@@ -59,7 +59,7 @@ ext_modules = [
             get_pybind_include()
         ],
         library_dirs=None,
-        libraries=['mpfr', 'gmp'],
+        # libraries=['mpfr', 'gmp'],
         language='c++'
     ),
 ]

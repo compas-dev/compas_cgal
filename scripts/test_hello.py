@@ -1,3 +1,14 @@
 from compas_cgal._cgal import hello
 
-print(hello.hello_compas())
+
+def main():
+    print(hello.hello_compas())
+
+
+# ==============================================================================
+# Main
+# ==============================================================================
+
+if __name__ == '__main__':
+
+    main()
