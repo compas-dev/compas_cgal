@@ -51,6 +51,8 @@ ext_modules = [
         sorted([
             'src/hello.cpp',
             'src/mesh.cpp',
+            'src/meshing.cpp',
+            'src/booleans.cpp',
             'src/compas_cgal.cpp',
         ]),
         include_dirs=[
@@ -59,7 +61,7 @@ ext_modules = [
             get_pybind_include()
         ],
         library_dirs=None,
-        # libraries=['mpfr', 'gmp'],
+        libraries=['mpfr', 'gmp'],
         language='c++'
     ),
 ]

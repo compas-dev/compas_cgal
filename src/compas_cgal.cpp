@@ -1,20 +1,25 @@
-#include <compas_cgal.hpp>
+#include <compas.h>
+#include <compas_cgal/trimesh.h>
 #include <pybind11/pybind11.h>
 
 
-Mesh mesh_from_vertices_and_faces(RowMatrixXd V, RowMatrixXi F) {
+// =======================
+// Helpers
+// =======================
+
+TriMesh trimesh_from_vertices_and_faces(RowMatrixXd V, RowMatrixXi F) {
 
     int v = V.rows();
-    Mesh m;
-    vertex_descriptor index_descriptor[v];
+    TriMesh m;
+    TriMesh::Vertex_index index_descriptor[v];
 
     for (int i=0; i < V.rows(); i++) {
-        index_descriptor[i] = m.add_vertex(Point3(V(i, 0), V(i, 1), V(i, 2)));
+        index_descriptor[i] = m.add_vertex(Point_3(V(i, 0), V(i, 1), V(i, 2)));
     }
 
-    vertex_descriptor a;
-    vertex_descriptor b;
-    vertex_descriptor c;
+    TriMesh::Vertex_index a;
+    TriMesh::Vertex_index b;
+    TriMesh::Vertex_index c;
 
     for (int i=0; i < F.rows(); i++) {
         a = index_descriptor[F(i, 0)];
@@ -27,12 +32,17 @@ Mesh mesh_from_vertices_and_faces(RowMatrixXd V, RowMatrixXi F) {
 }
 
 
-// PyBind stuff
+// =======================
+// PyBind
+// =======================
 
 namespace py = pybind11;
 
 void init_hello(py::module&);
 void init_mesh(py::module&);
+
+void init_meshing(py::module&);
+void init_booleans(py::module&);
 
 
 PYBIND11_MODULE(_cgal, m) {
@@ -40,4 +50,7 @@ PYBIND11_MODULE(_cgal, m) {
 
     init_hello(m);
     init_mesh(m);
+
+    init_meshing(m);
+    init_booleans(m);
 }

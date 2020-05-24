@@ -2,7 +2,7 @@ from compas_cgal._cgal import hello
 
 
 def main():
-    print(hello.hello_compas())
+    hello.hello_compas()
 
 
 # ==============================================================================
@@ -10,5 +10,9 @@ def main():
 # ==============================================================================
 
 if __name__ == '__main__':
+
+    from compas.utilities import print_profile
+
+    main = print_profile(main)
 
     main()

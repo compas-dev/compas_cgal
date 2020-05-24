@@ -1,6 +1,5 @@
 #include <iostream>
 #include <pybind11/pybind11.h>
-#include <CGAL/Surface_mesh.h>
 
 
 int hello_compas() {

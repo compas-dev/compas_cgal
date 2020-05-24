@@ -1,14 +1,17 @@
 import numpy as np
 import compas
 from compas.datastructures import Mesh
-from compas_cgal._cgal import mesh
+from compas_cgal._cgal import meshing
 
 
 def main(v, f):
     V = np.asarray(v, dtype=np.float64)
     F = np.asarray(f, dtype=np.int32)
 
-    mesh.mesh_test(V, F)
+    meshing.refine(V, F)
+    meshing.fair(V, F)
+    meshing.triangulate(V, F)
+    meshing.remesh(V, F)
 
 
 # ==============================================================================
