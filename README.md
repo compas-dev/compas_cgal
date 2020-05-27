@@ -17,7 +17,7 @@ pip install -e .
 
 ## Repo Structure
 
-The `ext_modules` paert of `setup.py` shows where the important bits are.
+The `ext_modules` part of `setup.py` shows where the important bits are.
 
 ```python
 # setup.py
