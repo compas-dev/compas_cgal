@@ -49,11 +49,10 @@ ext_modules = [
     Extension(
         'compas_cgal._cgal',
         sorted([
-            'src/hello.cpp',
-            'src/mesh.cpp',
+            'src/compas_cgal.cpp',
+            'src/trimesh.cpp',
             'src/meshing.cpp',
             'src/booleans.cpp',
-            'src/compas_cgal.cpp',
         ]),
         include_dirs=[
             './include',

@@ -3,12 +3,15 @@
 
 #include <pybind11/eigen.h>
 
-using RowMatrixXd = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
-using RowMatrixXi = Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+namespace compas
+{
+    using RowMatrixXd = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+    using RowMatrixXi = Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 
-struct Mesh {
-	RowMatrixXd vertices;
-	RowMatrixXi faces;
-};
+    struct Mesh {
+        RowMatrixXd vertices;
+        RowMatrixXi faces;
+    };
+}
 
 #endif /* COMPAS_H */

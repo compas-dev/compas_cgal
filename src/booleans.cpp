@@ -1,20 +1,7 @@
-#include <compas.h>
-#include <pybind11/pybind11.h>
-
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include <CGAL/Surface_mesh.h>
-#include <CGAL/Polygon_mesh_processing/corefinement.h>
+#include "booleans.h"
 
 
-using Kernel = CGAL::Exact_predicates_inexact_constructions_kernel;
-using Point_3 = Kernel::Point_3;
-using BoolMesh = CGAL::Surface_mesh<Point_3>;
-
-namespace PMP = CGAL::Polygon_mesh_processing;
-namespace py = pybind11;
-
-
-BoolMesh boolmesh_from_vertices_and_faces(RowMatrixXd V, RowMatrixXi F) {
+BoolMesh boolmesh_from_vertices_and_faces(compas::RowMatrixXd V, compas::RowMatrixXi F) {
 
     int v = V.rows();
     int f = F.rows();
@@ -40,7 +27,7 @@ BoolMesh boolmesh_from_vertices_and_faces(RowMatrixXd V, RowMatrixXi F) {
 }
 
 
-Mesh pmp_boolean_union(RowMatrixXd VA, RowMatrixXi FA, RowMatrixXd VB, RowMatrixXi FB) {
+compas::Mesh pmp_boolean_union(compas::RowMatrixXd VA, compas::RowMatrixXi FA, compas::RowMatrixXd VB, compas::RowMatrixXi FB) {
 
     BoolMesh A = boolmesh_from_vertices_and_faces(VA, FA);
     BoolMesh B = boolmesh_from_vertices_and_faces(VB, FB);
@@ -50,9 +37,9 @@ Mesh pmp_boolean_union(RowMatrixXd VA, RowMatrixXi FA, RowMatrixXd VB, RowMatrix
 
     int v = C.number_of_vertices();
     int f = C.number_of_faces();
-    Mesh M;
-    RowMatrixXd VC(v, 3);
-    RowMatrixXi FC(f, 3);
+    compas::Mesh M;
+    compas::RowMatrixXd VC(v, 3);
+    compas::RowMatrixXi FC(f, 3);
 
     BoolMesh::Property_map<BoolMesh::Vertex_index, Point_3> location = C.points();
 
@@ -89,7 +76,7 @@ void init_booleans(py::module & m) {
         py::arg("FB").noconvert()
     );
 
-    py::class_<Mesh>(m, "Mesh")
-    	.def_readonly("vertices", &Mesh::vertices)
-    	.def_readonly("faces", &Mesh::faces);
+    py::class_<compas::Mesh>(m, "Mesh")
+    	.def_readonly("vertices", &compas::Mesh::vertices)
+    	.def_readonly("faces", &compas::Mesh::faces);
 }
