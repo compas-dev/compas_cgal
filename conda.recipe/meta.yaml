@@ -24,9 +24,11 @@ requirements:
     - pip
     - python
     - pybind11
+    - eigen
     - cgal-cpp >=5.0
   run:
     - python {{ python }}
+    - eigen
     - cgal-cpp >=5.0
     # Just to silence the warnings, but not adding vs2015_runtime for win...
     - boost-cpp

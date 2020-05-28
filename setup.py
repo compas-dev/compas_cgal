@@ -28,21 +28,25 @@ optional_requirements = {}
 
 conda_prefix = os.getenv('CONDA_PREFIX')
 
+windows = os.name == 'nt'
 
-class get_pybind_include(object):
-    """Helper class to determine the pybind11 include path
 
-    The purpose of this class is to postpone importing pybind11
-    until it is actually installed, so that the ``get_include()``
-    method can be invoked. """
-
-    def __str__(self):
-        import pybind11
-        return pybind11.get_include()
+def get_pybind_include():
+    if windows:
+        return os.path.join(conda_prefix, 'Library', 'include', 'eigen3')
+    return os.path.join(conda_prefix, 'include', 'eigen3')
 
 
 def get_eigen_include():
-    return os.path.join(conda_prefix, 'include', 'eigen3')
+    if windows:
+        return os.path.join(conda_prefix, 'Library', 'include')
+    return os.path.join(conda_prefix, 'include')
+
+
+def get_library_dirs():
+    if windows:
+        return os.path.join(conda_prefix, 'Library', 'lib')
+    return os.path.join(conda_prefix, 'lib')
 
 
 ext_modules = [
@@ -60,7 +64,9 @@ ext_modules = [
             get_eigen_include(),
             get_pybind_include()
         ],
-        library_dirs=None,
+        library_dirs=[
+            get_library_dirs(),
+        ],
         libraries=['mpfr', 'gmp'],
         language='c++'
     ),

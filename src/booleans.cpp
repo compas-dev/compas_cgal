@@ -1,12 +1,13 @@
 #include "booleans.h"
 
 
-Mesh mesh_from_vertices_and_faces(compas::RowMatrixXd V, compas::RowMatrixXi F) {
+Mesh mesh_from_vertices_and_faces(const compas::RowMatrixXd & V, const compas::RowMatrixXi & F) {
 
     int v = V.rows();
     int f = F.rows();
+
     Mesh m;
-    Mesh::Vertex_index index_descriptor[v];
+    std::vector<Mesh::Vertex_index> index_descriptor(v);
 
     for (int i=0; i < v; i++) {
         index_descriptor[i] = m.add_vertex(K::Point_3(V(i, 0), V(i, 1), V(i, 2)));

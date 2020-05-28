@@ -1,13 +1,13 @@
 #include "slicer.h"
 
 
-SliceMesh slicemesh_from_vertices_and_faces(compas::RowMatrixXd V, compas::RowMatrixXi F) {
+SliceMesh slicemesh_from_vertices_and_faces(const compas::RowMatrixXd & V, const compas::RowMatrixXi & F) {
 
     int v = V.rows();
     int f = F.rows();
 
     SliceMesh mesh;
-    SliceMesh::Vertex_index index_descriptor[v];
+    std::vector<SliceMesh::Vertex_index> index_descriptor(v);
 
     for (int i=0; i < v; i++) {
         index_descriptor[i] = mesh.add_vertex(K::Point_3(V(i, 0), V(i, 1), V(i, 2)));

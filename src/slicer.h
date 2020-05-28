@@ -18,7 +18,7 @@ using Polylines = std::list<Polyline_type>;
 
 namespace py = pybind11;
 
-SliceMesh slicemesh_from_vertices_and_faces(compas::RowMatrixXd V, compas::RowMatrixXi F);
+SliceMesh slicemesh_from_vertices_and_faces(const compas::RowMatrixXd & V, const compas::RowMatrixXi & F);
 
 void pmp_slice_mesh(compas::RowMatrixXd V, compas::RowMatrixXi F, compas::RowMatrixXd P, compas::RowMatrixXd N);
 
