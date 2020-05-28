@@ -53,6 +53,7 @@ ext_modules = [
             'src/trimesh.cpp',
             'src/meshing.cpp',
             'src/booleans.cpp',
+            'src/slicer.cpp',
         ]),
         include_dirs=[
             './include',
@@ -92,7 +93,8 @@ def cpp_flag(compiler):
 
     The newer version is prefered over c++11 (when it is available).
     """
-    flags = ['-std=c++17', '-std=c++14', '-std=c++11']
+    # flags = ['-std=c++17', '-std=c++14', '-std=c++11']
+    flags = ['-std=c++14', '-std=c++11']
 
     for flag in flags:
         if has_flag(compiler, flag):
@@ -105,7 +107,7 @@ def cpp_flag(compiler):
 class BuildExt(build_ext):
     """A custom build extension for adding compiler-specific options."""
     c_opts = {
-        'msvc': ['/EHsc'],
+        'msvc': ['/EHsc', '/std:c++14'],
         'unix': [],
     }
     l_opts = {

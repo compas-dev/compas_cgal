@@ -1,0 +1,52 @@
+{% set name = "compas_cgal" %}
+{% set version = "0.1.0" %}
+{% set hash = "5add48573f2a5f7cd253644232f022305b10b493559d7601c2235926b7240feb" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+#   url: https://github.com/blockresearchgroup/{{ name }}/archive/v{{ version }}.tar.gz
+#   sha256: {{ hash }}
+    path: ../
+
+build:
+  number: 0
+  skip: true  # [py<36]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    # - ninja  # [win]
+  host:
+    - pip
+    - python
+    - pybind11
+    - cgal-cpp >=5.0
+  run:
+    - python {{ python }}
+    - cgal-cpp >=5.0
+    # Just to silence the warnings, but not adding vs2015_runtime for win...
+    - boost-cpp
+    - mpir  # [win]
+    - gmp  # [not win]
+    - mpfr
+    - COMPAS >=0.15.5
+
+test:
+  imports:
+    - compas_cgal
+
+about:
+  home: https://github.com/blockresearchgroup/compas_cgal
+  license: LGPL-3.0-or-later
+  license_file: LICENSE
+  summary: 'COMPAS friendly wrappers for CGAL Polygon Mesh Processing.'
+  dev_url: https://github.com/blockresearchgroup/compas_cgal
+  doc_url: https://github.com/blockresearchgroup/compas_cgal
+
+extra:
+  recipe-maintainers:
+    - brgcode
