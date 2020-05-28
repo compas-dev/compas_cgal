@@ -1,6 +1,6 @@
 {% set name = "compas_cgal" %}
 {% set version = "0.1.0" %}
-{% set hash = "5add48573f2a5f7cd253644232f022305b10b493559d7601c2235926b7240feb" %}
+{% set hash = "" %}
 
 package:
   name: {{ name|lower }}
@@ -19,7 +19,6 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    # - ninja  # [win]
   host:
     - pip
     - python
@@ -30,12 +29,10 @@ requirements:
     - python {{ python }}
     - eigen
     - cgal-cpp >=5.0
-    # Just to silence the warnings, but not adding vs2015_runtime for win...
     - boost-cpp
     - mpir  # [win]
     - gmp  # [not win]
     - mpfr
-    - COMPAS >=0.15.5
 
 test:
   imports:
