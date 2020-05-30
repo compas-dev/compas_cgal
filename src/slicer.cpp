@@ -56,8 +56,4 @@ void init_slicer(py::module & m) {
         py::arg("P").noconvert(),
         py::arg("N").noconvert()
     );
-
-    // py::class_<compas::Mesh>(m, "Mesh")
-    // 	.def_readonly("vertices", &compas::Mesh::vertices)
-    // 	.def_readonly("faces", &compas::Mesh::faces);
 }

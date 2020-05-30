@@ -1,7 +1,7 @@
 #include "booleans.h"
 
 
-Mesh mesh_from_vertices_and_faces(const compas::RowMatrixXd & V, const compas::RowMatrixXi & F) {
+Mesh mesh2_from_vertices_and_faces(const compas::RowMatrixXd & V, const compas::RowMatrixXi & F) {
 
     int v = V.rows();
     int f = F.rows();
@@ -30,11 +30,13 @@ Mesh mesh_from_vertices_and_faces(const compas::RowMatrixXd & V, const compas::R
 
 compas::Mesh pmp_boolean_union(compas::RowMatrixXd VA, compas::RowMatrixXi FA, compas::RowMatrixXd VB, compas::RowMatrixXi FB) {
 
-    Mesh A = mesh_from_vertices_and_faces(VA, FA);
-    Mesh B = mesh_from_vertices_and_faces(VB, FB);
+    Mesh A = mesh2_from_vertices_and_faces(VA, FA);
+    Mesh B = mesh2_from_vertices_and_faces(VB, FB);
     Mesh C;
 
     PMP::corefine_and_compute_union(A, B, C);
+
+    // Result
 
     int v = C.number_of_vertices();
     int f = C.number_of_faces();
@@ -77,8 +79,4 @@ void init_booleans(py::module & m) {
         py::arg("VB").noconvert(),
         py::arg("FB").noconvert()
     );
-
-    py::class_<compas::Mesh>(m, "Mesh")
-    	.def_readonly("vertices", &compas::Mesh::vertices)
-    	.def_readonly("faces", &compas::Mesh::faces);
 }

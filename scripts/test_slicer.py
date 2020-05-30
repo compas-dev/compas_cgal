@@ -1,5 +1,9 @@
+import os
 import numpy as np
 from compas_cgal._cgal import booleans
+
+HERE = os.path.dirname(__file__)
+# FILE = os.path.join(HERE, 'booleans.json')
 
 
 def main(A, B):
@@ -21,6 +25,7 @@ def main(A, B):
 if __name__ == '__main__':
 
     import compas
+
     from compas.utilities import print_profile
     from compas.utilities import rgb_to_hex
     from compas.geometry import Point
@@ -57,6 +62,8 @@ if __name__ == '__main__':
 
     mesh = main(box, sphere)
 
+    # mesh.to_json(FILE)
+
     meshes = []
     meshes.append(MeshObject(mesh, color=rgb_to_hex((210, 210, 210))))
 
@@ -64,4 +71,3 @@ if __name__ == '__main__':
     viewer.meshes = meshes
 
     viewer.show()
-

@@ -16,7 +16,7 @@ using Mesh = CGAL::Surface_mesh<K::Point_3>;
 namespace PMP = CGAL::Polygon_mesh_processing;
 namespace py = pybind11;
 
-Mesh mesh_from_vertices_and_faces(const compas::RowMatrixXd & V, const compas::RowMatrixXi & F);
+Mesh mesh2_from_vertices_and_faces(const compas::RowMatrixXd & V, const compas::RowMatrixXi & F);
 
 compas::Mesh pmp_boolean_union(compas::RowMatrixXd VA, compas::RowMatrixXi FA, compas::RowMatrixXd VB, compas::RowMatrixXi FB);
 

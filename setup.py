@@ -54,7 +54,6 @@ ext_modules = [
         'compas_cgal._cgal',
         sorted([
             'src/compas_cgal.cpp',
-            'src/trimesh.cpp',
             'src/meshing.cpp',
             'src/booleans.cpp',
             'src/slicer.cpp',

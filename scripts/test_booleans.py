@@ -2,8 +2,8 @@ import os
 import numpy as np
 from compas_cgal._cgal import booleans
 
-HERE = os.path.dirname(__file__)
-FILE = os.path.join(HERE, 'booleans.json')
+# HERE = os.path.dirname(__file__)
+# FILE = os.path.join(HERE, 'booleans.json')
 
 
 def main(A, B):
@@ -62,7 +62,7 @@ if __name__ == '__main__':
 
     mesh = main(box, sphere)
 
-    mesh.to_json(FILE)
+    # mesh.to_json(FILE)
 
     meshes = []
     meshes.append(MeshObject(mesh, color=rgb_to_hex((210, 210, 210))))
