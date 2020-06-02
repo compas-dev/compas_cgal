@@ -12,7 +12,8 @@ def main(v, f):
     # meshing.refine(V, F)
     # meshing.fair(V, F)
     # meshing.triangulate(V, F)
-    meshing.remesh(V, F, 0.5, 10)
+    result = meshing.remesh(V, F, 0.1, 10)
+    return result
 
 
 # ==============================================================================
@@ -22,6 +23,7 @@ def main(v, f):
 if __name__ == '__main__':
 
     from compas.utilities import print_profile
+    from compas_plotters import MeshPlotter
 
     m = Mesh.from_obj(compas.get('faces.obj'))
     mesh_quads_to_triangles(m)
@@ -30,4 +32,11 @@ if __name__ == '__main__':
 
     main = print_profile(main)
 
-    main(v, f)
+    result = main(v, f)
+
+    mesh = Mesh.from_vertices_and_faces(result.vertices, result.faces)
+
+    plotter = MeshPlotter(mesh, figsize=(8, 5))
+    plotter.draw_vertices()
+    plotter.draw_faces()
+    plotter.show()
