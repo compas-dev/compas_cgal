@@ -45,8 +45,8 @@ if __name__ == '__main__':
     # R = Rotation.from_axis_and_angle(Vector(0, 1, 0), math.radians(60))
     # normal.transform(R)
     planes = []
-    for i in range(20):
-        plane = Plane(Point(-0.2 * i, 0, 0), normal)
+    for i in range(30):
+        plane = Plane(Point(-0.15 * i, 0, 0), normal)
         planes.append(plane)
 
     mesh = Mesh.from_ply(compas.get('bunny.ply'))

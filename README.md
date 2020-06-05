@@ -60,8 +60,20 @@ ext_modules = [
 
 ### 1. Booleans
 
-```bash
-python ./scripts/test_booleans.py
-```
+**Mesh-Mesh Union.**
 
 ![images/cgal_boolean_union.png](images/cgal_boolean_union.png)
+
+**Mesh-Mesh Difference.**
+
+![images/cgal_boolean_difference.png](images/cgal_boolean_difference.png)
+
+**Mesh-Mesh Intersection.**
+
+![images/cgal_boolean_intersection.png](images/cgal_boolean_intersection.png)
+
+### 2. Slicing
+
+**Slice mesh by plane.**
+
+![images/cgal_slicer.png](images/cgal_slicer.png)

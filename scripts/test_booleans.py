@@ -62,7 +62,7 @@ if __name__ == '__main__':
     sphere = Mesh.from_shape(sphere, u=50, v=50)
     mesh_quads_to_triangles(sphere)
 
-    mesh = boolean(box, sphere, 'difference')
+    mesh = boolean(box, sphere, 'intersection')
 
     meshes = []
     meshes.append(MeshObject(mesh, color='#cccccc'))
