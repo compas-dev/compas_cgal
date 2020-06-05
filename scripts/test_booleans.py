@@ -2,9 +2,6 @@ import os
 import numpy as np
 from compas_cgal._cgal import booleans
 
-# HERE = os.path.dirname(__file__)
-# FILE = os.path.join(HERE, 'booleans.json')
-
 
 def main(A, B):
     VA, FA = A.to_vertices_and_faces()

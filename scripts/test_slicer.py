@@ -2,8 +2,6 @@ import os
 import numpy as np
 from compas_cgal._cgal import slicer
 
-HERE = os.path.dirname(__file__)
-
 
 def main(mesh, plane):
     V, F = mesh.to_vertices_and_faces()
@@ -12,8 +10,7 @@ def main(mesh, plane):
     F = np.asarray(F, dtype=np.int32)
     P = np.array([point], dtype=np.float64)
     N = np.array([normal], dtype=np.float64)
-    result = slicer.slice_mesh(V, F, P, N)
-    print(result)
+    slicer.slice_mesh(V, F, P, N)
 
 
 # ==============================================================================
