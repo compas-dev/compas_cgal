@@ -1,4 +1,5 @@
 #include "meshing.h"
+
 #include <CGAL/Polygon_mesh_processing/remesh.h>
 
 namespace PMP = CGAL::Polygon_mesh_processing;
@@ -14,11 +15,11 @@ compas::Result pmp_remesh(
 {
     Mesh mesh = compas::mesh_from_vertices_and_faces(V, F);
 
-    // PMP::isotropic_remeshing(
-    //     faces(mesh),
-    //     target_edge_length,
-    //     mesh,
-    //     params::number_of_iterations(niter));
+    PMP::isotropic_remeshing(
+        faces(mesh),
+        target_edge_length,
+        mesh,
+        params::number_of_iterations(niter));
 
     // Result
 
