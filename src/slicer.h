@@ -3,10 +3,7 @@
 
 #include <compas.h>
 
-using Polyline_type = std::vector<Kernel::Point_3>;
-using Polylines = std::list<Polyline_type>;
-
-void pmp_slice_mesh(
+compas::RowMatrixXd pmp_slice_mesh(
     compas::RowMatrixXd V,
     compas::RowMatrixXi F,
     compas::RowMatrixXd point,

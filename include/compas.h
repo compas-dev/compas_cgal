@@ -9,7 +9,12 @@
 
 using Kernel = CGAL::Exact_predicates_inexact_constructions_kernel;
 using Mesh = CGAL::Surface_mesh<Kernel::Point_3>;
+using Polyline = std::vector<Kernel::Point_3>;
+using Polylines = std::list<Polyline>;
 
+// using ResultPoint = std::vector<double>;
+// using ResultPolyline = std::vector<ResultPoint>;
+// using ResultPolylines = std::list<ResultPolyline>;
 
 namespace compas
 {
@@ -24,7 +29,8 @@ namespace compas
 
     Mesh mesh_from_vertices_and_faces(const RowMatrixXd & V, const RowMatrixXi & F);
 
-    Result result_from_mesh(Mesh mesh);
+    Result result_from_mesh(const Mesh & mesh);
+    RowMatrixXd result_from_polylines(const Polylines & polylines);
 }
 
 

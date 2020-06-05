@@ -36,9 +36,10 @@ Mesh compas::mesh_from_vertices_and_faces(
     return mesh;
 }
 
-// construct a result
+// TODO: rename to ResultMesh
+// construct a result mesh
 // from a CGAL surface mesh
-compas::Result compas::result_from_mesh(Mesh mesh)
+compas::Result compas::result_from_mesh(const Mesh & mesh)
 {
     int v = mesh.number_of_vertices();
     int f = mesh.number_of_faces();
@@ -65,6 +66,26 @@ compas::Result compas::result_from_mesh(Mesh mesh)
 
     R.vertices = R_vertices;
     R.faces = R_faces;
+
+    return R;
+}
+
+// construct a set of result polylines
+// from CGAL polylines
+// the CGAL polylines are a list of vectors of points
+compas::RowMatrixXd compas::result_from_polylines(const Polylines & polylines)
+{
+    int p = polylines.size();
+    Polyline p0 = polylines.front();
+    int n = p0.size();
+
+    compas::RowMatrixXd R(n, 3);
+
+    for (int i = 0; i < n; i++) {
+        R(i, 0) = (double) p0[i].x();
+        R(i, 1) = (double) p0[i].y();
+        R(i, 2) = (double) p0[i].z();
+    }
 
     return R;
 }

@@ -4,7 +4,7 @@
 namespace py = pybind11;
 
 
-void pmp_slice_mesh(
+compas::RowMatrixXd pmp_slice_mesh(
     compas::RowMatrixXd V,
     compas::RowMatrixXi F,
     compas::RowMatrixXd point,
@@ -21,7 +21,11 @@ void pmp_slice_mesh(
 
     slicer(plane, std::back_inserter(polylines));
 
-    std::cout << "The slicer intersects " << polylines.size() << " polylines.";
+    // std::cout << "The slicer intersects " << polylines.size() << " polylines.";
+
+    compas::RowMatrixXd R = compas::result_from_polylines(polylines);
+
+    return R;
 };
 
 

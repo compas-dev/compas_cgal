@@ -10,7 +10,7 @@ def main(mesh, plane):
     F = np.asarray(F, dtype=np.int32)
     P = np.array([point], dtype=np.float64)
     N = np.array([normal], dtype=np.float64)
-    slicer.slice_mesh(V, F, P, N)
+    return slicer.slice_mesh(V, F, P, N)
 
 
 # ==============================================================================
@@ -19,25 +19,58 @@ def main(mesh, plane):
 
 if __name__ == '__main__':
 
+    import math
     import compas
 
     from compas.utilities import print_profile
     from compas.utilities import rgb_to_hex
+    from compas.geometry import scale_vector
     from compas.geometry import Point
     from compas.geometry import Vector
     from compas.geometry import Plane
     from compas.geometry import Box
+    from compas.geometry import Polygon
+    from compas.geometry import Polyline
+    from compas.geometry import Rotation
+    from compas.geometry import Translation
+    from compas.geometry import Scale
     from compas.datastructures import Mesh
     from compas.datastructures import mesh_quads_to_triangles
+    from compas_viewers.objectviewer import ObjectViewer
 
-    main = print_profile(main)
+    # main = print_profile(main)
 
-    O = Point(0, 0, 0)
-    Z = Vector(0, 0, 1)
-    XY = Plane(O, Z)
+    point = Point(0, 0, 0)
+    normal = Vector(1, 0, 0)
+    # R = Rotation.from_axis_and_angle(Vector(0, 1, 0), math.radians(60))
+    # normal.transform(R)
+    planes = []
+    for i in range(20):
+        plane = Plane(Point(-0.2 * i, 0, 0), normal)
+        planes.append(plane)
 
-    box = Box.from_width_height_depth(1, 1, 1)
-    box = Mesh.from_shape(box)
-    mesh_quads_to_triangles(box)
+    mesh = Mesh.from_ply(compas.get('bunny.ply'))
+    vector = scale_vector(mesh.centroid(), -1)
 
-    main(box, XY)
+    T = Translation.from_vector(vector)
+    S = Scale.from_factors([100, 100, 100])
+    R = Rotation.from_axis_and_angle(Vector(1, 0, 0), math.radians(90))
+
+    mesh.transform_numpy(R * S * T)
+
+    polylines = []
+    for plane in planes:
+        points = main(mesh, plane)
+        points = [Point(*point) for point in points]  # otherwise Polygon throws an error
+        polyline = Polyline(points)
+        polylines.append(polyline)
+
+    viewer = ObjectViewer()
+
+    # viewer.add(mesh, settings={'color': '#cccccc'})
+
+    for polyline in polylines:
+        viewer.add(polyline, settings={'color': '#0000ff'})
+
+    viewer.update()
+    viewer.show()
