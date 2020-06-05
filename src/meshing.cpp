@@ -1,5 +1,4 @@
 #include "meshing.h"
-
 #include <CGAL/Polygon_mesh_processing/remesh.h>
 
 namespace PMP = CGAL::Polygon_mesh_processing;

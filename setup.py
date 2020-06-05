@@ -57,7 +57,7 @@ ext_modules = [
             'src/compas.cpp',
             'src/meshing.cpp',
             'src/booleans.cpp',
-            # 'src/slicer.cpp',
+            'src/slicer.cpp',
         ]),
         include_dirs=[
             './include',
