@@ -69,6 +69,7 @@ if __name__ == '__main__':
         polylines.append(polyline)
 
     viewer = ObjectViewer()
+    viewer.view.use_shaders = False
 
     # viewer.add(mesh, settings={'color': '#cccccc'})
 
