@@ -44,6 +44,7 @@ compas::Result compas::result_from_mesh(const Mesh & mesh)
     int v = mesh.number_of_vertices();
     int f = mesh.number_of_faces();
 
+
     compas::Result R;
     compas::RowMatrixXd R_vertices(v, 3);
     compas::RowMatrixXi R_faces(f, 3);

@@ -22,7 +22,7 @@ compas::Result pmp_remesh(
         params::number_of_iterations(niter));
 
     // Result
-
+    mesh.collect_garbage();
     compas::Result R = compas::result_from_mesh(mesh);
 
     return R;

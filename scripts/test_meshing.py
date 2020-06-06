@@ -1,9 +1,12 @@
+import sys
+import os
+sys.path.insert(1, os.path.dirname(__file__) + "/../src")
+
 import numpy as np
 import compas
 from compas.datastructures import Mesh
 from compas.datastructures import mesh_quads_to_triangles
 from compas_cgal._cgal import meshing
-
 
 def main(v, f):
     V = np.asarray(v, dtype=np.float64)
@@ -35,6 +38,7 @@ if __name__ == '__main__':
     result = main(v, f)
 
     mesh = Mesh.from_vertices_and_faces(result.vertices, result.faces)
+
 
     plotter = MeshPlotter(mesh, figsize=(8, 5))
     plotter.draw_vertices()
