@@ -3,7 +3,9 @@
 
 #include <compas.h>
 
-compas::RowMatrixXd pmp_slice_mesh(
+// std::vector<compas::RowMatrixXd, Eigen::aligned_allocator<compas::RowMatrixXd>>
+compas::RowMatrixXd
+pmp_slice_mesh(
     compas::RowMatrixXd V,
     compas::RowMatrixXi F,
     compas::RowMatrixXd P,

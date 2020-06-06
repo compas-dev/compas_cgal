@@ -4,7 +4,9 @@
 namespace py = pybind11;
 
 
-compas::RowMatrixXd pmp_slice_mesh(
+// std::vector<compas::RowMatrixXd, Eigen::aligned_allocator<compas::RowMatrixXd>>
+compas::RowMatrixXd
+pmp_slice_mesh(
     compas::RowMatrixXd V,
     compas::RowMatrixXi F,
     compas::RowMatrixXd P,
@@ -26,7 +28,7 @@ compas::RowMatrixXd pmp_slice_mesh(
         slicer(plane, std::back_inserter(polylines));
     }
 
-    // std::vector<compas::RowMatrixXd> result = compas::result_from_polylines(polylines);
+    // std::vector<compas::RowMatrixXd, Eigen::aligned_allocator<compas::RowMatrixXd>> result = compas::result_from_polylines(polylines);
     // return result;
 
     // this avoids the segmentation fault

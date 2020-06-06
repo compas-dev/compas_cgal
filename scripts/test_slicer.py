@@ -56,7 +56,7 @@ if __name__ == '__main__':
     S = Scale.from_factors([100, 100, 100])
     R = Rotation.from_axis_and_angle(Vector(1, 0, 0), math.radians(90))
 
-    mesh.transform_numpy(R * S * T)
+    mesh.transform(R * S * T)
 
     # currently this only returns one polyline
     # because otherwise a segmentation fault occurs

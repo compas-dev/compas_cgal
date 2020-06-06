@@ -9,7 +9,7 @@ COMPAS friedly bindings for the CGAL library.
 ```bash
 conda create -n cgal python=3.7 python.app eigen boost-cpp gmp mpfr cgal-cpp">=5.0" pybind11
 conda activate cgal
-conda install COMPAS
+conda install COMPAS=0.16.0
 conda install PySide2 PyOpenGL
 pip install git+https://github.com/compas-dev/compas_viewers.git#egg=compas_viewers
 pip install -e .
@@ -20,7 +20,7 @@ pip install -e .
 ```bash
 conda create -n cgal python=3.7 eigen boost-cpp mpir mpfr cgal-cpp">=5.0" pybind11
 conda activate cgal
-conda install COMPAS
+conda install COMPAS=0.16.0
 conda install PySide2
 pip install wheels/PyOpenGL‑3.1.5‑cp37‑cp37m‑win_amd64.whl
 pip install git+https://github.com/compas-dev/compas_viewers.git#egg=compas_viewers

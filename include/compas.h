@@ -1,6 +1,8 @@
 #ifndef COMPAS_H
 #define COMPAS_H
 
+#include <Eigen/StdVector>
+
 #include <pybind11/eigen.h>
 #include <pybind11/stl.h>
 
@@ -27,7 +29,8 @@ namespace compas
     Mesh mesh_from_vertices_and_faces(const RowMatrixXd & V, const RowMatrixXi & F);
 
     Result result_from_mesh(const Mesh & mesh);
-    std::vector<RowMatrixXd> result_from_polylines(const Polylines & polylines);
+
+    std::vector<compas::RowMatrixXd, Eigen::aligned_allocator<compas::RowMatrixXd>> result_from_polylines(const Polylines & polylines);
 }
 
 
