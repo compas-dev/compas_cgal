@@ -73,19 +73,26 @@ compas::Result compas::result_from_mesh(const Mesh & mesh)
 // construct a set of result polylines
 // from CGAL polylines
 // the CGAL polylines are a list of vectors of points
-compas::RowMatrixXd compas::result_from_polylines(const Polylines & polylines)
+std::vector<compas::RowMatrixXd>
+compas::result_from_polylines(const Polylines & polylines)
 {
-    int p = polylines.size();
-    Polyline p0 = polylines.front();
-    int n = p0.size();
+    std::vector<compas::RowMatrixXd> pointsets;
+    compas::RowMatrixXd points;
+    int n;
 
-    compas::RowMatrixXd R(n, 3);
+    for (auto i = polylines.begin(); i != polylines.end(); i++){
+        const Polyline & poly = *i;
+        n = poly.size();
+        points(n, 3);
 
-    for (int i = 0; i < n; i++) {
-        R(i, 0) = (double) p0[i].x();
-        R(i, 1) = (double) p0[i].y();
-        R(i, 2) = (double) p0[i].z();
+        for(int j = 0; j < n; j++){
+            points(j, 0) = (double) poly[j].x();
+            points(j, 1) = (double) poly[j].y();
+            points(j, 2) = (double) poly[j].z();
+        }
+
+        pointsets.push_back(points);
     }
 
-    return R;
+    return pointsets;
 }

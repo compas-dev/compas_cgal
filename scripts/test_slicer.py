@@ -3,13 +3,13 @@ import numpy as np
 from compas_cgal._cgal import slicer
 
 
-def main(mesh, plane):
+def main(mesh, planes):
     V, F = mesh.to_vertices_and_faces()
-    point, normal = plane
+    points, normals = zip(*planes)
     V = np.asarray(V, dtype=np.float64)
     F = np.asarray(F, dtype=np.int32)
-    P = np.array([point], dtype=np.float64)
-    N = np.array([normal], dtype=np.float64)
+    P = np.array(points, dtype=np.float64)
+    N = np.array(normals, dtype=np.float64)
     return slicer.slice_mesh(V, F, P, N)
 
 
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     # R = Rotation.from_axis_and_angle(Vector(0, 1, 0), math.radians(60))
     # normal.transform(R)
     planes = []
-    for i in range(30):
+    for i in range(2):
         plane = Plane(Point(-0.15 * i, 0, 0), normal)
         planes.append(plane)
 
@@ -58,9 +58,12 @@ if __name__ == '__main__':
 
     mesh.transform_numpy(R * S * T)
 
+    # currently this only returns one polyline
+    # because otherwise a segmentation fault occurs
+    result = main(mesh, planes)
+
     polylines = []
-    for plane in planes:
-        points = main(mesh, plane)
+    for points in [result]:
         points = [Point(*point) for point in points]  # otherwise Polygon throws an error
         polyline = Polyline(points)
         polylines.append(polyline)

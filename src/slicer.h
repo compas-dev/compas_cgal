@@ -6,8 +6,8 @@
 compas::RowMatrixXd pmp_slice_mesh(
     compas::RowMatrixXd V,
     compas::RowMatrixXi F,
-    compas::RowMatrixXd point,
-    compas::RowMatrixXd normal);
+    compas::RowMatrixXd P,
+    compas::RowMatrixXd N);
 
 
 #endif /* COMPAS_SLICER_H */
