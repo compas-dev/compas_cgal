@@ -3,21 +3,21 @@
 # flake8: noqa
 import io
 import os
-import re
-import sys
-import platform
-import subprocess
 
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
-from distutils.version import LooseVersion
+import sys
+import setuptools
 
-HERE = os.path.abspath(os.path.dirname(__file__))
+from setuptools.command.develop import develop
+from setuptools.command.install import install
+
+here = os.path.abspath(os.path.dirname(__file__))
 
 
 def read(*names, **kwargs):
     return io.open(
-        os.path.join(HERE, *names),
+        os.path.join(here, *names),
         encoding=kwargs.get("encoding", "utf8")
     ).read()
 
@@ -26,56 +26,121 @@ long_description = read("README.md")
 requirements = read("requirements.txt").split("\n")
 optional_requirements = {}
 
+conda_prefix = os.getenv('CONDA_PREFIX')
 
-class CMakeExtension(Extension):
-    def __init__(self, name, sourcedir=''):
-        Extension.__init__(self, name, sources=[])
-        self.sourcedir = os.path.abspath(sourcedir)
+windows = os.name == 'nt'
 
 
-class CMakeBuild(build_ext):
-    def run(self):
+def get_pybind_include():
+    if windows:
+        return os.path.join(conda_prefix, 'Library', 'include', 'eigen3')
+    return os.path.join(conda_prefix, 'include', 'eigen3')
+
+
+def get_eigen_include():
+    if windows:
+        return os.path.join(conda_prefix, 'Library', 'include')
+    return os.path.join(conda_prefix, 'include')
+
+
+def get_library_dirs():
+    if windows:
+        return os.path.join(conda_prefix, 'Library', 'lib')
+    return os.path.join(conda_prefix, 'lib')
+
+
+ext_modules = [
+    Extension(
+        'compas_cgal._cgal',
+        sorted([
+            'src/compas_cgal.cpp',
+            'src/compas.cpp',
+            'src/meshing.cpp',
+            'src/booleans.cpp',
+            'src/slicer.cpp',
+        ]),
+        include_dirs=[
+            './include',
+            get_eigen_include(),
+            get_pybind_include()
+        ],
+        library_dirs=[
+            get_library_dirs(),
+        ],
+        libraries=['mpfr', 'gmp'],
+        language='c++'
+    ),
+]
+
+# cf http://bugs.python.org/issue26689
+def has_flag(compiler, flagname):
+    """Return a boolean indicating whether a flag name is supported on
+    the specified compiler.
+    """
+    import tempfile
+    import os
+    with tempfile.NamedTemporaryFile('w', suffix='.cpp', delete=False) as f:
+        f.write('int main (int argc, char **argv) { return 0; }')
+        fname = f.name
+    try:
+        compiler.compile([fname], extra_postargs=[flagname])
+    except setuptools.distutils.errors.CompileError:
+        return False
+    finally:
         try:
-            out = subprocess.check_output(['cmake', '--version'])
+            os.remove(fname)
         except OSError:
-            raise RuntimeError("CMake must be installed to build the following extensions: " + ", ".join(e.name for e in self.extensions))
+            pass
+    return True
 
-        if platform.system() == "Windows":
-            cmake_version = LooseVersion(re.search(r'version\s*([\d.]+)', out.decode()).group(1))
-            if cmake_version < '3.1.0':
-                raise RuntimeError("CMake >= 3.1.0 is required on Windows")
 
+def cpp_flag(compiler):
+    """Return the -std=c++[11/14/17] compiler flag.
+
+    The newer version is prefered over c++11 (when it is available).
+    """
+    # flags = ['-std=c++17', '-std=c++14', '-std=c++11']
+    flags = ['-std=c++14', '-std=c++11']
+
+    for flag in flags:
+        if has_flag(compiler, flag):
+            return flag
+
+    raise RuntimeError('Unsupported compiler -- at least C++11 support '
+                       'is needed!')
+
+
+class BuildExt(build_ext):
+    """A custom build extension for adding compiler-specific options."""
+    c_opts = {
+        'msvc': ['/EHsc', '/std:c++14'],
+        'unix': [],
+    }
+    l_opts = {
+        'msvc': [],
+        'unix': [],
+    }
+
+    if sys.platform == 'darwin':
+        darwin_opts = ['-stdlib=libc++', '-mmacosx-version-min=10.14']
+        c_opts['unix'] += darwin_opts
+        l_opts['unix'] += darwin_opts
+
+    def build_extensions(self):
+        ct = self.compiler.compiler_type
+        opts = self.c_opts.get(ct, [])
+        link_opts = self.l_opts.get(ct, [])
+        if ct == 'unix':
+            opts.append('-DVERSION_INFO="%s"' % self.distribution.get_version())
+            opts.append(cpp_flag(self.compiler))
+            if has_flag(self.compiler, '-fvisibility=hidden'):
+                opts.append('-fvisibility=hidden')
+            opts.append('-DCGAL_DEBUG=1')
         for ext in self.extensions:
-            self.build_extension(ext)
-
-    def build_extension(self, ext):
-        extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
-        # required for auto-detection of auxiliary "native" libs
-        if not extdir.endswith(os.path.sep):
-            extdir += os.path.sep
-
-        cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
-                      '-DPYTHON_EXECUTABLE=' + sys.executable]
-
-        cfg = 'Debug' if self.debug else 'Release'
-        # cfg = 'Debug'
-        build_args = ['--config', cfg]
-
-        if platform.system() == "Windows":
-            cmake_args += ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(), extdir)]
-            if sys.maxsize > 2**32:
-                cmake_args += ['-A', 'x64']
-            build_args += ['--', '/m']
-        else:
-            cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
-            build_args += ['--', '-j4']
-
-        env = os.environ.copy()
-        env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(env.get('CXXFLAGS', ''), self.distribution.get_version())
-        if not os.path.exists(self.build_temp):
-            os.makedirs(self.build_temp)
-        subprocess.check_call(['cmake', ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env)
-        subprocess.check_call(['cmake', '--build', '.'] + build_args, cwd=self.build_temp)
+            ext.define_macros = [('VERSION_INFO', '"{}"'.format(self.distribution.get_version()))]
+            ext.extra_compile_args = opts
+            ext.extra_link_args = link_opts
+        build_ext.build_extensions(self)
 
 
 setup(
@@ -109,11 +174,11 @@ setup(
     # package_data={},
     # data_files=[],
     # include_package_data=True,
-    ext_modules=[CMakeExtension('compas_cgal')],
-    cmdclass={'build_ext': CMakeBuild},
+    ext_modules=ext_modules,
+    cmdclass={'build_ext': BuildExt},
     setup_requires=['pybind11>=2.5.0'],
     install_requires=requirements,
     python_requires=">=3.6",
     extras_require=optional_requirements,
-    zip_safe=False
+    zip_safe=False,
 )

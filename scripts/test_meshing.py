@@ -27,7 +27,6 @@ def main(v, f):
 
 if __name__ == '__main__':
 
-    from compas.utilities import print_profile
     from compas_plotters import MeshPlotter
 
     m = Mesh.from_obj(compas.get('faces.obj'))

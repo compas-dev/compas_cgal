@@ -1,4 +1,3 @@
-import os
 import numpy as np
 from compas_cgal._cgal import slicer
 
@@ -22,28 +21,18 @@ if __name__ == '__main__':
     import math
     import compas
 
-    from compas.utilities import print_profile
-    from compas.utilities import rgb_to_hex
     from compas.geometry import scale_vector
     from compas.geometry import Point
     from compas.geometry import Vector
     from compas.geometry import Plane
-    from compas.geometry import Box
-    from compas.geometry import Polygon
     from compas.geometry import Polyline
     from compas.geometry import Rotation
     from compas.geometry import Translation
     from compas.geometry import Scale
     from compas.datastructures import Mesh
-    from compas.datastructures import mesh_quads_to_triangles
     from compas_viewers.objectviewer import ObjectViewer
 
-    # main = print_profile(main)
-
-    point = Point(0, 0, 0)
     normal = Vector(1, 0, 0)
-    # R = Rotation.from_axis_and_angle(Vector(0, 1, 0), math.radians(60))
-    # normal.transform(R)
     planes = []
     for i in range(2):
         plane = Plane(Point(-0.15 * i, 0, 0), normal)
@@ -58,8 +47,6 @@ if __name__ == '__main__':
 
     mesh.transform(R * S * T)
 
-    # currently this only returns one polyline
-    # because otherwise a segmentation fault occurs
     result = main(mesh, planes)
 
     polylines = []
@@ -70,8 +57,6 @@ if __name__ == '__main__':
 
     viewer = ObjectViewer()
     viewer.view.use_shaders = False
-
-    # viewer.add(mesh, settings={'color': '#cccccc'})
 
     for polyline in polylines:
         viewer.add(polyline, settings={'color': '#0000ff'})
