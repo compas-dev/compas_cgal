@@ -60,6 +60,8 @@ pip install -e .
 
 **Slice mesh by plane.**
 
+Note that the visualisation of the slices is slow with COMPAS viewer!
+
 ![images/cgal_slicer.png](images/cgal_slicer.png)
 
 *To do:*
