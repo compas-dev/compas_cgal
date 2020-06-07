@@ -58,6 +58,7 @@ ext_modules = [
             'src/meshing.cpp',
             'src/booleans.cpp',
             'src/slicer.cpp',
+            'src/intersections.cpp',
         ]),
         include_dirs=[
             './include',

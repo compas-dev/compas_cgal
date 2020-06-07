@@ -65,7 +65,8 @@ pip install -e .
 *To do:*
 
 * Simplify slice polylines
-* optimise vieweing of polylines
+* Optimise vieweing of polylines
+* Group polylines per slice plane
 
 ### 3. Meshing
 
