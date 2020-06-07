@@ -8,9 +8,10 @@ namespace params = PMP::parameters;
 namespace py = pybind11;
 
 
-compas::Result pmp_remesh(
-    compas::RowMatrixXd V,
-    compas::RowMatrixXi F,
+compas::Result
+pmp_remesh(
+    Eigen::Ref<const compas::RowMatrixXd> & V,
+    Eigen::Ref<const compas::RowMatrixXi> & F,
     double target_edge_length,
     unsigned int niter)
 {
@@ -35,7 +36,7 @@ compas::Result pmp_remesh(
     compas::Result R = compas::result_from_mesh(mesh);
 
     return R;
-}
+};
 
 
 void init_meshing(py::module & m) {
@@ -49,4 +50,4 @@ void init_meshing(py::module & m) {
         py::arg("target_edge_length"),
         py::arg("niter")
     );
-}
+};

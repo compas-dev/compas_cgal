@@ -63,7 +63,7 @@ if __name__ == '__main__':
     result = main(mesh, planes)
 
     polylines = []
-    for points in [result]:
+    for points in result:
         points = [Point(*point) for point in points]  # otherwise Polygon throws an error
         polyline = Polyline(points)
         polylines.append(polyline)

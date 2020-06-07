@@ -1,10 +1,10 @@
 #ifndef COMPAS_H
 #define COMPAS_H
 
-#include <Eigen/StdVector>
-
 #include <pybind11/eigen.h>
 #include <pybind11/stl.h>
+
+#include <Eigen/StdVector>
 
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Surface_mesh.h>
@@ -30,7 +30,7 @@ namespace compas
 
     Result result_from_mesh(const Mesh & mesh);
 
-    std::vector<compas::RowMatrixXd, Eigen::aligned_allocator<compas::RowMatrixXd>> result_from_polylines(const Polylines & polylines);
+    std::vector<compas::RowMatrixXd> result_from_polylines(const Polylines & polylines);
 }
 
 

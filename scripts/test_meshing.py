@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
     mesh = Mesh.from_vertices_and_faces(result.vertices, result.faces)
 
-    plotter = MeshPlotter(mesh, figsize=(16, 10))
+    plotter = MeshPlotter(mesh, figsize=(8, 5))
     plotter.draw_vertices(radius=0.01)
     plotter.draw_faces()
     plotter.show()
