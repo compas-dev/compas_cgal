@@ -67,6 +67,7 @@ ext_modules = [
 **Mesh-Mesh Difference.**
 
 ![images/cgal_boolean_difference.png](images/cgal_boolean_difference.png)
+![images/cgal_boolean_difference.png](images/cgal_boolean_difference_remeshed.png)
 
 **Mesh-Mesh Intersection.**
 

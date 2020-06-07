@@ -4,7 +4,7 @@ from compas_cgal._cgal import booleans
 from compas_cgal._cgal import meshing
 
 
-def boolean(A, B, operation='union', remesh=False):
+def boolean(A, B, operation='union', remesh=True):
     VA, FA = A.to_vertices_and_faces()
     VB, FB = B.to_vertices_and_faces()
     VA = np.asarray(VA, dtype=np.float64)

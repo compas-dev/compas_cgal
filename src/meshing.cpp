@@ -1,6 +1,7 @@
 #include "meshing.h"
 
 #include <CGAL/Polygon_mesh_processing/remesh.h>
+#include <CGAL/Polygon_mesh_processing/detect_features.h>
 
 namespace PMP = CGAL::Polygon_mesh_processing;
 namespace params = PMP::parameters;
@@ -15,11 +16,18 @@ compas::Result pmp_remesh(
 {
     Mesh mesh = compas::mesh_from_vertices_and_faces(V, F);
 
+    // protect sharp features
+
+    typedef boost::property_map<Mesh, CGAL::edge_is_feature_t>::type EIFMap;
+    EIFMap eif = get(CGAL::edge_is_feature, mesh);
+    PMP::detect_sharp_edges(mesh, 60, eif);
+
     PMP::isotropic_remeshing(
         faces(mesh),
         target_edge_length,
         mesh,
-        params::number_of_iterations(niter));
+        params::number_of_iterations(niter)
+               .edge_is_constrained_map(eif));
 
     mesh.collect_garbage();
 
