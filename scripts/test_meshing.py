@@ -42,4 +42,4 @@ if __name__ == '__main__':
     plotter = MeshPlotter(mesh, figsize=(16, 10))
     plotter.draw_vertices(radius=0.01)
     plotter.draw_faces()
-    plotter.save(FILE)
+    plotter.show()
