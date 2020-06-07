@@ -1,4 +1,3 @@
-import numpy as np
 from compas_cgal import booleans
 
 from compas.geometry import Point
