@@ -20,9 +20,9 @@ def _boolean(A, B, operation, remesh=True):
 
     Parameters
     ----------
-    A : compas.datastructures.Mesh
+    A : tuple of vertices and faces
         Mesh A.
-    B : compas.datastructures.Mesh
+    B : tuple of vertices and faces
         Mesh B.
     operation : {'union', 'difference', 'intersection'}
         The type of boolean operation.
@@ -32,8 +32,10 @@ def _boolean(A, B, operation, remesh=True):
 
     Returns
     -------
-    compas.datastructures.Mesh
-        The boolean result mesh.
+    list
+        The vertices of the boolean mesh,
+        and the faces of the boolean mesh,
+        as a list of two numpy arrays.
 
     Raises
     ------
@@ -42,17 +44,17 @@ def _boolean(A, B, operation, remesh=True):
 
     Notes
     -----
-    * COMPAS meshes should be able to shadow vertices, faces tuples.
-    * Input should be tuples of vertices and faces.
+    * COMPAS meshes should be able to shadow (vertices, faces) tuples.
     * Provide remeshing options
     * Add remeshing on the C++ side (avoid needles traffic).
     * Provide optional out parameter.
     * Remeshing only protects sharp features in the boolean.
     * Remeshing should protect the intersection edges.
+    * Result should be a list of vertices and faces.
 
     """
-    VA, FA = A.to_vertices_and_faces()
-    VB, FB = B.to_vertices_and_faces()
+    VA, FA = A
+    VB, FB = B
     VA = np.asarray(VA, dtype=np.float64)
     FA = np.asarray(FA, dtype=np.int32)
     VB = np.asarray(VB, dtype=np.float64)
@@ -72,8 +74,7 @@ def _boolean(A, B, operation, remesh=True):
         F = result.faces
         result = meshing.remesh(V, F, 0.1, 10)
 
-    mesh = Mesh.from_vertices_and_faces(result.vertices, result.faces)
-    return mesh
+    return result.vertices, result.faces
 
 
 def boolean_union(A, B, remesh=True):

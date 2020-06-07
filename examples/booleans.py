@@ -43,7 +43,11 @@ sphere.quads_to_triangles()
 # A more general approach to remeshing would protect the edges found at the intersection,
 # regardless of whether they are sharp or not.
 
-mesh = boolean_difference(box, sphere)
+V, F = boolean_difference(
+    box.to_vertices_and_faces(),
+    sphere.to_vertices_and_faces())
+
+mesh = Mesh.from_vertices_and_faces(V, F)
 
 # ==============================================================================
 # Visualize
