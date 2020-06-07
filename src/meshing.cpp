@@ -27,8 +27,7 @@ pmp_remesh(
         faces(mesh),
         target_edge_length,
         mesh,
-        params::number_of_iterations(niter)
-               .edge_is_constrained_map(eif));
+        params::number_of_iterations(niter).edge_is_constrained_map(eif));
 
     mesh.collect_garbage();
 

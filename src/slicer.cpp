@@ -15,16 +15,16 @@ pmp_slice_mesh(
 
     CGAL::Polygon_mesh_slicer<Mesh, Kernel> slicer(mesh);
     Polylines polylines;
-    Kernel::Plane_3 plane;
+    std::back_insert_iterator<Polylines> slices(polylines);
 
     int number_of_planes = P.rows();
 
     for (int i = 0; i < number_of_planes; i++){
-        plane = Kernel::Plane_3(
-            Kernel::Point_3(P(0, 0), P(0, 1), P(0, 2)),
-            Kernel::Vector_3(N(0, 0), N(0, 1), N(0, 2)));
+        Kernel::Plane_3 plane = Kernel::Plane_3(
+            Kernel::Point_3(P(i, 0), P(i, 1), P(i, 2)),
+            Kernel::Vector_3(N(i, 0), N(i, 1), N(i, 2)));
 
-        slicer(plane, std::back_inserter(polylines));
+        slicer(plane, slices);
     }
 
     std::vector<compas::RowMatrixXd> result = compas::result_from_polylines(polylines);

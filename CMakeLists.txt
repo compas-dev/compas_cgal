@@ -49,6 +49,7 @@ pybind11_add_module(_cgal
     src/booleans.cpp
     src/compas.cpp
     src/compas_cgal.cpp
+    src/intersections.cpp
     src/meshing.cpp
     src/slicer.cpp
 )

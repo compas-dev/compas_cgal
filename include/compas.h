@@ -30,7 +30,7 @@ namespace compas
 
     Result result_from_mesh(const Mesh & mesh);
 
-    std::vector<compas::RowMatrixXd> result_from_polylines(const Polylines & polylines);
+    std::vector<compas::RowMatrixXd> result_from_polylines(Polylines polylines);
 }
 
 

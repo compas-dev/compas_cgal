@@ -35,8 +35,6 @@ if __name__ == '__main__':
 
     import compas
 
-    from compas.utilities import print_profile
-    from compas.utilities import rgb_to_hex
     from compas.geometry import Point
     from compas.geometry import Vector
     from compas.geometry import Plane

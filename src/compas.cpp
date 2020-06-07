@@ -8,7 +8,8 @@ namespace py = pybind11;
 // from vertices and faces
 // contained in nx3 and fx3 eigen matrices
 // using the Exact Predicates Exact Constructions Kernel
-Mesh compas::mesh_from_vertices_and_faces(
+Mesh
+compas::mesh_from_vertices_and_faces(
     const compas::RowMatrixXd & V,
     const compas::RowMatrixXi & F)
 {
@@ -39,7 +40,8 @@ Mesh compas::mesh_from_vertices_and_faces(
 // TODO: rename to ResultMesh
 // construct a result mesh
 // from a CGAL surface mesh
-compas::Result compas::result_from_mesh(const Mesh & mesh)
+compas::Result
+compas::result_from_mesh(const Mesh & mesh)
 {
     int v = mesh.number_of_vertices();
     int f = mesh.number_of_faces();
@@ -75,16 +77,14 @@ compas::Result compas::result_from_mesh(const Mesh & mesh)
 // from CGAL polylines
 // the CGAL polylines are a list of vectors of points
 std::vector<compas::RowMatrixXd>
-compas::result_from_polylines(const Polylines & polylines)
+compas::result_from_polylines(Polylines polylines)
 {
     std::vector<compas::RowMatrixXd> pointsets;
-    compas::RowMatrixXd points;
-    int n;
 
     for (auto i = polylines.begin(); i != polylines.end(); i++){
-        const Polyline & poly = *i;
-        n = poly.size();
-        points(n, 3);
+        const Polyline& poly = *i;
+        int n = poly.size();
+        compas::RowMatrixXd points(n, 3);
 
         for(int j = 0; j < n; j++){
             points(j, 0) = (double) poly[j].x();
