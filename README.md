@@ -4,6 +4,8 @@ COMPAS friedly bindings for the CGAL library.
 
 ## Installation
 
+**Update COMPAS to 0.16.0 and the viewers to the latest version!**
+
 ### Mac
 
 ```bash
