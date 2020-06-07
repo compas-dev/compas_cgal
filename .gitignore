@@ -114,3 +114,16 @@ temp/**
 .DS_Store
 
 .vscode
+.idea/compas_cgal.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+ext/eigen/
+ext/pybind11/
+scripts/.idea/misc.xml
+scripts/.idea/modules.xml
+scripts/.idea/scripts.iml
+scripts/.idea/vcs.xml
+scripts/.idea/workspace.xml
+cmake-build-debug/*
+cmake-build-release/*
