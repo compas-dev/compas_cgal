@@ -65,8 +65,7 @@ pip install -e .
 *To do:*
 
 * Simplify slice polylines
-* Slice by multiple planes (on C++ side)
-* Return more than one polygon (fix bug)
+* optimise vieweing of polylines
 
 ### 3. Meshing
 

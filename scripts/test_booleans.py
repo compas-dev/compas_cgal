@@ -1,4 +1,3 @@
-import os
 import numpy as np
 from compas_cgal._cgal import booleans
 from compas_cgal._cgal import meshing
@@ -32,8 +31,6 @@ def boolean(A, B, operation='union', remesh=True):
 # ==============================================================================
 
 if __name__ == '__main__':
-
-    import compas
 
     from compas.geometry import Point
     from compas.geometry import Vector
