@@ -21,8 +21,9 @@ compas::Result pmp_remesh(
         mesh,
         params::number_of_iterations(niter));
 
-    // Result
+    mesh.collect_garbage();
 
+    // Result
     compas::Result R = compas::result_from_mesh(mesh);
 
     return R;

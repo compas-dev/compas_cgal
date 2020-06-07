@@ -77,3 +77,9 @@ ext_modules = [
 **Slice mesh by plane.**
 
 ![images/cgal_slicer.png](images/cgal_slicer.png)
+
+### 3. Remeshing
+
+**Mesh remeshing.**
+
+![images/cgal_slicer.png](images/cgal_remesh.png)

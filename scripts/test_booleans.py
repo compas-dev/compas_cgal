@@ -1,9 +1,10 @@
 import os
 import numpy as np
 from compas_cgal._cgal import booleans
+from compas_cgal._cgal import meshing
 
 
-def boolean(A, B, operation='union'):
+def boolean(A, B, operation='union', remesh=False):
     VA, FA = A.to_vertices_and_faces()
     VB, FB = B.to_vertices_and_faces()
     VA = np.asarray(VA, dtype=np.float64)
@@ -14,6 +15,10 @@ def boolean(A, B, operation='union'):
         result = booleans.boolean_union(VA, FA, VB, FB)
     elif operation == 'difference':
         result = booleans.boolean_difference(VA, FA, VB, FB)
+        if remesh:
+            V = result.vertices
+            F = result.faces
+            result = meshing.remesh(V, F, 0.1, 10)
     elif operation == 'intersection':
         result = booleans.boolean_intersection(VA, FA, VB, FB)
     else:
@@ -62,7 +67,7 @@ if __name__ == '__main__':
     sphere = Mesh.from_shape(sphere, u=50, v=50)
     mesh_quads_to_triangles(sphere)
 
-    mesh = boolean(box, sphere, 'intersection')
+    mesh = boolean(box, sphere, 'difference')
 
     meshes = []
     meshes.append(MeshObject(mesh, color='#cccccc'))
