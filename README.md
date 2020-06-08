@@ -4,7 +4,7 @@ COMPAS friedly bindings for the CGAL library.
 
 ## Installation
 
-**Update COMPAS to 0.16.0 and the viewers to the latest version!**
+**This package requires the very latest of both COMPAS and the COMPAS viewers!**
 
 Note that the CMake-based version of `setup.py` is not working on Windows, yet.
 The version using `setuptools` works on Windows and on Mac.
@@ -34,8 +34,10 @@ pip install -e .
 
 * `examples/booleans.py`
 * `examples/slicer.py`
+* `examples/remeshing.py`
 
 ### Rhino
 
 * `examples/booleans_rhino.py`
 * `examples/slicer_rhino.py`
+* `examples/remeshing_rhino.py`

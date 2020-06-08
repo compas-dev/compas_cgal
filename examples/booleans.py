@@ -1,10 +1,7 @@
-import numpy as np
-
 from compas.geometry import Point
 from compas.geometry import Box
 from compas.geometry import Sphere
 from compas.datastructures import Mesh
-from compas.datastructures import mesh_subdivide_quad
 
 from compas_viewers.multimeshviewer import MultiMeshViewer
 from compas_viewers.multimeshviewer import MeshObject
@@ -32,7 +29,7 @@ B = sphere.to_vertices_and_faces()
 # Remesh the sphere
 # ==============================================================================
 
-B = remesh(B, 0.3, 100)
+B = remesh(B, 0.3, 10)
 
 # ==============================================================================
 # Compute the boolean mesh

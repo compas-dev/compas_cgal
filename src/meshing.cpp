@@ -13,21 +13,22 @@ pmp_remesh(
     Eigen::Ref<const compas::RowMatrixXd> & V,
     Eigen::Ref<const compas::RowMatrixXi> & F,
     double target_edge_length,
-    unsigned int niter)
+    unsigned int number_of_iterations,
+    bool do_project)
 {
     Mesh mesh = compas::mesh_from_vertices_and_faces(V, F);
 
     // protect sharp features
 
-    typedef boost::property_map<Mesh, CGAL::edge_is_feature_t>::type EIFMap;
-    EIFMap eif = get(CGAL::edge_is_feature, mesh);
-    PMP::detect_sharp_edges(mesh, 60, eif);
+    // typedef boost::property_map<Mesh, CGAL::edge_is_feature_t>::type EIFMap;
+    // EIFMap eif = get(CGAL::edge_is_feature, mesh);
+    // PMP::detect_sharp_edges(mesh, 60, eif);
 
     PMP::isotropic_remeshing(
         faces(mesh),
         target_edge_length,
         mesh,
-        params::number_of_iterations(niter).edge_is_constrained_map(eif));
+        params::number_of_iterations(number_of_iterations).do_project(do_project));
 
     mesh.collect_garbage();
 
@@ -47,6 +48,7 @@ void init_meshing(py::module & m) {
         py::arg("V").noconvert(),
         py::arg("F").noconvert(),
         py::arg("target_edge_length"),
-        py::arg("niter")
+        py::arg("number_of_iterations") = 10,
+        py::arg("do_project") = true
     );
 };

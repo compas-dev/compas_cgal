@@ -1,29 +1,26 @@
-import numpy as np
 import math
 import compas
 
 from compas.geometry import scale_vector
-from compas.geometry import Point
 from compas.geometry import Vector
-from compas.geometry import Plane
-from compas.geometry import Polyline
 from compas.geometry import Rotation
 from compas.geometry import Translation
 from compas.geometry import Scale
 from compas.datastructures import Mesh
 
-from compas_viewers.objectviewer import ObjectViewer
+from compas_viewers.multimeshviewer import MultiMeshViewer
+from compas_viewers.multimeshviewer import MeshObject
 
-from compas_cgal.slicer import slice_mesh
+from compas_cgal.meshing import remesh
 
 
 # ==============================================================================
 # Get the bunny and construct a mesh
 # ==============================================================================
 
-# replace by benchy
-
 bunny = Mesh.from_ply(compas.get('bunny.ply'))
+
+bunny.cull_vertices()
 
 # ==============================================================================
 # Move the bunny to the origin and rotate it upright.
@@ -37,50 +34,24 @@ R = Rotation.from_axis_and_angle(Vector(1, 0, 0), math.radians(90))
 bunny.transform(R * S * T)
 
 # ==============================================================================
-# Create planes
+# Remesh
 # ==============================================================================
 
-# replace by planes along a curve
+num_edges = bunny.number_of_edges()
+length = sum(bunny.edge_length(*edge) for edge in bunny.edges()) / num_edges
 
-bbox = bunny.bounding_box()
+V, F = remesh(bunny.to_vertices_and_faces(), 2 * length, 10)
 
-x, y, z = zip(*bbox)
-xmin, xmax = min(x), max(x)
-
-normal = Vector(1, 0, 0)
-planes = []
-for i in np.linspace(xmin, xmax, 100):
-    plane = Plane(Point(i, 0, 0), normal)
-    planes.append(plane)
-
-# ==============================================================================
-# Slice
-# ==============================================================================
-
-pointsets = slice_mesh(
-    bunny.to_vertices_and_faces(),
-    planes)
-
-# ==============================================================================
-# Process output
-# ==============================================================================
-
-polylines = []
-for points in pointsets:
-    # otherwise Polygon throws an error
-    points = [Point(*point) for point in points]
-    polyline = Polyline(points)
-    polylines.append(polyline)
+bunny = Mesh.from_vertices_and_faces(V, F)
 
 # ==============================================================================
 # Visualize
 # ==============================================================================
 
-viewer = ObjectViewer()
-viewer.view.use_shaders = False
+meshes = []
+meshes.append(MeshObject(bunny, color='#cccccc'))
 
-for polyline in polylines:
-    viewer.add(polyline, settings={'color': '#0000ff'})
+viewer = MultiMeshViewer()
+viewer.meshes = meshes
 
-viewer.update()
 viewer.show()

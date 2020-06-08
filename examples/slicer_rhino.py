@@ -5,14 +5,11 @@ from compas.geometry import scale_vector
 from compas.geometry import Point
 from compas.geometry import Vector
 from compas.geometry import Plane
-from compas.geometry import Box
-from compas.geometry import Polygon
 from compas.geometry import Polyline
 from compas.geometry import Rotation
 from compas.geometry import Translation
 from compas.geometry import Scale
 from compas.datastructures import Mesh
-from compas.datastructures import mesh_quads_to_triangles
 
 from compas_rhino.artists import MeshArtist
 from compas_rhino.artists import PolylineArtist
@@ -24,6 +21,8 @@ slicer = Proxy('compas_cgal.slicer')
 # ==============================================================================
 # Get the bunny and construct a mesh
 # ==============================================================================
+
+# replace by benchy
 
 bunny = Mesh.from_ply(compas.get('bunny.ply'))
 
@@ -41,6 +40,8 @@ bunny.transform(R * S * T)
 # ==============================================================================
 # Create planes
 # ==============================================================================
+
+# replace by planes along a curve
 
 bbox = bunny.bounding_box()
 
@@ -83,7 +84,7 @@ meshartist.clear_layer()
 meshartist.draw_faces(join_faces=True)
 meshartist.redraw()
 
-# this is vey slow
+# this is very slow
 
 polylineartist = PolylineArtist(None, layer="CGAL::Slicer::Slices")
 polylineartist.clear_layer()

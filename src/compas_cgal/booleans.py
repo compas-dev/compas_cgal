@@ -3,7 +3,6 @@ from __future__ import absolute_import
 from __future__ import division
 
 import numpy as np
-from compas.datastructures import Mesh
 from compas_cgal._cgal import booleans
 
 
@@ -37,16 +36,6 @@ def _boolean(A, B, operation):
     ------
     NotImplementedError
         If the operation type is not supported.
-
-    Notes
-    -----
-    * COMPAS meshes should be able to shadow (vertices, faces) tuples.
-    * Provide remeshing options
-    * Add remeshing on the C++ side (avoid needles traffic).
-    * Provide optional out parameter.
-    * Remeshing only protects sharp features in the boolean.
-    * Remeshing should protect the intersection edges.
-    * Result should be a list of vertices and faces.
 
     """
     VA, FA = A

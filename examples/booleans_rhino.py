@@ -2,7 +2,6 @@ from compas.geometry import Point
 from compas.geometry import Box
 from compas.geometry import Sphere
 from compas.datastructures import Mesh
-from compas.datastructures import mesh_subdivide_quad
 
 from compas_rhino.artists import MeshArtist
 
