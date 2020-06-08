@@ -41,3 +41,5 @@ pip install -e .
 * `examples/booleans_rhino.py`
 * `examples/slicer_rhino.py`
 * `examples/remeshing_rhino.py`
+
+![docsource/_images/cgal_boolean_union-rhino.png](docsource/_images/cgal_boolean_union-rhino.png)

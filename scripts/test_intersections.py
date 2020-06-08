@@ -4,7 +4,6 @@ from compas.geometry import Point
 from compas.geometry import Sphere
 from compas.geometry import Polyline
 from compas.datastructures import Mesh
-from compas.datastructures import mesh_quads_to_triangles
 
 from compas_viewers.objectviewer import ObjectViewer
 
