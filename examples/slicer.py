@@ -17,14 +17,8 @@ from compas.datastructures import mesh_quads_to_triangles
 
 from compas_viewers.objectviewer import ObjectViewer
 
-from compas_cgal._cgal import slicer
+from compas_cgal.slicer import slice_mesh
 
-
-normal = Vector(1, 0, 0)
-planes = []
-for i in range(-10, 10):
-    plane = Plane(Point(0.1 * i, 0, 0), normal)
-    planes.append(plane)
 
 # get the bunny
 # and construct a mesh
@@ -39,23 +33,29 @@ S = Scale.from_factors([100, 100, 100])
 R = Rotation.from_axis_and_angle(Vector(1, 0, 0), math.radians(90))
 mesh.transform(R * S * T)
 
-vertices, faces = mesh.to_vertices_and_faces()
-points, normals = zip(*planes)
+# create planes
+bbox = mesh.bounding_box()
+x, y, z = zip(*bbox)
+xmin, xmax = min(x), max(x)
+normal = Vector(1, 0, 0)
+planes = []
+for i in np.linspace(xmin, xmax, 100):
+    plane = Plane(Point(i, 0, 0), normal)
+    planes.append(plane)
 
-# this should be handled by a wrapper
+# slice
+pointsets = slice_mesh(
+    mesh.to_vertices_and_faces(),
+    planes)
+
+# process output
 polylines = []
-V = np.asarray(vertices, dtype=np.float64)
-F = np.asarray(faces, dtype=np.int32)
-P = np.array(points, dtype=np.float64)
-N = np.array(normals, dtype=np.float64)
-pointsets = slicer.slice_mesh(V, F, P, N)
 for points in pointsets:
     points = [Point(*point) for point in points]  # otherwise Polygon throws an error
     polyline = Polyline(points)
     polylines.append(polyline)
 
 # visualize
-# this is slow
 viewer = ObjectViewer()
 viewer.view.use_shaders = False
 

@@ -30,64 +30,12 @@ pip install -e .
 
 ## Examples
 
-### 1. Booleans
+### Viewer
 
-**Mesh-Mesh Union.**
+* `examples/booleans.py`
+* `examples/slicer.py`
 
-![images/cgal_boolean_union.png](images/cgal_boolean_union.png)
+### Rhino
 
-**Mesh-Mesh Difference.**
-
-![images/cgal_boolean_difference.png](images/cgal_boolean_difference.png)
-![images/cgal_boolean_difference_remeshed.png](images/cgal_boolean_difference_remeshed.png)
-
-**Mesh-Mesh Intersection.**
-
-![images/cgal_boolean_intersection.png](images/cgal_boolean_intersection.png)
-
-*To do:*
-
-* Add options:
-  * remesh solution (on C++ side)
-  * dihedral angle for feature preservation
-  * number of remeshing iterations
-  * target edge length for remeshing
-* Preserve intersection edges during remeshing
-* Remesh protected edges to target length
-* Combine boolean operations (on C++ side)
-
-### 2. Slicing
-
-**Slice mesh by plane.**
-
-Note that the visualisation of the slices is slow with COMPAS viewer!
-
-![images/cgal_slicer.png](images/cgal_slicer.png)
-
-*To do:*
-
-* Simplify slice polylines
-* Optimise vieweing of polylines
-* Group polylines per slice plane
-
-### 3. Meshing
-
-**Mesh remeshing.**
-
-![images/cgal_remesh.png](images/cgal_remesh.png)
-
-*To do:*
-
-* Fair
-* Refine
-* Triangulate
-
-### 4. Mesh-Mesh Intersections
-
-### 5. Connected Components
-
-### 6. Collisions
-
-*To Do:*
-
-* Intersecting meshes
+* `examples/booleans_rhino.py`
+* `examples/slicer_rhino.py`

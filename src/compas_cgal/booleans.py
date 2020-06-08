@@ -5,7 +5,6 @@ from __future__ import division
 import numpy as np
 from compas.datastructures import Mesh
 from compas_cgal._cgal import booleans
-from compas_cgal._cgal import meshing
 
 
 __all__ = [
@@ -15,7 +14,7 @@ __all__ = [
 ]
 
 
-def _boolean(A, B, operation, remesh=True):
+def _boolean(A, B, operation):
     """Wrapper for all boolean operations.
 
     Parameters
@@ -26,9 +25,6 @@ def _boolean(A, B, operation, remesh=True):
         Mesh B.
     operation : {'union', 'difference', 'intersection'}
         The type of boolean operation.
-    remesh : bool, optional
-        Remesh if ``True``.
-        Default is ``True``.
 
     Returns
     -------
@@ -69,24 +65,19 @@ def _boolean(A, B, operation, remesh=True):
     else:
         raise NotImplementedError
 
-    if remesh:
-        V = result.vertices
-        F = result.faces
-        result = meshing.remesh(V, F, 0.1, 10)
-
     return result.vertices, result.faces
 
 
-def boolean_union(A, B, remesh=True):
-    return _boolean(A, B, 'union', remesh=remesh)
+def boolean_union(A, B):
+    return _boolean(A, B, 'union')
 
 
-def boolean_difference(A, B, remesh=True):
-    return _boolean(A, B, 'difference', remesh=remesh)
+def boolean_difference(A, B):
+    return _boolean(A, B, 'difference')
 
 
-def boolean_intersection(A, B, remesh=True):
-    return _boolean(A, B, 'intersection', remesh=remesh)
+def boolean_intersection(A, B):
+    return _boolean(A, B, 'intersection')
 
 
 # ==============================================================================
