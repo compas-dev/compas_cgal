@@ -7,8 +7,7 @@ namespace PMP = CGAL::Polygon_mesh_processing;
 namespace params = PMP::parameters;
 namespace py = pybind11;
 
-
-compas::Result
+std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 pmp_remesh(
     Eigen::Ref<const compas::RowMatrixXd> & V,
     Eigen::Ref<const compas::RowMatrixXi> & F,
@@ -33,11 +32,11 @@ pmp_remesh(
     mesh.collect_garbage();
 
     // Result
-    compas::Result R = compas::result_from_mesh(mesh);
+    // compas::Result R = compas::result_from_mesh(mesh);
+    std::tuple<compas::RowMatrixXd, compas::RowMatrixXi> R = compas::mesh_to_vertices_and_faces(mesh);
 
     return R;
 };
-
 
 void init_meshing(py::module & m) {
     py::module submodule = m.def_submodule("meshing");

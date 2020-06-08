@@ -37,38 +37,68 @@ compas::mesh_from_vertices_and_faces(
     return mesh;
 }
 
-// TODO: rename to ResultMesh
-// construct a result mesh
-// from a CGAL surface mesh
-compas::Result
-compas::result_from_mesh(const Mesh & mesh)
+std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
+compas::mesh_to_vertices_and_faces(
+    const Mesh & mesh)
 {
     int v = mesh.number_of_vertices();
     int f = mesh.number_of_faces();
 
-
-    compas::Result R;
-    compas::RowMatrixXd R_vertices(v, 3);
-    compas::RowMatrixXi R_faces(f, 3);
+    compas::RowMatrixXd V(v, 3);
+    compas::RowMatrixXi F(f, 3);
 
     Mesh::Property_map<Mesh::Vertex_index, Kernel::Point_3> location = mesh.points();
 
     for (Mesh::Vertex_index vd : mesh.vertices()) {
-        R_vertices(vd, 0) = (double) location[vd][0];
-        R_vertices(vd, 1) = (double) location[vd][1];
-        R_vertices(vd, 2) = (double) location[vd][2];
+        V(vd, 0) = (double) location[vd][0];
+        V(vd, 1) = (double) location[vd][1];
+        V(vd, 2) = (double) location[vd][2];
     }
 
     for (Mesh::Face_index fd : mesh.faces()) {
         int i = 0;
         for (Mesh::Vertex_index vd : vertices_around_face(mesh.halfedge(fd), mesh)) {
-            R_faces(fd, i) = (int) vd;
+            F(fd, i) = (int) vd;
             i++;
         }
     }
 
-    R.vertices = R_vertices;
-    R.faces = R_faces;
+    std::tuple<compas::RowMatrixXd, compas::RowMatrixXi> result = std::make_tuple(V, F);
+    return result;
+}
+
+// TODO: rename to ResultMesh
+// construct a result mesh
+// from a CGAL surface mesh
+compas::Result
+compas::result_from_mesh(
+    const Mesh & mesh)
+{
+    int v = mesh.number_of_vertices();
+    int f = mesh.number_of_faces();
+
+    compas::Result R;
+    compas::RowMatrixXd V(v, 3);
+    compas::RowMatrixXi F(f, 3);
+
+    Mesh::Property_map<Mesh::Vertex_index, Kernel::Point_3> location = mesh.points();
+
+    for (Mesh::Vertex_index vd : mesh.vertices()) {
+        V(vd, 0) = (double) location[vd][0];
+        V(vd, 1) = (double) location[vd][1];
+        V(vd, 2) = (double) location[vd][2];
+    }
+
+    for (Mesh::Face_index fd : mesh.faces()) {
+        int i = 0;
+        for (Mesh::Vertex_index vd : vertices_around_face(mesh.halfedge(fd), mesh)) {
+            F(fd, i) = (int) vd;
+            i++;
+        }
+    }
+
+    R.vertices = V;
+    R.faces = F;
 
     return R;
 }
@@ -77,7 +107,8 @@ compas::result_from_mesh(const Mesh & mesh)
 // from CGAL polylines
 // the CGAL polylines are a list of vectors of points
 std::vector<compas::RowMatrixXd>
-compas::result_from_polylines(Polylines polylines)
+compas::result_from_polylines(
+    Polylines polylines)
 {
     std::vector<compas::RowMatrixXd> pointsets;
 

@@ -3,7 +3,7 @@
 
 #include <compas.h>
 
-compas::Result
+std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 pmp_remesh(
     Eigen::Ref<const compas::RowMatrixXd> & V,
     Eigen::Ref<const compas::RowMatrixXi> & F,

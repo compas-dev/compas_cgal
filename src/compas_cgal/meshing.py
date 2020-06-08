@@ -41,8 +41,7 @@ def remesh(mesh, target_edge_length, number_of_iterations=10, do_project=True):
     V, F = mesh
     V = np.asarray(V, dtype=np.float64)
     F = np.asarray(F, dtype=np.int32)
-    result = meshing.remesh(V, F, target_edge_length, number_of_iterations)
-    return result.vertices, result.faces
+    return meshing.remesh(V, F, target_edge_length, number_of_iterations)
 
 
 def remesh_constrained(mesh, target_edge_length, protected_edges, number_of_iterations=10, do_project=True):

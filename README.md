@@ -36,6 +36,10 @@ pip install -e .
 * `examples/slicer.py`
 * `examples/remeshing.py`
 
+![docsource/_images/cgal_remeshing.png](docsource/_images/cgal_remeshing.png)
+
+![docsource/_images/cgal_slicer.png](docsource/_images/cgal_slicer.png)
+
 ### Rhino
 
 * `examples/booleans_rhino.py`
@@ -43,3 +47,5 @@ pip install -e .
 * `examples/remeshing_rhino.py`
 
 ![docsource/_images/cgal_boolean_union-rhino.png](docsource/_images/cgal_boolean_union-rhino.png)
+
+![docsource/_images/cgal_slicer-rhino.png](docsource/_images/cgal_slicer-rhino.png)

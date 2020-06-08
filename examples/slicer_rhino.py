@@ -22,16 +22,14 @@ slicer = Proxy('compas_cgal.slicer')
 # Get the bunny and construct a mesh
 # ==============================================================================
 
-# replace by benchy
-
 bunny = Mesh.from_ply(compas.get('bunny.ply'))
 
 # ==============================================================================
 # Move the bunny to the origin and rotate it upright.
 # ==============================================================================
 
-vector = scale_vector(bunny.centroid(), -1)
-T = Translation.from_vector(vector)
+vector = Vector(* bunny.centroid())
+T = Translation.from_vector(vector.scaled(-1))
 S = Scale.from_factors([100, 100, 100])
 R = Rotation.from_axis_and_angle(Vector(1, 0, 0), math.radians(90))
 
@@ -81,7 +79,7 @@ for points in pointsets:
 
 meshartist = MeshArtist(bunny, layer="CGAL::Slicer::Bunny")
 meshartist.clear_layer()
-meshartist.draw_faces(join_faces=True)
+meshartist.draw_faces(join_faces=True, color=(255, 200, 200))
 meshartist.redraw()
 
 # this is very slow
@@ -90,5 +88,6 @@ polylineartist = PolylineArtist(None, layer="CGAL::Slicer::Slices")
 polylineartist.clear_layer()
 for polyline in polylines:
     polylineartist.primitive = polyline
+    polylineartist.color = (255, 0, 0)
     polylineartist.draw()
 polylineartist.redraw()

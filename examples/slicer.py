@@ -33,7 +33,7 @@ zmin, zmax = min(z), max(z)
 
 normal = Vector(0, 0, 1)
 planes = []
-for i in np.linspace(zmin, zmax, 30):
+for i in np.linspace(zmin, zmax, 50):
     plane = Plane(Point(0, 0, i), normal)
     planes.append(plane)
 
@@ -62,10 +62,10 @@ for points in pointsets:
 viewer = ObjectViewer()
 viewer.view.use_shaders = False
 
-# viewer.add(benchy, settings={'color': '#00ff00'})
+# viewer.add(benchy, settings={'color': '#ff0000'})
 
 for polyline in polylines:
-    viewer.add(polyline, settings={'color': '#0000ff'})
+    viewer.add(polyline, settings={'color': '#ffffff'})
 
 viewer.update()
 viewer.show()
