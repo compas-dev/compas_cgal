@@ -1,6 +1,6 @@
 # COMPAS CGAL
 
-COMPAS friedly bindings for the CGAL library.
+COMPAS friendly bindings for the CGAL library.
 
 ## Installation
 
