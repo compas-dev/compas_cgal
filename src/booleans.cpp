@@ -7,7 +7,7 @@ namespace params = PMP::parameters;
 namespace py = pybind11;
 
 
-compas::Result
+std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 pmp_boolean_union(
     Eigen::Ref<const compas::RowMatrixXd> & VA,
     Eigen::Ref<const compas::RowMatrixXi> & FA,
@@ -22,12 +22,12 @@ pmp_boolean_union(
 
     // Result
 
-    compas::Result R = compas::result_from_mesh(C);
+    std::tuple<compas::RowMatrixXd, compas::RowMatrixXi> R = compas::mesh_to_vertices_and_faces(C);
 
     return R;
 };
 
-compas::Result
+std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 pmp_boolean_difference(
     Eigen::Ref<const compas::RowMatrixXd> & VA,
     Eigen::Ref<const compas::RowMatrixXi> & FA,
@@ -42,12 +42,12 @@ pmp_boolean_difference(
 
     // Result
 
-    compas::Result R = compas::result_from_mesh(C);
+    std::tuple<compas::RowMatrixXd, compas::RowMatrixXi> R = compas::mesh_to_vertices_and_faces(C);
 
     return R;
 };
 
-compas::Result
+std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 pmp_boolean_intersection(
     Eigen::Ref<const compas::RowMatrixXd> & VA,
     Eigen::Ref<const compas::RowMatrixXi> & FA,
@@ -62,7 +62,7 @@ pmp_boolean_intersection(
 
     // Result
 
-    compas::Result R = compas::result_from_mesh(C);
+    std::tuple<compas::RowMatrixXd, compas::RowMatrixXi> R = compas::mesh_to_vertices_and_faces(C);
 
     return R;
 };

@@ -1,55 +1,79 @@
+import os
 import math
-import compas
+import time
 
 from compas.geometry import scale_vector
 from compas.geometry import Vector
 from compas.geometry import Rotation
 from compas.geometry import Translation
 from compas.geometry import Scale
-from compas.datastructures import Mesh
+from compas.utilities import pairwise
 
 from compas_viewers.multimeshviewer import MultiMeshViewer
 from compas_viewers.multimeshviewer import MeshObject
 
-from compas_cgal.meshing import remesh
+from compas_cgal.trimesh import TriMesh
 
+HERE = os.path.dirname(__file__)
+FILE = os.path.join(HERE, '..', 'data', 'Bunny.ply')
+SPLITS = []
+
+SPLITS.append(time.time())
 
 # ==============================================================================
 # Get the bunny and construct a mesh
 # ==============================================================================
 
-bunny = Mesh.from_ply(compas.get('bunny.ply'))
+bunny = TriMesh.from_ply(FILE)
+
+SPLITS.append(time.time())
 
 bunny.cull_vertices()
+
+SPLITS.append(time.time())
 
 # ==============================================================================
 # Move the bunny to the origin and rotate it upright.
 # ==============================================================================
 
-vector = scale_vector(bunny.centroid(), -1)
+vector = scale_vector(bunny.centroid, -1)
+
 T = Translation.from_vector(vector)
 S = Scale.from_factors([100, 100, 100])
 R = Rotation.from_axis_and_angle(Vector(1, 0, 0), math.radians(90))
 
 bunny.transform(R * S * T)
 
+SPLITS.append(time.time())
+
 # ==============================================================================
 # Remesh
 # ==============================================================================
 
-num_edges = bunny.number_of_edges()
-length = sum(bunny.edge_length(*edge) for edge in bunny.edges()) / num_edges
+length = bunny.average_edge_length
 
-V, F = remesh(bunny.to_vertices_and_faces(), 2 * length, 10)
+SPLITS.append(time.time())
 
-bunny = Mesh.from_vertices_and_faces(V, F)
+bunny.remesh(3 * length)
+
+SPLITS.append(time.time())
+
+mesh = bunny.to_mesh()
+
+SPLITS.append(time.time())
 
 # ==============================================================================
 # Visualize
 # ==============================================================================
 
+processes = ['bunny', 'cull', 'transform', 'length', 'remesh', 'mesh']
+times = [t2 - t1 for t1, t2 in pairwise(SPLITS)]
+
+for name, t in zip(processes, times):
+    print(f"{name}: {t:.4f}")
+
 meshes = []
-meshes.append(MeshObject(bunny, color='#cccccc'))
+meshes.append(MeshObject(mesh, color='#cccccc'))
 
 viewer = MultiMeshViewer()
 viewer.meshes = meshes

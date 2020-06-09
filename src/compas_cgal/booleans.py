@@ -54,7 +54,7 @@ def _boolean(A, B, operation):
     else:
         raise NotImplementedError
 
-    return result.vertices, result.faces
+    return result
 
 
 def boolean_union(A, B):
