@@ -51,18 +51,18 @@ for points in pointsets:
 # Visualize
 # ==============================================================================
 
-# @li todo: increase thickness of intersection polyline independently
-# @li todo: visualize polyline/intersection points
-# @li perhaps the root scene element should not be explicitly mentioned in the object manager. it wastes a level of indentation...
-
 viewer = ObjectViewer()
-viewer.view.use_shaders = False
 
-viewer.add(Mesh.from_vertices_and_faces(*A), settings={'color': '#ff0000'})
-viewer.add(Mesh.from_vertices_and_faces(*B), settings={'color': '#00ff00'})
+viewer.add(Mesh.from_vertices_and_faces(*A), settings={'color': '#ff0000', 'opacity': 0.7})
+viewer.add(Mesh.from_vertices_and_faces(*B), settings={'color': '#00ff00',  'opacity': 0.7})
 
 for polyline in polylines:
-    viewer.add(polyline, settings={'color': '#0000ff'})
+    viewer.add(polyline, settings={
+        'edges.color': '#0000ff', 
+        'edges.width':3,
+        'vertices.color': '#ff0000',
+        'vertices.size': 10
+        })
 
 viewer.update()
 viewer.show()
