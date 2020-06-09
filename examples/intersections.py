@@ -52,14 +52,15 @@ for points in pointsets:
 # ==============================================================================
 
 viewer = ObjectViewer()
+viewer.view.use_shaders = False
 
 viewer.add(Mesh.from_vertices_and_faces(*A), settings={'color': '#ff0000', 'opacity': 0.7})
 viewer.add(Mesh.from_vertices_and_faces(*B), settings={'color': '#00ff00',  'opacity': 0.7})
 
 for polyline in polylines:
     viewer.add(polyline, settings={
-        'edges.color': '#0000ff', 
-        'edges.width':3,
+        'edges.color': '#0000ff',
+        'edges.width': 3,
         'vertices.color': '#ff0000',
         'vertices.size': 10
         })
