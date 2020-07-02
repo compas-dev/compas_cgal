@@ -33,14 +33,14 @@ windows = os.name == 'nt'
 
 def get_pybind_include():
     if windows:
-        return os.path.join(conda_prefix, 'Library', 'include', 'eigen3')
-    return os.path.join(conda_prefix, 'include', 'eigen3')
+        return os.path.join(conda_prefix, 'Library', 'include')
+    return os.path.join(conda_prefix, 'include')
 
 
 def get_eigen_include():
     if windows:
-        return os.path.join(conda_prefix, 'Library', 'include')
-    return os.path.join(conda_prefix, 'include')
+        return os.path.join(conda_prefix, 'Library', 'include', 'eigen3')
+    return os.path.join(conda_prefix, 'include', 'eigen3')
 
 
 def get_library_dirs():

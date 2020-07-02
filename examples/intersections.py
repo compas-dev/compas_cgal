@@ -52,7 +52,7 @@ for points in pointsets:
 # ==============================================================================
 
 viewer = ObjectViewer()
-viewer.view.use_shaders = False
+viewer.view.use_shaders = True
 
 viewer.add(Mesh.from_vertices_and_faces(*A), settings={'color': '#ff0000', 'opacity': 0.7})
 viewer.add(Mesh.from_vertices_and_faces(*B), settings={'color': '#00ff00',  'opacity': 0.7})

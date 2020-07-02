@@ -91,13 +91,16 @@ class TriMesh(object):
     @property
     def edges(self):
         if not self._edges:
-            edges = set()
-            for i in self.adjacency:
-                for j in self.adjacency[i]:
-                    if (i, j) in edges or (j, i) in edges:
+            seen = set()
+            edges = []
+            for i, nbrs in self.adjacency.items():
+                for j in nbrs:
+                    if (i, j) in seen:
                         continue
-                    edges.add((i, j))
-            self._edges = list(edges)
+                    seen.add((i, j))
+                    seen.add((i, j))
+                    edges.append((i, j))
+            self._edges = edges
         return self._edges
 
     @property
