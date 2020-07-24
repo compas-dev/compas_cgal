@@ -1,40 +1,40 @@
-# name: build
+name: build
 
-# on:
-#   push:
-#     branches:
-#       - master
+on:
+  push:
+    branches-ignore:
+      - '**'
 
-# jobs:
-#   build-docs:
-#     runs-on: macos-latest
-#     steps:
-#       - uses: actions/checkout@v2
-#       - name: Set up Python
-#         uses: actions/setup-python@v2
-#         with:
-#           python-version: 3.7
-#       - name: Install conda
-#         uses: goanpeca/setup-miniconda@v1
-#         with:
-#           miniconda-version: "latest"
-#           activate-environment: cgal 
-#       - name: Install dependencies
-#         shell: bash -l {0}
-#         run: |
-#           conda install -n cgal -c conda-forge python.app eigen boost-cpp gmp mpfr cgal-cpp">=5.0" pybind11 COMPAS">=0.16.0"
-#       - name: Install
-#         run: |
-#           pip install .
-#       - name: Build docs with sphinx
-#         run: |
-#           rm -rf dist/docs && invoke docs
-#       - name: Deploy docs
-#         if: success()
-#         uses: crazy-max/ghaction-github-pages@v2
-#         with:
-#           target_branch: gh-pages
-#           build_dir: dist/docs
-#           keep_history: true
-#         env:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+jobs:
+  build-docs:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: Install conda
+        uses: goanpeca/setup-miniconda@v1
+        with:
+          miniconda-version: "latest"
+          activate-environment: cgal 
+      - name: Install dependencies
+        shell: bash -l {0}
+        run: |
+          conda install -n cgal -c conda-forge python.app eigen boost-cpp gmp mpfr cgal-cpp">=5.0" pybind11 COMPAS">=0.16.0"
+      - name: Install
+        run: |
+          pip install .
+      - name: Build docs with sphinx
+        run: |
+          rm -rf dist/docs && invoke docs
+      - name: Deploy docs
+        if: success()
+        uses: crazy-max/ghaction-github-pages@v2
+        with:
+          target_branch: gh-pages
+          build_dir: dist/docs
+          keep_history: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
