@@ -113,16 +113,16 @@ temp/**
 
 .DS_Store
 
-.vscode
-.idea
+.vscode/**
+.idea/**
 
-ext
+ext/**
 
-dist
+dist/**
 
-scripts/.idea
+scripts/.idea/**
 
 cmake-build-debug/*
 cmake-build-release/*
 
-wheels
+wheels/**
