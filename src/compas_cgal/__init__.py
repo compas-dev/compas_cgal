@@ -5,10 +5,43 @@ compas_cgal
 
 .. currentmodule:: compas_cgal
 
+Booleans
+========
 
-.. toctree::
-    :maxdepth: 1
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
 
+    booleans.boolean_union
+    booleans.boolean_difference
+    booleans.boolean_intersection
+
+Intersections
+=============
+
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+
+    intersections.intersection_mesh_mesh
+
+Meshing
+=======
+
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+
+    meshing.remesh
+
+Slicer
+======
+
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+
+    slicer.slice_mesh
 
 """
 from __future__ import print_function

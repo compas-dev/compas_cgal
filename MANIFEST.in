@@ -1,13 +1,17 @@
+graft include
 graft src
 
 prune .github
+prune .vscode
 
 prune data
 prune docs
-prune docsource
-prune examples
+prune ext
+prune scripts
 prune temp
 prune tests
+prune var
+prune wheels
 
 include LICENSE
 include README.md
@@ -15,7 +19,7 @@ include AUTHORS.md
 include CHANGELOG.md
 include requirements.txt
 
-exclude requirements-dev.txt 
+exclude requirements-dev.txt
 exclude pytest.ini .bumpversion.cfg .editorconfig
 exclude tasks.py
 exclude CONTRIBUTING.md
