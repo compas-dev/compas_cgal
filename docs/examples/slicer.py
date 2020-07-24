@@ -12,7 +12,7 @@ from compas_viewers.objectviewer import ObjectViewer
 from compas_cgal.slicer import slice_mesh
 
 HERE = os.path.dirname(__file__)
-FILE = os.path.join(HERE, '..', 'data', '3DBenchy.stl')
+FILE = os.path.join(HERE, '../..', 'data', '3DBenchy.stl')
 
 # ==============================================================================
 # Get benchy and construct a mesh
