@@ -2,6 +2,9 @@
 
 COMPAS friendly bindings for the CGAL library.
 
+More information is available in the docs:
+<https://blockresearchgroup.github.io/compas_cgal/>
+
 ## Installation
 
 **compas_cgal requires the very latest of both COMPAS and the COMPAS viewers!**
@@ -12,18 +15,15 @@ The version using `setuptools` works on Windows and on Mac.
 ### Mac
 
 ```bash
-conda create -n cgal python=3.7 python.app eigen boost-cpp gmp mpfr cgal-cpp">=5.0" pybind11 PySide2 PyOpenGL COMPAS">=0.16.0"
+conda create -n cgal python=3.7 python.app eigen boost-cpp gmp mpfr cgal-cpp">=5.0" pybind11 COMPAS">=0.16.0"
 conda activate cgal
-pip install git+https://github.com/compas-dev/compas_viewers.git#egg=compas_viewers
 pip install -e .
 ```
 
 ### Windows
 
 ```bash
-conda create -n cgal python=3.7 eigen boost-cpp mpir mpfr cgal-cpp">=5.0" pybind11 PySide2 COMPAS">=0.16.0"
+conda create -n cgal python=3.7 eigen boost-cpp mpir mpfr cgal-cpp">=5.0" pybind11 COMPAS">=0.16.0"
 conda activate cgal
-pip install wheels/PyOpenGL‑3.1.5‑cp37‑cp37m‑win_amd64.whl
-pip install git+https://github.com/compas-dev/compas_viewers.git#egg=compas_viewers
 pip install -e .
 ```
