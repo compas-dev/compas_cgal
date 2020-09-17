@@ -1,5 +1,6 @@
 import numpy as np
 from compas_cgal._cgal import slicer
+from compas.plugins import plugin
 
 
 __all__ = [
@@ -7,6 +8,7 @@ __all__ = [
 ]
 
 
+@plugin(category='slicing')
 def slice_mesh(mesh, planes):
     """Slice a mesh by a list of planes.
 
