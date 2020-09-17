@@ -1,9 +1,6 @@
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import division
-
 import numpy as np
 from compas_cgal._cgal import intersections
+from compas.plugins import plugin
 
 
 __all__ = [
@@ -11,6 +8,7 @@ __all__ = [
 ]
 
 
+@plugin(category='intersections')
 def intersection_mesh_mesh(A, B):
     """Compute the intersection of tow meshes.
 
@@ -37,11 +35,3 @@ def intersection_mesh_mesh(A, B):
     pointsets = intersections.intersection_mesh_mesh(VA, FA, VB, FB)
 
     return pointsets
-
-
-# ==============================================================================
-# Main
-# ==============================================================================
-
-if __name__ == '__main__':
-    pass

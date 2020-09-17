@@ -1,7 +1,3 @@
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import division
-
 import numpy as np
 from compas.geometry import transform_points_numpy
 from compas.files import STL
@@ -166,22 +162,3 @@ class TriMesh(object):
         V, F = remesh(self, target_length, iterations)
         self.vertices = V
         self.faces = F
-
-
-# ==============================================================================
-# Main
-# ==============================================================================
-
-if __name__ == "__main__":
-
-    import os
-
-    HERE = os.path.dirname(__file__)
-    FILE = os.path.join(HERE, '../../', 'data', 'Bunny.ply')
-
-    bunny = TriMesh.from_ply(FILE)
-    bunny.cull_vertices()
-
-    uvw = bunny.C.dot(bunny.vertices)
-
-    print(normrow(uvw))

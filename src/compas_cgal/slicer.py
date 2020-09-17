@@ -1,7 +1,3 @@
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import division
-
 import numpy as np
 from compas_cgal._cgal import slicer
 
@@ -36,11 +32,3 @@ def slice_mesh(mesh, planes):
 
     pointsets = slicer.slice_mesh(V, F, P, N)
     return pointsets
-
-
-# ==============================================================================
-# Main
-# ==============================================================================
-
-if __name__ == '__main__':
-    pass

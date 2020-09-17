@@ -1,7 +1,3 @@
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import division
-
 import numpy as np
 from compas_cgal._cgal import meshing
 
@@ -69,11 +65,3 @@ def remesh_constrained(mesh, target_edge_length, protected_edges, number_of_iter
 
     """
     raise NotImplementedError
-
-
-# ==============================================================================
-# Main
-# ==============================================================================
-
-if __name__ == '__main__':
-    pass

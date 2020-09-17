@@ -1,9 +1,4 @@
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import division
-
 import numpy as np
-
 from compas.plugins import plugin
 from compas_cgal._cgal import booleans
 
@@ -72,11 +67,3 @@ def boolean_difference(A, B):
 @plugin(category='booleans', pluggable_name='boolean_intersection_mesh_mesh')
 def boolean_intersection(A, B):
     return _boolean(A, B, 'intersection')
-
-
-# ==============================================================================
-# Main
-# ==============================================================================
-
-if __name__ == '__main__':
-    pass
