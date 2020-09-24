@@ -8,7 +8,7 @@ __all__ = [
 ]
 
 
-@plugin(category='meshing')
+@plugin(category='trimesh', pluggable_name='trimesh_remesh')
 def remesh(mesh, target_edge_length, number_of_iterations=10, do_project=True):
     """Remeshing of a triangle mesh.
 

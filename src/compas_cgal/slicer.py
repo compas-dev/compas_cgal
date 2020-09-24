@@ -8,7 +8,7 @@ __all__ = [
 ]
 
 
-@plugin(category='slicing')
+@plugin(category='trimesh', pluggable_name='trimesh_slice')
 def slice_mesh(mesh, planes):
     """Slice a mesh by a list of planes.
 

@@ -51,7 +51,7 @@ def _boolean(A, B, operation):
     else:
         raise NotImplementedError
 
-    return result.vertices, result.faces
+    return result
 
 
 @plugin(category='booleans', pluggable_name='boolean_union_mesh_mesh')
