@@ -1,15 +1,14 @@
 {% set name = "compas_cgal" %}
 {% set version = "0.1.1" %}
-{% set hash = "" %}
+{% set hash = "c9a816ed3c5a903d62e6cab8d94d934329d536db4409fc1b549de43d25adf5c9" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-#   url: https://github.com/compas-dev/{{ name }}/archive/v{{ version }}.tar.gz
-#   sha256: {{ hash }}
-  path: ../
+  url: https://github.com/compas-dev/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ hash }}
 
 build:
   number: 0

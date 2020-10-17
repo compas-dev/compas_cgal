@@ -1,25 +1,43 @@
 # COMPAS CGAL
 
+[![GitHub - License](https://img.shields.io/github/license/compas-dev/compas_cgal.svg)](https://github.com/compas-dev/compas_cgal)
+[![Conda - Latest Release](https://anaconda.org/conda-forge/compas_cgal/badges/version.svg)](https://anaconda.org/conda-forge/compas_cgal)
+
+This package provides Python bindings for specific algorithms of CGAL.
+The bindings are generated with PyBind11 and data is exchanged using NumPy arrays.
+
 More information is available in the docs:
-<https://blockresearchgroup.github.io/compas_cgal/>
+<https://compas.dev/compas_cgal/>
 
 ## Installation
 
-Note that the CMake-based version of `setup.py` is not working on Windows, yet.
-The version using `setuptools` works on Windows and on Mac.
-
-### Mac
+`compas_cgal` is now available via `conda-forge` for Windows, OSX, and Linux,
+and can be installed using `conda`.
 
 ```bash
-conda create -n cgal python=3.7 python.app eigen boost-cpp gmp mpfr cgal-cpp">=5.0" pybind11 COMPAS">=0.16.0"
-conda activate cgal
-pip install -e .
+conda install COMPAS compas_cgal
 ```
 
-### Windows
+## Usage
 
-```bash
-conda create -n cgal python=3.7 eigen boost-cpp mpir mpfr cgal-cpp">=5.0" pybind11 COMPAS">=0.16.0"
-conda activate cgal
-pip install -e .
-```
+Currently, the following functions are available:
+
+* `boolean_union`
+* `boolean_difference`
+* `boolean_intersection`
+* `intersection_mesh_mesh`
+* `remesh`
+* `slice_mesh`
+
+These functions can be used directly from `compas_cgal`
+or from `compas.geometry` through the plugin mechanism in COMPAS.
+
+For examples, see <https://compas.dev/compas_cgal/examples/>
+
+## Contribute
+
+See [CONTRIBUTING](CONTRIBUTING.md) for more information.
+
+## License
+
+`compas_cgal` is released under the LGPL 3.0 to be compatible with the license of CGAL.
