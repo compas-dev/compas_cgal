@@ -7,9 +7,9 @@ package:
   version: {{ version }}
 
 source:
-#   url: https://github.com/blockresearchgroup/{{ name }}/archive/v{{ version }}.tar.gz
+#   url: https://github.com/compas-dev/{{ name }}/archive/v{{ version }}.tar.gz
 #   sha256: {{ hash }}
-    path: ../
+  path: ../
 
 build:
   number: 0
@@ -19,11 +19,11 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - eigen
   host:
     - pip
     - python
     - pybind11
-    - eigen
     - cgal-cpp >=5.0
   run:
     - python {{ python }}
@@ -39,13 +39,14 @@ test:
     - compas_cgal
 
 about:
-  home: https://github.com/blockresearchgroup/compas_cgal
+  home: https://github.com/compas-dev/compas_cgal
   license: LGPL-3.0-or-later
   license_file: LICENSE
-  summary: 'COMPAS friendly wrappers for CGAL Polygon Mesh Processing.'
-  dev_url: https://github.com/blockresearchgroup/compas_cgal
-  doc_url: https://github.com/blockresearchgroup/compas_cgal
+  summary: 'COMPAS friendly wrappers for CGAL algorithms.'
+  dev_url: https://github.com/compas-dev/compas_cgal
+  doc_url: https://github.com/compas-dev/compas_cgal
 
 extra:
   recipe-maintainers:
     - brgcode
+    - gonzalocasas
