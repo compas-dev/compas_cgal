@@ -27,9 +27,7 @@ jobs:
           channels: conda-forge
           python-version: 3.7
 
-      
       - name: build (windows)
-        if: matrix.os == 'windows-latest'
         run: |
           conda install eigen boost-cpp mpir mpfr cgal-cpp">=5.0" pybind11 COMPAS">=0.16.0" -y
           pip install -r requirements-dev.txt
