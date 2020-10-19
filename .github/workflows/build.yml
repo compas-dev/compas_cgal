@@ -22,24 +22,23 @@ jobs:
         with:
           miniconda-version: "latest"
           activate-environment: cgal
+          channels: conda-forge
           python-version: 3.7
 
       - name: Create conda env (mac)
         if: matrix.os == 'macos-latest'
         run: |
-          conda config --add channels conda-forge
           conda install python.app eigen boost-cpp gmp mpfr cgal-cpp">=5.0" pybind11 COMPAS">=0.16.0" -y
       
       - name: Create conda env (windows)
         if: matrix.os == 'windows-latest'
         run: |
-          conda config --add channels conda-forge
           conda install eigen boost-cpp mpir mpfr cgal-cpp">=5.0" pybind11 COMPAS">=0.16.0" -y
     
       - name: Install compas_cgal
         run: |
-          pip3 install -r requirements-dev.txt 
-          pip3 install -e .
+          python -m pip install -r requirements-dev.txt 
+          python -m pip install -e .
   
       - name: Lint with flake8
         run: |
