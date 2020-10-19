@@ -28,7 +28,7 @@ jobs:
       - name: Create conda env (mac)
         if: matrix.os == 'macos-latest'
         run: |
-          conda install python.app eigen boost-cpp gmp mpfr cgal-cpp">=5.0" pybind11 COMPAS">=0.16.0" -y
+          conda install eigen boost-cpp gmp mpfr cgal-cpp">=5.0" pybind11 COMPAS">=0.16.0" -y
       
       - name: Create conda env (windows)
         if: matrix.os == 'windows-latest'
