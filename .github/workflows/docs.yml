@@ -8,6 +8,10 @@ on:
     branches:
       - master
 
+defaults:
+  run:
+    shell: bash -l {0}
+
 jobs:
   build:
     name: build and deploy docs
