@@ -11,20 +11,25 @@ on:
 jobs:
   build:
     name: build and deploy docs
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
+
       - uses: actions/checkout@v2
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v2
+
+      - uses: conda-incubator/setup-miniconda@v1
         with:
-          python-version: 3.8
-      - name: Install dependencies
+          miniconda-version: "latest"
+          activate-environment: cgal
+          channels: conda-forge
+          python-version: 3.7
+
+      
+      - name: build (windows)
+        if: matrix.os == 'windows-latest'
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install cython --install-option="--no-cython-compile"
-      - name: Install
-        run: |
-          python -m pip install --no-cache-dir -r requirements-dev.txt
+          conda install eigen boost-cpp mpir mpfr cgal-cpp">=5.0" pybind11 COMPAS">=0.16.0" -y
+          pip install -r requirements-dev.txt
+
       - name: Generate docs
         if: ${{ success() }}
         run: |
@@ -43,6 +48,7 @@ jobs:
           fi;
           echo "Docs will be deployed to https://compas.dev/compas_cgal/$BRANCH_OR_TAG"
           mkdir -p deploy/$BRANCH_OR_TAG && mv -T dist/docs deploy/$BRANCH_OR_TAG/
+
       - name: Deploy docs
         if: success()
         uses: crazy-max/ghaction-github-pages@v2
