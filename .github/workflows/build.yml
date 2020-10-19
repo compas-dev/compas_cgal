@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest,windows-latest]
+        os: [macos-latest]
 
     steps:
       - uses: actions/checkout@v2
@@ -38,8 +38,8 @@ jobs:
     
       - name: Install compas_cgal
         run: |
-          pip install -r requirements-dev.txt 
-          pip install -e .
+          pip3 install -r requirements-dev.txt 
+          pip3 install -e .
   
       - name: Lint with flake8
         run: |
