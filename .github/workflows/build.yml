@@ -8,40 +8,48 @@ on:
     branches:
       - master
 
+defaults:
+  run:
+    shell: bash -l {0}
+
+
 jobs:
   build-packages:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest]
+        os: [macos-latest, windows-latest]
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Quick test
+        run : echo worked
 
-      - uses: conda-incubator/setup-miniconda@v1.7.0
-        with:
-          miniconda-version: "latest"
-          activate-environment: cgal
-          channels: conda-forge
-          python-version: 3.7
+      # - uses: actions/checkout@v2
 
-      - name: build mac
-        if: matrix.os == 'macos-latest'
-        shell: bash -l {0}
-        run: |
-          conda install eigen boost-cpp gmp mpfr cgal-cpp">=5.0" pybind11 COMPAS">=0.16.0" -y
-          pip install -r requirements-dev.txt 
-          pip install -e .
+      # - uses: conda-incubator/setup-miniconda@v1.7.0
+      #   with:
+      #     miniconda-version: "latest"
+      #     activate-environment: cgal
+      #     channels: conda-forge
+      #     python-version: 3.7
+
+      # - name: build mac
+      #   if: matrix.os == 'macos-latest'
+      #   shell: bash -l {0}
+      #   run: |
+      #     conda install eigen boost-cpp gmp mpfr cgal-cpp">=5.0" pybind11 COMPAS">=0.16.0" -y
+      #     pip install -r requirements-dev.txt 
+      #     pip install -e .
       
-      - name: Create conda env (windows)
-        if: matrix.os == 'windows-latest'
-        run: |
-          conda install eigen boost-cpp mpir mpfr cgal-cpp">=5.0" pybind11 COMPAS">=0.16.0" -y
+      # - name: Create conda env (windows)
+      #   if: matrix.os == 'windows-latest'
+      #   run: |
+      #     conda install eigen boost-cpp mpir mpfr cgal-cpp">=5.0" pybind11 COMPAS">=0.16.0" -y
   
-      - name: Lint with flake8
-        run: |
-          invoke lint
+      # - name: Lint with flake8
+      #   run: |
+      #     invoke lint
 
-      - name: Test with pytest
-        run: |
-          invoke test
+      # - name: Test with pytest
+      #   run: |
+      #     invoke test
