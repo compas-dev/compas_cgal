@@ -52,3 +52,7 @@ jobs:
       - name: Test with pytest
         run: |
           invoke test
+
+      - name: Test build docs
+        run: |
+          invoke docs
