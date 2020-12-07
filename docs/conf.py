@@ -131,13 +131,6 @@ intersphinx_mapping = {
 
 # -- Options for HTML output ----------------------------------------------
 
-package_docs_root = "/compas/"
-
-with open(os.path.join(os.path.dirname(__file__), "docversions.txt"), "r") as f:
-    version_names = [version.strip() for version in f.readlines()]
-    package_docs_versions = [(version, "{}{}".format(package_docs_root, version))
-                             for version in version_names if version]
-
 html_theme = "compaspkg"
 html_theme_path = sphinx_compas_theme.get_html_theme_path()
 html_theme_options = {
@@ -147,8 +140,8 @@ html_theme_options = {
     "package_author": "Tom Van Mele",
     "package_description": "COMPAS package for working with CGAL",
     "package_repo": "https://github.com/compas-dev/compas_cgal",
-    "package_docs": "https://compas.dev/compas_cgal",
-    "package_old_versions_txt": "https://compas.dev/compas_cgal/docversions.txt"
+    "package_docs": "https://compas.dev/compas_cgal/",
+    "package_old_versions_txt": "https://compas.dev/compas_cgal/doc_versions.txt"
 }
 html_context = {}
 html_static_path = []
