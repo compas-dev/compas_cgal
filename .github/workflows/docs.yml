@@ -1,40 +1,62 @@
-name: build
+name: docs
 
 on:
   push:
-    branches-ignore:
-      - '**'
+    branches:
+      - master
+  # pull_request:
+  #   branches:
+  #     - master
+
+defaults:
+  run:
+    shell: bash -l {0}
 
 jobs:
-  build-docs:
-    runs-on: macos-latest
+  build:
+    name: build and deploy docs
+    runs-on: windows-latest
     steps:
+
       - uses: actions/checkout@v2
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
-      - name: Install conda
-        uses: goanpeca/setup-miniconda@v1
+
+      - uses: conda-incubator/setup-miniconda@v1
         with:
           miniconda-version: "latest"
-          activate-environment: cgal 
-      - name: Install dependencies
-        shell: bash -l {0}
+          activate-environment: cgal
+          channels: conda-forge
+          python-version: 3.7
+
+      - name: build (windows)
         run: |
-          conda install -n cgal -c conda-forge python.app eigen boost-cpp gmp mpfr cgal-cpp">=5.0" pybind11 COMPAS">=0.16.0"
-      - name: Install
+          conda install eigen boost-cpp mpir mpfr cgal-cpp">=5.0" pybind11 COMPAS">=0.16.0" -y
+          pip install -r requirements-dev.txt
+
+      - name: Generate docs
+        if: ${{ success() }}
         run: |
-          pip install .
-      - name: Build docs with sphinx
-        run: |
-          rm -rf dist/docs && invoke docs
+          invoke docs
+          # Get branch/tag/latest name from git
+          GITHUB_REF_REGEX="tags/([0-9a-zA-Z\.\-]+)|(pull/[0-9]+)|heads/(.+)"
+          if [[ $GITHUB_REF =~ $GITHUB_REF_REGEX ]]; then
+            if [[ $BASH_REMATCH = pull* ]]; then
+              BRANCH_OR_TAG=pull_${BASH_REMATCH##*/}
+            else
+              BRANCH_OR_TAG=${BASH_REMATCH##*/}
+            fi;
+            if [[ $BRANCH_OR_TAG = master ]]; then
+              BRANCH_OR_TAG=latest
+            fi;
+          fi;
+          echo "Docs will be deployed to https://compas.dev/compas_cgal/$BRANCH_OR_TAG"
+          mkdir -p deploy/$BRANCH_OR_TAG && mv -T dist/docs deploy/$BRANCH_OR_TAG/
+
       - name: Deploy docs
         if: success()
         uses: crazy-max/ghaction-github-pages@v2
         with:
           target_branch: gh-pages
-          build_dir: dist/docs
+          build_dir: deploy
           keep_history: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
