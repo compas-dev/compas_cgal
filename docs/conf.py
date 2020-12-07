@@ -14,7 +14,6 @@ project = "COMPAS CGAL"
 copyright = "2017, Block Research Group - ETH Zurich"
 author = "Tom Van Mele"
 release = "0.1.1"
-
 version = ".".join(release.split(".")[0:2])
 
 master_doc = "index"
@@ -125,11 +124,18 @@ plot_html_show_formats = False
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/", None),
-    "compas": ("https://compas-dev.github.io/compas", "https://compas-dev.github.io/compas/objects.inv"),
+    "compas": ("https://compas.dev/compas", None),
 }
 
 
 # -- Options for HTML output ----------------------------------------------
+
+package_docs_root = "/compas/"
+
+with open(os.path.join(os.path.dirname(__file__), "docversions.txt"), "r") as f:
+    version_names = [version.strip() for version in f.readlines()]
+    package_docs_versions = [(version, "{}{}".format(package_docs_root, version))
+                             for version in version_names if version]
 
 html_theme = "compaspkg"
 html_theme_path = sphinx_compas_theme.get_html_theme_path()
@@ -139,8 +145,9 @@ html_theme_options = {
     "package_version": release,
     "package_author": "Tom Van Mele",
     "package_description": "COMPAS package for working with CGAL",
-    "package_repo": "https://github.com/BlockResearchGroup/compas_cgal",
-    "package_docs": "https://blockresearchgroup.github.io/compas_cgal"
+    "package_repo": "https://github.com/compas-dev/compas_cgal",
+    "package_docs": "https://compas.dev/compas_cgal",
+    "package_old_versions_txt": "https://compas.dev/compas_cgal/docversions.txt"
 }
 html_context = {}
 html_static_path = []
