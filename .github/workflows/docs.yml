@@ -37,19 +37,21 @@ jobs:
         run: |
           invoke docs
           # Get branch/tag/latest name from git
-          GITHUB_REF_REGEX="tags/([0-9a-zA-Z\.\-]+)|(pull/[0-9]+)|heads/(.+)"
+          GITHUB_REF_REGEX="tags/v[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}|(pull/[0-9]+)|heads/master"
           if [[ $GITHUB_REF =~ $GITHUB_REF_REGEX ]]; then
-            if [[ $BASH_REMATCH = pull* ]]; then
-              BRANCH_OR_TAG=pull_${BASH_REMATCH##*/}
-            else
-              BRANCH_OR_TAG=${BASH_REMATCH##*/}
-            fi;
-            if [[ $BRANCH_OR_TAG = master ]]; then
-              BRANCH_OR_TAG=latest
-            fi;
+              if [[ $BASH_REMATCH = pull* ]]; then
+                  echo This is a pull request
+                  FOLDER_NAME=pull_${BASH_REMATCH##*/}
+              elif [[ $BASH_REMATCH = tags/* ]]; then
+                  echo This is a version tag
+                  FOLDER_NAME=${BASH_REMATCH##*/v}
+              else
+                  echo This is a commit to master branch
+                  FOLDER_NAME=latest
+              fi;
           fi;
-          echo "Docs will be deployed to https://compas.dev/compas_cgal/$BRANCH_OR_TAG"
-          mkdir -p deploy/$BRANCH_OR_TAG && mv -T dist/docs deploy/$BRANCH_OR_TAG/
+          echo "Docs will be deployed to https://compas.dev/compas_cgal/$FOLDER_NAME"
+          mkdir -p deploy/$BRANCH_OR_TAG && mv -T dist/docs deploy/$FOLDER_NAME/
 
       - name: Deploy docs
         if: success()
@@ -58,5 +60,38 @@ jobs:
           target_branch: gh-pages
           build_dir: deploy
           keep_history: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  docVersions:
+    needs: build
+    name: update doc versions
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v2
+        with:
+          ref: gh-pages
+
+      - name: update doc versions
+        run: |
+          >doc_versions.txt
+          for folder in $(ls -rd */ | tr -d '/')
+          do 
+              if [[ $folder =~ ^[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}$|^latest$ ]]
+              then 
+                  echo ${folder}  >> doc_versions.txt
+              fi
+          done
+          echo found available doc versions:
+          cat doc_versions.txt
+
+      - name: Deploy docs
+        if: success() && env.GH_PAT != ''
+        uses: crazy-max/ghaction-github-pages@v2
+        with:
+          target_branch: gh-pages
+          build_dir: ./
+          keep_history: false  
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
