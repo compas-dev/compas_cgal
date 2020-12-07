@@ -11,7 +11,7 @@ More information is available in the docs:
 
 ## Installation
 
-`compas_cgal` is now available via `conda-forge` for Windows, OSX, and Linux,
+`compas_cgal` is available via `conda-forge` for Windows, OSX, and Linux,
 and can be installed using `conda`.
 
 ```bash
