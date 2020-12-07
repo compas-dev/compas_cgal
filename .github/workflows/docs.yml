@@ -87,7 +87,7 @@ jobs:
           cat doc_versions.txt
 
       - name: Deploy docs
-        if: success() && env.GH_PAT != ''
+        if: success()
         uses: crazy-max/ghaction-github-pages@v2
         with:
           target_branch: gh-pages
