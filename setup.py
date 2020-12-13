@@ -150,7 +150,7 @@ setup(
     description="COMPAS friedly bindings for the CGAL library.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/BlockResearchGroup/compas_cgal",
+    url="https://github.com/compas-dev/compas_cgal",
     author="tom van mele",
     author_email="van.mele@arch.ethz.ch",
     license="GPL-3 License",
