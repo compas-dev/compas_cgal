@@ -4,7 +4,7 @@ from compas.geometry import Sphere
 from compas.geometry import Polyline
 from compas.datastructures import Mesh
 
-from compas_viewers.objectviewer import ObjectViewer
+from compas_view2.app import App
 
 from compas_cgal.intersections import intersection_mesh_mesh
 from compas_cgal.meshing import remesh
@@ -51,19 +51,19 @@ for points in pointsets:
 # Visualize
 # ==============================================================================
 
-viewer = ObjectViewer()
-viewer.view.use_shaders = True
+viewer = App()
 
-viewer.add(Mesh.from_vertices_and_faces(*A), settings={'color': '#ff0000', 'opacity': 0.7})
-viewer.add(Mesh.from_vertices_and_faces(*B), settings={'color': '#00ff00',  'opacity': 0.7})
+viewer.add(Mesh.from_vertices_and_faces(*A), facecolor=(1, 0, 0), opacity=0.7)
+viewer.add(Mesh.from_vertices_and_faces(*B), facecolor=(0, 1, 0), opacity=0.7)
 
 for polyline in polylines:
-    viewer.add(polyline, settings={
-        'edges.color': '#0000ff',
-        'edges.width': 3,
-        'vertices.color': '#ff0000',
-        'vertices.size': 10
-        })
+    viewer.add(
+        polyline,
+        linecolor=(0, 0, 1),
+        linewidth=3,
+        pointcolor=(1, 0, 0),
+        pointsize=10,
+        show_points=True
+    )
 
-viewer.update()
-viewer.show()
+viewer.run()

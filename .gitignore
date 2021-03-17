@@ -120,8 +120,3 @@ ext/**
 dist/**
 
 scripts/.idea/**
-
-cmake-build-debug/*
-cmake-build-release/*
-
-wheels/**

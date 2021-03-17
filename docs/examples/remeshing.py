@@ -7,8 +7,7 @@ from compas.geometry import Rotation
 from compas.geometry import Translation
 from compas.geometry import Scale
 
-from compas_viewers.multimeshviewer import MultiMeshViewer
-from compas_viewers.multimeshviewer import MeshObject
+from compas_view2.app import App
 
 from compas_cgal.trimesh import TriMesh
 
@@ -49,10 +48,8 @@ mesh = bunny.to_mesh()
 # Visualize
 # ==============================================================================
 
-meshes = []
-meshes.append(MeshObject(mesh, color='#cccccc'))
+viewer = App()
 
-viewer = MultiMeshViewer()
-viewer.meshes = meshes
+viewer.add(mesh, facecolor=(0.7, 0.7, 0.7))
 
-viewer.show()
+viewer.run()

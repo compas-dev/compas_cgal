@@ -3,8 +3,7 @@ from compas.geometry import Box
 from compas.geometry import Sphere
 from compas.datastructures import Mesh
 
-from compas_viewers.multimeshviewer import MultiMeshViewer
-from compas_viewers.multimeshviewer import MeshObject
+from compas_view2.app import App
 
 from compas_cgal.booleans import boolean_union
 from compas_cgal.meshing import remesh
@@ -43,10 +42,8 @@ mesh = Mesh.from_vertices_and_faces(V, F)
 # Visualize
 # ==============================================================================
 
-meshes = []
-meshes.append(MeshObject(mesh, color='#cccccc'))
+viewer = App()
 
-viewer = MultiMeshViewer()
-viewer.meshes = meshes
+viewer.add(mesh, show_edges=True)
 
-viewer.show()
+viewer.run()

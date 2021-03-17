@@ -7,7 +7,7 @@ from compas.geometry import Plane
 from compas.geometry import Polyline
 from compas.datastructures import Mesh
 
-from compas_viewers.objectviewer import ObjectViewer
+from compas_view2.app import App
 
 from compas_cgal.slicer import slice_mesh
 
@@ -59,13 +59,9 @@ for points in pointsets:
 # Visualize
 # ==============================================================================
 
-viewer = ObjectViewer()
-viewer.view.use_shaders = False
-
-# viewer.add(benchy, settings={'color': '#ff0000'})
+viewer = App()
 
 for polyline in polylines:
-    viewer.add(polyline, settings={'color': '#ffffff'})
+    viewer.add(polyline, linecolor=(1, 0, 0))
 
-viewer.update()
-viewer.show()
+viewer.run()
