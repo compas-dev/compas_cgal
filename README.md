@@ -32,7 +32,7 @@ Currently, the following functions are available:
 These functions can be used directly from `compas_cgal`
 or from `compas.geometry` through the plugin mechanism in COMPAS.
 
-For examples, see <https://compas.dev/compas_cgal/examples.html>
+For examples, see <https://compas.dev/compas_cgal/latest/examples.html>.
 
 ## Contribute
 
