@@ -18,7 +18,7 @@ More information is available in the docs:
 and can be installed using `conda`.
 
 ```bash
-conda install COMPAS compas_cgal
+conda create -n cgal -c conda-forge compas compas_cgal --yes
 ```
 
 ## Usage
