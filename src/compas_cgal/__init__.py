@@ -68,7 +68,7 @@ __all_plugins__ = [
     'compas_cgal.booleans',
     'compas_cgal.intersections',
     'compas_cgal.meshing',
-    'compas_cgal.slicer'
+    'compas_cgal.slicer',
 ]
 
 __all__ = ["HOME", "DATA", "DOCS", "TEMP"]
