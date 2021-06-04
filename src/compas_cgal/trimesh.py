@@ -134,6 +134,11 @@ class TriMesh(object):
         off = OFF(filepath, precision)
         return cls(off.reader.vertices, off.reader.faces)
 
+    @classmethod
+    def from_mesh(cls, mesh):
+        V, F = mesh.to_vertices_and_faces()
+        return cls(V, F)
+
     def to_mesh(self):
         return Mesh.from_vertices_and_faces(self.vertices, self.faces)
 
