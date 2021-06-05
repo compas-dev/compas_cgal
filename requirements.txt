@@ -1,1 +1,1 @@
-nptypes
+nptyping
