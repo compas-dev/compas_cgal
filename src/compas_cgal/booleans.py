@@ -2,7 +2,7 @@ import numpy as np
 from compas.plugins import plugin
 from compas_cgal._cgal import booleans
 
-from typing import Literal
+from typing_extensions import Literal
 
 from compas_cgal.types import VerticesFaces
 from compas_cgal.types import VerticesFacesNumpy
