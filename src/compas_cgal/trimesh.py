@@ -1,5 +1,11 @@
+from __future__ import annotations
+from typing import Any, Dict, Optional, List, Tuple
+from nptyping import NDArray
+
 import numpy as np
+import scipy as sp
 from compas.geometry import transform_points_numpy
+from compas.geometry import Transformation
 from compas.files import STL
 from compas.files import OFF
 from compas.files import PLY
@@ -30,6 +36,20 @@ class TriMesh:
     faces : ndarray[(f, 3), int32]
         The faces of the mesh stored as a `f` by 3 Numpy array of integers,
         with `f` the number of faces.
+    edges : list of tuple(int, int) - readonly
+        Edges of the mesh as pairs of vertices.
+    adjacency : dict - readonly
+        Vertex adjacency dict.
+    C : sp.sparse.csr_matrix - readonly
+        Sparse connectivity matrix.
+    A : sp.sparse.csr_matrix - readonly
+        Sparse adjacency matrix.
+    D : sp.sparse.csr_matrix - readonly
+        Sparse degree matrix.
+    centroid : ndarray[(1, 3), float64] - readonly
+        The centroid of the mesh.
+    average_edge_length : float - readonly
+        The average length og the edges.
 
     """
 
@@ -61,27 +81,35 @@ class TriMesh:
             raise KeyError
 
     @property
-    def vertices(self):
+    def vertices(self) -> NDArray[(Any, 3), np.float64]:
         return self._vertices
 
     @vertices.setter
     def vertices(self, vertices):
         self._adjacency = None
         self._edges = None
-        self._vertices = np.asarray(vertices, dtype=np.float64)
+        array = np.asarray(vertices, dtype=np.float64)
+        rows, cols = array.shape
+        if rows < 1 or cols != 3:
+            raise Exception('The vertex input data is not valid.')
+        self._vertices = array
 
     @property
-    def faces(self):
+    def faces(self) -> NDArray[(Any, 3), np.int32]:
         return self._faces
 
     @faces.setter
     def faces(self, faces):
         self._adjacency = None
         self._edges = None
-        self._faces = np.asarray(faces, dtype=np.int32)
+        array = np.asarray(faces, dtype=np.int32)
+        rows, cols = array.shape
+        if rows < 1 or cols != 3:
+            raise Exception('The face input data is not valid.')
+        self._faces = array
 
     @property
-    def adjacency(self):
+    def adjacency(self) -> Dict[int, List[int]]:
         if not self._adjacency:
             adj = {i: [] for i in range(self.vertices.shape[0])}
             for a, b, c in self.faces:
@@ -101,7 +129,7 @@ class TriMesh:
         return self._adjacency
 
     @property
-    def edges(self):
+    def edges(self) -> List[Tuple[int, int]]:
         if not self._edges:
             seen = set()
             edges = []
@@ -116,15 +144,15 @@ class TriMesh:
         return self._edges
 
     @property
-    def C(self):
+    def C(self) -> sp.sparse.csr_matrix:
         return connectivity_matrix(self.edges, 'csr')
 
     @property
-    def A(self):
+    def A(self) -> sp.sparse.csr_matrix:
         return adjacency_matrix(self.adjacency, 'csr')
 
     @property
-    def D(self):
+    def D(self) -> sp.sparse.csr_matrix:
         return degree_matrix(self.adjacency, 'csr')
 
     @property
@@ -132,45 +160,54 @@ class TriMesh:
         return np.mean(self.vertices, axis=0)
 
     @property
-    def average_edge_length(self):
+    def average_edge_length(self) -> float:
         return np.mean(normrow(self.C.dot(self.vertices)), axis=0)
 
     @classmethod
-    def from_stl(cls, filepath, precision=None):
+    def from_stl(cls: TriMesh, filepath: str, precision: Optional[str] = None) -> TriMesh:
+        """Construct a triangle mesh from the data in an STL file."""
         stl = STL(filepath, precision)
         return cls(stl.parser.vertices, stl.parser.faces)
 
     @classmethod
-    def from_ply(cls, filepath, precision=None):
+    def from_ply(cls: TriMesh, filepath: str, precision: Optional[str] = None) -> TriMesh:
+        """Construct a triangle mesh from the data in a PLY file."""
         ply = PLY(filepath, precision)
         return cls(ply.parser.vertices, ply.parser.faces)
 
     @classmethod
-    def from_off(cls, filepath, precision=None):
+    def from_off(cls: TriMesh, filepath: str, precision: Optional[str] = None) -> TriMesh:
+        """Construct a triangle mesh from the data in an OFF file."""
         off = OFF(filepath, precision)
         return cls(off.reader.vertices, off.reader.faces)
 
     @classmethod
-    def from_mesh(cls, mesh):
+    def from_mesh(cls: TriMesh, mesh: Mesh) -> TriMesh:
+        """Construct a triangle mesh from a COMPAS mesh."""
         V, F = mesh.to_vertices_and_faces()
         return cls(V, F)
 
-    def to_mesh(self):
+    def to_mesh(self) -> Mesh:
+        """Convert the triangle mesh to a COMPAS mesh"""
         return Mesh.from_vertices_and_faces(self.vertices, self.faces)
 
-    def copy(self):
+    def copy(self) -> TriMesh:
+        """Create an independent copy of the triangle mesh."""
         cls = type(self)
         return cls(self.vertices.copy(), self.faces.copy())
 
-    def transform(self, T):
+    def transform(self, T: Transformation):
+        """Transform the triangle mesh."""
         self.vertices[:] = transform_points_numpy(self.vertices, T)
 
-    def transformed(self, T):
+    def transformed(self, T: Transformation) -> TriMesh:
+        """Create a transformed copy of the triangle mesh."""
         mesh = self.copy()
         mesh.transform(T)
         return mesh
 
     def cull_vertices(self):
+        """Remove unused vertices."""
         indices = np.unique(self.faces)
         indexmap = {index: i for i, index in enumerate(indices)}
         self.vertices = self.vertices[indices]
@@ -179,7 +216,8 @@ class TriMesh:
             face[1] = indexmap[face[1]]
             face[2] = indexmap[face[2]]
 
-    def remesh(self, target_length, iterations=10):
+    def remesh(self, target_length: float, iterations: int = 10):
+        """Remesh the triangle mesh."""
         V, F = remesh(self, target_length, iterations)
         self.vertices = V
         self.faces = F
