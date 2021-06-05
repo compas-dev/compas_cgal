@@ -12,10 +12,26 @@ from compas.numerical import normrow
 from compas_cgal.meshing import remesh
 
 
-__all__ = ['TriMesh']
+class TriMesh:
+    """Class representing a triangle mesh with its vertices and faces stored as Numpy arrays.
 
+    Parameters
+    ----------
+    vertices : array-like
+        The vertices of the mesh.
+    faces : array-like
+        The faces of the mesh.
 
-class TriMesh(object):
+    Attributes
+    ----------
+    vertices : ndarray[(n, 3), float64]
+        The vertices of the mesh stored as a `n` by 3 Numpy array of floats,
+        with `n` the number of vertices.
+    faces : ndarray[(f, 3), int32]
+        The faces of the mesh stored as a `f` by 3 Numpy array of integers,
+        with `f` the number of faces.
+
+    """
 
     def __init__(self, vertices, faces):
         self._vertices = None
