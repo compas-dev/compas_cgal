@@ -158,19 +158,19 @@ class TriMesh:
         return np.mean(normrow(self.C.dot(self.vertices)), axis=0)
 
     @classmethod
-    def from_stl(cls, filepath, precision):
+    def from_stl(cls, filepath, precision='3f'):
         """Construct a triangle mesh from the data in an STL file."""
         stl = STL(filepath, precision)
         return cls(stl.parser.vertices, stl.parser.faces)
 
     @classmethod
-    def from_ply(cls, filepath, precision):
+    def from_ply(cls, filepath, precision='3f'):
         """Construct a triangle mesh from the data in a PLY file."""
         ply = PLY(filepath, precision)
         return cls(ply.parser.vertices, ply.parser.faces)
 
     @classmethod
-    def from_off(cls, filepath, precision):
+    def from_off(cls, filepath, precision='3f'):
         """Construct a triangle mesh from the data in an OFF file."""
         off = OFF(filepath, precision)
         return cls(off.reader.vertices, off.reader.faces)
@@ -210,7 +210,7 @@ class TriMesh:
             face[1] = indexmap[face[1]]
             face[2] = indexmap[face[2]]
 
-    def remesh(self, target_length, iterations):
+    def remesh(self, target_length, iterations=10):
         """Remesh the triangle mesh."""
         V, F = remesh(self, target_length, iterations)
         self.vertices = V

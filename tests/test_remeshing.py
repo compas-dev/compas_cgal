@@ -7,9 +7,9 @@ from compas.geometry import Rotation
 from compas.geometry import Translation
 from compas.geometry import Scale
 
-
 from compas_cgal.trimesh import TriMesh
 from compas_cgal import HERE
+
 
 def test_remeshing():
 
@@ -43,6 +43,4 @@ def test_remeshing():
 
     bunny.remesh(4 * length)
 
-    mesh = bunny.to_mesh()
-
-
+    bunny.to_mesh()

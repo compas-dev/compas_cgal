@@ -4,7 +4,7 @@ from compas.plugins import plugin
 
 
 @plugin(category='trimesh', pluggable_name='trimesh_remesh')
-def remesh(mesh, target_edge_length, number_of_iterations, do_project):
+def remesh(mesh, target_edge_length, number_of_iterations=10, do_project=True):
     """Remeshing of a triangle mesh.
 
     Parameters
@@ -37,7 +37,7 @@ def remesh(mesh, target_edge_length, number_of_iterations, do_project):
     return meshing.remesh(V, F, target_edge_length, number_of_iterations)
 
 
-def remesh_constrained(mesh, target_edge_length, protected_edges, number_of_iterations, do_project):
+def remesh_constrained(mesh, target_edge_length, protected_edges, number_of_iterations=10, do_project=True):
     """Remeshing of a triangle mesh.
 
     Parameters
