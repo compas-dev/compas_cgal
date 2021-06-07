@@ -5,7 +5,6 @@
 [![Conda - Latest Release](https://anaconda.org/conda-forge/compas_cgal/badges/version.svg)](https://anaconda.org/conda-forge/compas_cgal)
 [![Conda - Platform](https://img.shields.io/conda/pn/conda-forge/compas_cgal)](https://anaconda.org/conda-forge/compas_cgal)
 
-
 This package provides Python bindings for specific algorithms of CGAL.
 The bindings are generated with PyBind11 and data is exchanged using NumPy arrays.
 
@@ -23,16 +22,7 @@ conda create -n cgal -c conda-forge compas compas_cgal --yes
 
 ## Usage
 
-Currently, the following functions are available:
-
-* `boolean_union`
-* `boolean_difference`
-* `boolean_intersection`
-* `intersection_mesh_mesh`
-* `remesh`
-* `slice_mesh`
-
-These functions can be used directly from `compas_cgal`
+The provided functionality can be used directly from the `compas_cgal` package
 or from `compas.geometry` through the plugin mechanism in COMPAS.
 
 For examples, see <https://compas.dev/compas_cgal/latest/examples.html>.
