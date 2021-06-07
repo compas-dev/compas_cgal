@@ -1,9 +1,11 @@
-from typing import List, Tuple
+from typing import List
+from typing import Tuple
 import numpy as np
 from compas_cgal._cgal import meshing
 from compas.plugins import plugin
 
-from compas_cgal.types import VerticesFaces, VerticesFacesNumpy
+from compas_cgal.types import VerticesFaces
+from compas_cgal.types import VerticesFacesNumpy
 
 
 __all__ = [

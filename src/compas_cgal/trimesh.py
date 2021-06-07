@@ -1,5 +1,10 @@
 from __future__ import annotations
-from typing import Any, Dict, Optional, List, Tuple
+
+from typing import Any
+from typing import Dict
+from typing import Optional
+from typing import List
+from typing import Tuple
 from nptyping import NDArray
 
 import numpy as np

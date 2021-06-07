@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from typing import Any, Tuple, List, Union
+from typing import Any
+from typing import Tuple
+from typing import List
+from typing import Union
 from typing_extensions import Annotated
 from nptyping import NDArray
 
