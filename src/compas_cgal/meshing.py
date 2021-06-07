@@ -1,6 +1,11 @@
+from typing import List
+from typing import Tuple
 import numpy as np
 from compas_cgal._cgal import meshing
 from compas.plugins import plugin
+
+from compas_cgal.types import VerticesFaces
+from compas_cgal.types import VerticesFacesNumpy
 
 
 __all__ = [
@@ -9,7 +14,10 @@ __all__ = [
 
 
 @plugin(category='trimesh', pluggable_name='trimesh_remesh')
-def remesh(mesh, target_edge_length, number_of_iterations=10, do_project=True):
+def remesh(mesh: VerticesFaces,
+           target_edge_length: float,
+           number_of_iterations: int = 10,
+           do_project: bool = True) -> VerticesFacesNumpy:
     """Remeshing of a triangle mesh.
 
     Parameters
@@ -42,7 +50,11 @@ def remesh(mesh, target_edge_length, number_of_iterations=10, do_project=True):
     return meshing.remesh(V, F, target_edge_length, number_of_iterations)
 
 
-def remesh_constrained(mesh, target_edge_length, protected_edges, number_of_iterations=10, do_project=True):
+def remesh_constrained(mesh: VerticesFaces,
+                       target_edge_length: float,
+                       protected_edges: List[Tuple[int, int]],
+                       number_of_iterations: int = 10,
+                       do_project: bool = True) -> VerticesFacesNumpy:
     """Remeshing of a triangle mesh.
 
     Parameters

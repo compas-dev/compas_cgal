@@ -5,8 +5,20 @@ compas_cgal
 
 .. currentmodule:: compas_cgal
 
+Classes
+=======
+
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+
+    trimesh.TriMesh
+
+Functions
+=========
+
 Booleans
-========
+--------
 
 .. autosummary::
     :toctree: generated/
@@ -17,7 +29,7 @@ Booleans
     booleans.boolean_intersection
 
 Intersections
-=============
+-------------
 
 .. autosummary::
     :toctree: generated/
@@ -25,8 +37,17 @@ Intersections
 
     intersections.intersection_mesh_mesh
 
+Measure
+-------
+
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+
+    measure.volume
+
 Meshing
-=======
+-------
 
 .. autosummary::
     :toctree: generated/
@@ -35,7 +56,7 @@ Meshing
     meshing.remesh
 
 Slicer
-======
+------
 
 .. autosummary::
     :toctree: generated/
@@ -54,7 +75,6 @@ __copyright__ = "Block Research Group - ETH Zurich"
 __license__ = "MIT License"
 __email__ = "van.mele@arch.ethz.ch"
 __version__ = "0.1.1"
-
 
 HERE = os.path.dirname(__file__)
 
