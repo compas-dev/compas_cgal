@@ -1,16 +1,5 @@
-from __future__ import annotations
-
-from typing import Any
-from typing import Dict
-from typing import Optional
-from typing import List
-from typing import Tuple
-from nptyping import NDArray
-
 import numpy as np
-import scipy as sp
 from compas.geometry import transform_points_numpy
-from compas.geometry import Transformation
 from compas.files import STL
 from compas.files import OFF
 from compas.files import PLY
@@ -86,7 +75,7 @@ class TriMesh:
             raise KeyError
 
     @property
-    def vertices(self) -> NDArray[(Any, 3), np.float64]:
+    def vertices(self):
         return self._vertices
 
     @vertices.setter
@@ -100,7 +89,7 @@ class TriMesh:
         self._vertices = array
 
     @property
-    def faces(self) -> NDArray[(Any, 3), np.int32]:
+    def faces(self):
         return self._faces
 
     @faces.setter
@@ -114,7 +103,7 @@ class TriMesh:
         self._faces = array
 
     @property
-    def adjacency(self) -> Dict[int, List[int]]:
+    def adjacency(self):
         if not self._adjacency:
             adj = {i: [] for i in range(self.vertices.shape[0])}
             for a, b, c in self.faces:
@@ -134,7 +123,7 @@ class TriMesh:
         return self._adjacency
 
     @property
-    def edges(self) -> List[Tuple[int, int]]:
+    def edges(self):
         if not self._edges:
             seen = set()
             edges = []
@@ -149,15 +138,15 @@ class TriMesh:
         return self._edges
 
     @property
-    def C(self) -> sp.sparse.csr_matrix:
+    def C(self):
         return connectivity_matrix(self.edges, 'csr')
 
     @property
-    def A(self) -> sp.sparse.csr_matrix:
+    def A(self):
         return adjacency_matrix(self.adjacency, 'csr')
 
     @property
-    def D(self) -> sp.sparse.csr_matrix:
+    def D(self):
         return degree_matrix(self.adjacency, 'csr')
 
     @property
@@ -169,43 +158,43 @@ class TriMesh:
         return np.mean(normrow(self.C.dot(self.vertices)), axis=0)
 
     @classmethod
-    def from_stl(cls: TriMesh, filepath: str, precision: Optional[str] = None) -> TriMesh:
+    def from_stl(cls, filepath, precision):
         """Construct a triangle mesh from the data in an STL file."""
         stl = STL(filepath, precision)
         return cls(stl.parser.vertices, stl.parser.faces)
 
     @classmethod
-    def from_ply(cls: TriMesh, filepath: str, precision: Optional[str] = None) -> TriMesh:
+    def from_ply(cls, filepath, precision):
         """Construct a triangle mesh from the data in a PLY file."""
         ply = PLY(filepath, precision)
         return cls(ply.parser.vertices, ply.parser.faces)
 
     @classmethod
-    def from_off(cls: TriMesh, filepath: str, precision: Optional[str] = None) -> TriMesh:
+    def from_off(cls, filepath, precision):
         """Construct a triangle mesh from the data in an OFF file."""
         off = OFF(filepath, precision)
         return cls(off.reader.vertices, off.reader.faces)
 
     @classmethod
-    def from_mesh(cls: TriMesh, mesh: Mesh) -> TriMesh:
+    def from_mesh(cls, mesh):
         """Construct a triangle mesh from a COMPAS mesh."""
         V, F = mesh.to_vertices_and_faces()
         return cls(V, F)
 
-    def to_mesh(self) -> Mesh:
+    def to_mesh(self):
         """Convert the triangle mesh to a COMPAS mesh"""
         return Mesh.from_vertices_and_faces(self.vertices, self.faces)
 
-    def copy(self) -> TriMesh:
+    def copy(self):
         """Create an independent copy of the triangle mesh."""
         cls = type(self)
         return cls(self.vertices.copy(), self.faces.copy())
 
-    def transform(self, T: Transformation):
+    def transform(self, T):
         """Transform the triangle mesh."""
         self.vertices[:] = transform_points_numpy(self.vertices, T)
 
-    def transformed(self, T: Transformation) -> TriMesh:
+    def transformed(self, T):
         """Create a transformed copy of the triangle mesh."""
         mesh = self.copy()
         mesh.transform(T)
@@ -221,7 +210,7 @@ class TriMesh:
             face[1] = indexmap[face[1]]
             face[2] = indexmap[face[2]]
 
-    def remesh(self, target_length: float, iterations: int = 10):
+    def remesh(self, target_length, iterations):
         """Remesh the triangle mesh."""
         V, F = remesh(self, target_length, iterations)
         self.vertices = V

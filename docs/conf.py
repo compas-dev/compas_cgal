@@ -25,7 +25,7 @@ version = ".".join(release.split(".")[0:2])
 
 master_doc = "index"
 source_suffix = [".rst", ]
-templates_path = ["_templates"]
+templates_path = sphinx_compas_theme.get_autosummary_templates_path()
 exclude_patterns = []
 
 pygments_style = "sphinx"
@@ -174,5 +174,5 @@ html_last_updated_fmt = ""
 html_copy_source = False
 html_show_sourcelink = False
 html_permalinks = False
-html_add_permalinks = None
+html_add_permalinks = ""
 html_compact_lists = True

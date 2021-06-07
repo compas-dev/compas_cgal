@@ -2,17 +2,9 @@ import numpy as np
 from compas_cgal._cgal import intersections
 from compas.plugins import plugin
 
-from compas_cgal.types import VerticesFaces
-from compas_cgal.types import ListOfPolylinesNumpy
-
-
-__all__ = [
-    'intersection_mesh_mesh'
-]
-
 
 @plugin(category='intersections')
-def intersection_mesh_mesh(A: VerticesFaces, B: VerticesFaces) -> ListOfPolylinesNumpy:
+def intersection_mesh_mesh(A, B):
     """Compute the intersection of tow meshes.
 
     Parameters

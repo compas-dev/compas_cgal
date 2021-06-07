@@ -2,16 +2,9 @@ import numpy as np
 from compas_cgal._cgal import measure
 from compas.plugins import plugin
 
-from compas_cgal.types import VerticesFaces
-
-
-__all__ = [
-    'volume'
-]
-
 
 @plugin(category='trimesh', pluggable_name='trimesh_volume')
-def volume(mesh: VerticesFaces) -> float:
+def volume(mesh):
     """Compute the volume of a closed triangle mesh.
 
     Parameters

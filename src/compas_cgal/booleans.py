@@ -2,22 +2,8 @@ import numpy as np
 from compas.plugins import plugin
 from compas_cgal._cgal import booleans
 
-from typing_extensions import Literal
 
-from compas_cgal.types import VerticesFaces
-from compas_cgal.types import VerticesFacesNumpy
-
-
-__all__ = [
-    'boolean_union',
-    'boolean_difference',
-    'boolean_intersection'
-]
-
-
-def _boolean(A: VerticesFaces,
-             B: VerticesFaces,
-             operation: Literal['union', 'difference', 'intersection']) -> VerticesFacesNumpy:
+def _boolean(A, B, operation):
     """Wrapper for all boolean operations.
 
     Parameters
@@ -62,18 +48,15 @@ def _boolean(A: VerticesFaces,
 
 
 @plugin(category='booleans', pluggable_name='boolean_union_mesh_mesh')
-def boolean_union(A: VerticesFaces,
-                  B: VerticesFaces) -> VerticesFacesNumpy:
+def boolean_union(A, B):
     return _boolean(A, B, 'union')
 
 
 @plugin(category='booleans', pluggable_name='boolean_difference_mesh_mesh')
-def boolean_difference(A: VerticesFaces,
-                       B: VerticesFaces) -> VerticesFacesNumpy:
+def boolean_difference(A, B):
     return _boolean(A, B, 'difference')
 
 
 @plugin(category='booleans', pluggable_name='boolean_intersection_mesh_mesh')
-def boolean_intersection(A: VerticesFaces,
-                         B: VerticesFaces) -> VerticesFacesNumpy:
+def boolean_intersection(A, B):
     return _boolean(A, B, 'intersection')

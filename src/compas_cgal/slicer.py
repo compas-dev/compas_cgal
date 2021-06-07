@@ -2,19 +2,9 @@ import numpy as np
 from compas_cgal._cgal import slicer
 from compas.plugins import plugin
 
-from compas_cgal.types import VerticesFaces
-from compas_cgal.types import ListOfPlanes
-from compas_cgal.types import ListOfPolylinesNumpy
-
-
-__all__ = [
-    'slice_mesh'
-]
-
 
 @plugin(category='trimesh', pluggable_name='trimesh_slice')
-def slice_mesh(mesh: VerticesFaces,
-               planes: ListOfPlanes) -> ListOfPolylinesNumpy:
+def slice_mesh(mesh, planes):
     """Slice a mesh by a list of planes.
 
     Parameters
