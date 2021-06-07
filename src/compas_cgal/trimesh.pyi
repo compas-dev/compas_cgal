@@ -5,7 +5,10 @@ from typing import Dict
 from typing import Optional
 from typing import List
 from typing import Tuple
+from typing import Union
 from nptyping import NDArray
+from compas_cgal.types import SequenceOfVertices
+from compas_cgal.types import SequenceOfFaces
 
 import numpy as np
 import scipy as sp
@@ -15,16 +18,16 @@ from compas.datastructures import Mesh
 
 class TriMesh:
 
-    def __init__(self, vertices, faces) -> TriMesh:
+    def __init__(self, vertices: SequenceOfVertices, faces: SequenceOfFaces) -> TriMesh:
         pass
 
     def __iter__(self):
         pass
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: int) -> Union[SequenceOfVertices, SequenceOfFaces]:
         pass
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: int, value: Union[SequenceOfVertices, SequenceOfFaces]):
         pass
 
     @property
@@ -32,7 +35,7 @@ class TriMesh:
         pass
 
     @vertices.setter
-    def vertices(self, vertices):
+    def vertices(self, vertices: SequenceOfVertices) -> None:
         pass
 
     @property
@@ -40,7 +43,7 @@ class TriMesh:
         pass
 
     @faces.setter
-    def faces(self, faces):
+    def faces(self, faces: SequenceOfFaces) -> None:
         pass
 
     @property
@@ -64,7 +67,7 @@ class TriMesh:
         pass
 
     @property
-    def centroid(self):
+    def centroid(self) -> NDArray[(3, ), np.float64]:
         pass
 
     @property
@@ -93,14 +96,14 @@ class TriMesh:
     def copy(self) -> TriMesh:
         pass
 
-    def transform(self, T: Transformation):
+    def transform(self, T: Transformation) -> None:
         pass
 
     def transformed(self, T: Transformation) -> TriMesh:
         pass
 
-    def cull_vertices(self):
+    def cull_vertices(self) -> None:
         pass
 
-    def remesh(self, target_length: float, iterations: int = 10):
+    def remesh(self, target_length: float, iterations: int = 10) -> None:
         pass
