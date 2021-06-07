@@ -4,11 +4,22 @@ from typing import Any
 from typing import Tuple
 from typing import List
 from typing import Union
+from typing import Sequence
 from typing_extensions import Annotated
 from nptyping import NDArray
 
 import compas.geometry
 import numpy as np
+
+SequenceOfVertices = Union[
+    Sequence[Annotated[List[float], 3]],
+    NDArray[(Any, 3), np.float64],
+]
+
+SequenceOfFaces = Union[
+    Sequence[Annotated[List[int], 3]],
+    NDArray[(Any, 3), np.int32],
+]
 
 VerticesFacesNumpy = Tuple[
     NDArray[(Any, 3), np.float64],
