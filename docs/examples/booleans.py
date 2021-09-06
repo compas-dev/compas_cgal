@@ -44,6 +44,6 @@ mesh = Mesh.from_vertices_and_faces(V, F)
 
 viewer = App()
 
-viewer.add(mesh, show_edges=True)
+viewer.add(mesh)
 
 viewer.run()
