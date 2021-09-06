@@ -34,13 +34,13 @@ jobs:
       - name: build (mac)
         if: matrix.os == 'macos-latest'
         run: |
-          conda install eigen=3.3 boost-cpp gmp mpfr cgal-cpp=5.2 pybind11 COMPAS">=0.16.0" -y
+          conda install eigen=3.3 boost-cpp gmp mpfr cgal-cpp=5.2 pybind11 compas -y
           pip install -r requirements-dev.txt
 
       - name: build (windows)
         if: matrix.os == 'windows-latest'
         run: |
-          conda install eigen=3.3 boost-cpp mpir mpfr cgal-cpp=5.2 pybind11 COMPAS">=0.16.0" -y
+          conda install eigen=3.3 boost-cpp mpir mpfr cgal-cpp=5.2 pybind11 compas -y
           pip install -r requirements-dev.txt
 
       - name: Lint with flake8

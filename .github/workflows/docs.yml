@@ -29,7 +29,7 @@ jobs:
 
       - name: build (windows)
         run: |
-          conda install eigen=3.3 boost-cpp mpir mpfr cgal-cpp=5.2 pybind11 COMPAS">=0.16.0" -y
+          conda install eigen=3.3 boost-cpp mpir mpfr cgal-cpp=5.2 pybind11 compas -y
           pip install -r requirements-dev.txt
           invoke docs
 
