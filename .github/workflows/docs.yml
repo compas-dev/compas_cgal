@@ -29,7 +29,7 @@ jobs:
 
       - name: build (windows)
         run: |
-          conda install eigen boost-cpp mpir mpfr cgal-cpp">=5.0" pybind11 COMPAS">=0.16.0" -y
+          conda install eigen=3.3 boost-cpp mpir mpfr cgal-cpp=5.2 pybind11 COMPAS">=0.16.0" -y
           pip install -r requirements-dev.txt
           invoke docs
 
@@ -50,11 +50,11 @@ jobs:
           keep_history: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
+
     outputs:
       commit_type: ${{ steps.docs.outputs.commit_type }}
       current_version: ${{ steps.docs.outputs.current_version }}
-  
+
   docVersions:
     needs: build
     if: needs.build.outputs.commit_type == 'tag'
