@@ -3,8 +3,15 @@
 
 #include <compas.h>
 
-std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
-pmp_tetrahedralisation(
-    Eigen::Ref<const compas::RowMatrixXd> & Points);
+
+compas::RowMatrixXi
+pmp_delaunay_triangulation(
+    Eigen::Ref<const compas::RowMatrixXd> & V);
+
+
+compas::RowMatrixXi
+pmp_constrained_delaunay_triangulation(
+    Eigen::Ref<const compas::RowMatrixXd> & V,
+    Eigen::Ref<const compas::RowMatrixXi> & E);
 
 #endif /* COMPAS_TRIANGULATIONS_H */
