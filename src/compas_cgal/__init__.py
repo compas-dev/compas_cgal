@@ -64,6 +64,15 @@ Slicer
 
     slicer.slice_mesh
 
+Slicer
+------
+
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+
+    triangulation.constrained_delaunay_triangulation
+
 """
 from __future__ import print_function
 
