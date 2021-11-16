@@ -148,7 +148,7 @@ class BuildExt(build_ext):
 
 setup(
     name="compas_cgal",
-    version="0.2.0rc0",
+    version="0.2.0",
     description="COMPAS friedly bindings for the CGAL library.",
     long_description=long_description,
     long_description_content_type="text/markdown",
