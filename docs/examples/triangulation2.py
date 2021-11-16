@@ -3,7 +3,7 @@ import numpy as np
 from compas_plotters import Plotter
 from compas.geometry import Point, Polygon, Translation
 from compas.datastructures import Mesh
-from compas_cgal.triangulation import conforming_delaunay_triangulation as cdt
+from compas_cgal.triangulation import refined_delaunay_mesh as cdt
 
 # ==============================================================================
 # Constraints
@@ -27,7 +27,7 @@ points = [Point(4, 0, 0), Point(-4, 0, 0), Point(0, 4, 0), Point(0, -4, 0)]
 # Triangulation
 # ==============================================================================
 
-V, F = cdt(boundary, points=points, holes=holes)
+V, F = cdt(boundary, points=points, holes=holes, maxlength=1.0, is_optimized=True)
 
 mesh = Mesh.from_vertices_and_faces(V, F)
 
