@@ -37,5 +37,4 @@ def test_booleans():
 
     V, F = boolean_union(A, B)
 
-    mesh = Mesh.from_vertices_and_faces(V, F)
-
+    Mesh.from_vertices_and_faces(V, F)

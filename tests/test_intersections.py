@@ -36,5 +36,6 @@ def test_intersections():
 
     print(pointsets)
 
+
 if __name__ == "__main__":
     test_intersections()
