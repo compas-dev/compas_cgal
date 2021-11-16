@@ -9,12 +9,6 @@ pmp_delaunay_triangulation(
     Eigen::Ref<const compas::RowMatrixXd> & V);
 
 
-// compas::RowMatrixXd
-// pmp_constrained_delaunay_triangulation(
-//     Eigen::Ref<const compas::RowMatrixXd> & V,
-//     Eigen::Ref<const compas::RowMatrixXi> & E);
-
-
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 pmp_constrained_delaunay_triangulation(
     Eigen::Ref<const compas::RowMatrixXd> & B,

@@ -87,59 +87,6 @@ pmp_delaunay_triangulation(Eigen::Ref<const compas::RowMatrixXd> & V)
     return F;
 }
 
-// ===========================================================================
-// ===========================================================================
-// ===========================================================================
-// CDT
-// ===========================================================================
-// ===========================================================================
-// ===========================================================================
-
-// compas::RowMatrixXd
-// pmp_constrained_delaunay_triangulation(
-//     Eigen::Ref<const compas::RowMatrixXd> & V,
-//     Eigen::Ref<const compas::RowMatrixXi> & E)
-// {
-//     CDT triangulation;
-
-//     std::vector< CDT::Vertex_handle > vertex_handles(V.rows());
-
-//     for (int i=0; i < V.rows(); i++) {
-//         CDT::Point point = CDT::Point(V(i, 0), V(i, 1));
-//         vertex_handles[i] = triangulation.insert(point);
-//     }
-
-//     for (int i=0; i < E.rows(); i++) {
-//         triangulation.insert_constraint(
-//             vertex_handles[E(i, 0)],
-//             vertex_handles[E(i, 1)]
-//         );
-//     }
-
-//     compas::RowMatrixXd F(triangulation.number_of_faces(), 6);
-
-//     int j = 0;
-//     for (CDT::Finite_faces_iterator fit = triangulation.finite_faces_begin(); fit != triangulation.finite_faces_end(); fit++) {
-//         CDT::Face_handle face = fit;
-
-//         CDT::Point a = face->vertex(0)->point();
-//         CDT::Point b = face->vertex(1)->point();
-//         CDT::Point c = face->vertex(2)->point();
-
-//         F(j, 0) = a.hx();
-//         F(j, 1) = a.hy();
-
-//         F(j, 2) = b.hx();
-//         F(j, 3) = b.hy();
-
-//         F(j, 4) = c.hx();
-//         F(j, 5) = c.hy();
-
-//         j++;
-//     }
-
-//     return F;
-// }
 
 // ===========================================================================
 // ===========================================================================
@@ -167,7 +114,7 @@ pmp_delaunay_triangulation(Eigen::Ref<const compas::RowMatrixXd> & V)
 //         CDT::Face_handle face = queue.front();
 
 //         queue.pop_front();
-        
+
 //         if (face->info().nesting_level == -1) {
 //             face->info().nesting_level = index;
 
@@ -201,11 +148,11 @@ pmp_delaunay_triangulation(Eigen::Ref<const compas::RowMatrixXd> & V)
 //     for (CDT::Face_handle face : triangulation.all_face_handles()) {
 //         face->info().nesting_level = -1;
 //     }
-    
+
 //     std::list<CDT::Edge> border;
 
 //     mark_domains(triangulation, triangulation.infinite_face(), 0, border);
-    
+
 //     while (! border.empty()) {
 //         CDT::Edge edge = border.front();
 //         border.pop_front();
@@ -304,6 +251,7 @@ pmp_constrained_delaunay_triangulation(
     }
 
     CGAL::refine_Delaunay_mesh_2(triangulation, seeds.begin(), seeds.end(), criteria);
+
     CGAL::lloyd_optimize_mesh_2(triangulation,
                                 CGAL::parameters::max_iteration_number = 10,
                                 CGAL::parameters::seeds_begin = seeds.begin(),
@@ -352,7 +300,6 @@ pmp_constrained_delaunay_triangulation(
     for (CDT::Finite_faces_iterator fit = triangulation.finite_faces_begin(); fit != triangulation.finite_faces_end(); fit++) {
         CDT::Face_handle face = fit;
 
-        // if (face->info().in_domain()) {
         if (fit->is_in_domain()) {
             CDT::Vertex_handle a = face->vertex(0);
             CDT::Vertex_handle b = face->vertex(1);
@@ -371,39 +318,6 @@ pmp_constrained_delaunay_triangulation(
 }
 
 
-// /**
-//  * Conforming delaunay triangulation of a given boundary
-//  * with internal holes and constraint curves.
-//  *
-//  * @param B The vertices of the boundary.
-//  * @param holes A list of holes in the triangulation.
-//  * @param curves A list of internal polyline constraints.
-//  */
-// std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
-// pmp_conforming_delaunay_triangulation(
-//     Eigen::Ref<const compas::RowMatrixXd> & B,
-//     std::vector< Eigen::Ref<const compas::RowMatrixXd> > & holes,
-//     std::vector< Eigen::Ref<const compas::RowMatrixXd> > & curves)
-// {
-//     std::tuple<compas::RowMatrixXd, compas::RowMatrixXi> cdt = pmp_constrained_delaunay_triangulation(B, holes, curves);
-
-//     std::list<CDT::Point> seeds;
-
-//     for (auto hit : holes) {
-//         compas::RowMatrixXd H = hit;
-
-//         double n = (double) H.rows();
-
-//         double x = H.block(0, 0, H.rows(), 1).sum() / n;
-//         double y = H.block(0, 1, H.rows(), 1).sum() / n;
-
-//         seeds.push_back(CDT::Point(x, y));
-//     }
-
-//     CGAL::refine_Delaunay_mesh_2(cdt, seeds.begin(), seeds.end(), Criteria());
-// }
-
-
 // ===========================================================================
 // ===========================================================================
 // ===========================================================================
@@ -420,13 +334,6 @@ void init_triangulations(py::module & m) {
         &pmp_delaunay_triangulation,
         py::arg("V").noconvert()
     );
-
-    // submodule.def(
-    //     "constrained_delaunay_triangulation",
-    //     &pmp_constrained_delaunay_triangulation,
-    //     py::arg("V").noconvert(),
-    //     py::arg("E").noconvert()
-    // );
 
     submodule.def(
         "constrained_delaunay_triangulation",
