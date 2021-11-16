@@ -54,12 +54,12 @@ ext_modules = [
         'compas_cgal._cgal',
         sorted([
             'src/compas_cgal.cpp',
-            # 'src/compas.cpp',
-            # 'src/meshing.cpp',
-            # 'src/booleans.cpp',
-            # 'src/slicer.cpp',
-            # 'src/intersections.cpp',
-            # 'src/measure.cpp',
+            'src/compas.cpp',
+            'src/meshing.cpp',
+            'src/booleans.cpp',
+            'src/slicer.cpp',
+            'src/intersections.cpp',
+            'src/measure.cpp',
             'src/triangulations.cpp',
         ]),
         include_dirs=[
