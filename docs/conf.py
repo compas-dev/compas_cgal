@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../src'))
 project = "COMPAS CGAL"
 copyright = "2017, Block Research Group - ETH Zurich"
 author = "Tom Van Mele"
-release = "0.3.0rc0"
+release = "0.3.0"
 version = ".".join(release.split(".")[0:2])
 
 master_doc = "index"
