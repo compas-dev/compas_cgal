@@ -29,8 +29,17 @@ namespace compas
         const RowMatrixXd & V,
         const RowMatrixXi & F);
 
+    Mesh
+    ngon_from_vertices_and_faces(
+        const RowMatrixXd & V,
+        const std::vector< std::vector<int> > & faces);
+
     std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
     mesh_to_vertices_and_faces(
+        const Mesh & mesh);
+
+    std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
+    quadmesh_to_vertices_and_faces(
         const Mesh & mesh);
 
     std::vector<compas::RowMatrixXd>

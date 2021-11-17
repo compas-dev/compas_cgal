@@ -61,6 +61,7 @@ ext_modules = [
             'src/intersections.cpp',
             'src/measure.cpp',
             'src/triangulations.cpp',
+            'src/subdivision.cpp',
         ]),
         include_dirs=[
             './include',
