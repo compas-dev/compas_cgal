@@ -4,7 +4,7 @@
 #include <compas.h>
 
 std::vector<compas::RowMatrixXd>
-pmp_slice_mesh(
+slice_mesh(
     Eigen::Ref<const compas::RowMatrixXd> & V,
     Eigen::Ref<const compas::RowMatrixXi> & F,
     Eigen::Ref<const compas::RowMatrixXd> & P,

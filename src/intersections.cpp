@@ -13,8 +13,8 @@ pmp_intersection_mesh_mesh(
     Eigen::Ref<const compas::RowMatrixXd> & VB,
     Eigen::Ref<const compas::RowMatrixXi> & FB)
 {
-    Mesh A = compas::mesh_from_vertices_and_faces(VA, FA);
-    Mesh B = compas::mesh_from_vertices_and_faces(VB, FB);
+    Mesh A = compas::trimesh_from_vertices_and_faces(VA, FA);
+    Mesh B = compas::trimesh_from_vertices_and_faces(VB, FB);
 
     Polylines polylines;
 

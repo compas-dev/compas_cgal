@@ -9,7 +9,7 @@ namespace py = pybind11;
 // contained in nx3 and fx3 eigen matrices
 // using the Exact Predicates Exact Constructions Kernel
 Mesh
-compas::mesh_from_vertices_and_faces(
+compas::trimesh_from_vertices_and_faces(
     const compas::RowMatrixXd & V,
     const compas::RowMatrixXi & F)
 {
@@ -38,7 +38,7 @@ compas::mesh_from_vertices_and_faces(
 }
 
 Mesh
-compas::ngon_from_vertices_and_faces(
+compas::mesh_from_vertices_and_faces(
     const compas::RowMatrixXd & V,
     const std::vector< std::vector<int> > & faces)
 {
@@ -66,7 +66,7 @@ compas::ngon_from_vertices_and_faces(
 }
 
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
-compas::mesh_to_vertices_and_faces(
+compas::trimesh_to_vertices_and_faces(
     const Mesh & mesh)
 {
     int v = mesh.number_of_vertices();

@@ -5,12 +5,12 @@
 
 
 compas::RowMatrixXi
-pmp_delaunay_triangulation(
+delaunay_triangulation(
     Eigen::Ref<const compas::RowMatrixXd> & V);
 
 
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
-pmp_constrained_delaunay_triangulation(
+constrained_delaunay_triangulation(
     Eigen::Ref<const compas::RowMatrixXd> & B,
     Eigen::Ref<const compas::RowMatrixXd> & P,
     std::vector< Eigen::Ref<const compas::RowMatrixXd> > & holes,
@@ -19,7 +19,7 @@ pmp_constrained_delaunay_triangulation(
 
 
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
-pmp_refined_delaunay_mesh(
+refined_delaunay_mesh(
     Eigen::Ref<const compas::RowMatrixXd> & B,
     Eigen::Ref<const compas::RowMatrixXd> & P,
     std::vector< Eigen::Ref<const compas::RowMatrixXd> > & holes,

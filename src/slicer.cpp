@@ -5,13 +5,13 @@ namespace py = pybind11;
 
 
 std::vector<compas::RowMatrixXd>
-pmp_slice_mesh(
+slice_mesh(
     Eigen::Ref<const compas::RowMatrixXd> & V,
     Eigen::Ref<const compas::RowMatrixXi> & F,
     Eigen::Ref<const compas::RowMatrixXd> & P,
     Eigen::Ref<const compas::RowMatrixXd> & N)
 {
-    Mesh mesh = compas::mesh_from_vertices_and_faces(V, F);
+    Mesh mesh = compas::trimesh_from_vertices_and_faces(V, F);
 
     CGAL::Polygon_mesh_slicer<Mesh, Kernel> slicer(mesh);
     Polylines polylines;
@@ -29,21 +29,6 @@ pmp_slice_mesh(
 
     std::vector<compas::RowMatrixXd> result = compas::result_from_polylines(polylines);
     return result;
-
-    // // this avoids the segmentation fault
-    // // but returns only one of the results
-
-    // Polyline poly = polylines.front();
-    // int n = poly.size();
-    // compas::RowMatrixXd points(n, 3);
-
-    // for(int j = 0; j < n; j++){
-    //     points(j, 0) = (double) poly[j].x();
-    //     points(j, 1) = (double) poly[j].y();
-    //     points(j, 2) = (double) poly[j].z();
-    // }
-
-    // return points;
 };
 
 
@@ -52,7 +37,7 @@ void init_slicer(py::module & m) {
 
     submodule.def(
         "slice_mesh",
-        &pmp_slice_mesh,
+        &slice_mesh,
         py::arg("V").noconvert(),
         py::arg("F").noconvert(),
         py::arg("P").noconvert(),

@@ -10,7 +10,7 @@ pmp_volume(
     Eigen::Ref<const compas::RowMatrixXd> & V,
     Eigen::Ref<const compas::RowMatrixXi> & F)
 {
-    Mesh mesh = compas::mesh_from_vertices_and_faces(V, F);
+    Mesh mesh = compas::trimesh_from_vertices_and_faces(V, F);
 
     double volume = PMP::volume(mesh);
 

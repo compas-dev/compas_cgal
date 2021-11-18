@@ -7,6 +7,8 @@ namespace PMP = CGAL::Polygon_mesh_processing;
 namespace params = PMP::parameters;
 namespace py = pybind11;
 
+using edge_descriptor = boost::graph_traits<Mesh>::edge_descriptor;
+
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 pmp_remesh(
     Eigen::Ref<const compas::RowMatrixXd> & V,
@@ -15,26 +17,46 @@ pmp_remesh(
     unsigned int number_of_iterations,
     bool do_project)
 {
-    Mesh mesh = compas::mesh_from_vertices_and_faces(V, F);
+    Mesh mesh = compas::trimesh_from_vertices_and_faces(V, F);
 
     // protect sharp features
 
-    // typedef boost::property_map<Mesh, CGAL::edge_is_feature_t>::type EIFMap;
-    // EIFMap eif = get(CGAL::edge_is_feature, mesh);
-    // PMP::detect_sharp_edges(mesh, 60, eif);
+    typedef boost::property_map<Mesh, CGAL::edge_is_feature_t>::type EIFMap;
+    EIFMap eif = get(CGAL::edge_is_feature, mesh);
+    PMP::detect_sharp_edges(mesh, 60, eif);
+
+    std::vector<edge_descriptor> features;
+    for (edge_descriptor e : edges(mesh)) {
+        if (get(eif, e)) {
+            features.push_back(e);
+        }
+    }
+
+    // split long edges of the protected features
+
+    PMP::split_long_edges(features, target_edge_length, mesh);
+
+    // protect the border
+    // protect constrained edges
+    // protect constrained vertices
+
+    // remesh
 
     PMP::isotropic_remeshing(
         faces(mesh),
         target_edge_length,
         mesh,
-        params::number_of_iterations(number_of_iterations).do_project(do_project));
+        params::number_of_iterations(number_of_iterations)
+               .do_project(do_project)
+               .edge_is_constrained_map(eif));
+
+    // clean up
 
     mesh.collect_garbage();
 
     // Result
-    // compas::Result R = compas::result_from_mesh(mesh);
-    std::tuple<compas::RowMatrixXd, compas::RowMatrixXi> R = compas::mesh_to_vertices_and_faces(mesh);
 
+    std::tuple<compas::RowMatrixXd, compas::RowMatrixXi> R = compas::trimesh_to_vertices_and_faces(mesh);
     return R;
 };
 

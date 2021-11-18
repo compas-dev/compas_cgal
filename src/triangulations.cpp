@@ -65,7 +65,7 @@ namespace py = pybind11;
  * @param V The given vertex locations.
  */
 compas::RowMatrixXi
-pmp_delaunay_triangulation(Eigen::Ref<const compas::RowMatrixXd> & V)
+delaunay_triangulation(Eigen::Ref<const compas::RowMatrixXd> & V)
 {
     DT triangulation;
 
@@ -196,7 +196,7 @@ mark_domains(CDT2 & triangulation)
  * @param curves A list of internal polyline constraints.
  */
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
-pmp_constrained_delaunay_triangulation(
+constrained_delaunay_triangulation(
     Eigen::Ref<const compas::RowMatrixXd> & B,
     Eigen::Ref<const compas::RowMatrixXd> & P,
     std::vector< Eigen::Ref<const compas::RowMatrixXd> > & holes,
@@ -339,7 +339,7 @@ pmp_constrained_delaunay_triangulation(
  * @param is_optimized Apply additional optimization to the mesh geometry.
  */
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
-pmp_refined_delaunay_mesh(
+refined_delaunay_mesh(
     Eigen::Ref<const compas::RowMatrixXd> & B,
     Eigen::Ref<const compas::RowMatrixXd> & P,
     std::vector< Eigen::Ref<const compas::RowMatrixXd> > & holes,
@@ -501,13 +501,13 @@ void init_triangulations(py::module & m) {
 
     submodule.def(
         "delaunay_triangulation",
-        &pmp_delaunay_triangulation,
+        &delaunay_triangulation,
         py::arg("V").noconvert()
     );
 
     submodule.def(
         "constrained_delaunay_triangulation",
-        &pmp_constrained_delaunay_triangulation,
+        &constrained_delaunay_triangulation,
         py::arg("B").noconvert(),
         py::arg("P").noconvert(),
         py::arg("holes").noconvert(),
@@ -517,7 +517,7 @@ void init_triangulations(py::module & m) {
 
     submodule.def(
         "refined_delaunay_mesh",
-        &pmp_refined_delaunay_mesh,
+        &refined_delaunay_mesh,
         py::arg("B").noconvert(),
         py::arg("P").noconvert(),
         py::arg("holes").noconvert(),

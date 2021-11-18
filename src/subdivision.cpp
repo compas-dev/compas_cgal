@@ -10,7 +10,7 @@ subd_catmullclark(
     std::vector< std::vector<int> > & faces,
     unsigned int k)
 {
-    Mesh mesh = compas::ngon_from_vertices_and_faces(V, faces);
+    Mesh mesh = compas::mesh_from_vertices_and_faces(V, faces);
 
     CGAL::Subdivision_method_3::CatmullClark_subdivision(mesh, CGAL::parameters::number_of_iterations(k));
 
