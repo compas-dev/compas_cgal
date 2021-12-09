@@ -76,6 +76,27 @@ ext_modules = [
     ),
 ]
 ```
+## Simple Step-by-Step Guide on Adding a New Module
+
+This section provides a step-to-step guide on how to setup a new module and function, replicating the `measure.volume` function in a new dummy module and submodule called `measuring.voluming` to illustrate the steps involved.
+
+#### Preparing Dummy Module Files
+Duplicate the files `measure.cpp` and `measure.h` as `measuring.cpp` and `measuring.h`
+
+#### Guide
+
+1. Open `measuring.cpp`.  Replace `pmp_volume` and `init_measure` as respectively `pmp_voluming` and `init_measuring`.  These respectively define the replicated module and submodule.
+* Under `init_measuring`, the name contained in `m.def_submodule(measure)` register the name of the submodule whereas the name contained in `submodule.def(volume)` register the name of the submodule method.  In the two places, replace `measure` and `volume` as `measuring` and `voluming`.  Furthermore, replace `pmp_volume` as `pmp_voluming` to reference the newly replicated submodule function.  Finally, replace `#include "measure.h"` as `#include "measuring.h"`
+* Repeat the steps in `measuring.h`, the header file
+
+2. To register the module, open `compas_cgal.cpp`. Insert `void init_measuring(py::module&);` and `init_measuring` in the two corresponding areas with similar declarations below `namespace py = pybind11;` and within the clause `PYBIND11_MODULE(_cgal, m){}`.
+
+3. To add the module for compilation. Open `setup.py` and insert `src/measuring.cpp` under `ext_modules`.
+
+4. (Optional) Replicate the files `measure.py` and `measure.pyi`.
+
+5. To recompile, simply rerun `pip install -e.`   The compiling process may be sped up by commenting out modules that are not required in `setup.py` under `ext_modules`, and commenting out their corresponding references in `compas_cgal.cpp`
+
 
 ## Usage
 
