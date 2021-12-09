@@ -93,7 +93,7 @@ Duplicate the files `measure.cpp` and `measure.h` as `measuring.cpp` and `measur
 
 3. To add the module for compilation. Open `setup.py` and insert `src/measuring.cpp` under `ext_modules`.
 
-4. (Optional) Replicate the files `measure.py` and `measure.pyi`.
+4. (Optional) Replicate the files `measure.py` and `measure.pyi`
 
 5. To recompile, simply rerun `pip install -e.`   The compiling process may be sped up by commenting out modules that are not required in `setup.py` under `ext_modules`, and commenting out their corresponding references in `compas_cgal.cpp`
 

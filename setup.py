@@ -60,6 +60,7 @@ ext_modules = [
             'src/slicer.cpp',
             'src/intersections.cpp',
             'src/measure.cpp',
+            'src/measuring.cpp',
             'src/triangulations.cpp',
             'src/subdivision.cpp',
         ]),
