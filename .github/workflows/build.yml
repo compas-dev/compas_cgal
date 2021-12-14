@@ -18,7 +18,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, windows-latest]
+        os: [macos-latest, windows-latest, ubuntu-latest]
+        python-version: [3.7, 3.8, 3.9]
 
     steps:
 
@@ -29,7 +30,12 @@ jobs:
           miniconda-version: "latest"
           activate-environment: cgal
           channels: conda-forge
-          python-version: 3.7
+
+      - name: build (linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          conda install eigen=3.3 boost-cpp gmp mpfr cgal-cpp=5.2 pybind11 compas -y
+          pip install -r requirements-dev.txt
 
       - name: build (mac)
         if: matrix.os == 'macos-latest'

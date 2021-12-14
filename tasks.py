@@ -5,6 +5,7 @@ import contextlib
 import glob
 import os
 import sys
+import tempfile
 from shutil import rmtree
 
 from invoke import Exit
@@ -112,10 +113,8 @@ def docs(ctx, doctest=False, rebuild=False, check_links=False):
         clean(ctx)
 
     with chdir(BASE_FOLDER):
-        # ctx.run('sphinx-autogen docs/**.rst')
-
         if doctest:
-            testdocs(ctx, rebuild=rebuild)
+            testdocs(ctx)
 
         opts = '-E' if rebuild else ''
         ctx.run('sphinx-build {} -b html docs dist/docs'.format(opts))
@@ -132,11 +131,10 @@ def lint(ctx):
 
 
 @task()
-def testdocs(ctx, rebuild=False):
+def testdocs(ctx):
     """Test the examples in the docstrings."""
     log.write('Running doctest...')
-    opts = '-E' if rebuild else ''
-    ctx.run('sphinx-build {} -b doctest docs dist/docs'.format(opts))
+    ctx.run('pytest --doctest-modules')
 
 
 @task()
@@ -193,26 +191,43 @@ def prepare_changelog(ctx):
 
 
 @task(help={
-      'release_type': 'Type of release follows semver rules. Must be one of: major, minor, patch, major-rc, minor-rc, patch-rc, rc, release.'})
+      'gh_io_folder': 'Folder where GH_IO.dll is located. Defaults to the Rhino 6.0 installation folder (platform-specific).',
+      'ironpython': 'Command for running the IronPython executable. Defaults to `ipy`.'})
+def build_ghuser_components(ctx, gh_io_folder=None, ironpython=None):
+    """Build Grasshopper user objects from source"""
+    with chdir(BASE_FOLDER):
+        with tempfile.TemporaryDirectory('actions.ghcomponentizer') as action_dir:
+            target_dir = source_dir = os.path.abspath('src/compas_ghpython/components')
+            ctx.run('git clone https://github.com/compas-dev/compas-actions.ghpython_components.git {}'.format(action_dir))
+
+            if not gh_io_folder:
+                import compas_ghpython
+                gh_io_folder = compas_ghpython.get_grasshopper_plugin_path('6.0')
+
+            if not ironpython:
+                ironpython = 'ipy'
+
+            gh_io_folder = os.path.abspath(gh_io_folder)
+            componentizer_script = os.path.join(action_dir, 'componentize.py')
+
+            ctx.run('{} {} {} {} --ghio "{}"'.format(ironpython, componentizer_script, source_dir, target_dir, gh_io_folder))
+
+
+@task(help={
+      'release_type': 'Type of release follows semver rules. Must be one of: major, minor, patch.'})
 def release(ctx, release_type):
     """Releases the project in one swift command!"""
-    if release_type not in ('patch', 'minor', 'major', 'major-rc', 'minor-rc', 'patch-rc', 'rc', 'release'):
-        raise Exit('The release type parameter is invalid.\nMust be one of: major, minor, patch, major-rc, minor-rc, patch-rc, rc, release')
-
-    is_rc = release_type.find('rc') >= 0
-    release_type = release_type.split('-')[0]
+    if release_type not in ('patch', 'minor', 'major'):
+        raise Exit('The release type parameter is invalid.\nMust be one of: major, minor, patch.')
 
     # Run checks
-    ctx.run('invoke check')
+    ctx.run('invoke check test')
 
     # Bump version and git tag it
-    if is_rc:
-        ctx.run('bump2version %s --verbose' % release_type)
-    elif release_type == 'release':
-        ctx.run('bump2version release --verbose')
-    else:
-        ctx.run('bump2version %s --verbose --no-tag' % release_type)
-        ctx.run('bump2version release --verbose')
+    ctx.run('bump2version %s --verbose' % release_type)
+
+    # Prepare the change log for the next release
+    prepare_changelog(ctx)
 
 
 @contextlib.contextmanager
