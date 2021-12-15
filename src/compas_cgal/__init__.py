@@ -64,14 +64,26 @@ Slicer
 
     slicer.slice_mesh
 
-Slicer
-------
+Subdivision
+-----------
 
 .. autosummary::
     :toctree: generated/
     :nosignatures:
 
+    subdivision.catmull_clark
+
+Triangulation
+-------------
+
+.. autosummary::
+    :toctree: generated/
+    :nosignatures:
+
+    triangulation.delaunay_triangulation
     triangulation.constrained_delaunay_triangulation
+    triangulation.conforming_delaunay_triangulation
+    triangulation.refined_delaunay_mesh
 
 """
 from __future__ import print_function
