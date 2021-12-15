@@ -121,3 +121,5 @@ ext/**
 dist/**
 
 scripts/.idea/**
+
+generated
