@@ -14,11 +14,11 @@ defaults:
 
 
 jobs:
-  build-packages:
+  build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
+        os: [macos-latest, windows-latest]
         python-version: [3.7, 3.8, 3.9]
 
     steps:
@@ -28,35 +28,9 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2.0.0
         with:
           miniconda-version: "latest"
-          activate-environment: cgal
-          channels: conda-forge
+          python-version: ${{ matrix.python-version }}
 
-      - name: build (linux)
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          conda install eigen=3.3 boost-cpp gmp mpfr cgal-cpp=5.2 pybind11 compas -y
-          pip install -r requirements-dev.txt
-
-      - name: build (mac)
-        if: matrix.os == 'macos-latest'
-        run: |
-          conda install eigen=3.3 boost-cpp gmp mpfr cgal-cpp=5.2 pybind11 compas -y
-          pip install -r requirements-dev.txt
-
-      - name: build (windows)
-        if: matrix.os == 'windows-latest'
-        run: |
-          conda install eigen=3.3 boost-cpp mpir mpfr cgal-cpp=5.2 pybind11 compas -y
-          pip install -r requirements-dev.txt
-
-      - name: Lint with flake8
-        run: |
-          invoke lint
-
-      - name: Test with pytest
-        run: |
-          invoke test
-
-      - name: Test build docs
-        run: |
-          invoke docs
+      - uses: compas-dev/compas-actions.build@main
+        with:
+          test_lint: true
+          test_compas: true
