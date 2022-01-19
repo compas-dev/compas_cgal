@@ -10,5 +10,6 @@ dependencies:
   - eigen=3.3
   - cgal-cpp=5.2
   - pybind11
+  - compas
   - pip:
     - -r requirements-dev.txt
