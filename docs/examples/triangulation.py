@@ -4,6 +4,7 @@ from compas_plotters import Plotter
 from compas.geometry import Point, Polygon, Translation
 from compas.datastructures import Mesh
 from compas_cgal.triangulation import conforming_delaunay_triangulation as cdt
+from compas_cgal.triangulation import refined_delaunay_mesh as rdm
 
 # ==============================================================================
 # Constraints
@@ -29,15 +30,21 @@ points = [Point(4, 0, 0), Point(-4, 0, 0), Point(0, 4, 0), Point(0, -4, 0)]
 
 V, F = cdt(boundary, points=points, holes=holes)
 
-mesh = Mesh.from_vertices_and_faces(V, F)
+cdt_mesh = Mesh.from_vertices_and_faces(V, F)
+
+V, F = rdm(boundary, points=points, holes=holes, maxlength=1.0, is_optimized=True)
+
+rdm_mesh = Mesh.from_vertices_and_faces(V, F)
 
 # ==============================================================================
 # Viz
 # ==============================================================================
 
-plotter = Plotter(figsize=(8, 8))
-plotter.add(mesh, sizepolicy='absolute', vertexsize=5)
-for point in points:
-    plotter.add(point, size=10, color=(1, 0, 0))
+plotter = Plotter(figsize=(16, 9))
+
+plotter.add(cdt_mesh, sizepolicy='absolute', vertexsize=5)
+plotter.add(rdm_mesh.transformed(Translation.from_vector([23, 0, 0])), sizepolicy='absolute', vertexsize=5)
+
 plotter.zoom_extents()
+# plotter.save('docs/_images/cgal_triangulation.png', dpi=150)
 plotter.show()
