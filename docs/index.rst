@@ -8,7 +8,6 @@ Documentation of COMPAS CGAL
 
    Introduction<self>
    installation
-   tutorial
    examples
    api
    license
