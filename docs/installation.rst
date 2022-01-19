@@ -5,7 +5,7 @@ Installation
 Stable
 ======
 
-Stable releases of :mod:`compas_cgal` can be installed via ``conda-forge``.
+Stable releases of :mod:`compas_cgal` can be installed via `conda-forge`.
 
 .. code-block:: bash
 
@@ -33,7 +33,7 @@ Or everything in one go
 Dev Install
 ===========
 
-A local development version can be set up using a combination of ``conda`` and ``pip``.
+A local development version can be set up using a combination of `conda` and `pip`.
 First, clone the :mod:`compas_cgal` repo.
 
 .. code-block:: bash
@@ -74,7 +74,7 @@ Create an environment with all the required dependencies.
 
 .. code-block:: bash
 
-    conda create -n cgal-dev python=3.8 mpir mpfr boost-cpp eigen=3.3 cgal-cpp=5.2 pybind11 compas compas_view2 --yes
+    conda create -n cgal-dev python=3.8 mpfr gmp boost-cpp eigen=3.3 cgal-cpp=5.2 pybind11 compas compas_view2 --yes
 
 .. raw:: html
 
@@ -100,7 +100,7 @@ Change to the root folder of the :mod:`compas_cgal` repo.
     cd compas_cgal
 
 
-And compile the code while creating an editable install of the python wrapper using ``setuptools``.
+And compile the code while creating an editable install of the python wrapper using `setuptools`.
 
 .. code-block:: bash
 
@@ -108,7 +108,7 @@ And compile the code while creating an editable install of the python wrapper us
 
 
 To add your c++ module to the wrapper, and potentially exclude some of the existing modules during its development,
-modify the list of extension modules in the ``setup.py`` file.
+modify the list of extension modules in the `setup.py` file.
 
 .. code-block:: python
 
@@ -123,6 +123,8 @@ modify the list of extension modules in the ``setup.py`` file.
                 'src/slicer.cpp',
                 'src/intersections.cpp',
                 'src/measure.cpp',
+                'src/triangulations.cpp',
+                'src/subdivision.cpp',
             ]),
             include_dirs=[
                 './include',
