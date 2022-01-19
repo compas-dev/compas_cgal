@@ -9,26 +9,26 @@ def remesh(mesh, target_edge_length, number_of_iterations=10, do_project=True):
 
     Parameters
     ----------
-    mesh : tuple of vertices and faces
+    mesh : tuple[sequence[[float, float, float] | :class:`compas.geometry.Point`], sequence[[int, int, int]]]
         The mesh to remesh.
     target_edge_length : float
         The target edge length.
     number_of_iterations : int, optional
         Number of remeshing iterations.
-        Default is ``10``.
     do_project : bool, optional
-        Reproject vertices onto the input surface when they are created or displaced.
-        Default is ``True``.
+        If True, reproject vertices onto the input surface when they are created or displaced.
 
     Returns
     -------
-    list
-        The vertices and faces of the new mesh.
+    (V, 3) np.array[float]
+        The vertices of the remeshed mesh.
+    (F, 3) np.array[int]
+        The faces of the remeshed mesh.
 
     Notes
     -----
     This remeshing function only constrains the edges on the boundary of the mesh.
-    To protect specific features or edges, please use :func:`remesh_constrained`.
+    Protecting specific features or edges is not implemented yet.
 
     """
     V, F = mesh

@@ -9,7 +9,7 @@ def volume(mesh):
 
     Parameters
     ----------
-    mesh : tuple of vertices and faces
+    mesh : tuple[sequence[[float, float, float] | :class:`compas.geometry.Point`], sequence[[int, int, int]]]
         The mesh.
 
     Returns

@@ -7,15 +7,17 @@ def catmull_clark(mesh, k=1):
 
     Parameters
     ----------
-    mesh : tuple of vertices and faces
+    mesh : tuple[sequence[[float, float, float] | :class:`compas.geometry.Point`], sequence[[int, int, int]]]
         The mesh to remesh.
     k : int, optional
         The number of subdivision steps.
 
     Returns
     -------
-    list
-        The vertices and faces of the subdivided mesh.
+    (V, 3) np.array[float]
+        The vertices of the subdivided mesh.
+    (F, 4) np.array[int]
+        The faces of the subdivided mesh.
 
     """
     V, F = mesh

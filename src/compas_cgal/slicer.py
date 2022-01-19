@@ -9,15 +9,15 @@ def slice_mesh(mesh, planes):
 
     Parameters
     ----------
-    mesh : tuple of vertices and faces
+    mesh : tuple[sequence[[float, float, float] | :class:`compas.geometry.Point`], sequence[[int, int, int]]]
         The mesh to slice.
-    planes : list of (point, normal) tuples or compas.geometry.Plane
+    planes : list[[point, normal] | :class:`compas.geometry.Plane`]
         The slicing planes.
 
     Returns
     -------
-    list of arrays
-        The points defining the slice polylines.
+    list[np.array[np.array[float]]]
+        A list of slice polylines, with each polyline an array of points.
 
     """
     vertices, faces = mesh

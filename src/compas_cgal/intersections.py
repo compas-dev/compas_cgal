@@ -9,15 +9,15 @@ def intersection_mesh_mesh(A, B):
 
     Parameters
     ----------
-    A : tuple of vertices and faces
+    A : tuple[sequence[[float, float, float] | :class:`compas.geometry.Point`], sequence[[int, int, int]]]
         Mesh A.
-    B : tuple of vertices and faces
+    B : tuple[sequence[[float, float, float] | :class:`compas.geometry.Point`], sequence[[int, int, int]]]
         Mesh B.
 
     Returns
     -------
-    list of arrays of points
-        The intersection polylines as arrays of points.
+    list[np.array[np.array[float]]]
+        A list of intersection polylines, with each polyline an array of points.
 
     """
     VA, FA = A

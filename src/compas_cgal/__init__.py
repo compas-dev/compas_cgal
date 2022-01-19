@@ -5,20 +5,8 @@ compas_cgal
 
 .. currentmodule:: compas_cgal
 
-Classes
-=======
-
-.. autosummary::
-    :toctree: generated/
-    :nosignatures:
-
-    trimesh.TriMesh
-
-Functions
-=========
-
 Booleans
---------
+========
 
 .. autosummary::
     :toctree: generated/
@@ -29,7 +17,7 @@ Booleans
     booleans.boolean_intersection
 
 Intersections
--------------
+=============
 
 .. autosummary::
     :toctree: generated/
@@ -38,7 +26,7 @@ Intersections
     intersections.intersection_mesh_mesh
 
 Measure
--------
+=======
 
 .. autosummary::
     :toctree: generated/
@@ -47,7 +35,7 @@ Measure
     measure.volume
 
 Meshing
--------
+=======
 
 .. autosummary::
     :toctree: generated/
@@ -56,7 +44,7 @@ Meshing
     meshing.remesh
 
 Slicer
-------
+======
 
 .. autosummary::
     :toctree: generated/
@@ -65,7 +53,7 @@ Slicer
     slicer.slice_mesh
 
 Subdivision
------------
+===========
 
 .. autosummary::
     :toctree: generated/
@@ -74,7 +62,7 @@ Subdivision
     subdivision.catmull_clark
 
 Triangulation
--------------
+=============
 
 .. autosummary::
     :toctree: generated/

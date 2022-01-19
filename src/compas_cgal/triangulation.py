@@ -77,21 +77,19 @@ def conforming_delaunay_triangulation(boundary, points=None, holes=None, curves=
     ----------
     boundary : :class:`compas.geometry.Polygon`
         The boundary of the triangulation.
-    points : list of :class:`compas.geometry.Point`, optional
+    points : list[:class:`compas.geometry.Point`], optional
         Additional internal points.
-    holes : list of :class:`compas.geometry.Polygon`, optional
+    holes : list[:class:`compas.geometry.Polygon`], optional
         Internal boundary polygons.
-    curves : list of :class:`compas.geometry.Polyline`, optional
+    curves : list[:class:`compas.geometry.Polyline`], optional
         Internal constraint curves.
 
     Returns
     -------
-    list
-        The vertices and faces of the triangulation.
-
-    Notes
-    -----
-    ...
+    (V, 3) np.array[float]
+        The vertices of the triangulation.
+    (F, 3) np.array[int]
+        The faces of the triangulation.
 
     """
     boundary = np.asarray(boundary, dtype=np.float64)
@@ -113,17 +111,17 @@ def conforming_delaunay_triangulation(boundary, points=None, holes=None, curves=
 
 
 def refined_delaunay_mesh(boundary, points=None, holes=None, curves=None, maxlength=None, is_optimized=False):
-    """Construct a refined Delaunay mesh [1]_.
+    """Construct a refined Delaunay mesh.
 
     Parameters
     ----------
     boundary : :class:`compas.geometry.Polygon`
         The boundary of the triangulation.
-    points : list of :class:`compas.geometry.Point`, optional
+    points : list[:class:`compas.geometry.Point`], optional
         Additional internal points.
-    holes : list of :class:`compas.geometry.Polygon`, optional
+    holes : list[:class:`compas.geometry.Polygon`], optional
         Internal boundary polygons.
-    curves : list of :class:`compas.geometry.Polyline`, optional
+    curves : list[:class:`compas.geometry.Polyline`], optional
         Internal constraint curves.
     maxlength : float, optional
         The maximum length of the triangle edges.
@@ -132,8 +130,10 @@ def refined_delaunay_mesh(boundary, points=None, holes=None, curves=None, maxlen
 
     Returns
     -------
-    list
-        The vertices and faces of the triangulation.
+    (V, 3) np.array[float]
+        The vertices of the triangulation.
+    (F, 3) np.array[int]
+        The faces of the triangulation.
 
     References
     ----------

@@ -8,19 +8,19 @@ def _boolean(A, B, operation):
 
     Parameters
     ----------
-    A : tuple of vertices and faces
+    A : tuple[sequence[[float, float, float] | :class:`compas.geometry.Point`], sequence[[int, int, int]]]
         Mesh A.
-    B : tuple of vertices and faces
+    B : tuple[sequence[[float, float, float] | :class:`compas.geometry.Point`], sequence[[int, int, int]]]
         Mesh B.
-    operation : {'union', 'difference', 'intersection'}
+    operation : Literal['union', 'difference', 'intersection']
         The type of boolean operation.
 
     Returns
     -------
-    list
-        The vertices of the boolean mesh,
-        and the faces of the boolean mesh,
-        as a list of two numpy arrays.
+    (V, 3) np.array[float]
+        The vertices of the boolean mesh.
+    (F, 3) np.array[int]
+        The faces of the boolean mesh.
 
     Raises
     ------
@@ -49,14 +49,71 @@ def _boolean(A, B, operation):
 
 @plugin(category='booleans', pluggable_name='boolean_union_mesh_mesh')
 def boolean_union(A, B):
+    """Boolean union of two meshes.
+
+    Parameters
+    ----------
+    A : tuple[sequence[[float, float, float] | :class:`compas.geometry.Point`], sequence[[int, int, int]]]
+        Mesh A.
+    B : tuple[sequence[[float, float, float] | :class:`compas.geometry.Point`], sequence[[int, int, int]]]
+        Mesh B.
+    operation : Literal['union', 'difference', 'intersection']
+        The type of boolean operation.
+
+    Returns
+    -------
+    (V, 3) np.array[float]
+        The vertices of the boolean mesh.
+    (F, 3) np.array[int]
+        The faces of the boolean mesh.
+
+    """
     return _boolean(A, B, 'union')
 
 
 @plugin(category='booleans', pluggable_name='boolean_difference_mesh_mesh')
 def boolean_difference(A, B):
+    """Boolean difference of two meshes.
+
+    Parameters
+    ----------
+    A : tuple[sequence[[float, float, float] | :class:`compas.geometry.Point`], sequence[[int, int, int]]]
+        Mesh A.
+    B : tuple[sequence[[float, float, float] | :class:`compas.geometry.Point`], sequence[[int, int, int]]]
+        Mesh B.
+    operation : Literal['union', 'difference', 'intersection']
+        The type of boolean operation.
+
+    Returns
+    -------
+    (V, 3) np.array[float]
+        The vertices of the boolean mesh.
+    (F, 3) np.array[int]
+        The faces of the boolean mesh.
+
+    """
     return _boolean(A, B, 'difference')
 
 
 @plugin(category='booleans', pluggable_name='boolean_intersection_mesh_mesh')
 def boolean_intersection(A, B):
+    """Boolean intersection of two meshes.
+
+    Parameters
+    ----------
+    A : tuple[sequence[[float, float, float] | :class:`compas.geometry.Point`], sequence[[int, int, int]]]
+        Mesh A.
+    B : tuple[sequence[[float, float, float] | :class:`compas.geometry.Point`], sequence[[int, int, int]]]
+        Mesh B.
+    operation : Literal['union', 'difference', 'intersection']
+        The type of boolean operation.
+
+    Returns
+    -------
+    (V, 3) np.array[float]
+        The vertices of the boolean mesh.
+    (F, 3) np.array[int]
+        The faces of the boolean mesh.
+
+    """
     return _boolean(A, B, 'intersection')
