@@ -66,4 +66,4 @@ for polyline in polylines:
         show_points=True
     )
 
-viewer.run()
+viewer.show()
