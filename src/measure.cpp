@@ -1,9 +1,9 @@
 #include "measure.h"
-
 #include <CGAL/Polygon_mesh_processing/measure.h>
 
+
 namespace PMP = CGAL::Polygon_mesh_processing;
-namespace py = pybind11;
+
 
 double
 pmp_volume(
@@ -17,13 +17,14 @@ pmp_volume(
     return volume;
 };
 
-void init_measure(py::module & m) {
-    py::module submodule = m.def_submodule("measure");
+
+void init_measure(pybind11::module & m) {
+    pybind11::module submodule = m.def_submodule("measure");
 
     submodule.def(
         "volume",
         &pmp_volume,
-        py::arg("V").noconvert(),
-        py::arg("F").noconvert()
+        pybind11::arg("V").noconvert(),
+        pybind11::arg("F").noconvert()
     );
 };

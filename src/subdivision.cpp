@@ -1,8 +1,6 @@
 #include "subdivision.h"
-
 #include <CGAL/subdivision_method_3.h>
 
-namespace py = pybind11;
 
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 subd_catmullclark(
@@ -20,14 +18,15 @@ subd_catmullclark(
     return R;
 };
 
-void init_subdivision(py::module & m) {
-    py::module submodule = m.def_submodule("subdivision");
+
+void init_subdivision(pybind11::module & m) {
+    pybind11::module submodule = m.def_submodule("subdivision");
 
     submodule.def(
         "subd_catmullclark",
         &subd_catmullclark,
-        py::arg("V").noconvert(),
-        py::arg("faces").noconvert(),
-        py::arg("k")
+        pybind11::arg("V").noconvert(),
+        pybind11::arg("faces").noconvert(),
+        pybind11::arg("k")
     );
 };

@@ -1,10 +1,9 @@
 #include "booleans.h"
-
 #include <CGAL/Polygon_mesh_processing/corefinement.h>
 
+
 namespace PMP = CGAL::Polygon_mesh_processing;
-namespace params = PMP::parameters;
-namespace py = pybind11;
+
 
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 pmp_boolean_union(
@@ -26,6 +25,7 @@ pmp_boolean_union(
     return R;
 };
 
+
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 pmp_boolean_difference(
     Eigen::Ref<const compas::RowMatrixXd> &VA,
@@ -45,6 +45,7 @@ pmp_boolean_difference(
 
     return R;
 };
+
 
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 pmp_boolean_intersection(
@@ -66,31 +67,32 @@ pmp_boolean_intersection(
     return R;
 };
 
-void init_booleans(py::module &m)
+
+void init_booleans(pybind11::module &m)
 {
-    py::module submodule = m.def_submodule("booleans");
+    pybind11::module submodule = m.def_submodule("booleans");
 
     submodule.def(
         "boolean_union",
         &pmp_boolean_union,
-        py::arg("VA").noconvert(),
-        py::arg("FA").noconvert(),
-        py::arg("VB").noconvert(),
-        py::arg("FB").noconvert());
+        pybind11::arg("VA").noconvert(),
+        pybind11::arg("FA").noconvert(),
+        pybind11::arg("VB").noconvert(),
+        pybind11::arg("FB").noconvert());
 
     submodule.def(
         "boolean_difference",
         &pmp_boolean_difference,
-        py::arg("VA").noconvert(),
-        py::arg("FA").noconvert(),
-        py::arg("VB").noconvert(),
-        py::arg("FB").noconvert());
+        pybind11::arg("VA").noconvert(),
+        pybind11::arg("FA").noconvert(),
+        pybind11::arg("VB").noconvert(),
+        pybind11::arg("FB").noconvert());
 
     submodule.def(
         "boolean_intersection",
         &pmp_boolean_intersection,
-        py::arg("VA").noconvert(),
-        py::arg("FA").noconvert(),
-        py::arg("VB").noconvert(),
-        py::arg("FB").noconvert());
+        pybind11::arg("VA").noconvert(),
+        pybind11::arg("FA").noconvert(),
+        pybind11::arg("VB").noconvert(),
+        pybind11::arg("FB").noconvert());
 };

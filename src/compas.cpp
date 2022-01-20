@@ -1,7 +1,6 @@
 #include <compas.h>
 #include <pybind11/pybind11.h>
 
-namespace py = pybind11;
 
 Mesh
 compas::mesh_from_vertices_and_faces(
@@ -32,6 +31,7 @@ compas::mesh_from_vertices_and_faces(
     return mesh;
 }
 
+
 Mesh
 compas::ngon_from_vertices_and_faces(
     const compas::RowMatrixXd & V,
@@ -57,8 +57,8 @@ compas::ngon_from_vertices_and_faces(
     }
 
     return mesh;
-
 }
+
 
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 compas::mesh_to_vertices_and_faces(
@@ -90,6 +90,7 @@ compas::mesh_to_vertices_and_faces(
     return result;
 }
 
+
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 compas::quadmesh_to_vertices_and_faces(
     const Mesh & mesh)
@@ -120,12 +121,12 @@ compas::quadmesh_to_vertices_and_faces(
     return result;
 }
 
+
 // TODO: rename to ResultMesh
 // construct a result mesh
 // from a CGAL surface mesh
 compas::Result
-compas::result_from_mesh(
-    const Mesh & mesh)
+compas::result_from_mesh(const Mesh & mesh)
 {
     int v = mesh.number_of_vertices();
     int f = mesh.number_of_faces();
@@ -156,12 +157,12 @@ compas::result_from_mesh(
     return R;
 }
 
+
 // construct a set of result polylines
 // from CGAL polylines
 // the CGAL polylines are a list of vectors of points
 std::vector<compas::RowMatrixXd>
-compas::result_from_polylines(
-    Polylines polylines)
+compas::result_from_polylines(Polylines polylines)
 {
     std::vector<compas::RowMatrixXd> pointsets;
 

@@ -1,19 +1,16 @@
 #include "triangulations.h"
-
 #include <CGAL/Delaunay_triangulation_2.h>
 #include <CGAL/Constrained_triangulation_2.h>
 #include <CGAL/Constrained_Delaunay_triangulation_2.h>
 #include <CGAL/Triangulation_vertex_base_with_info_2.h>
 #include <CGAL/Triangulation_face_base_with_info_2.h>
 #include <CGAL/Polygon_2.h>
-
 #include <CGAL/Delaunay_mesher_2.h>
 #include <CGAL/Delaunay_mesh_vertex_base_2.h>
 #include <CGAL/Delaunay_mesh_face_base_2.h>
 #include <CGAL/Delaunay_mesh_size_criteria_2.h>
 #include <CGAL/Triangulation_conformer_2.h>
 #include <CGAL/lloyd_optimize_mesh_2.h>
-
 #include <unordered_map>
 
 
@@ -48,7 +45,6 @@ using Itag = CGAL::Exact_predicates_tag;
 using CDT3 = CGAL::Constrained_Delaunay_triangulation_2<Kernel, TDS3, Itag>;
 using Criteria = CGAL::Delaunay_mesh_size_criteria_2<CDT3>;
 
-namespace py = pybind11;
 
 // ===========================================================================
 // ===========================================================================
@@ -496,34 +492,34 @@ pmp_refined_delaunay_mesh(
 // ===========================================================================
 // ===========================================================================
 
-void init_triangulations(py::module & m) {
-    py::module submodule = m.def_submodule("triangulations");
+void init_triangulations(pybind11::module & m) {
+    pybind11::module submodule = m.def_submodule("triangulations");
 
     submodule.def(
         "delaunay_triangulation",
         &pmp_delaunay_triangulation,
-        py::arg("V").noconvert()
+        pybind11::arg("V").noconvert()
     );
 
     submodule.def(
         "constrained_delaunay_triangulation",
         &pmp_constrained_delaunay_triangulation,
-        py::arg("B").noconvert(),
-        py::arg("P").noconvert(),
-        py::arg("holes").noconvert(),
-        py::arg("curves").noconvert(),
-        py::arg("is_conforming") = false
+        pybind11::arg("B").noconvert(),
+        pybind11::arg("P").noconvert(),
+        pybind11::arg("holes").noconvert(),
+        pybind11::arg("curves").noconvert(),
+        pybind11::arg("is_conforming") = false
     );
 
     submodule.def(
         "refined_delaunay_mesh",
         &pmp_refined_delaunay_mesh,
-        py::arg("B").noconvert(),
-        py::arg("P").noconvert(),
-        py::arg("holes").noconvert(),
-        py::arg("curves").noconvert(),
-        py::arg("minangle") = 0.0,
-        py::arg("maxlength") = 0.0,
-        py::arg("is_optimized") = true
+        pybind11::arg("B").noconvert(),
+        pybind11::arg("P").noconvert(),
+        pybind11::arg("holes").noconvert(),
+        pybind11::arg("curves").noconvert(),
+        pybind11::arg("minangle") = 0.0,
+        pybind11::arg("maxlength") = 0.0,
+        pybind11::arg("is_optimized") = true
     );
 };

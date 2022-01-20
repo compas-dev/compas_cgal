@@ -3,6 +3,7 @@
 
 #include <compas.h>
 
+
 std::vector<compas::RowMatrixXd>
 pmp_intersection_mesh_mesh(
     Eigen::Ref<const compas::RowMatrixXd> & VA,

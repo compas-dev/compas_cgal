@@ -1,22 +1,24 @@
 #include <pybind11/pybind11.h>
 #include <compas.h>
 
-namespace py = pybind11;
 
-void init_meshing(py::module&);
-void init_booleans(py::module&);
-void init_slicer(py::module&);
-void init_intersections(py::module&);
-void init_measure(py::module&);
-void init_triangulations(py::module&);
-void init_subdivision(py::module&);
+// here all modules of "_cgal" are declared.
+void init_meshing(pybind11::module&);
+void init_booleans(pybind11::module&);
+void init_slicer(pybind11::module&);
+void init_intersections(pybind11::module&);
+void init_measure(pybind11::module&);
+void init_triangulations(pybind11::module&);
+void init_subdivision(pybind11::module&);
+
 
 // the first parameter here ("_cgal") will be the name of the "so" or "pyd" file that will be produced by PyBind11
 // which is the entry point from where all other modules will be accessible.
 PYBIND11_MODULE(_cgal, m) {
     m.doc() = "";
 
-    py::class_<compas::Result>(m, "Result")
+    // register Result as a Python class
+    pybind11::class_<compas::Result>(m, "Result")
     	.def_readonly("vertices", &compas::Result::vertices)
     	.def_readonly("faces", &compas::Result::faces);
 
