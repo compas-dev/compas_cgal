@@ -17,9 +17,9 @@ def _boolean(A, B, operation):
 
     Returns
     -------
-    NDArray[(Any, 3) np.float64]
+    NDArray[(Any, 3), np.float64]
         The vertices of the boolean mesh.
-    NDArray[(Any, 3) np.int32]
+    NDArray[(Any, 3), np.int32]
         The faces of the boolean mesh.
 
     Raises
@@ -62,9 +62,9 @@ def boolean_union(A, B):
 
     Returns
     -------
-    NDArray[(Any, 3) np.float64]
+    NDArray[(Any, 3), np.float64]
         The vertices of the boolean mesh.
-    NDArray[(Any, 3) np.int32]
+    NDArray[(Any, 3), np.int32]
         The faces of the boolean mesh.
 
     """
@@ -86,9 +86,9 @@ def boolean_difference(A, B):
 
     Returns
     -------
-    NDArray[(Any, 3) np.float64]
+    NDArray[(Any, 3), np.float64]
         The vertices of the boolean mesh.
-    NDArray[(Any, 3) np.int32]
+    NDArray[(Any, 3), np.int32]
         The faces of the boolean mesh.
 
     """
@@ -110,9 +110,9 @@ def boolean_intersection(A, B):
 
     Returns
     -------
-    NDArray[(Any, 3) np.float64]
+    NDArray[(Any, 3), np.float64]
         The vertices of the boolean mesh.
-    NDArray[(Any, 3) np.int32]
+    NDArray[(Any, 3), np.int32]
         The faces of the boolean mesh.
 
     """

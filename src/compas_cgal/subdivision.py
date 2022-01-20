@@ -14,9 +14,9 @@ def catmull_clark(mesh, k=1):
 
     Returns
     -------
-    NDArray[(Any, 3) np.float64]
+    NDArray[(Any, 3), np.float64]
         The vertices of the subdivided mesh.
-    NDArray[(Any, 4) np.int32]
+    NDArray[(Any, 4), np.int32]
         The faces of the subdivided mesh.
 
     """
