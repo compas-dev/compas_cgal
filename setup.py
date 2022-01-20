@@ -60,8 +60,8 @@ ext_modules = [
             'src/slicer.cpp',
             'src/intersections.cpp',
             'src/measure.cpp',
-            'src/triangulations.cpp',
             'src/subdivision.cpp',
+            'src/triangulations.cpp',
         ]),
         include_dirs=[
             './include',
@@ -171,6 +171,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: Implementation :: CPython",
     ],
     keywords=[],
