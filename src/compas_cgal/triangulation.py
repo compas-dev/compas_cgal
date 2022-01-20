@@ -130,9 +130,9 @@ def refined_delaunay_mesh(boundary, points=None, holes=None, curves=None, maxlen
 
     Returns
     -------
-    (V, 3) np.array[float]
+    NDArray[(Any, 3), np.float64]
         The vertices of the triangulation.
-    (F, 3) np.array[int]
+    NDArray[(Any, 3), np.int32]
         The faces of the triangulation.
 
     References

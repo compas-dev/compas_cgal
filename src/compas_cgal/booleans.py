@@ -8,18 +8,18 @@ def _boolean(A, B, operation):
 
     Parameters
     ----------
-    A : tuple[sequence[[float, float, float] | :class:`compas.geometry.Point`], sequence[[int, int, int]]]
+    A : tuple[Sequence[[float, float, float] | :class:`compas.geometry.Point`], Sequence[[int, int, int]]]
         Mesh A.
-    B : tuple[sequence[[float, float, float] | :class:`compas.geometry.Point`], sequence[[int, int, int]]]
+    B : tuple[Sequence[[float, float, float] | :class:`compas.geometry.Point`], Sequence[[int, int, int]]]
         Mesh B.
     operation : Literal['union', 'difference', 'intersection']
         The type of boolean operation.
 
     Returns
     -------
-    (V, 3) np.array[float]
+    NDArray[(Any, 3) np.float64]
         The vertices of the boolean mesh.
-    (F, 3) np.array[int]
+    NDArray[(Any, 3) np.int32]
         The faces of the boolean mesh.
 
     Raises
@@ -53,18 +53,18 @@ def boolean_union(A, B):
 
     Parameters
     ----------
-    A : tuple[sequence[[float, float, float] | :class:`compas.geometry.Point`], sequence[[int, int, int]]]
+    A : tuple[Sequence[[float, float, float] | :class:`compas.geometry.Point`], Sequence[[int, int, int]]]
         Mesh A.
-    B : tuple[sequence[[float, float, float] | :class:`compas.geometry.Point`], sequence[[int, int, int]]]
+    B : tuple[Sequence[[float, float, float] | :class:`compas.geometry.Point`], Sequence[[int, int, int]]]
         Mesh B.
     operation : Literal['union', 'difference', 'intersection']
         The type of boolean operation.
 
     Returns
     -------
-    (V, 3) np.array[float]
+    NDArray[(Any, 3) np.float64]
         The vertices of the boolean mesh.
-    (F, 3) np.array[int]
+    NDArray[(Any, 3) np.int32]
         The faces of the boolean mesh.
 
     """
@@ -77,18 +77,18 @@ def boolean_difference(A, B):
 
     Parameters
     ----------
-    A : tuple[sequence[[float, float, float] | :class:`compas.geometry.Point`], sequence[[int, int, int]]]
+    A : tuple[Sequence[[float, float, float] | :class:`compas.geometry.Point`], Sequence[[int, int, int]]]
         Mesh A.
-    B : tuple[sequence[[float, float, float] | :class:`compas.geometry.Point`], sequence[[int, int, int]]]
+    B : tuple[Sequence[[float, float, float] | :class:`compas.geometry.Point`], Sequence[[int, int, int]]]
         Mesh B.
     operation : Literal['union', 'difference', 'intersection']
         The type of boolean operation.
 
     Returns
     -------
-    (V, 3) np.array[float]
+    NDArray[(Any, 3) np.float64]
         The vertices of the boolean mesh.
-    (F, 3) np.array[int]
+    NDArray[(Any, 3) np.int32]
         The faces of the boolean mesh.
 
     """
@@ -101,18 +101,18 @@ def boolean_intersection(A, B):
 
     Parameters
     ----------
-    A : tuple[sequence[[float, float, float] | :class:`compas.geometry.Point`], sequence[[int, int, int]]]
+    A : tuple[Sequence[[float, float, float] | :class:`compas.geometry.Point`], Sequence[[int, int, int]]]
         Mesh A.
-    B : tuple[sequence[[float, float, float] | :class:`compas.geometry.Point`], sequence[[int, int, int]]]
+    B : tuple[Sequence[[float, float, float] | :class:`compas.geometry.Point`], Sequence[[int, int, int]]]
         Mesh B.
     operation : Literal['union', 'difference', 'intersection']
         The type of boolean operation.
 
     Returns
     -------
-    (V, 3) np.array[float]
+    NDArray[(Any, 3) np.float64]
         The vertices of the boolean mesh.
-    (F, 3) np.array[int]
+    NDArray[(Any, 3) np.int32]
         The faces of the boolean mesh.
 
     """

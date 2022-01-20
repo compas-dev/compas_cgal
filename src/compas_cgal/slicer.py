@@ -9,14 +9,14 @@ def slice_mesh(mesh, planes):
 
     Parameters
     ----------
-    mesh : tuple[sequence[[float, float, float] | :class:`compas.geometry.Point`], sequence[[int, int, int]]]
+    mesh : tuple[Sequence[[float, float, float] | :class:`compas.geometry.Point`], Sequence[[int, int, int]]]
         The mesh to slice.
     planes : list[[point, normal] | :class:`compas.geometry.Plane`]
         The slicing planes.
 
     Returns
     -------
-    list[np.array[np.array[float]]]
+    list[NDArray[(Any, 3), np.float64]]
         A list of slice polylines, with each polyline an array of points.
 
     """

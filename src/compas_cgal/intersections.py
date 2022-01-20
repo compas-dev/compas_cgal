@@ -9,14 +9,14 @@ def intersection_mesh_mesh(A, B):
 
     Parameters
     ----------
-    A : tuple[sequence[[float, float, float] | :class:`compas.geometry.Point`], sequence[[int, int, int]]]
+    A : tuple[Sequence[[float, float, float] | :class:`compas.geometry.Point`], Sequence[[int, int, int]]]
         Mesh A.
-    B : tuple[sequence[[float, float, float] | :class:`compas.geometry.Point`], sequence[[int, int, int]]]
+    B : tuple[Sequence[[float, float, float] | :class:`compas.geometry.Point`], Sequence[[int, int, int]]]
         Mesh B.
 
     Returns
     -------
-    list[np.array[np.array[float]]]
+    list[NDArray[(Any, 3), np.float64]]
         A list of intersection polylines, with each polyline an array of points.
 
     """

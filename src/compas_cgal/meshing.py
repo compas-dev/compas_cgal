@@ -9,7 +9,7 @@ def remesh(mesh, target_edge_length, number_of_iterations=10, do_project=True):
 
     Parameters
     ----------
-    mesh : tuple[sequence[[float, float, float] | :class:`compas.geometry.Point`], sequence[[int, int, int]]]
+    mesh : tuple[Sequence[[float, float, float] | :class:`compas.geometry.Point`], Sequence[[int, int, int]]]
         The mesh to remesh.
     target_edge_length : float
         The target edge length.
@@ -20,9 +20,9 @@ def remesh(mesh, target_edge_length, number_of_iterations=10, do_project=True):
 
     Returns
     -------
-    (V, 3) np.array[float]
+    NDArray[(Any, 3), np.float64]
         The vertices of the remeshed mesh.
-    (F, 3) np.array[int]
+    NDArray[(Any, 3), np.int32]
         The faces of the remeshed mesh.
 
     Notes
