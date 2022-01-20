@@ -1,13 +1,8 @@
 #include <compas.h>
-
 #include <pybind11/pybind11.h>
 
 namespace py = pybind11;
 
-// construct a CGAL surface mesh
-// from vertices and faces
-// contained in nx3 and fx3 eigen matrices
-// using the Exact Predicates Exact Constructions Kernel
 Mesh
 compas::mesh_from_vertices_and_faces(
     const compas::RowMatrixXd & V,
