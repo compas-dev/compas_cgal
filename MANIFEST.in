@@ -23,5 +23,7 @@ exclude requirements-dev.txt
 exclude pytest.ini .bumpversion.cfg .editorconfig
 exclude tasks.py
 exclude CONTRIBUTING.md
+exclude env_osx.yml
+exclude env_win.yml
 
 global-exclude *.py[cod] __pycache__ *.dylib *.nb[ic] .DS_Store *.so
