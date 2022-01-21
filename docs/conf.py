@@ -48,7 +48,6 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.githubpages",
     "sphinx.ext.autodoc.typehints",
-    "sphinx_design",
 ]
 
 # autodoc options
