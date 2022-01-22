@@ -9,15 +9,29 @@ def intersection_mesh_mesh(A, B):
 
     Parameters
     ----------
-    A : tuple[Sequence[[float, float, float] | :class:`compas.geometry.Point`], Sequence[[int, int, int]]]
+    A : tuple[Sequence[[float, float, float] | :class:`~compas.geometry.Point`], Sequence[[int, int, int]]]
         Mesh A.
-    B : tuple[Sequence[[float, float, float] | :class:`compas.geometry.Point`], Sequence[[int, int, int]]]
+    B : tuple[Sequence[[float, float, float] | :class:`~compas.geometry.Point`], Sequence[[int, int, int]]]
         Mesh B.
 
     Returns
     -------
     list[NDArray[(Any, 3), np.float64]]
         A list of intersection polylines, with each polyline an array of points.
+
+    Examples
+    --------
+    >>> from compas.geometry import Box, Sphere, Polyline
+    >>> from compas_cgal.intersections import intersection_mesh_mesh
+
+    >>> box = Box.from_width_height_depth(1, 1, 1)
+    >>> sphere = Sphere([1, 1, 1], 0.5)
+
+    >>> A = box.to_vertices_and_faces(triangulated=True)
+    >>> B = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
+
+    >>> result = intersection_mesh_mesh(A, B)
+    >>> polylines = [Polyline(points) for points in result]
 
     """
     VA, FA = A

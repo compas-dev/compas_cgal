@@ -9,17 +9,24 @@ def delaunay_triangulation(points):
 
     Parameters
     ----------
-    points : list of :class:`compas.geometry.Point`
+    points : list of :class:`~compas.geometry.Point`
         Points of the triangulation.
 
     Returns
     -------
-    list
+    NDArray[(Any, 3), np.int32]
         The faces of the triangulation.
 
-    Notes
-    -----
-    ...
+    Examples
+    --------
+    >>> from compas.geometry import Pointcloud
+    >>> from compas.datastructures import Mesh
+    >>> from compas_cgal.triangulation import delaunay_triangulation
+
+    >>> points = Pointcloud.from_bounds(8, 5, 0, 17)
+    >>> triangles = delaunay_triangulation(points)
+
+    >>> mesh = Mesh.from_vertices_and_faces(points, triangles)
 
     """
     vertices = np.asarray(points, dtype=np.float64)
@@ -32,23 +39,21 @@ def constrained_delaunay_triangulation(boundary, points=None, holes=None, curves
 
     Parameters
     ----------
-    boundary : :class:`compas.geometry.Polygon`
+    boundary : :class:`~compas.geometry.Polygon`
         The boundary of the triangulation.
-    points : list of :class:`compas.geometry.Point`, optional
+    points : list of :class:`~compas.geometry.Point`, optional
         Additional internal points.
-    holes : list of :class:`compas.geometry.Polygon`, optional
+    holes : list of :class:`~compas.geometry.Polygon`, optional
         Internal boundary polygons.
-    curves : list of :class:`compas.geometry.Polyline`, optional
+    curves : list of :class:`~compas.geometry.Polyline`, optional
         Internal constraint curves.
 
     Returns
     -------
-    list
-        The vertices and faces of the triangulation.
-
-    Notes
-    -----
-    ...
+    NDArray[(Any, 3), np.float64]
+        The vertices of the triangulation.
+    NDArray[(Any, 3), np.int32]
+        The faces of the triangulation.
 
     """
     boundary = np.asarray(boundary, dtype=np.float64)
@@ -75,20 +80,20 @@ def conforming_delaunay_triangulation(boundary, points=None, holes=None, curves=
 
     Parameters
     ----------
-    boundary : :class:`compas.geometry.Polygon`
+    boundary : :class:`~compas.geometry.Polygon`
         The boundary of the triangulation.
-    points : list[:class:`compas.geometry.Point`], optional
+    points : list[:class:`~compas.geometry.Point`], optional
         Additional internal points.
-    holes : list[:class:`compas.geometry.Polygon`], optional
+    holes : list[:class:`~compas.geometry.Polygon`], optional
         Internal boundary polygons.
-    curves : list[:class:`compas.geometry.Polyline`], optional
+    curves : list[:class:`~compas.geometry.Polyline`], optional
         Internal constraint curves.
 
     Returns
     -------
-    (V, 3) np.array[float]
+    NDArray[(Any, 3), np.float64]
         The vertices of the triangulation.
-    (F, 3) np.array[int]
+    NDArray[(Any, 3), np.int32]
         The faces of the triangulation.
 
     """
@@ -115,13 +120,13 @@ def refined_delaunay_mesh(boundary, points=None, holes=None, curves=None, maxlen
 
     Parameters
     ----------
-    boundary : :class:`compas.geometry.Polygon`
+    boundary : :class:`~compas.geometry.Polygon`
         The boundary of the triangulation.
-    points : list[:class:`compas.geometry.Point`], optional
+    points : list[:class:`~compas.geometry.Point`], optional
         Additional internal points.
-    holes : list[:class:`compas.geometry.Polygon`], optional
+    holes : list[:class:`~compas.geometry.Polygon`], optional
         Internal boundary polygons.
-    curves : list[:class:`compas.geometry.Polyline`], optional
+    curves : list[:class:`~compas.geometry.Polyline`], optional
         Internal constraint curves.
     maxlength : float, optional
         The maximum length of the triangle edges.

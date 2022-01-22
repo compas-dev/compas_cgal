@@ -221,7 +221,7 @@ class TriMesh:
 
         Parameters
         ----------
-        mesh : :class:`compas.datastructures.Mesh`
+        mesh : :class:`~compas.datastructures.Mesh`
             A COMPAS mesh data structure.
 
         Returns
@@ -237,7 +237,7 @@ class TriMesh:
 
         Returns
         -------
-        :class:`compas.datastructures.Mesh`
+        :class:`~compas.datastructures.Mesh`
 
         """
         return Mesh.from_vertices_and_faces(self.vertices, self.faces)
@@ -258,7 +258,7 @@ class TriMesh:
 
         Parameters
         ----------
-        T : :class:`compas.geometry.Transformation`
+        T : :class:`~compas.geometry.Transformation`
             A 4x4 transformation matrix.
 
         Returns
@@ -273,7 +273,7 @@ class TriMesh:
 
         Parameters
         ----------
-        T : :class:`compas.geometry.Transformation`
+        T : :class:`~compas.geometry.Transformation`
             A 4x4 transformation matrix.
 
         Returns

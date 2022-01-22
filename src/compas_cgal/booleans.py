@@ -8,9 +8,9 @@ def _boolean(A, B, operation):
 
     Parameters
     ----------
-    A : tuple[Sequence[[float, float, float] | :class:`compas.geometry.Point`], Sequence[[int, int, int]]]
+    A : tuple[Sequence[[float, float, float] | :class:`~compas.geometry.Point`], Sequence[[int, int, int]]]
         Mesh A.
-    B : tuple[Sequence[[float, float, float] | :class:`compas.geometry.Point`], Sequence[[int, int, int]]]
+    B : tuple[Sequence[[float, float, float] | :class:`~compas.geometry.Point`], Sequence[[int, int, int]]]
         Mesh B.
     operation : Literal['union', 'difference', 'intersection']
         The type of boolean operation.
@@ -53,9 +53,9 @@ def boolean_union(A, B):
 
     Parameters
     ----------
-    A : tuple[Sequence[[float, float, float] | :class:`compas.geometry.Point`], Sequence[[int, int, int]]]
+    A : tuple[Sequence[[float, float, float] | :class:`~compas.geometry.Point`], Sequence[[int, int, int]]]
         Mesh A.
-    B : tuple[Sequence[[float, float, float] | :class:`compas.geometry.Point`], Sequence[[int, int, int]]]
+    B : tuple[Sequence[[float, float, float] | :class:`~compas.geometry.Point`], Sequence[[int, int, int]]]
         Mesh B.
     operation : Literal['union', 'difference', 'intersection']
         The type of boolean operation.
@@ -66,6 +66,20 @@ def boolean_union(A, B):
         The vertices of the boolean mesh.
     NDArray[(Any, 3), np.int32]
         The faces of the boolean mesh.
+
+    Examples
+    --------
+    >>> from compas.geometry import Box, Sphere, Polyhedron
+    >>> from compas_cgal.booleans import boolean_union
+
+    >>> box = Box.from_width_height_depth(1, 1, 1)
+    >>> sphere = Sphere([1, 1, 1], 0.5)
+
+    >>> A = box.to_vertices_and_faces(triangulated=True)
+    >>> B = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
+
+    >>> C = boolean_union(A, B)
+    >>> shape = Polyhedron(*C)
 
     """
     return _boolean(A, B, 'union')
@@ -77,9 +91,9 @@ def boolean_difference(A, B):
 
     Parameters
     ----------
-    A : tuple[Sequence[[float, float, float] | :class:`compas.geometry.Point`], Sequence[[int, int, int]]]
+    A : tuple[Sequence[[float, float, float] | :class:`~compas.geometry.Point`], Sequence[[int, int, int]]]
         Mesh A.
-    B : tuple[Sequence[[float, float, float] | :class:`compas.geometry.Point`], Sequence[[int, int, int]]]
+    B : tuple[Sequence[[float, float, float] | :class:`~compas.geometry.Point`], Sequence[[int, int, int]]]
         Mesh B.
     operation : Literal['union', 'difference', 'intersection']
         The type of boolean operation.
@@ -90,6 +104,20 @@ def boolean_difference(A, B):
         The vertices of the boolean mesh.
     NDArray[(Any, 3), np.int32]
         The faces of the boolean mesh.
+
+    Examples
+    --------
+    >>> from compas.geometry import Box, Sphere, Polyhedron
+    >>> from compas_cgal.booleans import boolean_difference
+
+    >>> box = Box.from_width_height_depth(1, 1, 1)
+    >>> sphere = Sphere([1, 1, 1], 0.5)
+
+    >>> A = box.to_vertices_and_faces(triangulated=True)
+    >>> B = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
+
+    >>> C = boolean_difference(A, B)
+    >>> shape = Polyhedron(*C)
 
     """
     return _boolean(A, B, 'difference')
@@ -101,9 +129,9 @@ def boolean_intersection(A, B):
 
     Parameters
     ----------
-    A : tuple[Sequence[[float, float, float] | :class:`compas.geometry.Point`], Sequence[[int, int, int]]]
+    A : tuple[Sequence[[float, float, float] | :class:`~compas.geometry.Point`], Sequence[[int, int, int]]]
         Mesh A.
-    B : tuple[Sequence[[float, float, float] | :class:`compas.geometry.Point`], Sequence[[int, int, int]]]
+    B : tuple[Sequence[[float, float, float] | :class:`~compas.geometry.Point`], Sequence[[int, int, int]]]
         Mesh B.
     operation : Literal['union', 'difference', 'intersection']
         The type of boolean operation.
@@ -114,6 +142,20 @@ def boolean_intersection(A, B):
         The vertices of the boolean mesh.
     NDArray[(Any, 3), np.int32]
         The faces of the boolean mesh.
+
+    Examples
+    --------
+    >>> from compas.geometry import Box, Sphere, Polyhedron
+    >>> from compas_cgal.booleans import boolean_intersection
+
+    >>> box = Box.from_width_height_depth(1, 1, 1)
+    >>> sphere = Sphere([1, 1, 1], 0.5)
+
+    >>> A = box.to_vertices_and_faces(triangulated=True)
+    >>> B = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
+
+    >>> C = boolean_intersection(A, B)
+    >>> shape = Polyhedron(*C)
 
     """
     return _boolean(A, B, 'intersection')
