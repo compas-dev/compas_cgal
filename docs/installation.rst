@@ -41,7 +41,19 @@ First, clone the :mod:`compas_cgal` repo.
     git clone https://github.com/compas-dev/compas_cgal
 
 
-Create an environment with all the required dependencies.
+Create a dev environment.
+
+.. code-block:: bash
+
+    conda create -n cgal-dev python=3.8 compas compas_view2 --yes
+
+Install common dev requirements.
+
+.. code-block:: bash
+
+    conda install -n cgal-dev mpfr boost-cpp eigen=3.3 cgal-cpp=5.2 pybind11 --yes
+
+Some are OS dependent.
 
 .. tabs::
 
@@ -50,13 +62,13 @@ Create an environment with all the required dependencies.
 
         .. code-block:: bash
 
-            conda create -n cgal-dev python=3.8 mpir mpfr boost-cpp eigen=3.3 cgal-cpp=5.2 pybind11 compas compas_view2 --yes
+            conda install -n cgal-dev mpir  --yes
 
     .. tab-item:: OSX / Linux
 
         .. code-block:: bash
 
-            conda create -n cgal-dev python=3.8 mpfr gmp boost-cpp eigen=3.3 cgal-cpp=5.2 pybind11 compas compas_view2 --yes
+            conda install -n cgal-dev gmp --yes
 
 
 Activate the environment.
