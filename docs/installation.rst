@@ -53,7 +53,6 @@ Create an environment with all the required dependencies.
             conda create -n cgal-dev python=3.8 mpir mpfr boost-cpp eigen=3.3 cgal-cpp=5.2 pybind11 compas compas_view2 --yes
 
     .. tab-item:: OSX / Linux
-        :active:
 
         .. code-block:: bash
 
