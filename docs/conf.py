@@ -14,7 +14,7 @@ import sphinx_compas_theme
 from sphinx.ext.napoleon.docstring import NumpyDocstring
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../src'))
-sys.path.append(os.path.join(os.path.dirname(__file__), '_ext'))
+
 
 # -- General configuration ------------------------------------------------
 
