@@ -9,7 +9,7 @@ def delaunay_triangulation(points):
 
     Parameters
     ----------
-    points : list of :class:`~compas.geometry.Point`
+    points : list[:class:`~compas.geometry.Point`]
         Points of the triangulation.
 
     Returns
@@ -41,11 +41,11 @@ def constrained_delaunay_triangulation(boundary, points=None, holes=None, curves
     ----------
     boundary : :class:`~compas.geometry.Polygon`
         The boundary of the triangulation.
-    points : list of :class:`~compas.geometry.Point`, optional
+    points : list[:class:`~compas.geometry.Point`], optional
         Additional internal points.
-    holes : list of :class:`~compas.geometry.Polygon`, optional
+    holes : list[:class:`~compas.geometry.Polygon`], optional
         Internal boundary polygons.
-    curves : list of :class:`~compas.geometry.Polyline`, optional
+    curves : list[:class:`~compas.geometry.Polyline`], optional
         Internal constraint curves.
 
     Returns
