@@ -43,48 +43,22 @@ First, clone the :mod:`compas_cgal` repo.
 
 Create an environment with all the required dependencies.
 
-.. raw:: html
+.. tabs::
 
-    <div class="card">
-        <div class="card-header">
-            <ul class="nav nav-tabs card-header-tabs">
-                <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" href="#dev_windows">Windows</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#dev_unix">OSX / Linux</a>
-                </li>
-            </ul>
-        </div>
-        <div class="card-body">
-            <div class="tab-content">
+    .. tab-item:: Windows
+        :active:
 
-.. raw:: html
+        .. code-block:: bash
 
-    <div class="tab-pane active" id="dev_windows">
+            conda create -n cgal-dev python=3.8 mpir mpfr boost-cpp eigen=3.3 cgal-cpp=5.2 pybind11 compas compas_view2 --yes
 
-.. code-block:: bash
+    .. tab-item:: OSX / Linux
+        :active:
 
-    conda create -n cgal-dev python=3.8 mpir mpfr boost-cpp eigen=3.3 cgal-cpp=5.2 pybind11 compas compas_view2 --yes
+        .. code-block:: bash
 
-.. raw:: html
+            conda create -n cgal-dev python=3.8 mpfr gmp boost-cpp eigen=3.3 cgal-cpp=5.2 pybind11 compas compas_view2 --yes
 
-    </div>
-    <div class="tab-pane" id="dev_unix">
-
-.. code-block:: bash
-
-    conda create -n cgal-dev python=3.8 mpfr gmp boost-cpp eigen=3.3 cgal-cpp=5.2 pybind11 compas compas_view2 --yes
-
-.. raw:: html
-
-    </div>
-
-.. raw:: html
-
-    </div>
-    </div>
-    </div>
 
 Activate the environment.
 
