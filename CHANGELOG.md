@@ -8,8 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Added
+* Support to python 3.10.
+* Added Changelog check in PRs.
 
 ### Changed
+* Updated github workflow.
 
 ### Removed
 
