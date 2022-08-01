@@ -41,6 +41,8 @@ def _boolean(A, B, operation):
         result = booleans.boolean_difference(VA, FA, VB, FB)
     elif operation == 'intersection':
         result = booleans.boolean_intersection(VA, FA, VB, FB)
+    elif operation == 'split':
+        result = booleans.split(VA, FA, VB, FB)
     else:
         raise NotImplementedError
 
@@ -159,3 +161,9 @@ def boolean_intersection(A, B):
 
     """
     return _boolean(A, B, 'intersection')
+
+@plugin(category='booleans', pluggable_name='split_mesh_mesh')
+def split(A, B):
+    """
+    """
+    return _boolean(A, B, 'split')
