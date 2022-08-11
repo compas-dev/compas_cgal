@@ -162,6 +162,7 @@ def boolean_intersection(A, B):
     """
     return _boolean(A, B, 'intersection')
 
+
 @plugin(category='booleans', pluggable_name='split_mesh_mesh')
 def split(A, B):
     """
