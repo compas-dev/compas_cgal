@@ -15,6 +15,7 @@ Booleans
     booleans.boolean_union
     booleans.boolean_difference
     booleans.boolean_intersection
+    booleans.split
 
 Intersections
 =============

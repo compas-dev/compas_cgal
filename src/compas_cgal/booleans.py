@@ -41,6 +41,8 @@ def _boolean(A, B, operation):
         result = booleans.boolean_difference(VA, FA, VB, FB)
     elif operation == 'intersection':
         result = booleans.boolean_intersection(VA, FA, VB, FB)
+    elif operation == 'split':
+        result = booleans.split(VA, FA, VB, FB)
     else:
         raise NotImplementedError
 
@@ -159,3 +161,41 @@ def boolean_intersection(A, B):
 
     """
     return _boolean(A, B, 'intersection')
+
+
+@plugin(category='booleans', pluggable_name='split_mesh_mesh')
+def split(A, B):
+    """Split one mesh with another.
+
+    Parameters
+    ----------
+    A : tuple[Sequence[[float, float, float] | :class:`~compas.geometry.Point`], Sequence[[int, int, int]]]
+        Mesh A.
+    B : tuple[Sequence[[float, float, float] | :class:`~compas.geometry.Point`], Sequence[[int, int, int]]]
+        Mesh B.
+    operation : Literal['union', 'difference', 'intersection']
+        The type of boolean operation.
+
+    Returns
+    -------
+    NDArray[(Any, 3), np.float64]
+        The vertices of the boolean mesh.
+    NDArray[(Any, 3), np.int32]
+        The faces of the boolean mesh.
+
+    Examples
+    --------
+    >>> from compas.geometry import Box, Sphere, Polyhedron
+    >>> from compas_cgal.booleans import split
+
+    >>> box = Box.from_width_height_depth(1, 1, 1)
+    >>> sphere = Sphere([1, 1, 1], 0.5)
+
+    >>> A = box.to_vertices_and_faces(triangulated=True)
+    >>> B = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
+
+    >>> V, F = split(A, B)
+    >>> mesh = Mesh.from_vertices_and_faces(V, F)
+
+    """
+    return _boolean(A, B, 'split')

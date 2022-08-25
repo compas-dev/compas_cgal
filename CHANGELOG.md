@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 * Support to python 3.10.
 * Added Changelog check in PRs.
+* Exposing mesh `split` function.
 
 ### Changed
 * Updated github workflow.
