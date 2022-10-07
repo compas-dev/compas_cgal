@@ -84,7 +84,7 @@ __author__ = ["tom van mele"]
 __copyright__ = "Block Research Group - ETH Zurich"
 __license__ = "MIT License"
 __email__ = "van.mele@arch.ethz.ch"
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 
 HERE = os.path.dirname(__file__)
 
