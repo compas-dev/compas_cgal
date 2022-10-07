@@ -8,11 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Added
+
 * Support to python 3.10.
 * Added Changelog check in PRs.
-* Exposing mesh `split` function.
+* Exposing mesh `compas_cgal.booleans.split` function.
 
 ### Changed
+
 * Updated github workflow.
 
 ### Removed
