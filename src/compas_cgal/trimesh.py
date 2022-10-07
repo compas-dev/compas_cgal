@@ -83,7 +83,7 @@ class TriMesh:
         array = np.asarray(vertices, dtype=np.float64)
         rows, cols = array.shape
         if rows < 1 or cols != 3:
-            raise Exception('The vertex input data is not valid.')
+            raise Exception("The vertex input data is not valid.")
         self._vertices = array
 
     @property
@@ -97,7 +97,7 @@ class TriMesh:
         array = np.asarray(faces, dtype=np.int32)
         rows, cols = array.shape
         if rows < 1 or cols != 3:
-            raise Exception('The face input data is not valid.')
+            raise Exception("The face input data is not valid.")
         self._faces = array
 
     @property
@@ -137,15 +137,15 @@ class TriMesh:
 
     @property
     def C(self):
-        return connectivity_matrix(self.edges, 'csr')
+        return connectivity_matrix(self.edges, "csr")
 
     @property
     def A(self):
-        return adjacency_matrix(self.adjacency, 'csr')
+        return adjacency_matrix(self.adjacency, "csr")
 
     @property
     def D(self):
-        return degree_matrix(self.adjacency, 'csr')
+        return degree_matrix(self.adjacency, "csr")
 
     @property
     def centroid(self):

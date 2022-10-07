@@ -1,5 +1,6 @@
 autopep8
 attrs >=17.4
+black
 bump2version >=1.0.1
 check-manifest >=0.36
 doc8

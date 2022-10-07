@@ -3,7 +3,7 @@ from compas_cgal._cgal import measure
 from compas.plugins import plugin
 
 
-@plugin(category='trimesh', pluggable_name='trimesh_volume')
+@plugin(category="trimesh", pluggable_name="trimesh_volume")
 def volume(mesh):
     """Compute the volume of a closed triangle mesh.
 

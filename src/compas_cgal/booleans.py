@@ -35,13 +35,13 @@ def _boolean(A, B, operation):
     VB = np.asarray(VB, dtype=np.float64)
     FB = np.asarray(FB, dtype=np.int32)
 
-    if operation == 'union':
+    if operation == "union":
         result = booleans.boolean_union(VA, FA, VB, FB)
-    elif operation == 'difference':
+    elif operation == "difference":
         result = booleans.boolean_difference(VA, FA, VB, FB)
-    elif operation == 'intersection':
+    elif operation == "intersection":
         result = booleans.boolean_intersection(VA, FA, VB, FB)
-    elif operation == 'split':
+    elif operation == "split":
         result = booleans.split(VA, FA, VB, FB)
     else:
         raise NotImplementedError
@@ -49,7 +49,7 @@ def _boolean(A, B, operation):
     return result
 
 
-@plugin(category='booleans', pluggable_name='boolean_union_mesh_mesh')
+@plugin(category="booleans", pluggable_name="boolean_union_mesh_mesh")
 def boolean_union(A, B):
     """Boolean union of two meshes.
 
@@ -84,10 +84,10 @@ def boolean_union(A, B):
     >>> shape = Polyhedron(*C)
 
     """
-    return _boolean(A, B, 'union')
+    return _boolean(A, B, "union")
 
 
-@plugin(category='booleans', pluggable_name='boolean_difference_mesh_mesh')
+@plugin(category="booleans", pluggable_name="boolean_difference_mesh_mesh")
 def boolean_difference(A, B):
     """Boolean difference of two meshes.
 
@@ -122,10 +122,10 @@ def boolean_difference(A, B):
     >>> shape = Polyhedron(*C)
 
     """
-    return _boolean(A, B, 'difference')
+    return _boolean(A, B, "difference")
 
 
-@plugin(category='booleans', pluggable_name='boolean_intersection_mesh_mesh')
+@plugin(category="booleans", pluggable_name="boolean_intersection_mesh_mesh")
 def boolean_intersection(A, B):
     """Boolean intersection of two meshes.
 
@@ -160,10 +160,10 @@ def boolean_intersection(A, B):
     >>> shape = Polyhedron(*C)
 
     """
-    return _boolean(A, B, 'intersection')
+    return _boolean(A, B, "intersection")
 
 
-@plugin(category='booleans', pluggable_name='split_mesh_mesh')
+@plugin(category="booleans", pluggable_name="split_mesh_mesh")
 def split(A, B):
     """Split one mesh with another.
 
@@ -198,4 +198,4 @@ def split(A, B):
     >>> mesh = Mesh.from_vertices_and_faces(V, F)
 
     """
-    return _boolean(A, B, 'split')
+    return _boolean(A, B, "split")

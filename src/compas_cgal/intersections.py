@@ -3,7 +3,7 @@ from compas_cgal._cgal import intersections
 from compas.plugins import plugin
 
 
-@plugin(category='intersections')
+@plugin(category="intersections")
 def intersection_mesh_mesh(A, B):
     """Compute the intersection of tow meshes.
 

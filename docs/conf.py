@@ -13,7 +13,7 @@ import importlib
 import sphinx_compas_theme
 from sphinx.ext.napoleon.docstring import NumpyDocstring
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../src"))
 
 
 # -- General configuration ------------------------------------------------
@@ -25,7 +25,9 @@ release = "0.4.0"
 version = ".".join(release.split(".")[0:2])
 
 master_doc = "index"
-source_suffix = [".rst", ]
+source_suffix = [
+    ".rst",
+]
 templates_path = sphinx_compas_theme.get_autosummary_templates_path()
 exclude_patterns = []
 
@@ -49,7 +51,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.githubpages",
     "sphinx.ext.autodoc.typehints",
-    "tabs"
+    "tabs",
 ]
 
 # autodoc options
@@ -72,7 +74,7 @@ autoclass_content = "class"
 
 
 def skip(app, what, name, obj, would_skip, options):
-    if name.startswith('_'):
+    if name.startswith("_"):
         return True
     return would_skip
 
@@ -132,31 +134,32 @@ intersphinx_mapping = {
 
 # linkcode
 
+
 def linkcode_resolve(domain, info):
-    if domain != 'py':
+    if domain != "py":
         return None
-    if not info['module']:
+    if not info["module"]:
         return None
-    if not info['fullname']:
-        return None
-
-    package = info['module'].split('.')[0]
-    if not package.startswith('compas_cgal'):
+    if not info["fullname"]:
         return None
 
-    module = importlib.import_module(info['module'])
-    parts = info['fullname'].split('.')
+    package = info["module"].split(".")[0]
+    if not package.startswith("compas_cgal"):
+        return None
+
+    module = importlib.import_module(info["module"])
+    parts = info["fullname"].split(".")
 
     if len(parts) == 1:
-        obj = getattr(module, info['fullname'])
-        filename = inspect.getmodule(obj).__name__.replace('.', '/')
+        obj = getattr(module, info["fullname"])
+        filename = inspect.getmodule(obj).__name__.replace(".", "/")
         lineno = inspect.getsourcelines(obj)[1]
     elif len(parts) == 2:
         obj_name, attr_name = parts
         obj = getattr(module, obj_name)
         attr = getattr(obj, attr_name)
         if inspect.isfunction(attr):
-            filename = inspect.getmodule(obj).__name__.replace('.', '/')
+            filename = inspect.getmodule(obj).__name__.replace(".", "/")
             lineno = inspect.getsourcelines(attr)[1]
         else:
             return None
@@ -164,6 +167,7 @@ def linkcode_resolve(domain, info):
         return None
 
     return f"https://github.com/compas-dev/compas_cgal/blob/master/src/{filename}.py#L{lineno}"
+
 
 # extlinks
 
@@ -175,13 +179,13 @@ html_theme = "compaspkg"
 html_theme_path = sphinx_compas_theme.get_html_theme_path()
 
 html_theme_options = {
-    "package_name"    : "compas_cgal",
-    "package_title"   : project,
-    "package_version" : release,
-    "package_author"  : "compas-dev",
-    "package_docs"    : "https://compas.dev/compas_cgal/",
-    "package_repo"    : "https://github.com/compas-dev/compas_cgal",
-    "package_old_versions_txt": "https://compas.dev/compas_cgal/doc_versions.txt"
+    "package_name": "compas_cgal",
+    "package_title": project,
+    "package_version": release,
+    "package_author": "compas-dev",
+    "package_docs": "https://compas.dev/compas_cgal/",
+    "package_repo": "https://github.com/compas-dev/compas_cgal",
+    "package_old_versions_txt": "https://compas.dev/compas_cgal/doc_versions.txt",
 }
 
 html_context = {}

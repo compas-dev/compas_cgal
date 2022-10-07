@@ -19,17 +19,11 @@ SequenceOfFaces = Union[
     NDArray[(Any, 3), np.int32],
 ]
 
-VerticesFacesNumpy = Tuple[
-    NDArray[(Any, 3), np.float64],
-    NDArray[(Any, 3), np.int32]
-]
+VerticesFacesNumpy = Tuple[NDArray[(Any, 3), np.float64], NDArray[(Any, 3), np.int32]]
 
 VerticesFaces = Union[
     VerticesFacesNumpy,
-    Tuple[
-        List[Annotated[List[float], 3]],
-        List[Annotated[List[int], 3]]
-    ]
+    Tuple[List[Annotated[List[float], 3]], List[Annotated[List[int], 3]]],
 ]
 
 ListOfPolylinesNumpy = List[NDArray[(Any, 3), np.float64]]
@@ -37,13 +31,7 @@ ListOfPolylinesNumpy = List[NDArray[(Any, 3), np.float64]]
 ListOfPlanes = List[
     Union[
         compas.geometry.Plane,
-        Tuple[
-            compas.geometry.Point,
-            compas.geometry.Vector
-        ],
-        Tuple[
-            Annotated[List[float], 3],
-            Annotated[List[float], 3]
-        ]
+        Tuple[compas.geometry.Point, compas.geometry.Vector],
+        Tuple[Annotated[List[float], 3], Annotated[List[float], 3]],
     ]
 ]

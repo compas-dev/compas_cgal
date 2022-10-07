@@ -3,7 +3,7 @@ from compas_cgal._cgal import meshing
 from compas.plugins import plugin
 
 
-@plugin(category='trimesh', pluggable_name='trimesh_remesh')
+@plugin(category="trimesh", pluggable_name="trimesh_remesh")
 def remesh(mesh, target_edge_length, number_of_iterations=10, do_project=True):
     """Remeshing of a triangle mesh.
 
