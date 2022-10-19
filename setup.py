@@ -167,8 +167,6 @@ setup(
         "Operating System :: Microsoft :: Windows",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
@@ -185,7 +183,7 @@ setup(
     cmdclass={"build_ext": BuildExt},
     setup_requires=["pybind11>=2.5.0"],
     install_requires=requirements,
-    python_requires=">=3.6",
+    python_requires=">=3.8",
     extras_require=optional_requirements,
     zip_safe=False,
 )
