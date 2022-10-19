@@ -12,13 +12,13 @@ from compas_rhino.artists import MeshArtist
 
 from compas.rpc import Proxy
 
-meshing = Proxy('compas_cgal.meshing')
+meshing = Proxy("compas_cgal.meshing")
 
 # ==============================================================================
 # Get the bunny and construct a mesh
 # ==============================================================================
 
-bunny = Mesh.from_ply(compas.get('bunny.ply'))
+bunny = Mesh.from_ply(compas.get("bunny.ply"))
 
 bunny.cull_vertices()
 

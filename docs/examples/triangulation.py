@@ -42,8 +42,12 @@ rdm_mesh = Mesh.from_vertices_and_faces(V, F)
 
 plotter = Plotter(figsize=(16, 9))
 
-plotter.add(cdt_mesh, sizepolicy='absolute', vertexsize=5)
-plotter.add(rdm_mesh.transformed(Translation.from_vector([23, 0, 0])), sizepolicy='absolute', vertexsize=5)
+plotter.add(cdt_mesh, sizepolicy="absolute", vertexsize=5)
+plotter.add(
+    rdm_mesh.transformed(Translation.from_vector([23, 0, 0])),
+    sizepolicy="absolute",
+    vertexsize=5,
+)
 
 plotter.zoom_extents()
 # plotter.save('docs/_images/cgal_triangulation.png', dpi=150)

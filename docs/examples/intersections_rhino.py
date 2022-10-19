@@ -32,7 +32,7 @@ B = sphere.to_vertices_and_faces()
 # Remesh the sphere
 # ==============================================================================
 
-proxy.package = 'compas_cgal.meshing'
+proxy.package = "compas_cgal.meshing"
 
 B = proxy.remesh(B, 0.3, 10)
 
@@ -40,7 +40,7 @@ B = proxy.remesh(B, 0.3, 10)
 # Compute the intersections
 # ==============================================================================
 
-proxy.package = 'compas_cgal.intersections'
+proxy.package = "compas_cgal.intersections"
 
 pointsets = proxy.intersection_mesh_mesh(A, B)
 
@@ -63,23 +63,24 @@ meshartist = MeshArtist(None)
 meshartist.mesh = Mesh.from_vertices_and_faces(*A)
 meshartist.layer = "CGAL::Intersections::A"
 meshartist.clear_layer()
-meshartist.draw_faces(join_faces=True, color=hex_to_rgb('#222222'))
+meshartist.draw_faces(join_faces=True, color=hex_to_rgb("#222222"))
 
 meshartist.mesh = Mesh.from_vertices_and_faces(*B)
 meshartist.layer = "CGAL::Intersections::B"
 meshartist.clear_layer()
-meshartist.draw_faces(join_faces=True, color=hex_to_rgb('#888888'))
+meshartist.draw_faces(join_faces=True, color=hex_to_rgb("#888888"))
 
 polylineartist = PolylineArtist(None, layer="CGAL::Intersections::Polylines")
 polylineartist.clear_layer()
-pointartist = PointArtist(None, layer='CGAL::Intersections::Points')
+pointartist = PointArtist(None, layer="CGAL::Intersections::Points")
 pointartist.clear_layer()
 
 for polyline in polylines:
     polylineartist.primitive = polyline
-    polylineartist.color = hex_to_rgb('#ffffff')
+    polylineartist.color = hex_to_rgb("#ffffff")
     polylineartist.draw()
     PointArtist.draw_collection(
-        polyline.points, color=(255, 0, 0), layer='CGAL::Intersections::Points')
+        polyline.points, color=(255, 0, 0), layer="CGAL::Intersections::Points"
+    )
 
 polylineartist.redraw()

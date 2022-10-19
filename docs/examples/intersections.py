@@ -63,7 +63,7 @@ for polyline in polylines:
         linewidth=3,
         pointcolor=(1, 0, 0),
         pointsize=10,
-        show_points=True
+        show_points=True,
     )
 
 viewer.show()

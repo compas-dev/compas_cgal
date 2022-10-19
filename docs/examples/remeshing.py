@@ -12,7 +12,7 @@ from compas_view2.app import App
 from compas_cgal.trimesh import TriMesh
 
 HERE = os.path.dirname(__file__)
-FILE = os.path.join(HERE, '../..', 'data', 'Bunny.ply')
+FILE = os.path.join(HERE, "../..", "data", "Bunny.ply")
 
 # ==============================================================================
 # Get the bunny and construct a mesh

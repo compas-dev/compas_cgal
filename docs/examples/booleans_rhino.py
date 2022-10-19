@@ -29,7 +29,7 @@ B = sphere.to_vertices_and_faces()
 # Remesh the sphere
 # ==============================================================================
 
-proxy.package = 'compas_cgal.meshing'
+proxy.package = "compas_cgal.meshing"
 
 B = proxy.remesh(B, 0.3, 100)
 
@@ -37,7 +37,7 @@ B = proxy.remesh(B, 0.3, 100)
 # Compute the boolean mesh
 # ==============================================================================
 
-proxy.package = 'compas_cgal.booleans'
+proxy.package = "compas_cgal.booleans"
 
 V, F = proxy.boolean_union(A, B)
 
