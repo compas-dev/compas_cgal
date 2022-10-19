@@ -33,8 +33,6 @@ jobs:
         with:
           dest: deploy
           build_to_subfolder: true
-          install_dependencies: false
-          build_docs: false
 
       - name: Deploy docs
         if: success() && steps.docs.outputs.commit_type != 'pull'
