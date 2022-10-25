@@ -4,29 +4,29 @@ from typing import List
 from typing import Union
 from typing import Sequence
 from typing_extensions import Annotated
-from nptyping import NDArray
+from nptyping import NDArray, Shape
 
 import compas.geometry
 import numpy as np
 
 SequenceOfVertices = Union[
     Sequence[Annotated[List[float], 3]],
-    NDArray[(Any, 3), np.float64],
+    NDArray[Shape["*, 3"], np.float64],
 ]
 
 SequenceOfFaces = Union[
     Sequence[Annotated[List[int], 3]],
-    NDArray[(Any, 3), np.int32],
+    NDArray[Shape["*, 3"], np.int32],
 ]
 
-VerticesFacesNumpy = Tuple[NDArray[(Any, 3), np.float64], NDArray[(Any, 3), np.int32]]
+VerticesFacesNumpy = Tuple[NDArray[Shape["*, 3"], np.float64], NDArray[Shape["*, 3"], np.int32]]
 
 VerticesFaces = Union[
     VerticesFacesNumpy,
     Tuple[List[Annotated[List[float], 3]], List[Annotated[List[int], 3]]],
 ]
 
-ListOfPolylinesNumpy = List[NDArray[(Any, 3), np.float64]]
+ListOfPolylinesNumpy = List[NDArray[Shape["*, 3"], np.float64]]
 
 ListOfPlanes = List[
     Union[

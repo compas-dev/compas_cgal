@@ -21,7 +21,7 @@ def slice_mesh(mesh, planes):
 
     Examples
     --------
-    >>> from compas.geometry import Sphere, Plane, Polylines
+    >>> from compas.geometry import Sphere, Plane, Polyline
     >>> from compas.utilities import linspace
     >>> from compas_cgal.slicer import slice_mesh
 

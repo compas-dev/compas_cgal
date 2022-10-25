@@ -186,6 +186,7 @@ def split(A, B):
     Examples
     --------
     >>> from compas.geometry import Box, Sphere, Polyhedron
+    >>> from compas.datastructures import Mesh
     >>> from compas_cgal.booleans import split
 
     >>> box = Box.from_width_height_depth(1, 1, 1)

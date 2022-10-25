@@ -38,7 +38,7 @@ def remesh(mesh, target_edge_length, number_of_iterations=10, do_project=True):
     >>> sphere = Sphere([1, 1, 1], 0.5)
     >>> mesh = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
 
-    >>> result = remesh(mesh)
+    >>> result = remesh(mesh, 0.1)
     >>> shape = Polyhedron(*result)
 
     """
