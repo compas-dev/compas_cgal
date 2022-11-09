@@ -71,9 +71,7 @@ def constrained_delaunay_triangulation(boundary, points=None, holes=None, curves
     else:
         curves = []
 
-    return triangulations.constrained_delaunay_triangulation(
-        boundary, points, holes, curves, is_conforming=False
-    )
+    return triangulations.constrained_delaunay_triangulation(boundary, points, holes, curves, is_conforming=False)
 
 
 @plugin(category="triangulation", requires=["compas_cgal"])
@@ -114,14 +112,10 @@ def conforming_delaunay_triangulation(boundary, points=None, holes=None, curves=
     else:
         curves = []
 
-    return triangulations.constrained_delaunay_triangulation(
-        boundary, points, holes, curves, is_conforming=True
-    )
+    return triangulations.constrained_delaunay_triangulation(boundary, points, holes, curves, is_conforming=True)
 
 
-def refined_delaunay_mesh(
-    boundary, points=None, holes=None, curves=None, maxlength=None, is_optimized=False
-):
+def refined_delaunay_mesh(boundary, points=None, holes=None, curves=None, maxlength=None, is_optimized=False):
     """Construct a refined Delaunay mesh.
 
     Parameters

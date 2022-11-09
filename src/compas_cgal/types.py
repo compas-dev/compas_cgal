@@ -18,9 +18,7 @@ SequenceOfFaces = Union[
     NDArray[Shape["*, 3"], np.int32],  # noqa: F722
 ]
 
-VerticesFacesNumpy = Tuple[
-    NDArray[Shape["*, 3"], np.float64], NDArray[Shape["*, 3"], np.int32]  # noqa: F722
-]
+VerticesFacesNumpy = Tuple[NDArray[Shape["*, 3"], np.float64], NDArray[Shape["*, 3"], np.int32]]  # noqa: F722
 
 VerticesFaces = Union[
     VerticesFacesNumpy,

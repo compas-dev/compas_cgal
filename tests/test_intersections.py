@@ -30,9 +30,7 @@ def test_intersections():
     polylines = []
     pointsets = intersections.intersection_mesh_mesh(VA, FA, VB, FB)
     for points in pointsets:
-        points = [
-            Point(*point) for point in points
-        ]  # otherwise Polygon throws an error
+        points = [Point(*point) for point in points]  # otherwise Polygon throws an error
         polyline = Polyline(points)
         polylines.append(polyline)
 

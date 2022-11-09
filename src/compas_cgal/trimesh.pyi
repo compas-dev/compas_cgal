@@ -58,19 +58,13 @@ class TriMesh:
     def average_edge_length(self) -> float:
         pass
     @classmethod
-    def from_stl(
-        cls: TriMesh, filepath: str, precision: Optional[str] = None
-    ) -> TriMesh:
+    def from_stl(cls: TriMesh, filepath: str, precision: Optional[str] = None) -> TriMesh:
         pass
     @classmethod
-    def from_ply(
-        cls: TriMesh, filepath: str, precision: Optional[str] = None
-    ) -> TriMesh:
+    def from_ply(cls: TriMesh, filepath: str, precision: Optional[str] = None) -> TriMesh:
         pass
     @classmethod
-    def from_off(
-        cls: TriMesh, filepath: str, precision: Optional[str] = None
-    ) -> TriMesh:
+    def from_off(cls: TriMesh, filepath: str, precision: Optional[str] = None) -> TriMesh:
         pass
     @classmethod
     def from_mesh(cls: TriMesh, mesh: Mesh) -> TriMesh:
