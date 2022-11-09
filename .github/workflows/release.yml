@@ -6,64 +6,26 @@ on:
 name: Create Release
 
 jobs:
-  Build:
+  build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [macos-latest, windows-latest]
-        python-version: ['3.8', '3.9', '3.10']
+        python: ['3.8', '3.9', '3.10']
 
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - uses: compas-dev/compas-actions.build@v1.2.0
+      - uses: compas-dev/compas-actions.build@v2
         with:
           test_lint: true
-
-  Release:
-    needs: Build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Get Version From Tag
-        id: tag_name
-        run: |
-          echo ::set-output name=current_version::${GITHUB_REF#refs/tags/v}
-        shell: bash
-
-      - name: Get Changelog Entry
-        id: changelog_reader
-        uses: mindsers/changelog-reader-action@v2
-        with:
-          version: ${{ steps.tag_name.outputs.current_version }}
-          path: ./CHANGELOG.md
-    
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: ${{ steps.changelog_reader.outputs.changes }}
-          draft: false
-          prerelease: false
+          test_compas: true
+          use_conda: true
+          python: ${{ matrix.python }}
 
   Publish:
-    needs: Release
+    needs: build
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-python@v4
-      with:
-        python-version: '3.x'
-    - uses: compas-dev/compas-actions.publish@v1.0.0
-      with:
-        token: ${{ secrets.PYPI }}
+      - uses: compas-dev/compas-actions.publish@v2
+        with:
+          pypi_token: ${{ secrets.PYPI }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
