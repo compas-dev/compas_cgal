@@ -1,22 +1,24 @@
+from __future__ import annotations
+from .types import VerticesFaces, Planes, PolylinesNumpy
 import numpy as np
 from compas_cgal._cgal import slicer
 from compas.plugins import plugin
 
 
 @plugin(category="trimesh", pluggable_name="trimesh_slice")
-def slice_mesh(mesh, planes):
+def slice_mesh_planes(mesh: VerticesFaces, planes: Planes) -> PolylinesNumpy:
     """Slice a mesh by a list of planes.
 
     Parameters
     ----------
-    mesh : tuple[Sequence[[float, float, float] | :class:`~compas.geometry.Point`], Sequence[[int, int, int]]]
+    mesh : :attr:`compas_cgal.types.VerticesFaces`
         The mesh to slice.
-    planes : list[[point, normal] | :class:`~compas.geometry.Plane`]
+    planes : :attr:`compas_cgal.types.Planes`
         The slicing planes.
 
     Returns
     -------
-    list[NDArray[(Any, 3), np.float64]]
+    :attr:`compas_cgal.types.PolylinesNumpy`
         A list of slice polylines, with each polyline an array of points.
 
     Examples
@@ -43,3 +45,6 @@ def slice_mesh(mesh, planes):
 
     pointsets = slicer.slice_mesh(V, F, P, N)
     return pointsets
+
+
+slice_mesh = slice_mesh_planes

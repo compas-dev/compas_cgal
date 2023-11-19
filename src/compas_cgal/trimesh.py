@@ -1,3 +1,4 @@
+from __future__ import annotations
 import numpy as np
 from compas.geometry import transform_points_numpy
 from compas.files import STL

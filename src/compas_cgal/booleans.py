@@ -1,26 +1,32 @@
+from __future__ import annotations
+from typing import Literal
+from .types import VerticesFaces
+from .types import VerticesFacesNumpy
+
 import numpy as np
 from compas.plugins import plugin
 from compas_cgal._cgal import booleans
 
 
-def _boolean(A, B, operation):
+def _boolean(
+    A: VerticesFaces,
+    B: VerticesFaces,
+    operation: Literal["union", "difference", "intersection"],
+) -> VerticesFacesNumpy:
     """Wrapper for all boolean operations.
 
     Parameters
     ----------
-    A : tuple[Sequence[[float, float, float] | :class:`~compas.geometry.Point`], Sequence[[int, int, int]]]
+    A : VerticesFaces
         Mesh A.
-    B : tuple[Sequence[[float, float, float] | :class:`~compas.geometry.Point`], Sequence[[int, int, int]]]
+    B : VerticesFaces
         Mesh B.
     operation : Literal['union', 'difference', 'intersection']
         The type of boolean operation.
 
     Returns
     -------
-    NDArray[(Any, 3), np.float64]
-        The vertices of the boolean mesh.
-    NDArray[(Any, 3), np.int32]
-        The faces of the boolean mesh.
+    VerticesFacesNumpy
 
     Raises
     ------
@@ -50,32 +56,30 @@ def _boolean(A, B, operation):
 
 
 @plugin(category="booleans", pluggable_name="boolean_union_mesh_mesh")
-def boolean_union(A, B):
+def boolean_union_mesh_mesh(
+    A: VerticesFaces,
+    B: VerticesFaces,
+) -> VerticesFacesNumpy:
     """Boolean union of two meshes.
 
     Parameters
     ----------
-    A : tuple[Sequence[[float, float, float] | :class:`~compas.geometry.Point`], Sequence[[int, int, int]]]
+    A : :attr:`compas_cgal.types.VerticesFaces`
         Mesh A.
-    B : tuple[Sequence[[float, float, float] | :class:`~compas.geometry.Point`], Sequence[[int, int, int]]]
+    B : :attr:`compas_cgal.types.VerticesFaces`
         Mesh B.
-    operation : Literal['union', 'difference', 'intersection']
-        The type of boolean operation.
 
     Returns
     -------
-    NDArray[(Any, 3), np.float64]
-        The vertices of the boolean mesh.
-    NDArray[(Any, 3), np.int32]
-        The faces of the boolean mesh.
+    :attr:`compas_cgal.types.VerticesFacesNumpy`
 
     Examples
     --------
     >>> from compas.geometry import Box, Sphere, Polyhedron
     >>> from compas_cgal.booleans import boolean_union
 
-    >>> box = Box.from_width_height_depth(1, 1, 1)
-    >>> sphere = Sphere([1, 1, 1], 0.5)
+    >>> box = Box(1)
+    >>> sphere = Sphere(0.5, point=[1, 1, 1])
 
     >>> A = box.to_vertices_and_faces(triangulated=True)
     >>> B = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
@@ -88,32 +92,30 @@ def boolean_union(A, B):
 
 
 @plugin(category="booleans", pluggable_name="boolean_difference_mesh_mesh")
-def boolean_difference(A, B):
+def boolean_difference_mesh_mesh(
+    A: VerticesFaces,
+    B: VerticesFaces,
+) -> VerticesFacesNumpy:
     """Boolean difference of two meshes.
 
     Parameters
     ----------
-    A : tuple[Sequence[[float, float, float] | :class:`~compas.geometry.Point`], Sequence[[int, int, int]]]
+    A : :attr:`compas_cgal.types.VerticesFaces`
         Mesh A.
-    B : tuple[Sequence[[float, float, float] | :class:`~compas.geometry.Point`], Sequence[[int, int, int]]]
+    B : :attr:`compas_cgal.types.VerticesFaces`
         Mesh B.
-    operation : Literal['union', 'difference', 'intersection']
-        The type of boolean operation.
 
     Returns
     -------
-    NDArray[(Any, 3), np.float64]
-        The vertices of the boolean mesh.
-    NDArray[(Any, 3), np.int32]
-        The faces of the boolean mesh.
+    :attr:`compas_cgal.types.VerticesFacesNumpy`
 
     Examples
     --------
     >>> from compas.geometry import Box, Sphere, Polyhedron
     >>> from compas_cgal.booleans import boolean_difference
 
-    >>> box = Box.from_width_height_depth(1, 1, 1)
-    >>> sphere = Sphere([1, 1, 1], 0.5)
+    >>> box = Box(1)
+    >>> sphere = Sphere(0.5, point=[1, 1, 1])
 
     >>> A = box.to_vertices_and_faces(triangulated=True)
     >>> B = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
@@ -126,32 +128,30 @@ def boolean_difference(A, B):
 
 
 @plugin(category="booleans", pluggable_name="boolean_intersection_mesh_mesh")
-def boolean_intersection(A, B):
+def boolean_intersection_mesh_mesh(
+    A: VerticesFaces,
+    B: VerticesFaces,
+) -> VerticesFacesNumpy:
     """Boolean intersection of two meshes.
 
     Parameters
     ----------
-    A : tuple[Sequence[[float, float, float] | :class:`~compas.geometry.Point`], Sequence[[int, int, int]]]
+    A : :attr:`compas_cgal.types.VerticesFaces`
         Mesh A.
-    B : tuple[Sequence[[float, float, float] | :class:`~compas.geometry.Point`], Sequence[[int, int, int]]]
+    B : :attr:`compas_cgal.types.VerticesFaces`
         Mesh B.
-    operation : Literal['union', 'difference', 'intersection']
-        The type of boolean operation.
 
     Returns
     -------
-    NDArray[(Any, 3), np.float64]
-        The vertices of the boolean mesh.
-    NDArray[(Any, 3), np.int32]
-        The faces of the boolean mesh.
+    :attr:`compas_cgal.types.VerticesFacesNumpy`
 
     Examples
     --------
     >>> from compas.geometry import Box, Sphere, Polyhedron
     >>> from compas_cgal.booleans import boolean_intersection
 
-    >>> box = Box.from_width_height_depth(1, 1, 1)
-    >>> sphere = Sphere([1, 1, 1], 0.5)
+    >>> box = Box(1)
+    >>> sphere = Sphere(0.5, point=[1, 1, 1])
 
     >>> A = box.to_vertices_and_faces(triangulated=True)
     >>> B = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
@@ -164,38 +164,39 @@ def boolean_intersection(A, B):
 
 
 @plugin(category="booleans", pluggable_name="split_mesh_mesh")
-def split(A, B):
+def split_mesh_mesh(
+    A: VerticesFaces,
+    B: VerticesFaces,
+) -> VerticesFacesNumpy:
     """Split one mesh with another.
 
     Parameters
     ----------
-    A : tuple[Sequence[[float, float, float] | :class:`~compas.geometry.Point`], Sequence[[int, int, int]]]
+    A : :attr:`compas_cgal.types.VerticesFaces`
         Mesh A.
-    B : tuple[Sequence[[float, float, float] | :class:`~compas.geometry.Point`], Sequence[[int, int, int]]]
+    B : :attr:`compas_cgal.types.VerticesFaces`
         Mesh B.
-    operation : Literal['union', 'difference', 'intersection']
-        The type of boolean operation.
 
     Returns
     -------
-    NDArray[(Any, 3), np.float64]
-        The vertices of the boolean mesh.
-    NDArray[(Any, 3), np.int32]
-        The faces of the boolean mesh.
+    :attr:`compas_cgal.types.VerticesFacesNumpy`
 
     Examples
     --------
     >>> from compas.geometry import Box, Sphere, Polyhedron
-    >>> from compas_cgal.booleans import split
+    >>> from compas_cgal.booleans import split_mesh_mesh
 
-    >>> box = Box.from_width_height_depth(1, 1, 1)
-    >>> sphere = Sphere([1, 1, 1], 0.5)
+    >>> box = Box(1)
+    >>> sphere = Sphere(0.5, point=[1, 1, 1])
 
     >>> A = box.to_vertices_and_faces(triangulated=True)
     >>> B = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
 
-    >>> V, F = split(A, B)
-    >>> mesh = Mesh.from_vertices_and_faces(V, F)
+    >>> C = split_mesh_mesh(A, B)
+    >>> shape = Polyhedron(*C)
 
     """
     return _boolean(A, B, "split")
+
+
+split = split_mesh_mesh

@@ -1,22 +1,28 @@
+from __future__ import annotations
+from .types import VerticesFaces
+from .types import PolylinesNumpy
 import numpy as np
 from compas_cgal._cgal import intersections
 from compas.plugins import plugin
 
 
 @plugin(category="intersections")
-def intersection_mesh_mesh(A, B):
+def intersection_mesh_mesh(
+    A: VerticesFaces,
+    B: VerticesFaces,
+) -> PolylinesNumpy:
     """Compute the intersection of tow meshes.
 
     Parameters
     ----------
-    A : tuple[Sequence[[float, float, float] | :class:`~compas.geometry.Point`], Sequence[[int, int, int]]]
+    A : :attr:`compas_cgal.types.VerticesFaces`
         Mesh A.
-    B : tuple[Sequence[[float, float, float] | :class:`~compas.geometry.Point`], Sequence[[int, int, int]]]
+    B : :attr:`compas_cgal.types.VerticesFaces`
         Mesh B.
 
     Returns
     -------
-    list[NDArray[(Any, 3), np.float64]]
+    :attr:`compas_cgal.types.PolylinesNumpy`
         A list of intersection polylines, with each polyline an array of points.
 
     Examples
@@ -24,8 +30,8 @@ def intersection_mesh_mesh(A, B):
     >>> from compas.geometry import Box, Sphere, Polyline
     >>> from compas_cgal.intersections import intersection_mesh_mesh
 
-    >>> box = Box.from_width_height_depth(1, 1, 1)
-    >>> sphere = Sphere([1, 1, 1], 0.5)
+    >>> box = Box(1)
+    >>> sphere = Sphere(0.5, point=[1, 1, 1])
 
     >>> A = box.to_vertices_and_faces(triangulated=True)
     >>> B = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)

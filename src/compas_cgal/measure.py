@@ -1,15 +1,17 @@
+from __future__ import annotations
+from .types import VerticesFaces
 import numpy as np
 from compas_cgal._cgal import measure
 from compas.plugins import plugin
 
 
 @plugin(category="trimesh", pluggable_name="trimesh_volume")
-def volume(mesh):
+def volume(mesh: VerticesFaces) -> float:
     """Compute the volume of a closed triangle mesh.
 
     Parameters
     ----------
-    mesh : tuple[Sequence[[float, float, float] | :class:`~compas.geometry.Point`], Sequence[[int, int, int]]]
+    mesh : :attr:`compas_cgal.types.VerticesFaces`
         The mesh.
 
     Returns
@@ -22,7 +24,7 @@ def volume(mesh):
     >>> from compas.geometry import Box
     >>> from compas_cgal.measure import volume
 
-    >>> box = Box.from_width_height_depth(1, 1, 1)
+    >>> box = Box(1)
     >>> mesh = box.to_vertices_and_faces(triangulated=True)
 
     >>> volume(mesh)

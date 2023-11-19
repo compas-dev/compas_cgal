@@ -1,15 +1,23 @@
+from __future__ import annotations
+from .types import VerticesFaces
+from .types import VerticesFacesNumpy
 import numpy as np
 from compas_cgal._cgal import meshing
 from compas.plugins import plugin
 
 
 @plugin(category="trimesh", pluggable_name="trimesh_remesh")
-def remesh(mesh, target_edge_length, number_of_iterations=10, do_project=True):
+def remesh(
+    mesh: VerticesFaces,
+    target_edge_length: float,
+    number_of_iterations: int = 10,
+    do_project: bool = True,
+) -> VerticesFacesNumpy:
     """Remeshing of a triangle mesh.
 
     Parameters
     ----------
-    mesh : tuple[Sequence[[float, float, float] | :class:`~compas.geometry.Point`], Sequence[[int, int, int]]]
+    mesh : :attr:`compas_cgal.types.VerticesFaces`
         The mesh to remesh.
     target_edge_length : float
         The target edge length.
@@ -20,10 +28,7 @@ def remesh(mesh, target_edge_length, number_of_iterations=10, do_project=True):
 
     Returns
     -------
-    NDArray[(Any, 3), np.float64]
-        The vertices of the remeshed mesh.
-    NDArray[(Any, 3), np.int32]
-        The faces of the remeshed mesh.
+    :attr:`compas_cgal.types.VerticesFacesNumpy`
 
     Notes
     -----
@@ -35,7 +40,7 @@ def remesh(mesh, target_edge_length, number_of_iterations=10, do_project=True):
     >>> from compas.geometry import Sphere, Polyhedron
     >>> from compas_cgal.meshing import remesh
 
-    >>> sphere = Sphere([1, 1, 1], 0.5)
+    >>> sphere = Sphere(0.5, point=[1, 1, 1])
     >>> mesh = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
 
     >>> result = remesh(mesh)
