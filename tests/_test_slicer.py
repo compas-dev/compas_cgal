@@ -8,7 +8,7 @@ from compas.geometry import Polyline
 from compas.datastructures import Mesh
 
 from compas_cgal import HERE
-from compas_cgal.slicer import slice_mesh
+from compas_cgal.slicer import slice_mesh_planes
 
 
 def test_slicer():
@@ -43,7 +43,7 @@ def test_slicer():
 
     M = benchy.to_vertices_and_faces()
 
-    pointsets = slice_mesh(M, planes)
+    pointsets = slice_mesh_planes(M, planes)
 
     # ==============================================================================
     # Process output

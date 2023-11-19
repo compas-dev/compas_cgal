@@ -6,28 +6,17 @@ from compas.geometry import Polyline
 from compas.datastructures import Mesh
 
 
-from compas_cgal._cgal import intersections
+from compas_cgal.intersections import intersection_mesh_mesh
 
 
 def test_intersections():
-    A = Sphere(Point(0, 0, 0), 1.0)
-    A = Mesh.from_shape(A, u=50, v=50)
-    A.quads_to_triangles()
-
-    B = Sphere(Point(1.0, 0, 0), 1.0)
-    B = Mesh.from_shape(B, u=50, v=50)
-    B.quads_to_triangles()
-
-    va, fa = A.to_vertices_and_faces()
-    VA = np.asarray(va, dtype=np.float64)
-    FA = np.asarray(fa, dtype=np.int32)
-
-    vb, fb = B.to_vertices_and_faces()
-    VB = np.asarray(vb, dtype=np.float64)
-    FB = np.asarray(fb, dtype=np.int32)
+    A = Sphere(1.0).to_vertices_and_faces(u=50, v=50, triangulated=True)
+    B = Sphere(1.0, point=[1, 0, 0]).to_vertices_and_faces(
+        u=50, v=50, triangulated=True
+    )
 
     polylines = []
-    pointsets = intersections.intersection_mesh_mesh(VA, FA, VB, FB)
+    pointsets = intersection_mesh_mesh(A, B)
     for points in pointsets:
         points = [
             Point(*point) for point in points
