@@ -1,6 +1,6 @@
 from compas.geometry import Box, Polyhedron
 from compas.geometry import Translation
-from compas_cgal.subdivision import catmull_clark
+from compas_cgal.subdivision import mesh_subdivide_sqrt3 as mesh_subdivide
 from compas_view2.app import App
 
 # ==============================================================================
@@ -9,12 +9,12 @@ from compas_view2.app import App
 
 box = Box.from_diagonal(([0, 0, 0], [1, 1, 1]))
 
-V, F = box.to_vertices_and_faces()
+V, F = box.to_vertices_and_faces(triangulated=True)
 
-V2, F2 = catmull_clark((V, F), 2)
-V4, F4 = catmull_clark((V, F), 4)
-V6, F6 = catmull_clark((V, F), 6)
-V8, F8 = catmull_clark((V, F), 8)
+V2, F2 = mesh_subdivide((V, F), 2)
+V4, F4 = mesh_subdivide((V, F), 4)
+V6, F6 = mesh_subdivide((V, F), 6)
+V8, F8 = mesh_subdivide((V, F), 8)
 
 S2 = Polyhedron(V2.tolist(), F2.tolist())
 S4 = Polyhedron(V4.tolist(), F4.tolist())

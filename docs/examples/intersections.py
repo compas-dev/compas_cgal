@@ -42,8 +42,8 @@ viewer = App(width=1600, height=900)
 viewer.view.camera.position = [5, -4, 2]
 viewer.view.camera.look_at([0, 1, 0])
 
-viewer.add(Mesh.from_vertices_and_faces(*A), facecolor=(1, 0, 0), opacity=0.7)
-viewer.add(Mesh.from_vertices_and_faces(*B), facecolor=(0, 1, 0), opacity=0.7)
+viewer.add(Mesh.from_vertices_and_faces(*A), facecolor=(1, 0, 0), opacity=0.3)
+viewer.add(Mesh.from_vertices_and_faces(*B), facecolor=(0, 1, 0), opacity=0.3)
 
 for polyline in polylines:
     viewer.add(

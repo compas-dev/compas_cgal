@@ -2,7 +2,7 @@
 Subdivision with Catmull Clark
 ********************************************************************************
 
-.. figure:: /_images/cgal_subd.png
+.. figure:: /_images/cgal_subd_loop.png
     :figclass: figure
     :class: figure-img img-fluid
 

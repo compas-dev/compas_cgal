@@ -2,13 +2,10 @@
 compas_cgal.intersections
 ********************************************************************************
 
-.. currentmodule:: compas_cgal
-
-Functions
-=========
+.. currentmodule:: compas_cgal.intersections
 
 .. autosummary::
     :toctree: generated/
     :nosignatures:
 
-    intersections.intersection_mesh_mesh
+    intersection_mesh_mesh

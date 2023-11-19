@@ -2,17 +2,14 @@
 compas_cgal.triangulation
 ********************************************************************************
 
-.. currentmodule:: compas_cgal
-
-Functions
-=========
+.. currentmodule:: compas_cgal.triangulation
 
 .. autosummary::
     :toctree: generated/
     :nosignatures:
 
-    triangulation.delaunay_triangulation
-    triangulation.constrained_delaunay_triangulation
-    triangulation.conforming_delaunay_triangulation
-    triangulation.refined_delaunay_mesh
+    delaunay_triangulation
+    constrained_delaunay_triangulation
+    conforming_delaunay_triangulation
+    refined_delaunay_mesh
 

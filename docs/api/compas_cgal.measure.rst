@@ -2,13 +2,12 @@
 compas_cgal.measure
 ********************************************************************************
 
-.. currentmodule:: compas_cgal
-
-Functions
-=========
+.. currentmodule:: compas_cgal.measure
 
 .. autosummary::
     :toctree: generated/
     :nosignatures:
 
-    measure.mesh_volume
+    mesh_area
+    mesh_volume
+    mesh_centroid

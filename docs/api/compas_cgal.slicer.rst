@@ -2,13 +2,10 @@
 compas_cgal.slicer
 ********************************************************************************
 
-.. currentmodule:: compas_cgal
-
-Functions
-=========
+.. currentmodule:: compas_cgal.slicer
 
 .. autosummary::
     :toctree: generated/
     :nosignatures:
 
-    slicer.slice_mesh_planes
+    slice_mesh_planes

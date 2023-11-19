@@ -9,7 +9,7 @@ from compas.datastructures import Mesh
 from compas.colors import Color
 from compas_view2.app import App
 
-from compas_cgal.slicer import slice_mesh
+from compas_cgal.slicer import slice_mesh_planes
 
 HERE = Path(__file__).parent.absolute()
 FILE = HERE.parent.parent / "data" / "3DBenchy.stl"
@@ -43,7 +43,7 @@ for i in np.linspace(zmin, zmax, 50):
 
 M = benchy.to_vertices_and_faces()
 
-pointsets = slice_mesh(M, planes)
+pointsets = slice_mesh_planes(M, planes)
 
 # ==============================================================================
 # Process output

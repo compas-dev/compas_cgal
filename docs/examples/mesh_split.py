@@ -1,4 +1,3 @@
-from random import random
 from compas.geometry import Box, Sphere
 from compas.datastructures import Mesh
 from compas.colors import Color
@@ -32,13 +31,13 @@ viewer = App(width=1600, height=900)
 viewer.view.camera.position = [5, -4, 2]
 viewer.view.camera.look_at([0, 0, 0])
 
-for vertices in mesh.connected_components():
+for color, vertices in zip([Color.blue(), Color.pink()], mesh.connected_components()):
     faces = []
     for indices in F:
         if all(index in vertices for index in indices):
             faces.append(indices)
     mesh = Mesh.from_vertices_and_faces(V, faces)
     mesh.remove_unused_vertices()
-    viewer.add(mesh, facecolor=Color.from_i(random()))
+    viewer.add(mesh, facecolor=color)
 
 viewer.run()

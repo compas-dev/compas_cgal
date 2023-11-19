@@ -2,13 +2,13 @@
 compas_cgal.subdivision
 ********************************************************************************
 
-.. currentmodule:: compas_cgal
-
-Functions
-=========
+.. currentmodule:: compas_cgal.subdivision
 
 .. autosummary::
     :toctree: generated/
     :nosignatures:
 
-    subdivision.catmull_clark
+    mesh_subdivide_catmull_clark
+    mesh_subdivide_loop
+    mesh_subdivide_sqrt3
+

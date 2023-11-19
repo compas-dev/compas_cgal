@@ -2,13 +2,10 @@
 compas_cgal.meshing
 ********************************************************************************
 
-.. currentmodule:: compas_cgal
-
-Functions
-=========
+.. currentmodule:: compas_cgal.meshing
 
 .. autosummary::
     :toctree: generated/
     :nosignatures:
 
-    meshing.remesh
+    mesh_remesh

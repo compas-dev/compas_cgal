@@ -46,8 +46,9 @@ mesh = Mesh.from_vertices_and_faces(V, F)
 # ==============================================================================
 
 viewer = App(width=1600, height=900)
-viewer.view.camera.position = [0, -20, 10]
+viewer.view.camera.position = [0, -25, 10]
 viewer.view.camera.look_at([0, 0, 0])
 
-viewer.add(mesh, facecolor=(0.7, 0.7, 0.7))
+viewer.add(bunny.transformed(Translation.from_vector([-10, 0, 0])))
+viewer.add(mesh.transformed(Translation.from_vector([+10, 0, 0])))
 viewer.run()
