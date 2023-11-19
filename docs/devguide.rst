@@ -18,20 +18,20 @@ The requirements are slightly different on Windows...
 
 .. tab-set::
 
-    .. tab-item:: OSX / Linux
+    .. tab-item:: OSX
         :selected:
 
         .. code-block:: bash
 
             cd compas_cgal
-            conda env create -f environment.yml
+            conda env create -f env_osx.yml
 
     .. tab-item:: Windows
 
         .. code-block:: bash
 
             cd compas_cgal
-            conda env create -f environment_win.yml
+            conda env create -f env_win.yml
 
 Note, that this will immediately also build :mod:`compas_cgal` for your system.
 
