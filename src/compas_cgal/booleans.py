@@ -192,8 +192,8 @@ def split_mesh_mesh(
     >>> A = box.to_vertices_and_faces(triangulated=True)
     >>> B = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
 
-    >>> C = split_mesh_mesh(A, B)
-    >>> shape = Polyhedron(*C)
+    >>> V, F = split_mesh_mesh(A, B)
+    >>> shape = Polyhedron(V.tolist(), F.tolist())
 
     """
     return _boolean(A, B, "split")

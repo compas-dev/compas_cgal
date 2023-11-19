@@ -7,7 +7,7 @@ from compas.plugins import plugin
 
 
 @plugin(category="trimesh", pluggable_name="trimesh_remesh")
-def remesh(
+def mesh_remesh(
     mesh: VerticesFaces,
     target_edge_length: float,
     number_of_iterations: int = 10,
@@ -38,12 +38,12 @@ def remesh(
     Examples
     --------
     >>> from compas.geometry import Sphere, Polyhedron
-    >>> from compas_cgal.meshing import remesh
+    >>> from compas_cgal.meshing import mesh_remesh
 
     >>> sphere = Sphere(0.5, point=[1, 1, 1])
     >>> mesh = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
 
-    >>> V, F = remesh(mesh, 1.0)
+    >>> V, F = mesh_remesh(mesh, 1.0)
     >>> shape = Polyhedron(V.tolist(), F.tolist())
 
     """

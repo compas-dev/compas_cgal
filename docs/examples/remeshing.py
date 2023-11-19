@@ -6,10 +6,9 @@ from compas.geometry import Vector
 from compas.geometry import Rotation
 from compas.geometry import Translation
 from compas.geometry import Scale
-
+from compas.datastructures import Mesh
+from compas_cgal.meshing import mesh_remesh
 from compas_view2.app import App
-
-from compas_cgal.trimesh import TriMesh
 
 HERE = Path(__file__).parent.absolute()
 FILE = HERE.parent.parent / "data" / "Bunny.ply"
@@ -18,15 +17,15 @@ FILE = HERE.parent.parent / "data" / "Bunny.ply"
 # Get the bunny and construct a mesh
 # ==============================================================================
 
-bunny = TriMesh.from_ply(FILE)
+bunny = Mesh.from_ply(FILE)
 
-bunny.cull_vertices()
+bunny.remove_unused_vertices()
 
 # ==============================================================================
 # Move the bunny to the origin and rotate it upright.
 # ==============================================================================
 
-vector = scale_vector(bunny.centroid, -1)
+vector = scale_vector(bunny.centroid(), -1)
 
 T = Translation.from_vector(vector)
 S = Scale.from_factors([100, 100, 100])
@@ -38,8 +37,9 @@ bunny.transform(R * S * T)
 # Remesh
 # ==============================================================================
 
-bunny.remesh(bunny.average_edge_length)
-mesh = bunny.to_mesh()
+V, F = mesh_remesh(bunny.to_vertices_and_faces(), 0.3, 10)
+
+mesh = Mesh.from_vertices_and_faces(V, F)
 
 # ==============================================================================
 # Visualize

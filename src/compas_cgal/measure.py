@@ -6,7 +6,7 @@ from compas.plugins import plugin
 
 
 @plugin(category="trimesh", pluggable_name="trimesh_volume")
-def volume(mesh: VerticesFaces) -> float:
+def mesh_volume(mesh: VerticesFaces) -> float:
     """Compute the volume of a closed triangle mesh.
 
     Parameters
@@ -22,12 +22,12 @@ def volume(mesh: VerticesFaces) -> float:
     Examples
     --------
     >>> from compas.geometry import Box
-    >>> from compas_cgal.measure import volume
+    >>> from compas_cgal.measure import mesh_volume
 
     >>> box = Box(1)
     >>> mesh = box.to_vertices_and_faces(triangulated=True)
 
-    >>> volume(mesh)
+    >>> mesh_volume(mesh)
     1.0
 
     """
@@ -35,3 +35,20 @@ def volume(mesh: VerticesFaces) -> float:
     V = np.asarray(V, dtype=np.float64)
     F = np.asarray(F, dtype=np.int32)
     return measure.volume(V, F)
+
+
+def mesh_area(mesh: VerticesFaces) -> float:
+    """Compute the area of a triangle mesh.
+
+    Parameters
+    ----------
+    mesh : :attr:`compas_cgal.types.VerticesFaces`
+        The mesh.
+
+    Returns
+    -------
+    float
+        The area of the mesh.
+
+    """
+    raise NotImplementedError

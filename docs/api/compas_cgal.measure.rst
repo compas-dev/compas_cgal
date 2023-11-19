@@ -11,4 +11,4 @@ Functions
     :toctree: generated/
     :nosignatures:
 
-    measure.volume
+    measure.mesh_volume

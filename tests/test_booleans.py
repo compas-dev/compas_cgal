@@ -3,7 +3,7 @@ from compas.geometry import Sphere
 from compas.datastructures import Mesh
 
 from compas_cgal.booleans import boolean_union_mesh_mesh
-from compas_cgal.meshing import remesh
+from compas_cgal.meshing import mesh_remesh
 
 
 def test_booleans():
@@ -21,7 +21,7 @@ def test_booleans():
     # Remesh the sphere
     # ==============================================================================
 
-    B = remesh(B, 0.3, 10)
+    B = mesh_remesh(B, 0.3, 10)
 
     # ==============================================================================
     # Compute the boolean mesh

@@ -6,8 +6,9 @@ from compas.geometry import Vector
 from compas.geometry import Rotation
 from compas.geometry import Translation
 from compas.geometry import Scale
+from compas.datastructures import Mesh
+from compas_cgal.meshing import mesh_remesh
 
-from compas_cgal.trimesh import TriMesh
 from compas_cgal import HERE
 
 
@@ -18,9 +19,9 @@ def test_remeshing():
     # Get the bunny and construct a mesh
     # ==============================================================================
 
-    bunny = TriMesh.from_ply(FILE)
+    bunny = Mesh.from_ply(FILE)
 
-    bunny.cull_vertices()
+    bunny.remove_unused_vertices()
 
     # ==============================================================================
     # Move the bunny to the origin and rotate it upright.
@@ -38,8 +39,7 @@ def test_remeshing():
     # Remesh
     # ==============================================================================
 
-    length = bunny.average_edge_length
+    V, F = mesh_remesh(bunny, 1)
 
-    bunny.remesh(4 * length)
-
-    bunny.to_mesh()
+    mesh = Mesh.from_vertices_and_faces(V, F)
+    print(mesh)
