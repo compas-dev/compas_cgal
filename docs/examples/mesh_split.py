@@ -1,11 +1,10 @@
-from compas.geometry import Box
-from compas.geometry import Sphere
-from compas.geometry import Polyhedron
-
+from random import random
+from compas.geometry import Box, Sphere
+from compas.datastructures import Mesh
+from compas.colors import Color
 from compas_view2.app import App
 
-from compas_cgal.booleans import boolean_union_mesh_mesh
-from compas_cgal.meshing import remesh
+from compas_cgal.booleans import split_mesh_mesh
 
 # ==============================================================================
 # Make a box and a sphere
@@ -18,26 +17,28 @@ sphere = Sphere(1, point=[1, 1, 1])
 B = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
 
 # ==============================================================================
-# Remesh the sphere
+# Compute the mesh split
 # ==============================================================================
 
-B = remesh(B, 0.3, 50)
+V, F = split_mesh_mesh(A, B)
+
+mesh = Mesh.from_vertices_and_faces(V, F)
 
 # ==============================================================================
-# Compute the boolean mesh
-# ==============================================================================
-
-V, F = boolean_union_mesh_mesh(A, B)
-shape = Polyhedron(V.tolist(), F.tolist())  # revise the Shape API
-
-# ==============================================================================
-# Visualize
+# Seperate disjoint faces and visualize
 # ==============================================================================
 
 viewer = App(width=1600, height=900)
 viewer.view.camera.position = [5, -4, 2]
-viewer.view.camera.look_at([0, 1, 0])
+viewer.view.camera.look_at([0, 0, 0])
 
-viewer.add(shape, linewidth=2)
+for vertices in mesh.connected_components():
+    faces = []
+    for indices in F:
+        if all(index in vertices for index in indices):
+            faces.append(indices)
+    mesh = Mesh.from_vertices_and_faces(V, faces)
+    mesh.remove_unused_vertices()
+    viewer.add(mesh, facecolor=Color.from_i(random()))
 
 viewer.run()

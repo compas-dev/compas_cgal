@@ -7,5 +7,5 @@ Mesh Split
     :class: figure-img img-fluid
 
 
-.. literalinclude:: booleans_split.py
+.. literalinclude:: mesh_split.py
     :language: python

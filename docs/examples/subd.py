@@ -11,15 +11,15 @@ box = Box.from_diagonal(([0, 0, 0], [1, 1, 1]))
 
 V, F = box.to_vertices_and_faces()
 
-VF2 = catmull_clark((V, F), 2)
-VF4 = catmull_clark((V, F), 4)
-VF6 = catmull_clark((V, F), 6)
-VF8 = catmull_clark((V, F), 8)
+V2, F2 = catmull_clark((V, F), 2)
+V4, F4 = catmull_clark((V, F), 4)
+V6, F6 = catmull_clark((V, F), 6)
+V8, F8 = catmull_clark((V, F), 8)
 
-S2 = Polyhedron(*VF2)
-S4 = Polyhedron(*VF4)
-S6 = Polyhedron(*VF6)
-S8 = Polyhedron(*VF8)
+S2 = Polyhedron(V2.tolist(), F2.tolist())
+S4 = Polyhedron(V4.tolist(), F4.tolist())
+S6 = Polyhedron(V6.tolist(), F6.tolist())
+S8 = Polyhedron(V8.tolist(), F8.tolist())
 
 S2.transform(Translation.from_vector([1, 0, 0]))
 S4.transform(Translation.from_vector([2, 0, 0]))
@@ -30,11 +30,9 @@ S8.transform(Translation.from_vector([4, 0, 0]))
 # Viz
 # ==============================================================================
 
-viewer = App(width=1200, height=750)
-viewer.view.camera.tx = -2.5
-viewer.view.camera.ty = -1
-viewer.view.camera.rz = 0
-viewer.view.camera.distance = 5
+viewer = App(width=1600, height=900)
+viewer.view.camera.position = [5, -2, 0.5]
+viewer.view.camera.look_at([3, 1, 0.5])
 
 viewer.add(box)
 viewer.add(S2)

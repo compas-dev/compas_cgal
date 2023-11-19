@@ -1,5 +1,5 @@
-import os
 import math
+from pathlib import Path
 
 from compas.geometry import scale_vector
 from compas.geometry import Vector
@@ -11,8 +11,8 @@ from compas_view2.app import App
 
 from compas_cgal.trimesh import TriMesh
 
-HERE = os.path.dirname(__file__)
-FILE = os.path.join(HERE, '../..', 'data', 'Bunny.ply')
+HERE = Path(__file__).parent.absolute()
+FILE = HERE.parent.parent / "data" / "Bunny.ply"
 
 # ==============================================================================
 # Get the bunny and construct a mesh
@@ -38,18 +38,16 @@ bunny.transform(R * S * T)
 # Remesh
 # ==============================================================================
 
-length = bunny.average_edge_length
-
-bunny.remesh(4 * length)
-
+bunny.remesh(bunny.average_edge_length)
 mesh = bunny.to_mesh()
 
 # ==============================================================================
 # Visualize
 # ==============================================================================
 
-viewer = App()
+viewer = App(width=1600, height=900)
+viewer.view.camera.position = [0, -20, 10]
+viewer.view.camera.look_at([0, 0, 0])
 
 viewer.add(mesh, facecolor=(0.7, 0.7, 0.7))
-
 viewer.run()
