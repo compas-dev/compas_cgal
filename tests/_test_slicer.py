@@ -12,8 +12,7 @@ from compas_cgal.slicer import slice_mesh
 
 
 def test_slicer():
-
-    FILE = os.path.join(HERE, '..', 'data', '3DBenchy.stl')
+    FILE = os.path.join(HERE, "..", "data", "3DBenchy.stl")
 
     # ==============================================================================
     # Get benchy and construct a mesh

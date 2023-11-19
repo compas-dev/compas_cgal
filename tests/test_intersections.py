@@ -10,7 +10,6 @@ from compas_cgal._cgal import intersections
 
 
 def test_intersections():
-
     A = Sphere(Point(0, 0, 0), 1.0)
     A = Mesh.from_shape(A, u=50, v=50)
     A.quads_to_triangles()
@@ -30,7 +29,9 @@ def test_intersections():
     polylines = []
     pointsets = intersections.intersection_mesh_mesh(VA, FA, VB, FB)
     for points in pointsets:
-        points = [Point(*point) for point in points]  # otherwise Polygon throws an error
+        points = [
+            Point(*point) for point in points
+        ]  # otherwise Polygon throws an error
         polyline = Polyline(points)
         polylines.append(polyline)
 

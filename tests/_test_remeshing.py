@@ -12,8 +12,7 @@ from compas_cgal import HERE
 
 
 def test_remeshing():
-
-    FILE = os.path.join(HERE, '..', 'data', 'Bunny.ply')
+    FILE = os.path.join(HERE, "..", "data", "Bunny.ply")
 
     # ==============================================================================
     # Get the bunny and construct a mesh
