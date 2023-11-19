@@ -6,7 +6,7 @@ from compas_cgal._cgal import subdivision
 
 
 def mesh_subdivide_catmull_clark(mesh: VerticesFaces, k=1) -> VerticesFacesNumpy:
-    """Subdivide a mesh withe the Catmull Clark scheme.
+    """Subdivide a mesh with the Catmull Clark scheme.
 
     Parameters
     ----------
@@ -38,7 +38,7 @@ def mesh_subdivide_catmull_clark(mesh: VerticesFaces, k=1) -> VerticesFacesNumpy
 
 
 def mesh_subdivide_loop(mesh: VerticesFaces, k=1) -> VerticesFacesNumpy:
-    """Subdivide a mesh withe the Loop scheme.
+    """Subdivide a mesh with the Loop scheme.
 
     Parameters
     ----------
@@ -52,4 +52,28 @@ def mesh_subdivide_loop(mesh: VerticesFaces, k=1) -> VerticesFacesNumpy:
     :attr:`compas_cgal.types.VerticesFacesNumpy`
 
     """
-    raise NotImplementedError
+    V, F = mesh
+    V = np.asarray(V, dtype=np.float64)
+    F = np.asarray(F, dtype=np.int32)
+    return subdivision.subd_loop(V, F, k)
+
+
+def mesh_subdivide_sqrt3(mesh: VerticesFaces, k=1) -> VerticesFacesNumpy:
+    """Subdivide a mesh with the Sqrt3 scheme.
+
+    Parameters
+    ----------
+    mesh : :attr:`compas_cgal.types.VerticesFaces`
+        The mesh to remesh.
+    k : int, optional
+        The number of subdivision steps.
+
+    Returns
+    -------
+    :attr:`compas_cgal.types.VerticesFacesNumpy`
+
+    """
+    V, F = mesh
+    V = np.asarray(V, dtype=np.float64)
+    F = np.asarray(F, dtype=np.int32)
+    return subdivision.subd_sqrt3(V, F, k)
