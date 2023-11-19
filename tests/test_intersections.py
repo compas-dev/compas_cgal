@@ -1,9 +1,6 @@
-import numpy as np
-
 from compas.geometry import Point
 from compas.geometry import Sphere
 from compas.geometry import Polyline
-from compas.datastructures import Mesh
 
 
 from compas_cgal.intersections import intersection_mesh_mesh
