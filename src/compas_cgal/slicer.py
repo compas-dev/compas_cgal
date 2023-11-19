@@ -23,11 +23,11 @@ def slice_mesh_planes(mesh: VerticesFaces, planes: Planes) -> PolylinesNumpy:
 
     Examples
     --------
-    >>> from compas.geometry import Sphere, Plane, Polylines
+    >>> from compas.geometry import Sphere, Plane, Polyline
     >>> from compas.utilities import linspace
     >>> from compas_cgal.slicer import slice_mesh
 
-    >>> sphere = Sphere([0, 0, 1.0], 1.0)
+    >>> sphere = Sphere(1.0, point=[0, 0, 1.0])
     >>> mesh = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
 
     >>> planes = [Plane([0, 0, z], [0, 0, 1.0]) for z in linspace(0.1, 1.9, 19)]

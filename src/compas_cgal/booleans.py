@@ -76,7 +76,7 @@ def boolean_union_mesh_mesh(
     Examples
     --------
     >>> from compas.geometry import Box, Sphere, Polyhedron
-    >>> from compas_cgal.booleans import boolean_union
+    >>> from compas_cgal.booleans import boolean_union_mesh_mesh
 
     >>> box = Box(1)
     >>> sphere = Sphere(0.5, point=[1, 1, 1])
@@ -84,7 +84,7 @@ def boolean_union_mesh_mesh(
     >>> A = box.to_vertices_and_faces(triangulated=True)
     >>> B = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
 
-    >>> C = boolean_union(A, B)
+    >>> C = boolean_union_mesh_mesh(A, B)
     >>> shape = Polyhedron(*C)
 
     """
@@ -112,7 +112,7 @@ def boolean_difference_mesh_mesh(
     Examples
     --------
     >>> from compas.geometry import Box, Sphere, Polyhedron
-    >>> from compas_cgal.booleans import boolean_difference
+    >>> from compas_cgal.booleans import boolean_difference_mesh_mesh
 
     >>> box = Box(1)
     >>> sphere = Sphere(0.5, point=[1, 1, 1])
@@ -120,7 +120,7 @@ def boolean_difference_mesh_mesh(
     >>> A = box.to_vertices_and_faces(triangulated=True)
     >>> B = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
 
-    >>> C = boolean_difference(A, B)
+    >>> C = boolean_difference_mesh_mesh(A, B)
     >>> shape = Polyhedron(*C)
 
     """
@@ -148,7 +148,7 @@ def boolean_intersection_mesh_mesh(
     Examples
     --------
     >>> from compas.geometry import Box, Sphere, Polyhedron
-    >>> from compas_cgal.booleans import boolean_intersection
+    >>> from compas_cgal.booleans import boolean_intersection_mesh_mesh
 
     >>> box = Box(1)
     >>> sphere = Sphere(0.5, point=[1, 1, 1])
@@ -156,7 +156,7 @@ def boolean_intersection_mesh_mesh(
     >>> A = box.to_vertices_and_faces(triangulated=True)
     >>> B = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
 
-    >>> C = boolean_intersection(A, B)
+    >>> C = boolean_intersection_mesh_mesh(A, B)
     >>> shape = Polyhedron(*C)
 
     """

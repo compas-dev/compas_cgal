@@ -43,8 +43,8 @@ def remesh(
     >>> sphere = Sphere(0.5, point=[1, 1, 1])
     >>> mesh = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
 
-    >>> result = remesh(mesh)
-    >>> shape = Polyhedron(*result)
+    >>> V, F = remesh(mesh, 1.0)
+    >>> shape = Polyhedron(V.tolist(), F.tolist())
 
     """
     V, F = mesh
