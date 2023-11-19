@@ -5,6 +5,26 @@ from compas_cgal._cgal import measure
 from compas.plugins import plugin
 
 
+def mesh_area(mesh: VerticesFaces) -> float:
+    """Compute the area of a triangle mesh.
+
+    Parameters
+    ----------
+    mesh : :attr:`compas_cgal.types.VerticesFaces`
+        The mesh.
+
+    Returns
+    -------
+    float
+        The area of the mesh.
+
+    """
+    V, F = mesh
+    V = np.asarray(V, dtype=np.float64)
+    F = np.asarray(F, dtype=np.int32)
+    return measure.area(V, F)
+
+
 @plugin(category="trimesh", pluggable_name="trimesh_volume")
 def mesh_volume(mesh: VerticesFaces) -> float:
     """Compute the volume of a closed triangle mesh.
@@ -37,8 +57,8 @@ def mesh_volume(mesh: VerticesFaces) -> float:
     return measure.volume(V, F)
 
 
-def mesh_area(mesh: VerticesFaces) -> float:
-    """Compute the area of a triangle mesh.
+def mesh_centroid(mesh: VerticesFaces) -> list[float]:
+    """Compute the centroid of a the volume of a closed triangle mesh.
 
     Parameters
     ----------
@@ -47,8 +67,11 @@ def mesh_area(mesh: VerticesFaces) -> float:
 
     Returns
     -------
-    float
-        The area of the mesh.
+    list
+        The centroid of the mesh.
 
     """
-    raise NotImplementedError
+    V, F = mesh
+    V = np.asarray(V, dtype=np.float64)
+    F = np.asarray(F, dtype=np.int32)
+    return measure.centroid(V, F)
