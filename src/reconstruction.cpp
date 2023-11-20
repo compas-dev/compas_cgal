@@ -68,12 +68,21 @@ pointset_outlier_removal(
 
     const double average_spacing = CGAL::compute_average_spacing<CGAL::Sequential_tag>(points, nnnbrs);
 
-    std::vector<Point>::iterator first_to_remove = CGAL::remove_outliers<CGAL::Parallel_if_available_tag>(
+    std::vector<Point>::iterator to_remove = CGAL::remove_outliers<CGAL::Parallel_if_available_tag>(
         points,
         nnnbrs,
         CGAL::parameters::threshold_percent(100.).threshold_distance(radius * average_spacing));
 
-    points.erase(first_to_remove, points.end());
+    // std::vector<std::size_t> outliers;
+    // for (it; it != points.end(); ++it)
+    // {
+    //     std::size_t index = std::distance(points.begin(), it);
+    //     outliers.push_back(index);
+    // }
+
+    // return outliers;
+
+    points.erase(to_remove, points.end());
     std::vector<Point>(points).swap(points);
 
     std::size_t s = points.size();
