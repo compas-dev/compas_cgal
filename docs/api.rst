@@ -9,6 +9,7 @@ API Reference
     api/compas_cgal.intersections
     api/compas_cgal.measure
     api/compas_cgal.meshing
+    api/compas_cgal.reconstruction
     api/compas_cgal.slicer
     api/compas_cgal.skeletonization
     api/compas_cgal.subdivision
