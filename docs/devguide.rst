@@ -132,3 +132,28 @@ Example
 =======
 
 Coming soon!
+
+
+Include Path
+============
+
+To avoid having VS Code complain about missing includes, add the following to ``.vscode/c_cpp_properties.json``.
+
+.. code-block:: json
+
+    {
+        "configurations": [
+            {
+                ...
+                "includePath": [
+                    "${workspaceFolder}/**",
+                    "/path/to/(mini)conda/envs/cgal-dev/include",
+                    "/path/to/(mini)conda/envs/cgal-dev/include/python3.9",
+                    "/path/to/(mini)conda/envs/cgal-dev/include/eigen3"
+                ],
+                ...
+            },
+        ...
+    }
+
+Replace ``/path/to/(mini)conda`` with the actual path to your (mini)conda installation.
