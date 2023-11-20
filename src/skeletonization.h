@@ -3,8 +3,10 @@
 
 #include <compas.h>
 
-// std::vector<compas::RowMatrixXd>
-void pmp_mesh_skeleton(
+typedef std::tuple<std::vector<double>, std::vector<double>> Edge;
+typedef std::list<Edge> Edges;
+
+Edges pmp_mesh_skeleton(
     Eigen::Ref<const compas::RowMatrixXd> &V,
     Eigen::Ref<const compas::RowMatrixXi> &F);
 
