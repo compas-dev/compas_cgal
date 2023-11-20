@@ -8,3 +8,5 @@ compas_cgal.reconstruction
     :toctree: generated/
     :nosignatures:
 
+    pointset_outlier_removal
+    poisson_surface_reconstruction

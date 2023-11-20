@@ -41,6 +41,15 @@ public:
     }
 };
 
+/**
+ * @brief Construct a Polyhedron_3 from vertices and faces.
+ *
+ * @param V vx3 matrix of vertex coordinates.
+ * @param F fx3 matrix of face vertex indices.
+ * @return Polyhedron
+ *
+ * @todo: add support for Ngon faces.
+ */
 Polyhedron polyhedron_from_vertices_and_faces(
     const compas::RowMatrixXd &V,
     const compas::RowMatrixXi &F)
@@ -51,6 +60,18 @@ Polyhedron polyhedron_from_vertices_and_faces(
     return polyhedron;
 }
 
+/**
+ * @brief Construct a Surface_mesh from vertices and faces.
+ *
+ * @param V vx3 matrix of vertex coordinates.
+ * @param F fx3 matrix of face vertex indices.
+ * @return Mesh
+ *
+ * @todo: change name to trimesh_from_vertices_and_faces.
+ * @todo: check that all faces are triangles.
+ * @todo: add error message if not all faces are triangles.
+ *
+ */
 Mesh compas::mesh_from_vertices_and_faces(
     const compas::RowMatrixXd &V,
     const compas::RowMatrixXi &F)
@@ -81,6 +102,15 @@ Mesh compas::mesh_from_vertices_and_faces(
     return mesh;
 }
 
+/**
+ * @brief Constrcut a Surface_mesh from vertices and faces.
+ *
+ * @param V nx3 matrix of vertex coordinates.
+ * @param faces list of list of vertex indices.
+ * @return Mesh
+ *
+ * @todo: rename to mesh_from_vertices_and_faces.
+ */
 Mesh compas::ngon_from_vertices_and_faces(
     const compas::RowMatrixXd &V,
     const std::vector<std::vector<int>> &faces)
@@ -95,11 +125,11 @@ Mesh compas::ngon_from_vertices_and_faces(
         index_descriptor[i] = mesh.add_vertex(Kernel::Point_3(V(i, 0), V(i, 1), V(i, 2)));
     }
 
-    for (int i = 0; i < faces.size(); i++)
+    for (std::size_t i = 0; i < faces.size(); i++)
     {
         std::vector<Mesh::Vertex_index> face;
 
-        for (int j = 0; j < faces[i].size(); j++)
+        for (std::size_t j = 0; j < faces[i].size(); j++)
         {
             face.push_back(index_descriptor[faces[i][j]]);
         }
@@ -110,12 +140,23 @@ Mesh compas::ngon_from_vertices_and_faces(
     return mesh;
 }
 
+/**
+ * @brief Convert a Surface_mesh to vertices and faces.
+ *
+ * @param mesh A Surface_mesh containing only triangles.
+ * @return std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
+ *
+ * @todo: rename to trimesh_to_vertices_and_faces.
+ * @todo: check that all faces are triangles.
+ * @todo: add error message if not all faces are triangles.
+ *
+ */
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 compas::mesh_to_vertices_and_faces(
     const Mesh &mesh)
 {
-    int v = mesh.number_of_vertices();
-    int f = mesh.number_of_faces();
+    std::size_t v = mesh.number_of_vertices();
+    std::size_t f = mesh.number_of_faces();
 
     compas::RowMatrixXd V(v, 3);
     compas::RowMatrixXi F(f, 3);
@@ -143,12 +184,22 @@ compas::mesh_to_vertices_and_faces(
     return result;
 }
 
+/**
+ * @brief Convert a Surface_mesh to vertices and faces.
+ *
+ * @param mesh A Surface_mesh containing only quads.
+ * @return std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
+ *
+ * @todo: check that all faces are quads.
+ * @todo: add error message if not all faces are quads.
+ *
+ */
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 compas::quadmesh_to_vertices_and_faces(
     const Mesh &mesh)
 {
-    int v = mesh.number_of_vertices();
-    int f = mesh.number_of_faces();
+    std::size_t v = mesh.number_of_vertices();
+    std::size_t f = mesh.number_of_faces();
 
     compas::RowMatrixXd V(v, 3);
     compas::RowMatrixXi F(f, 4);
@@ -176,6 +227,12 @@ compas::quadmesh_to_vertices_and_faces(
     return result;
 }
 
+/**
+ * @brief Convert a list of polylines to a list of list of point.
+ *
+ * @param polylines
+ * @return std::vector<compas::RowMatrixXd>
+ */
 std::vector<compas::RowMatrixXd>
 compas::polylines_to_lists_of_points(
     Polylines polylines)
@@ -185,7 +242,7 @@ compas::polylines_to_lists_of_points(
     for (auto i = polylines.begin(); i != polylines.end(); i++)
     {
         const Polyline &poly = *i;
-        int n = poly.size();
+        std::size_t n = poly.size();
         compas::RowMatrixXd points(n, 3);
 
         for (int j = 0; j < n; j++)
@@ -201,28 +258,25 @@ compas::polylines_to_lists_of_points(
     return pointsets;
 }
 
+/**
+ * @brief Convert a Polyhedron_3 to vertices and faces.
+ *
+ * @param polyhedron
+ * @return std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
+ *
+ * @todo: add support for Ngon faces.
+ */
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 compas::polyhedron_to_vertices_and_faces(
     Polyhedron polyhedron)
 {
-    int v = polyhedron.size_of_vertices();
-    int f = polyhedron.size_of_facets();
+    std::size_t v = polyhedron.size_of_vertices();
+    std::size_t f = polyhedron.size_of_facets();
 
     compas::RowMatrixXd V(v, 3);
     compas::RowMatrixXi F(f, 3);
 
     std::size_t i = 0;
-
-    // for (auto vi = polyhedron.vertices_begin(); vi != polyhedron.vertices_end(); ++vi)
-    // {
-    //     V(i, 0) = (double)vi->point().x();
-    //     V(i, 1) = (double)vi->point().y();
-    //     V(i, 2) = (double)vi->point().z();
-
-    //     vi->id() = i;
-
-    //     i++;
-    // }
 
     for (Polyhedron::Vertex_handle vh : polyhedron.vertex_handles())
     {
