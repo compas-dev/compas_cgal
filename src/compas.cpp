@@ -1,6 +1,56 @@
 #include <compas.h>
 #include <pybind11/pybind11.h>
 
+template <class HDS>
+class Build_polyhedron : public CGAL::Modifier_base<HDS>
+{
+private:
+    const compas::RowMatrixXd &m_vertices;
+    const compas::RowMatrixXi &m_faces;
+
+public:
+    Build_polyhedron(const compas::RowMatrixXd &V, const compas::RowMatrixXi &F) : m_vertices(V), m_faces(F)
+    {
+    }
+
+    void operator()(HDS &hds)
+    {
+        typedef typename HDS::Vertex Vertex;
+        typedef typename Vertex::Point Point;
+
+        CGAL::Polyhedron_incremental_builder_3<HDS> Builder(hds, true);
+
+        Builder.begin_surface(m_vertices.rows(), m_faces.rows());
+
+        for (int i = 0; i < m_vertices.rows(); i++)
+        {
+            Builder.add_vertex(Point(m_vertices(i, 0), m_vertices(i, 1), m_vertices(i, 2)));
+        }
+
+        for (int i = 0; i < m_faces.rows(); i++)
+        {
+            Builder.begin_facet();
+            for (int j = 0; j < m_faces.cols(); j++)
+            {
+                Builder.add_vertex_to_facet(m_faces(i, j));
+            }
+            Builder.end_facet();
+        }
+
+        Builder.end_surface();
+    }
+};
+
+Polyhedron polyhedron_from_vertices_and_faces(
+    const compas::RowMatrixXd &V,
+    const compas::RowMatrixXi &F)
+{
+    Polyhedron polyhedron;
+    Build_polyhedron<Polyhedron::HalfedgeDS> build(V, F);
+    polyhedron.delegate(build);
+    return polyhedron;
+}
+
 Mesh compas::mesh_from_vertices_and_faces(
     const compas::RowMatrixXd &V,
     const compas::RowMatrixXi &F)
@@ -103,13 +153,13 @@ compas::quadmesh_to_vertices_and_faces(
     compas::RowMatrixXd V(v, 3);
     compas::RowMatrixXi F(f, 4);
 
-    Mesh::Property_map<Mesh::Vertex_index, Kernel::Point_3> location = mesh.points();
+    Mesh::Property_map<Mesh::Vertex_index, Kernel::Point_3> vertex_location = mesh.points();
 
     for (Mesh::Vertex_index vd : mesh.vertices())
     {
-        V(vd, 0) = (double)location[vd][0];
-        V(vd, 1) = (double)location[vd][1];
-        V(vd, 2) = (double)location[vd][2];
+        V(vd, 0) = (double)vertex_location[vd][0];
+        V(vd, 1) = (double)vertex_location[vd][1];
+        V(vd, 2) = (double)vertex_location[vd][2];
     }
 
     for (Mesh::Face_index fd : mesh.faces())
@@ -151,17 +201,58 @@ compas::polylines_to_lists_of_points(
     return pointsets;
 }
 
-// Polyhedron compas::polyhedron_from_vertices_and_faces(
-//     const RowMatrixXd &V,
-//     const RowMatrixXi &F);
-// {
-//     int v = V.rows();
-//     int f = F.rows();
+std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
+compas::polyhedron_to_vertices_and_faces(
+    Polyhedron polyhedron)
+{
+    int v = polyhedron.size_of_vertices();
+    int f = polyhedron.size_of_facets();
 
-//     Polyhedron polyhedron;
+    compas::RowMatrixXd V(v, 3);
+    compas::RowMatrixXi F(f, 3);
 
-//     polyhedron.begin_surface();
-//     polyhedron.end_surface();
+    std::size_t i = 0;
 
-//     return polyhedron;
-// }
+    // for (auto vi = polyhedron.vertices_begin(); vi != polyhedron.vertices_end(); ++vi)
+    // {
+    //     V(i, 0) = (double)vi->point().x();
+    //     V(i, 1) = (double)vi->point().y();
+    //     V(i, 2) = (double)vi->point().z();
+
+    //     vi->id() = i;
+
+    //     i++;
+    // }
+
+    for (Polyhedron::Vertex_handle vh : polyhedron.vertex_handles())
+    {
+        V(i, 0) = (double)vh->point().x();
+        V(i, 1) = (double)vh->point().y();
+        V(i, 2) = (double)vh->point().z();
+
+        vh->id() = i;
+
+        i++;
+    }
+
+    i = 0;
+
+    for (Polyhedron::Facet_handle fh : polyhedron.facet_handles())
+    {
+        std::size_t j = 0;
+
+        Polyhedron::Halfedge_handle start = fh->halfedge(), h = start;
+        do
+        {
+            F(i, j) = h->vertex()->id();
+            h = h->next();
+            j++;
+
+        } while (h != start);
+
+        i++;
+    }
+
+    std::tuple<compas::RowMatrixXd, compas::RowMatrixXi> result = std::make_tuple(V, F);
+    return result;
+}

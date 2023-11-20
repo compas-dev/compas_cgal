@@ -63,6 +63,7 @@ ext_modules = [
                 "src/subdivision.cpp",
                 "src/triangulations.cpp",
                 "src/skeletonization.cpp",
+                "src/reconstruction.cpp",
             ]
         ),
         include_dirs=["./include", get_eigen_include(), get_pybind_include()],

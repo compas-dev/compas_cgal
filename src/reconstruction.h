@@ -5,7 +5,7 @@
 
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 poisson_surface_reconstruction(
-    Eigen::Ref<const compas::RowMatrixXd> &V,
-    Eigen::Ref<const compas::RowMatrixXi> &F);
+    Eigen::Ref<const compas::RowMatrixXd> &P,
+    Eigen::Ref<const compas::RowMatrixXd> &N);
 
 #endif /* COMPAS_RECONSTRUCTION_H */
