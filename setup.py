@@ -62,6 +62,7 @@ ext_modules = [
                 "src/measure.cpp",
                 "src/subdivision.cpp",
                 "src/triangulations.cpp",
+                "src/skeletonization.cpp",
             ]
         ),
         include_dirs=["./include", get_eigen_include(), get_pybind_include()],
@@ -72,6 +73,7 @@ ext_modules = [
         language="c++",
     ),
 ]
+
 
 # cf http://bugs.python.org/issue26689
 def has_flag(compiler, flagname):

@@ -10,6 +10,7 @@ API Reference
     api/compas_cgal.measure
     api/compas_cgal.meshing
     api/compas_cgal.slicer
+    api/compas_cgal.skeletonization
     api/compas_cgal.subdivision
     api/compas_cgal.triangulation
     api/compas_cgal.types
