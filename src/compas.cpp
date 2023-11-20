@@ -60,21 +60,6 @@ Mesh compas::ngon_from_vertices_and_faces(
     return mesh;
 }
 
-// Polyhedron compas::polyhedron_from_vertices_and_faces(
-//     const RowMatrixXd &V,
-//     const RowMatrixXi &F);
-// {
-//     int v = V.rows();
-//     int f = F.rows();
-
-//     Polyhedron polyhedron;
-
-//     polyhedron.begin_surface();
-//     polyhedron.end_surface();
-
-//     return polyhedron;
-// }
-
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 compas::mesh_to_vertices_and_faces(
     const Mesh &mesh)
@@ -141,49 +126,9 @@ compas::quadmesh_to_vertices_and_faces(
     return result;
 }
 
-// TODO: rename to ResultMesh
-// construct a result mesh
-// from a CGAL surface mesh
-compas::Result
-compas::result_from_mesh(const Mesh &mesh)
-{
-    int v = mesh.number_of_vertices();
-    int f = mesh.number_of_faces();
-
-    compas::Result R;
-    compas::RowMatrixXd V(v, 3);
-    compas::RowMatrixXi F(f, 3);
-
-    Mesh::Property_map<Mesh::Vertex_index, Kernel::Point_3> location = mesh.points();
-
-    for (Mesh::Vertex_index vd : mesh.vertices())
-    {
-        V(vd, 0) = (double)location[vd][0];
-        V(vd, 1) = (double)location[vd][1];
-        V(vd, 2) = (double)location[vd][2];
-    }
-
-    for (Mesh::Face_index fd : mesh.faces())
-    {
-        int i = 0;
-        for (Mesh::Vertex_index vd : vertices_around_face(mesh.halfedge(fd), mesh))
-        {
-            F(fd, i) = (int)vd;
-            i++;
-        }
-    }
-
-    R.vertices = V;
-    R.faces = F;
-
-    return R;
-}
-
-// construct a set of result polylines
-// from CGAL polylines
-// the CGAL polylines are a list of vectors of points
 std::vector<compas::RowMatrixXd>
-compas::result_from_polylines(Polylines polylines)
+compas::polylines_to_lists_of_points(
+    Polylines polylines)
 {
     std::vector<compas::RowMatrixXd> pointsets;
 
@@ -205,3 +150,18 @@ compas::result_from_polylines(Polylines polylines)
 
     return pointsets;
 }
+
+// Polyhedron compas::polyhedron_from_vertices_and_faces(
+//     const RowMatrixXd &V,
+//     const RowMatrixXi &F);
+// {
+//     int v = V.rows();
+//     int f = F.rows();
+
+//     Polyhedron polyhedron;
+
+//     polyhedron.begin_surface();
+//     polyhedron.end_surface();
+
+//     return polyhedron;
+// }
