@@ -122,4 +122,4 @@ dist/**
 
 scripts/.idea/**
 
-docs/api/generated
+generated
