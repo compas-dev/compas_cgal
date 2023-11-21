@@ -10,8 +10,7 @@ from compas.datastructures import Mesh
 from compas_cgal.meshing import mesh_remesh
 from compas_view2.app import App
 
-HERE = Path(__file__).parent.absolute()
-FILE = HERE.parent.parent / "data" / "Bunny.ply"
+FILE = Path(__file__).parent.parent.parent / "data" / "Bunny.ply"
 
 # ==============================================================================
 # Get the bunny and construct a mesh

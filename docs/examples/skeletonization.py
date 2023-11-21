@@ -8,9 +8,7 @@ from compas_view2.objects import Collection
 from compas_cgal.skeletonization import mesh_skeleton
 from compas_cgal.subdivision import mesh_subdivide_sqrt3
 
-HERE = Path(__file__).parent
-DATA = HERE / ".." / ".." / "data"
-FILE = DATA / "elephant.off"
+FILE = Path(__file__).parent.parent.parent / "data" / "elephant.off"
 
 Rx = Rotation.from_axis_and_angle([1, 0, 0], math.radians(60))
 Ry = Rotation.from_axis_and_angle([0, 1, 0], math.radians(5))

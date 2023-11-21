@@ -6,9 +6,7 @@ from compas.geometry import Rotation, Scale
 from compas_view2.app import App
 from compas_cgal.reconstruction import poisson_surface_reconstruction
 
-HERE = Path(__file__).parent
-DATA = HERE / ".." / ".." / "data"
-FILE = DATA / "oni.xyz"
+FILE = Path(__file__).parent.parent.parent / "data" / "oni.xyz"
 
 points = []
 normals = []

@@ -11,8 +11,7 @@ from compas_view2.app import App
 
 from compas_cgal.slicer import slice_mesh_planes
 
-HERE = Path(__file__).parent.absolute()
-FILE = HERE.parent.parent / "data" / "3DBenchy.stl"
+FILE = Path(__file__).parent.parent.parent / "data" / "3DBenchy.stl"
 
 # ==============================================================================
 # Get benchy and construct a mesh
