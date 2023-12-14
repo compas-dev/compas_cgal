@@ -1,14 +1,7 @@
 # flake8: noqa
 # -*- coding: utf-8 -*-
 
-# If your documentation needs a minimal Sphinx version, state it here.
-#
-# needs_sphinx = "1.0"
-
-import inspect
-import importlib
-import re
-import sphinx_compas_theme  # this is a temp solution
+import sphinx_compas2_theme
 
 # -- General configuration ------------------------------------------------
 
@@ -18,23 +11,15 @@ author = "Tom Van Mele"
 package = "compas_cgal"
 organization = "compas-dev"
 
+master_doc = "index"
+source_suffix = {".rst": "restructuredtext", ".md": "markdown"}
+templates_path = sphinx_compas2_theme.get_autosummary_templates_path()
+exclude_patterns = sphinx_compas2_theme.default_exclude_patterns + ["reference/**"]
+add_module_names = True
+language = "en"
 
-def get_latest_version():
-    with open("../CHANGELOG.md", "r") as file:
-        content = file.read()
-        pattern = re.compile(r"## (Unreleased|\[\d+\.\d+\.\d+\])")
-        versions = pattern.findall(content)
-        latest_version = versions[0] if versions else None
-        if (
-            latest_version
-            and latest_version.startswith("[")
-            and latest_version.endswith("]")
-        ):
-            latest_version = latest_version[1:-1]
-        return latest_version
+latest_version = sphinx_compas2_theme.get_latest_version()
 
-
-latest_version = get_latest_version()
 if latest_version == "Unreleased":
     release = "Unreleased"
     version = "latest"
@@ -42,55 +27,18 @@ else:
     release = latest_version
     version = ".".join(release.split(".")[0:2])  # type: ignore
 
-master_doc = "index"
-source_suffix = {
-    ".rst": "restructuredtext",
-    ".md": "markdown",
-}
-templates_path = sphinx_compas_theme.get_autosummary_templates_path() + ["_templates"]
-exclude_patterns = ["_build", "**.ipynb_checkpoints", "_notebooks", "**/__temp"]
-
-# pygments_style = "sphinx"
-# pygments_dark_style = "monokai"
-# show_authors = True
-add_module_names = True
-language = "en"
-
-
 # -- Extension configuration ------------------------------------------------
 
-extensions = [
-    "sphinx.ext.autodoc",
-    "sphinx.ext.autosummary",
-    "sphinx.ext.doctest",
-    "sphinx.ext.intersphinx",
-    "sphinx.ext.mathjax",
-    # "sphinx.ext.linkcode",
-    "sphinx.ext.extlinks",
-    "sphinx.ext.githubpages",
-    "sphinx.ext.coverage",
-    # "sphinx.ext.inheritance_diagram",
-    "sphinx.ext.graphviz",
-    # "matplotlib.sphinxext.plot_directive",
-    "sphinx.ext.autodoc.typehints",
-    "sphinx_design",
-    "sphinx_inline_tabs",
-    "sphinx_togglebutton",
-    "sphinx_remove_toctrees",
-    "sphinx_copybutton",
-    # "sphinxcontrib.bibtex",
-    "numpydoc",
-]
+extensions = sphinx_compas2_theme.default_extensions
+extensions.remove("sphinx.ext.linkcode")
 
-# remove_from_toctrees = ["api/generated/*"]
+# numpydoc options
 
 numpydoc_show_class_members = False
 numpydoc_class_members_toctree = False
 numpydoc_attributes_as_param_list = True
 
 # bibtex options
-
-# bibtex_bibfiles = ['refs.bib']
 
 # autodoc options
 
@@ -107,18 +55,7 @@ autodoc_typehints = "description"
 autodoc_typehints_format = "short"
 autodoc_typehints_description_target = "documented"
 
-autodoc_mock_imports = [
-    "System",
-    "clr",
-    "Eto",
-    "Rhino",
-    "Grasshopper",
-    "scriptcontext",
-    "rhinoscriptsyntax",
-    "bpy",
-    "bmesh",
-    "mathutils",
-]
+autodoc_mock_imports = sphinx_compas2_theme.default_mock_imports
 
 autodoc_default_options = {
     "undoc-members": True,
@@ -129,32 +66,10 @@ autodoc_member_order = "groupwise"
 
 autoclass_content = "class"
 
-
-def skip(app, what, name, obj, would_skip, options):
-    if name.startswith("_"):
-        return True
-    return would_skip
-
-
-def setup(app):
-    app.connect("autodoc-skip-member", skip)
-
-
 # autosummary options
 
 autosummary_generate = True
-autosummary_mock_imports = [
-    "System",
-    "clr",
-    "Eto",
-    "Rhino",
-    "Grasshopper",
-    "scriptcontext",
-    "rhinoscriptsyntax",
-    "bpy",
-    "bmesh",
-    "mathutils",
-]
+autosummary_mock_imports = sphinx_compas2_theme.default_mock_imports
 
 # graph options
 
@@ -174,54 +89,11 @@ intersphinx_mapping = {
 
 # linkcode
 
-
-def linkcode_resolve(domain, info):
-    if domain != "py":
-        return None
-    if not info["module"]:
-        return None
-    if not info["fullname"]:
-        return None
-
-    package = info["module"].split(".")[0]
-    if not package.startswith(package):
-        return None
-
-    module = importlib.import_module(info["module"])
-    parts = info["fullname"].split(".")
-
-    if len(parts) == 1:
-        obj = getattr(module, info["fullname"])
-        mod = inspect.getmodule(obj)
-        if not mod:
-            return None
-        filename = mod.__name__.replace(".", "/")
-        lineno = inspect.getsourcelines(obj)[1]
-    elif len(parts) == 2:
-        obj_name, attr_name = parts
-        obj = getattr(module, obj_name)
-        attr = getattr(obj, attr_name)
-        if inspect.isfunction(attr):
-            mod = inspect.getmodule(attr)
-            if not mod:
-                return None
-            filename = mod.__name__.replace(".", "/")
-            lineno = inspect.getsourcelines(attr)[1]
-        else:
-            return None
-    else:
-        return None
-
-    return f"https://github.com/{organization}/{package}/blob/main/src/{filename}.py#L{lineno}"
-
+# linkcode_resolve = sphinx_compas2_theme.get_linkcode_resolve(organization, package)
 
 # extlinks
 
-
-extlinks = {
-    "rhino": ("https://developer.rhino3d.com/api/RhinoCommon/html/T_%s.htm", "%s"),
-    "blender": ("https://docs.blender.org/api/2.93/%s.html", "%s"),
-}
+extlinks = {}
 
 # from pytorch
 
@@ -255,67 +127,49 @@ replace(html5.HTML5Translator)
 
 # -- Options for HTML output ----------------------------------------------
 
-html_theme = "pydata_sphinx_theme"
-html_logo = "_static/compas_icon.png"
+html_theme = "sidebaronly"
 html_title = project
-html_favicon = "_static/compas.ico"
 
 html_theme_options = {
-    "logo": {
-        "text": project,
-        "image_light": "_static/compas_icon.png",
-        "image_dark": "_static/compas_icon_white.png",
-    },
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": f"https://github.com/{organization}/{package}",
+            "icon": "fa-brands fa-github",
+            "type": "fontawesome",
+        },
+        {
+            "name": "Discourse",
+            "url": "http://forum.compas-framework.org/",
+            "icon": "fa-brands fa-discourse",
+            "type": "fontawesome",
+        },
+        {
+            "name": "PyPI",
+            "url": f"https://pypi.org/project/{package}/",
+            "icon": "fa-brands fa-python",
+            "type": "fontawesome",
+        },
+    ],
     "switcher": {
         "json_url": f"https://raw.githubusercontent.com/{organization}/{package}/gh-pages/versions.json",
         "version_match": version,
     },
     "check_switcher": False,
-    "navigation_depth": 3,
-    "show_nav_level": 1,
-    "show_toc_level": 2,
-    "pygment_light_style": "default",
-    "pygment_dark_style": "monokai",
+    "logo": {
+        "image_light": "_static/compas_icon_white.png",  # relative to parent of conf.py
+        "image_dark": "_static/compas_icon_white.png",  # relative to parent of conf.py
+        "text": project,
+    },
+    "navigation_depth": 2,
 }
 
-html_theme_options["icon_links"] = [
+favicons = [
     {
-        "name": "GitHub",
-        "url": f"https://github.com/{organization}/{package}",
-        "icon": "fa-brands fa-github",
-        "type": "fontawesome",
-    },
-    {
-        "name": "Discourse",
-        "url": "http://forum.compas-framework.org/",
-        "icon": "fa-brands fa-discourse",
-        "type": "fontawesome",
-    },
-    {
-        "name": "PyPI",
-        "url": "https://pypi.org/project/compas-libigl/",
-        "icon": "fa-brands fa-python",
-        "type": "fontawesome",
-    },
+        "rel": "icon",
+        "href": "compas.ico",  # relative to the static path
+    }
 ]
-
-html_theme_options["navbar_start"] = [
-    "navbar-logo",
-]
-
-html_theme_options["navbar_end"] = [
-    "version-switcher",
-    "theme-switcher",
-    "navbar-icon-links",
-]
-
-
-html_sidebars = {
-    "**": [
-        "sbt-sidebar-nav.html",
-        "compas-sidebar-footer.html",
-    ]
-}
 
 html_context = {
     "github_url": "https://github.com",
@@ -323,11 +177,10 @@ html_context = {
     "github_repo": package,
     "github_version": "main",
     "doc_path": "docs",
-    "default_theme": "light",
 }
 
-html_static_path = ["_static"]
-html_css_files = ["compas.css"]
+html_static_path = sphinx_compas2_theme.get_html_static_path() + ["_static"]
+html_css_files = []
 html_extra_path = []
 html_last_updated_fmt = ""
 html_copy_source = False
