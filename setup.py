@@ -6,11 +6,7 @@ import os
 
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
-import sys
 import setuptools
-
-from setuptools.command.develop import develop
-from setuptools.command.install import install
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -67,9 +63,7 @@ ext_modules = [
             ]
         ),
         include_dirs=["./include", get_eigen_include(), get_pybind_include()],
-        library_dirs=[
-            get_library_dirs(),
-        ],
+        library_dirs=[get_library_dirs()],
         libraries=["mpfr", "gmp"],
         language="c++",
     ),
@@ -104,7 +98,6 @@ def cpp_flag(compiler):
 
     The newer version is prefered over c++11 (when it is available).
     """
-    # flags = ['-std=c++17', '-std=c++14', '-std=c++11']
     flags = ["-std=c++14", "-std=c++11"]
 
     for flag in flags:
@@ -125,11 +118,6 @@ class BuildExt(build_ext):
         "msvc": [],
         "unix": [],
     }
-
-    # if sys.platform == 'darwin':
-    #     darwin_opts = ['-stdlib=libc++', '-mmacosx-version-min=10.14']
-    #     c_opts['unix'] += darwin_opts
-    #     l_opts['unix'] += darwin_opts
 
     def build_extensions(self):
         ct = self.compiler.compiler_type
@@ -158,10 +146,10 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/compas-dev/compas_cgal",
     author="tom van mele",
-    author_email="van.mele@arch.ethz.ch",
+    author_email="tom.v.mele@gmail.com",
     license="GPL-3 License",
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "Topic :: Scientific/Engineering",
         "License :: OSI Approved :: GPL-3 License",
@@ -170,8 +158,6 @@ setup(
         "Operating System :: Microsoft :: Windows",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
@@ -188,7 +174,7 @@ setup(
     cmdclass={"build_ext": BuildExt},
     setup_requires=["pybind11>=2.5.0"],
     install_requires=requirements,
-    python_requires=">=3.6",
+    python_requires=">=3.8",
     extras_require=optional_requirements,
     zip_safe=False,
 )
