@@ -7,7 +7,7 @@ subd_catmullclark(
     std::vector<std::vector<int>> &faces,
     unsigned int k)
 {
-    Mesh mesh = compas::ngon_from_vertices_and_faces(V, faces);
+    compas::Mesh mesh = compas::ngon_from_vertices_and_faces(V, faces);
 
     CGAL::Subdivision_method_3::CatmullClark_subdivision(mesh, CGAL::parameters::number_of_iterations(k));
 
@@ -23,7 +23,7 @@ subd_loop(
     compas::RowMatrixXi &F,
     unsigned int k)
 {
-    Mesh mesh = compas::mesh_from_vertices_and_faces(V, F);
+    compas::Mesh mesh = compas::mesh_from_vertices_and_faces(V, F);
 
     CGAL::Subdivision_method_3::Loop_subdivision(mesh, CGAL::parameters::number_of_iterations(k));
 
@@ -39,7 +39,7 @@ subd_sqrt3(
     compas::RowMatrixXi &F,
     unsigned int k)
 {
-    Mesh mesh = compas::mesh_from_vertices_and_faces(V, F);
+    compas::Mesh mesh = compas::mesh_from_vertices_and_faces(V, F);
 
     CGAL::Subdivision_method_3::Sqrt3_subdivision(mesh, CGAL::parameters::number_of_iterations(k));
 

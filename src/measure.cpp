@@ -9,7 +9,7 @@ pmp_area(
     Eigen::Ref<const compas::RowMatrixXd> &V,
     Eigen::Ref<const compas::RowMatrixXi> &F)
 {
-    Mesh mesh = compas::mesh_from_vertices_and_faces(V, F);
+    compas::Mesh mesh = compas::mesh_from_vertices_and_faces(V, F);
 
     double area = PMP::area(mesh);
 
@@ -21,7 +21,7 @@ pmp_volume(
     Eigen::Ref<const compas::RowMatrixXd> &V,
     Eigen::Ref<const compas::RowMatrixXi> &F)
 {
-    Mesh mesh = compas::mesh_from_vertices_and_faces(V, F);
+    compas::Mesh mesh = compas::mesh_from_vertices_and_faces(V, F);
 
     double volume = PMP::volume(mesh);
 
@@ -33,9 +33,9 @@ pmp_centroid(
     Eigen::Ref<const compas::RowMatrixXd> &V,
     Eigen::Ref<const compas::RowMatrixXi> &F)
 {
-    Mesh mesh = compas::mesh_from_vertices_and_faces(V, F);
+    compas::Mesh mesh = compas::mesh_from_vertices_and_faces(V, F);
 
-    Kernel::Point_3 centroid = PMP::centroid(mesh);
+    compas::Kernel::Point_3 centroid = PMP::centroid(mesh);
 
     return std::vector<double>{centroid.x(), centroid.y(), centroid.z()};
 };

@@ -3,7 +3,7 @@
 #include <CGAL/property_map.h>
 #include <CGAL/remove_outliers.h>
 
-typedef std::pair<Point, Vector> PwN;
+typedef std::pair<compas::Point, compas::Vector> PwN;
 
 /**
  * @brief Perform Poisson surface reconstruction on an oriented pointcloud with normals.
@@ -17,14 +17,14 @@ poisson_surface_reconstruction(
     Eigen::Ref<const compas::RowMatrixXd> &P,
     Eigen::Ref<const compas::RowMatrixXd> &N)
 {
-    Polyhedron mesh;
+    compas::Polyhedron mesh;
     std::vector<PwN> points;
 
     for (int i = 0; i < P.rows(); i++)
     {
         points.push_back(PwN(
-            Point(P(i, 0), P(i, 1), P(i, 2)),
-            Vector(N(i, 0), N(i, 1), N(i, 2))));
+            compas::Point(P(i, 0), P(i, 1), P(i, 2)),
+            compas::Vector(N(i, 0), N(i, 1), N(i, 2))));
     }
 
     double average_spacing = CGAL::compute_average_spacing<CGAL::Sequential_tag>(
@@ -59,16 +59,16 @@ pointset_outlier_removal(
     double radius)
 {
     int p = P.rows();
-    std::vector<Point> points;
+    std::vector<compas::Point> points;
 
     for (int i = 0; i < p; i++)
     {
-        points.push_back(Point(P(i, 0), P(i, 1), P(i, 2)));
+        points.push_back(compas::Point(P(i, 0), P(i, 1), P(i, 2)));
     }
 
     const double average_spacing = CGAL::compute_average_spacing<CGAL::Sequential_tag>(points, nnnbrs);
 
-    std::vector<Point>::iterator to_remove = CGAL::remove_outliers<CGAL::Parallel_if_available_tag>(
+    std::vector<compas::Point>::iterator to_remove = CGAL::remove_outliers<CGAL::Parallel_if_available_tag>(
         points,
         nnnbrs,
         CGAL::parameters::threshold_percent(100.).threshold_distance(radius * average_spacing));
@@ -83,7 +83,7 @@ pointset_outlier_removal(
     // return outliers;
 
     points.erase(to_remove, points.end());
-    std::vector<Point>(points).swap(points);
+    std::vector<compas::Point>(points).swap(points);
 
     std::size_t s = points.size();
     compas::RowMatrixXd result(s, 3);

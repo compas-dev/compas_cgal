@@ -14,11 +14,11 @@ pmp_remesh(
     unsigned int number_of_iterations,
     bool do_project)
 {
-    Mesh mesh = compas::mesh_from_vertices_and_faces(V, F);
+    compas::Mesh mesh = compas::mesh_from_vertices_and_faces(V, F);
 
     // protect sharp features
 
-    // typedef boost::property_map<Mesh, CGAL::edge_is_feature_t>::type EIFMap;
+    // typedef boost::property_map<compas::Mesh, CGAL::edge_is_feature_t>::type EIFMap;
     // EIFMap eif = get(CGAL::edge_is_feature, mesh);
     // PMP::detect_sharp_edges(mesh, 60, eif);
 
