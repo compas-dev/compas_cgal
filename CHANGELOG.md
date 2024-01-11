@@ -13,6 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [0.5.0] 2024-01-10
+
+### Added
+
+### Changed
+* The main include types like `Point`, `Vector`, `Polyline` and etc. are placed to the `compas` namespace because these names are very generic. For example if you want to run CGAL normal estimation, you get a clash with Windows Polyline class (the same name).
+
+### Removed
+
 
 ## [0.5.0] 2022-10-07
 

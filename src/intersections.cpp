@@ -10,10 +10,10 @@ pmp_intersection_mesh_mesh(
     Eigen::Ref<const compas::RowMatrixXd> &VB,
     Eigen::Ref<const compas::RowMatrixXi> &FB)
 {
-    Mesh A = compas::mesh_from_vertices_and_faces(VA, FA);
-    Mesh B = compas::mesh_from_vertices_and_faces(VB, FB);
+    compas::Mesh A = compas::mesh_from_vertices_and_faces(VA, FA);
+    compas::Mesh B = compas::mesh_from_vertices_and_faces(VB, FB);
 
-    Polylines polylines;
+    compas::Polylines polylines;
 
     PMP::surface_intersection(A, B, std::back_inserter(polylines));
 

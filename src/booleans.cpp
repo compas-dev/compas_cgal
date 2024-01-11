@@ -11,9 +11,9 @@ pmp_boolean_union(
     Eigen::Ref<const compas::RowMatrixXd> &VB,
     Eigen::Ref<const compas::RowMatrixXi> &FB)
 {
-    Mesh A = compas::mesh_from_vertices_and_faces(VA, FA);
-    Mesh B = compas::mesh_from_vertices_and_faces(VB, FB);
-    Mesh C;
+    compas::Mesh A = compas::mesh_from_vertices_and_faces(VA, FA);
+    compas::Mesh B = compas::mesh_from_vertices_and_faces(VB, FB);
+    compas::Mesh C;
 
     PMP::corefine_and_compute_union(A, B, C);
 
@@ -31,9 +31,9 @@ pmp_boolean_difference(
     Eigen::Ref<const compas::RowMatrixXd> &VB,
     Eigen::Ref<const compas::RowMatrixXi> &FB)
 {
-    Mesh A = compas::mesh_from_vertices_and_faces(VA, FA);
-    Mesh B = compas::mesh_from_vertices_and_faces(VB, FB);
-    Mesh C;
+    compas::Mesh A = compas::mesh_from_vertices_and_faces(VA, FA);
+    compas::Mesh B = compas::mesh_from_vertices_and_faces(VB, FB);
+    compas::Mesh C;
 
     PMP::corefine_and_compute_difference(A, B, C);
 
@@ -51,9 +51,9 @@ pmp_boolean_intersection(
     Eigen::Ref<const compas::RowMatrixXd> &VB,
     Eigen::Ref<const compas::RowMatrixXi> &FB)
 {
-    Mesh A = compas::mesh_from_vertices_and_faces(VA, FA);
-    Mesh B = compas::mesh_from_vertices_and_faces(VB, FB);
-    Mesh C;
+    compas::Mesh A = compas::mesh_from_vertices_and_faces(VA, FA);
+    compas::Mesh B = compas::mesh_from_vertices_and_faces(VB, FB);
+    compas::Mesh C;
 
     PMP::corefine_and_compute_intersection(A, B, C);
 
@@ -71,8 +71,8 @@ pmp_split(
     Eigen::Ref<const compas::RowMatrixXd> &VB,
     Eigen::Ref<const compas::RowMatrixXi> &FB)
 {
-    Mesh A = compas::mesh_from_vertices_and_faces(VA, FA);
-    Mesh B = compas::mesh_from_vertices_and_faces(VB, FB);
+    compas::Mesh A = compas::mesh_from_vertices_and_faces(VA, FA);
+    compas::Mesh B = compas::mesh_from_vertices_and_faces(VB, FB);
     PMP::split(A, B);
 
     std::tuple<compas::RowMatrixXd, compas::RowMatrixXi> R = compas::mesh_to_vertices_and_faces(A);

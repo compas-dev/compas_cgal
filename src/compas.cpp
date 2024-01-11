@@ -46,16 +46,16 @@ public:
  *
  * @param V vx3 matrix of vertex coordinates.
  * @param F fx3 matrix of face vertex indices.
- * @return Polyhedron
+ * @return compas::Polyhedron
  *
  * @todo: add support for Ngon faces.
  */
-Polyhedron polyhedron_from_vertices_and_faces(
+compas::Polyhedron compas::polyhedron_from_vertices_and_faces(
     const compas::RowMatrixXd &V,
     const compas::RowMatrixXi &F)
 {
-    Polyhedron polyhedron;
-    Build_polyhedron<Polyhedron::HalfedgeDS> build(V, F);
+    compas::Polyhedron polyhedron;
+    Build_polyhedron<compas::Polyhedron::HalfedgeDS> build(V, F);
     polyhedron.delegate(build);
     return polyhedron;
 }
@@ -65,31 +65,31 @@ Polyhedron polyhedron_from_vertices_and_faces(
  *
  * @param V vx3 matrix of vertex coordinates.
  * @param F fx3 matrix of face vertex indices.
- * @return Mesh
+ * @return compas::Mesh
  *
  * @todo: change name to trimesh_from_vertices_and_faces.
  * @todo: check that all faces are triangles.
  * @todo: add error message if not all faces are triangles.
  *
  */
-Mesh compas::mesh_from_vertices_and_faces(
+compas::Mesh compas::mesh_from_vertices_and_faces(
     const compas::RowMatrixXd &V,
     const compas::RowMatrixXi &F)
 {
     int v = V.rows();
     int f = F.rows();
 
-    Mesh mesh;
-    std::vector<Mesh::Vertex_index> index_descriptor(v);
+    compas::Mesh mesh;
+    std::vector<compas::Mesh::Vertex_index> index_descriptor(v);
 
     for (int i = 0; i < v; i++)
     {
-        index_descriptor[i] = mesh.add_vertex(Kernel::Point_3(V(i, 0), V(i, 1), V(i, 2)));
+        index_descriptor[i] = mesh.add_vertex(compas::Kernel::Point_3(V(i, 0), V(i, 1), V(i, 2)));
     }
 
-    Mesh::Vertex_index a;
-    Mesh::Vertex_index b;
-    Mesh::Vertex_index c;
+    compas::Mesh::Vertex_index a;
+    compas::Mesh::Vertex_index b;
+    compas::Mesh::Vertex_index c;
 
     for (int i = 0; i < f; i++)
     {
@@ -107,27 +107,27 @@ Mesh compas::mesh_from_vertices_and_faces(
  *
  * @param V nx3 matrix of vertex coordinates.
  * @param faces list of list of vertex indices.
- * @return Mesh
+ * @return compas::Mesh
  *
  * @todo: rename to mesh_from_vertices_and_faces.
  */
-Mesh compas::ngon_from_vertices_and_faces(
+compas::Mesh compas::ngon_from_vertices_and_faces(
     const compas::RowMatrixXd &V,
     const std::vector<std::vector<int>> &faces)
 {
     int v = V.rows();
 
-    Mesh mesh;
-    std::vector<Mesh::Vertex_index> index_descriptor(v);
+    compas::Mesh mesh;
+    std::vector<compas::Mesh::Vertex_index> index_descriptor(v);
 
     for (int i = 0; i < v; i++)
     {
-        index_descriptor[i] = mesh.add_vertex(Kernel::Point_3(V(i, 0), V(i, 1), V(i, 2)));
+        index_descriptor[i] = mesh.add_vertex(compas::Kernel::Point_3(V(i, 0), V(i, 1), V(i, 2)));
     }
 
     for (std::size_t i = 0; i < faces.size(); i++)
     {
-        std::vector<Mesh::Vertex_index> face;
+        std::vector<compas::Mesh::Vertex_index> face;
 
         for (std::size_t j = 0; j < faces[i].size(); j++)
         {
@@ -153,7 +153,7 @@ Mesh compas::ngon_from_vertices_and_faces(
  */
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 compas::mesh_to_vertices_and_faces(
-    const Mesh &mesh)
+    const compas::Mesh &mesh)
 {
     std::size_t v = mesh.number_of_vertices();
     std::size_t f = mesh.number_of_faces();
@@ -161,19 +161,19 @@ compas::mesh_to_vertices_and_faces(
     compas::RowMatrixXd V(v, 3);
     compas::RowMatrixXi F(f, 3);
 
-    Mesh::Property_map<Mesh::Vertex_index, Kernel::Point_3> location = mesh.points();
+    compas::Mesh::Property_map<compas::Mesh::Vertex_index, compas::Kernel::Point_3> location = mesh.points();
 
-    for (Mesh::Vertex_index vd : mesh.vertices())
+    for (compas::Mesh::Vertex_index vd : mesh.vertices())
     {
         V(vd, 0) = (double)location[vd][0];
         V(vd, 1) = (double)location[vd][1];
         V(vd, 2) = (double)location[vd][2];
     }
 
-    for (Mesh::Face_index fd : mesh.faces())
+    for (compas::Mesh::Face_index fd : mesh.faces())
     {
         int i = 0;
-        for (Mesh::Vertex_index vd : vertices_around_face(mesh.halfedge(fd), mesh))
+        for (compas::Mesh::Vertex_index vd : vertices_around_face(mesh.halfedge(fd), mesh))
         {
             F(fd, i) = (int)vd;
             i++;
@@ -196,7 +196,7 @@ compas::mesh_to_vertices_and_faces(
  */
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 compas::quadmesh_to_vertices_and_faces(
-    const Mesh &mesh)
+    const compas::Mesh &mesh)
 {
     std::size_t v = mesh.number_of_vertices();
     std::size_t f = mesh.number_of_faces();
@@ -204,19 +204,19 @@ compas::quadmesh_to_vertices_and_faces(
     compas::RowMatrixXd V(v, 3);
     compas::RowMatrixXi F(f, 4);
 
-    Mesh::Property_map<Mesh::Vertex_index, Kernel::Point_3> vertex_location = mesh.points();
+    compas::Mesh::Property_map<compas::Mesh::Vertex_index, compas::Kernel::Point_3> vertex_location = mesh.points();
 
-    for (Mesh::Vertex_index vd : mesh.vertices())
+    for (compas::Mesh::Vertex_index vd : mesh.vertices())
     {
         V(vd, 0) = (double)vertex_location[vd][0];
         V(vd, 1) = (double)vertex_location[vd][1];
         V(vd, 2) = (double)vertex_location[vd][2];
     }
 
-    for (Mesh::Face_index fd : mesh.faces())
+    for (compas::Mesh::Face_index fd : mesh.faces())
     {
         int i = 0;
-        for (Mesh::Vertex_index vd : vertices_around_face(mesh.halfedge(fd), mesh))
+        for (compas::Mesh::Vertex_index vd : vertices_around_face(mesh.halfedge(fd), mesh))
         {
             F(fd, i) = (int)vd;
             i++;
@@ -235,13 +235,13 @@ compas::quadmesh_to_vertices_and_faces(
  */
 std::vector<compas::RowMatrixXd>
 compas::polylines_to_lists_of_points(
-    Polylines polylines)
+    compas::Polylines polylines)
 {
     std::vector<compas::RowMatrixXd> pointsets;
 
     for (auto i = polylines.begin(); i != polylines.end(); i++)
     {
-        const Polyline &poly = *i;
+        const compas::Polyline &poly = *i;
         std::size_t n = poly.size();
         compas::RowMatrixXd points(n, 3);
 
@@ -268,7 +268,7 @@ compas::polylines_to_lists_of_points(
  */
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 compas::polyhedron_to_vertices_and_faces(
-    Polyhedron polyhedron)
+    compas::Polyhedron polyhedron)
 {
     std::size_t v = polyhedron.size_of_vertices();
     std::size_t f = polyhedron.size_of_facets();
@@ -278,7 +278,7 @@ compas::polyhedron_to_vertices_and_faces(
 
     std::size_t i = 0;
 
-    for (Polyhedron::Vertex_handle vh : polyhedron.vertex_handles())
+    for (compas::Polyhedron::Vertex_handle vh : polyhedron.vertex_handles())
     {
         V(i, 0) = (double)vh->point().x();
         V(i, 1) = (double)vh->point().y();
@@ -291,11 +291,11 @@ compas::polyhedron_to_vertices_and_faces(
 
     i = 0;
 
-    for (Polyhedron::Facet_handle fh : polyhedron.facet_handles())
+    for (compas::Polyhedron::Facet_handle fh : polyhedron.facet_handles())
     {
         std::size_t j = 0;
 
-        Polyhedron::Halfedge_handle start = fh->halfedge(), h = start;
+        compas::Polyhedron::Halfedge_handle start = fh->halfedge(), h = start;
         do
         {
             F(i, j) = h->vertex()->id();

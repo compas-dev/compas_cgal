@@ -8,19 +8,19 @@ pmp_slice_mesh(
     Eigen::Ref<const compas::RowMatrixXd> &P,
     Eigen::Ref<const compas::RowMatrixXd> &N)
 {
-    Mesh mesh = compas::mesh_from_vertices_and_faces(V, F);
+    compas::Mesh mesh = compas::mesh_from_vertices_and_faces(V, F);
 
-    CGAL::Polygon_mesh_slicer<Mesh, Kernel> slicer(mesh);
-    Polylines polylines;
-    std::back_insert_iterator<Polylines> slices(polylines);
+    CGAL::Polygon_mesh_slicer<compas::Mesh, compas::Kernel> slicer(mesh);
+    compas::Polylines polylines;
+    std::back_insert_iterator<compas::Polylines> slices(polylines);
 
     int number_of_planes = P.rows();
 
     for (int i = 0; i < number_of_planes; i++)
     {
-        Kernel::Plane_3 plane = Kernel::Plane_3(
-            Kernel::Point_3(P(i, 0), P(i, 1), P(i, 2)),
-            Kernel::Vector_3(N(i, 0), N(i, 1), N(i, 2)));
+        compas::Kernel::Plane_3 plane = compas::Kernel::Plane_3(
+            compas::Kernel::Point_3(P(i, 0), P(i, 1), P(i, 2)),
+            compas::Kernel::Vector_3(N(i, 0), N(i, 1), N(i, 2)));
 
         slicer(plane, slices);
     }
