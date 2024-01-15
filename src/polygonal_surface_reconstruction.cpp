@@ -33,7 +33,7 @@ typedef CGAL::Polygonal_surface_reconstruction<compas::Kernel> Polygonal_surface
 typedef CGAL::Surface_mesh<compas::Point> Surface_mesh;
 
 // Function for polygonal surface reconstruction using RANSAC
-std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
+std::tuple<compas::RowMatrixXd, std::vector<std::vector<int>>>
 polygonal_surface_reconstruction_ransac(
     Eigen::Ref<const compas::RowMatrixXd> &P,
     Eigen::Ref<const compas::RowMatrixXd> &N)
@@ -97,7 +97,7 @@ polygonal_surface_reconstruction_ransac(
     std::size_t f = candidate_faces.number_of_faces();
 
     compas::RowMatrixXd V(v, 3);
-    compas::RowMatrixXi F(f, 4);
+    std::vector<std::vector<int>> F;
 
     compas::Mesh::Property_map<compas::Mesh::Vertex_index, compas::Kernel::Point_3> location = candidate_faces.points();
 
@@ -110,15 +110,16 @@ polygonal_surface_reconstruction_ransac(
 
     for (compas::Mesh::Face_index fd : candidate_faces.faces())
     {
+        std::vector<int> fv;
         int i = 0;
         for (compas::Mesh::Vertex_index vd : vertices_around_face(candidate_faces.halfedge(fd), candidate_faces))
         {
-            F(fd, i) = (int)vd;
-            i++;
+            fv.emplace_back((int)vd);
         }
+        F.emplace_back(fv);
     }
 
-    std::tuple<compas::RowMatrixXd, compas::RowMatrixXi> result = std::make_tuple(V, F);
+    std::tuple<compas::RowMatrixXd, std::vector<std::vector<int>>> result = std::make_tuple(V, F);
 
     return result;
 }

@@ -43,8 +43,13 @@ def get_library_dirs():
         return os.path.join(conda_prefix, "Library", "lib")
     return os.path.join(conda_prefix, "lib")
 
+def get_scip_library():
+    if windows:
+        return "libscip"
+    return "scip"
 
 ext_modules = [
+
     Extension(
         "compas_cgal._cgal",
         sorted(
@@ -65,7 +70,7 @@ ext_modules = [
         ),
         include_dirs=["./include", get_eigen_include(), get_pybind_include()],
         library_dirs=[get_library_dirs()],
-        libraries=["mpfr", "gmp", "libscip"],
+        libraries=["mpfr", "gmp", get_scip_library()],
         language="c++",
     ),
 ]

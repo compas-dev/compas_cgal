@@ -9,7 +9,7 @@ from compas_cgal._cgal import polygonal_surface_reconstruction
 def polygonal_surface_reconstruction_ransac(
     points: Union[list[Point], NDArray[Shape["Any, 3"], Float]],
     normals: Union[list[Vector], NDArray[Shape["Any, 3"], Float]],
-):  # -> Tuple[NDArray[Shape["Any, 3"], Float], NDArray[Shape["Any, 3"], Int]]:
+):
     """Reconstruct a surface from a point cloud using the Poisson surface reconstruction algorithm.
 
     Parameters

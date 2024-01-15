@@ -3,7 +3,7 @@
 
 #include <compas.h>
 
-std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
+std::tuple<compas::RowMatrixXd, std::vector<std::vector<int>>>
 polygonal_surface_reconstruction_ransac(
     Eigen::Ref<const compas::RowMatrixXd> &P, 
     Eigen::Ref<const compas::RowMatrixXd> &N);
