@@ -123,3 +123,5 @@ dist/**
 scripts/.idea/**
 
 generated
+
+*.3dm
