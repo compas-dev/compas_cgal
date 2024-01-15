@@ -2,10 +2,10 @@
 #include <CGAL/Mean_curvature_flow_skeletonization.h>
 #include <CGAL/boost/graph/split_graph_into_polylines.h>
 
-typedef CGAL::Mean_curvature_flow_skeletonization<Mesh> Skeletonization;
+typedef CGAL::Mean_curvature_flow_skeletonization<compas::Mesh> Skeletonization;
 typedef Skeletonization::Skeleton Skeleton;
 
-typedef boost::graph_traits<Mesh>::vertex_descriptor vertex_descriptor;
+typedef boost::graph_traits<compas::Mesh>::vertex_descriptor vertex_descriptor;
 
 typedef Skeleton::vertex_descriptor Skeleton_vertex;
 typedef Skeleton::edge_descriptor Skeleton_edge;
@@ -13,19 +13,19 @@ typedef Skeleton::edge_descriptor Skeleton_edge;
 struct Split_polylines
 {
     const Skeleton &skeleton;
-    Polylines &polylines;
-    Polyline polyline;
+    compas::Polylines &polylines;
+    compas::Polyline polyline;
     int polyline_index = 0;
     int polyline_size;
 
-    Split_polylines(const Skeleton &skeleton, Polylines &polylines)
+    Split_polylines(const Skeleton &skeleton, compas::Polylines &polylines)
         : skeleton(skeleton), polylines(polylines)
     {
     }
 
     void start_new_polyline()
     {
-        polyline = Polyline();
+        polyline = compas::Polyline();
     }
 
     void add_node(Skeleton_vertex v)
@@ -44,7 +44,7 @@ Edges pmp_mesh_skeleton(
     Eigen::Ref<const compas::RowMatrixXi> &F)
 {
 
-    Mesh mesh = compas::mesh_from_vertices_and_faces(V, F);
+    compas::Mesh mesh = compas::mesh_from_vertices_and_faces(V, F);
 
     Skeleton skeleton;
     Skeletonization mcs(mesh);
@@ -59,7 +59,7 @@ Edges pmp_mesh_skeleton(
     mcs.contract_until_convergence();
     mcs.convert_to_skeleton(skeleton);
 
-    // Polylines polylines;
+    // compas::Polylines polylines;
     // Split_polylines splitter(skeleton, polylines);
     // CGAL::split_graph_into_polylines(skeleton, splitter);
 
@@ -67,8 +67,8 @@ Edges pmp_mesh_skeleton(
 
     for (Skeleton_edge e : CGAL::make_range(edges(skeleton)))
     {
-        const Kernel::Point_3 &s = skeleton[source(e, skeleton)].point;
-        const Kernel::Point_3 &t = skeleton[target(e, skeleton)].point;
+        const compas::Kernel::Point_3 &s = skeleton[source(e, skeleton)].point;
+        const compas::Kernel::Point_3 &t = skeleton[target(e, skeleton)].point;
 
         std::vector<double> s_vec = {s.x(), s.y(), s.z()};
         std::vector<double> t_vec = {t.x(), t.y(), t.z()};

@@ -55,3 +55,76 @@ def pointset_outlier_removal(
     """
     P = np.asarray(points, dtype=np.float64)
     return reconstruction.pointset_outlier_removal(P, nnnbrs, radius)
+
+
+def pointset_reduction(
+    points: Union[list[Point], NDArray[Shape["Any, 3"], Float]],
+    spacing: float = 2,
+) -> NDArray[Shape["Any, 3"], Float]:
+    """Remove outliers from a point cloud using the point set outlier removal algorithm.
+
+    Parameters
+    ----------
+    points : list of :class:`compas.geometry.Point` or :class:`numpy.ndarray`
+        The points of the point cloud.
+    spacing : int, optional
+        The cell size.
+
+    Returns
+    -------
+    :class:`numpy.ndarray`
+        The vectors of the point cloud.
+
+    """
+    P = np.asarray(points, dtype=np.float64)
+    return reconstruction.pointset_reduction(P, spacing)
+
+
+def pointset_smoothing(
+    points: Union[list[Point], NDArray[Shape["Any, 3"], Float]],
+    neighbors: int = 8,
+    iterations: int = 1,
+) -> NDArray[Shape["Any, 3"], Float]:
+    """Remove outliers from a point cloud using the point set outlier removal algorithm.
+
+    Parameters
+    ----------
+    points : list of :class:`compas.geometry.Point` or :class:`numpy.ndarray`
+        The points of the point cloud.
+    neighbors : int, optional
+        The number of nearest neighbors to consider for each point.
+
+    Returns
+    -------
+    :class:`numpy.ndarray`
+        The vectors of the point cloud.
+
+    """
+    P = np.asarray(points, dtype=np.float64)
+    return reconstruction.pointset_smoothing(P, neighbors, iterations)
+
+
+def pointset_normal_estimation(
+    points: Union[list[Point], NDArray[Shape["Any, 3"], Float]],
+    neighbors: int = 8,
+    erase: bool = False,
+) -> Tuple[NDArray[Shape["Any, 3"], Float], NDArray[Shape["Any, 3"], Float]]:
+    """Remove outliers from a point cloud using the point set outlier removal algorithm.
+
+    Parameters
+    ----------
+    points : list of :class:`compas.geometry.Point` or :class:`numpy.ndarray`
+        The points of the point cloud.
+    neighbors : int, optional
+        The number of nearest neighbors to consider for each point.
+    erase : bool, optional
+        Erase points that are not oriented properly.
+
+    Returns
+    -------
+    :class:`numpy.ndarray`
+        The vectors of the point cloud.
+
+    """
+    P = np.asarray(points, dtype=np.float64)
+    return reconstruction.pointset_normal_estimation(P, neighbors, erase)

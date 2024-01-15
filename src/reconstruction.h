@@ -14,18 +14,21 @@ pointset_outlier_removal(
     int nnnbrs,
     double radius);
 
-void pointset_reduction(
+compas::RowMatrixXd
+pointset_reduction(
     Eigen::Ref<const compas::RowMatrixXd> &P,
-    double radius = 0.0);
+    double spacing = 2.0);
 
-void pointset_smoothing(
+compas::RowMatrixXd
+pointset_smoothing(
     Eigen::Ref<const compas::RowMatrixXd> &P,
-    int k = 10,
-    double radius = 0.0);
+    int neighbors = 8,
+    int iterations = 1);
 
-void pointset_normal_esitmation(
+std::tuple<compas::RowMatrixXd, compas::RowMatrixXd>
+pointset_normal_estimation(
     Eigen::Ref<const compas::RowMatrixXd> &P,
-    int k = 10,
-    double radius = 0.0);
+    int neighbors=8,
+    bool erase=true);
 
 #endif /* COMPAS_RECONSTRUCTION_H */

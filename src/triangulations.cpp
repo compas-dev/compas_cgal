@@ -25,23 +25,23 @@ struct FaceInfo
     }
 };
 
-using Polygon = CGAL::Polygon_2<Kernel>;
+using Polygon = CGAL::Polygon_2<compas::Kernel>;
 
-using VertexBase1 = CGAL::Triangulation_vertex_base_with_info_2<unsigned, Kernel>;
+using VertexBase1 = CGAL::Triangulation_vertex_base_with_info_2<unsigned, compas::Kernel>;
 using TDS1 = CGAL::Triangulation_data_structure_2<VertexBase1>;
-using DT = CGAL::Delaunay_triangulation_2<Kernel, TDS1>;
+using DT = CGAL::Delaunay_triangulation_2<compas::Kernel, TDS1>;
 
-using VertexBase2 = CGAL::Triangulation_vertex_base_2<Kernel>;
-using _FaceBase2 = CGAL::Triangulation_face_base_with_info_2<FaceInfo, Kernel>;
-using FaceBase2 = CGAL::Constrained_triangulation_face_base_2<Kernel, _FaceBase2>;
+using VertexBase2 = CGAL::Triangulation_vertex_base_2<compas::Kernel>;
+using _FaceBase2 = CGAL::Triangulation_face_base_with_info_2<FaceInfo, compas::Kernel>;
+using FaceBase2 = CGAL::Constrained_triangulation_face_base_2<compas::Kernel, _FaceBase2>;
 using TDS2 = CGAL::Triangulation_data_structure_2<VertexBase2, FaceBase2>;
-using CDT2 = CGAL::Constrained_Delaunay_triangulation_2<Kernel, TDS2>;
+using CDT2 = CGAL::Constrained_Delaunay_triangulation_2<compas::Kernel, TDS2>;
 
-using VertexBase3 = CGAL::Delaunay_mesh_vertex_base_2<Kernel>;
-using FaceBase3 = CGAL::Delaunay_mesh_face_base_2<Kernel>;
+using VertexBase3 = CGAL::Delaunay_mesh_vertex_base_2<compas::Kernel>;
+using FaceBase3 = CGAL::Delaunay_mesh_face_base_2<compas::Kernel>;
 using TDS3 = CGAL::Triangulation_data_structure_2<VertexBase3, FaceBase3>;
 using Itag = CGAL::Exact_predicates_tag;
-using CDT3 = CGAL::Constrained_Delaunay_triangulation_2<Kernel, TDS3, Itag>;
+using CDT3 = CGAL::Constrained_Delaunay_triangulation_2<compas::Kernel, TDS3, Itag>;
 using Criteria = CGAL::Delaunay_mesh_size_criteria_2<CDT3>;
 
 // ===========================================================================
@@ -327,7 +327,7 @@ pmp_constrained_delaunay_triangulation(
 // ===========================================================================
 // ===========================================================================
 // ===========================================================================
-// Constrained Delaunay Mesh
+// Constrained Delaunay compas::Mesh
 // ===========================================================================
 // ===========================================================================
 // ===========================================================================
