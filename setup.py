@@ -60,11 +60,12 @@ ext_modules = [
                 "src/triangulations.cpp",
                 "src/skeletonization.cpp",
                 "src/reconstruction.cpp",
+                "src/polygonal_surface_reconstruction.cpp",
             ]
         ),
         include_dirs=["./include", get_eigen_include(), get_pybind_include()],
         library_dirs=[get_library_dirs()],
-        libraries=["mpfr", "gmp"],
+        libraries=["mpfr", "gmp", "libscip"],
         language="c++",
     ),
 ]
