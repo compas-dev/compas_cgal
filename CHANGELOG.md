@@ -13,6 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [0.5.0] 2024-01-15
+
+### Added
+
+### Changed
+* Added Polygonal Surface Reconstruction module using RANSAC for polygonal meshes.
+* Additional dependency called SCIP to find which planes defines the closed object.
+
+### Removed
+
 ## [0.5.0] 2024-01-10
 
 ### Added
