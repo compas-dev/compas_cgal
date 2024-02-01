@@ -67,6 +67,11 @@ autodoc_member_order = "groupwise"
 
 autoclass_content = "class"
 
+
+def setup(app):
+    app.connect("autodoc-skip-member", sphinx_compas2_theme.skip)
+
+
 # autosummary options
 
 autosummary_generate = True
