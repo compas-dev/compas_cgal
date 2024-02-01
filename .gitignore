@@ -125,3 +125,6 @@ scripts/.idea/**
 generated
 
 *.3dm
+
+recipe/**
+!recipe/sha256.py
