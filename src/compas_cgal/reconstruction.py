@@ -1,4 +1,3 @@
-from __future__ import annotations
 from typing import Union, Any, Tuple
 from nptyping import NDArray, Shape, Float, Int
 import numpy as np

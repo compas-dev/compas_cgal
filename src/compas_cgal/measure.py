@@ -1,4 +1,3 @@
-from __future__ import annotations
 from .types import VerticesFaces
 import numpy as np
 from compas_cgal._cgal import measure

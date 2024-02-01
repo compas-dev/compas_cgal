@@ -1,4 +1,3 @@
-from __future__ import annotations
 from typing import Literal
 from .types import VerticesFaces
 from .types import VerticesFacesNumpy

@@ -1,4 +1,3 @@
-from __future__ import annotations
 from .types import VerticesFaces
 from .types import PolylinesNumpy
 import numpy as np
