@@ -9,7 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Added `compas_cgal.reconstruction.poission_surface_reconstruction`.
+* Added `compas_cgal.reconstruction.pointset_outlier_removal`.
+* Added `compas_cgal.reconstruction.pointset_reduction`.
+* Added `compas_cgal.reconstruction.pointset_smoothing`.
+* Added `compas_cgal.reconstruction.pointset_normal_estimation`.
+* Added `compas_cgal.skeletonization.mesh_skeleton`.
+* Added `compas_cgal.subdivision.mesh_subdivision_catmull_clark`.
+* Added `compas_cgal.subdivision.mesh_subdivision_loop`.
+* Added `compas_cgal.subdivision.mesh_subdivision_sqrt3`.
+* Added `compas_cgal.triangulation.refined_delaunay_mesh`.
+
 ### Changed
+
+* Moved main include types like `Point`, `Vector`, `Polyline` and etc. to the `compas` namespace.
 
 ### Removed
 
