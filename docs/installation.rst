@@ -17,13 +17,8 @@ To install :mod:`compas_view2` in the same environment
 .. code-block:: bash
 
     conda activate cgal
-    conda install compas_view2
+    pip install compas_viewer
 
-Or everything in one go
-
-.. code-block:: bash
-
-    conda create -n cgal -c conda-forge compas_cgal compas_view2
 
 Dev Install
 ===========
