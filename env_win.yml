@@ -12,3 +12,5 @@ dependencies:
   - cgal-cpp
   - pybind11
   - compas
+  - pip:
+      - -e .[DEV]
