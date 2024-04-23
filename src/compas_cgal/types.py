@@ -1,16 +1,15 @@
 from typing import Any
-from typing import Tuple
 from typing import List
-from typing import Union
 from typing import Sequence
-from typing_extensions import Annotated
-from nptyping import NDArray
-from nptyping import Shape
-from nptyping import Int
-from nptyping import Float
+from typing import Tuple
+from typing import Union
 
 import compas.geometry
-
+from nptyping import Float
+from nptyping import Int
+from nptyping import NDArray
+from nptyping import Shape
+from typing_extensions import Annotated
 
 VerticesNumpy = NDArray[Shape["Any, 3"], Float]
 """An array of vertices, with each vertex defined by 3 spatial coordinates."""

@@ -1,7 +1,9 @@
-from .types import VerticesFaces
 import numpy as np
-from compas_cgal._cgal import measure
 from compas.plugins import plugin
+
+from compas_cgal._cgal import measure
+
+from .types import VerticesFaces
 
 
 def mesh_area(mesh: VerticesFaces) -> float:

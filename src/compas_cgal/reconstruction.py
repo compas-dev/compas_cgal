@@ -1,7 +1,15 @@
-from typing import Union, Any, Tuple
-from nptyping import NDArray, Shape, Float, Int
+from typing import Any
+from typing import Tuple
+from typing import Union
+
 import numpy as np
-from compas.geometry import Point, Vector
+from compas.geometry import Point
+from compas.geometry import Vector
+from nptyping import Float
+from nptyping import Int
+from nptyping import NDArray
+from nptyping import Shape
+
 from compas_cgal._cgal import reconstruction
 
 

@@ -137,10 +137,10 @@ replace = "[{new_version}] {now:%Y-%m-%d}"
 # ============================================================================
 
 [tool.black]
-line-length = 119
+line-length = 179
 
 [tool.ruff]
-line-length = 119
+line-length = 179
 indent-width = 4
 target-version = "py39"
 

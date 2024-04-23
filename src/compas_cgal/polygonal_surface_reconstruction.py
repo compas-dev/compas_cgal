@@ -1,8 +1,15 @@
 from __future__ import annotations
-from typing import Union, Any
-from nptyping import NDArray, Shape, Float
+
+from typing import Any
+from typing import Union
+
 import numpy as np
-from compas.geometry import Point, Vector
+from compas.geometry import Point
+from compas.geometry import Vector
+from nptyping import Float
+from nptyping import NDArray
+from nptyping import Shape
+
 from compas_cgal._cgal import polygonal_surface_reconstruction
 
 
@@ -28,6 +35,4 @@ def polygonal_surface_reconstruction_ransac(
 
     P = np.asarray(points, dtype=np.float64)
     N = np.asarray(normals, dtype=np.float64)
-    return polygonal_surface_reconstruction.polygonal_surface_reconstruction_ransac(
-        P, N
-    )
+    return polygonal_surface_reconstruction.polygonal_surface_reconstruction_ransac(P, N)
