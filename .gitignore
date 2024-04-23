@@ -109,7 +109,7 @@ ENV/
 *.rui_bak
 *.so
 
-temp/**
+temp
 
 .DS_Store
 
@@ -128,3 +128,7 @@ generated
 
 recipe/**
 !recipe/sha256.py
+
+.pytest_cache
+.ruff_cache
+.vscode
