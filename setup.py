@@ -1,25 +1,10 @@
-#!/usr/bin/env python
-# -*- encoding: utf-8 -*-
-# flake8: noqa
-import io
 import os
+import tempfile
 
-from setuptools import setup, Extension
-from setuptools.command.build_ext import build_ext
 import setuptools
-
-here = os.path.abspath(os.path.dirname(__file__))
-
-
-def read(*names, **kwargs):
-    return io.open(
-        os.path.join(here, *names), encoding=kwargs.get("encoding", "utf8")
-    ).read()
-
-
-long_description = read("README.md")
-requirements = read("requirements.txt").split("\n")
-optional_requirements = {}
+from setuptools import Extension
+from setuptools import setup
+from setuptools.command.build_ext import build_ext
 
 conda_prefix = os.getenv("CONDA_PREFIX")
 
@@ -43,13 +28,14 @@ def get_library_dirs():
         return os.path.join(conda_prefix, "Library", "lib")
     return os.path.join(conda_prefix, "lib")
 
+
 def get_scip_library():
     if windows:
         return "libscip"
     return "scip"
 
-ext_modules = [
 
+ext_modules = [
     Extension(
         "compas_cgal._cgal",
         sorted(
@@ -81,9 +67,6 @@ def has_flag(compiler, flagname):
     """Return a boolean indicating whether a flag name is supported on
     the specified compiler.
     """
-    import tempfile
-    import os
-
     with tempfile.NamedTemporaryFile("w", suffix=".cpp", delete=False) as f:
         f.write("int main (int argc, char **argv) { return 0; }")
         fname = f.name
@@ -136,9 +119,7 @@ class BuildExt(build_ext):
                 opts.append("-fvisibility=hidden")
             opts.append("-DCGAL_DEBUG=1")
         for ext in self.extensions:
-            ext.define_macros = [
-                ("VERSION_INFO", '"{}"'.format(self.distribution.get_version()))
-            ]
+            ext.define_macros = [("VERSION_INFO", '"{}"'.format(self.distribution.get_version()))]
             ext.extra_compile_args = opts
             ext.extra_link_args = link_opts
         build_ext.build_extensions(self)
@@ -146,43 +127,7 @@ class BuildExt(build_ext):
 
 setup(
     name="compas_cgal",
-    version="0.6.0",
-    description="COMPAS friedly bindings for the CGAL library.",
-    long_description=long_description,
-    long_description_content_type="text/markdown",
-    url="https://github.com/compas-dev/compas_cgal",
-    author="tom van mele",
-    author_email="tom.v.mele@gmail.com",
-    license="GPL-3 License",
-    classifiers=[
-        "Development Status :: 5 - Production/Stable",
-        "Intended Audience :: Developers",
-        "Topic :: Scientific/Engineering",
-        "License :: OSI Approved :: GPL-3 License",
-        "Operating System :: Unix",
-        "Operating System :: POSIX",
-        "Operating System :: Microsoft :: Windows",
-        "Programming Language :: Python",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3.11",
-        "Programming Language :: Python :: 3.12",
-        "Programming Language :: Python :: Implementation :: CPython",
-    ],
-    keywords=[],
-    project_urls={},
     packages=["compas_cgal"],
-    package_dir={"": "src"},
-    # package_data={},
-    # data_files=[],
-    # include_package_data=True,
     ext_modules=ext_modules,
     cmdclass={"build_ext": BuildExt},
-    setup_requires=["pybind11>=2.5.0"],
-    install_requires=requirements,
-    python_requires=">=3.8",
-    extras_require=optional_requirements,
-    zip_safe=False,
 )

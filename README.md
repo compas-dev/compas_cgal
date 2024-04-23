@@ -28,21 +28,21 @@ and compile and install an editable version of `compas_cgal` using `setuptools`.
 **Windows**:
 
 ```bash
-conda create -n cgal-dev python=3.8 mpir mpfr boost-cpp eigen=3.3 cgal-cpp=5.2 pybind11 compas compas_view2 --yes
+conda create -n cgal-dev python=3.9 mpir mpfr boost-cpp eigen=3.3 cgal-cpp pybind11 --yes
 conda activate cgal-dev
 git clone https://github.com/compas-dev/compas_cgal
 cd compas_cgal
-pip install -e .
+pip install -e .'[dev]'
 ```
 
 **Mac**:
 
 ```bash
-conda create -n cgal-dev python=3.8 gmp mpfr boost-cpp eigen=3.3 cgal-cpp=5.2 pybind11 compas compas_view2 --yes
+conda create -n cgal-dev python=3.9 gmp mpfr boost-cpp eigen=3.3 cgal-cpp pybind11 --yes
 conda activate cgal-dev
 git clone https://github.com/compas-dev/compas_cgal
 cd compas_cgal
-pip install -e .
+pip install -e .'[dev]'
 ```
 
 > Note that the version of eigen is important and should be `3.3`.

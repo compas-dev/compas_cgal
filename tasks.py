@@ -2,11 +2,11 @@ from __future__ import print_function
 
 import os
 
-from compas_invocations import build
-from compas_invocations import docs
-from compas_invocations import style
-from compas_invocations import tests
-from invoke import Collection
+from compas_invocations2 import build
+from compas_invocations2 import docs
+from compas_invocations2 import style
+from compas_invocations2 import tests
+from invoke.collection import Collection
 
 ns = Collection(
     docs.help,
@@ -17,11 +17,10 @@ ns = Collection(
     docs.linkcheck,
     tests.test,
     tests.testdocs,
-    tests.testcodeblocks,
+    build.build_ghuser_components,
     build.prepare_changelog,
     build.clean,
     build.release,
-    build.build_ghuser_components,
 )
 ns.configure(
     {
