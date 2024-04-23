@@ -1,50 +1,40 @@
-from typing import Any
+from typing import Annotated
 from typing import List
+from typing import Literal
 from typing import Sequence
 from typing import Tuple
 from typing import Union
 
 import compas.geometry
-from nptyping import Float
-from nptyping import Int
-from nptyping import NDArray
-from nptyping import Shape
-from typing_extensions import Annotated
+from numpy import float64
+from numpy import int64
+from numpy.typing import NDArray
 
-VerticesNumpy = NDArray[Shape["Any, 3"], Float]
+FloatNx3 = Annotated[NDArray[float64], Literal["N", 3]]
+IntNx3 = Annotated[NDArray[int64], Literal["N", 3]]
+
+VerticesNumpy = FloatNx3
 """An array of vertices, with each vertex defined by 3 spatial coordinates."""
 
-FacesNumpy = NDArray[Shape["Any, 3"], Int]
+FacesNumpy = IntNx3
 """An array of faces, with each face defined by 3 vertex indices."""
 
-Vertices = Union[
-    Sequence[Annotated[List[float], 3]],
-    NDArray[Shape["Any, 3"], Float],
-]
+Vertices = Union[Sequence[Annotated[List[float], 3]], FloatNx3]
 """The vertices of a mesh, defined as an array-like sequence of vertices, with each vertex represented by 3 spatial coordinates."""
 
-Faces = Union[
-    Sequence[Annotated[List[int], 3]],
-    NDArray[Shape["Any, 3"], Int],
-]
+Faces = Union[Sequence[Annotated[List[int], 3]], IntNx3]
 """The faces of a mesh, defined as an array-like sequence of faces, with each face represented by 3 vertex indices."""
 
-VerticesFaces = Tuple[
-    Vertices,
-    Faces,
-]
+VerticesFaces = Tuple[Vertices, Faces]
 """Representation of a mesh as a tuple of vertices and faces."""
 
-VerticesFacesNumpy = Tuple[
-    NDArray[Shape["Any, 3"], Float],
-    NDArray[Shape["Any, 3"], Int],
-]
+VerticesFacesNumpy = Tuple[FloatNx3, IntNx3]
 """Representation of a mesh as a tuple of vertices and faces,
 with the vertices represented a Nx3 array of spatial coordinates,
 and the faces as a Fx3 array of vertex indices.
 """
 
-PolylinesNumpy = List[NDArray[Shape["Any, 3"], Float]]
+PolylinesNumpy = List[FloatNx3]
 """A list of polylines, with each polyline represented as a Nx3 array of spatial coordinates."""
 
 Planes = Union[

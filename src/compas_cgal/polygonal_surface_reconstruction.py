@@ -1,21 +1,17 @@
-from __future__ import annotations
-
-from typing import Any
 from typing import Union
 
 import numpy as np
 from compas.geometry import Point
 from compas.geometry import Vector
-from nptyping import Float
-from nptyping import NDArray
-from nptyping import Shape
 
 from compas_cgal._cgal import polygonal_surface_reconstruction
 
+from .types import FloatNx3
+
 
 def polygonal_surface_reconstruction_ransac(
-    points: Union[list[Point], NDArray[Shape["Any, 3"], Float]],
-    normals: Union[list[Vector], NDArray[Shape["Any, 3"], Float]],
+    points: Union[list[Point], FloatNx3],
+    normals: Union[list[Vector], FloatNx3],
 ):
     """Reconstruct a surface from a point cloud using the Poisson surface reconstruction algorithm.
 

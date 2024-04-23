@@ -1,22 +1,20 @@
-from typing import Any
 from typing import Tuple
 from typing import Union
 
 import numpy as np
 from compas.geometry import Point
 from compas.geometry import Vector
-from nptyping import Float
-from nptyping import Int
-from nptyping import NDArray
-from nptyping import Shape
 
 from compas_cgal._cgal import reconstruction
 
+from .types import FloatNx3
+from .types import IntNx3
+
 
 def poisson_surface_reconstruction(
-    points: Union[list[Point], NDArray[Shape["Any, 3"], Float]],
-    normals: Union[list[Vector], NDArray[Shape["Any, 3"], Float]],
-) -> Tuple[NDArray[Shape["Any, 3"], Float], NDArray[Shape["Any, 3"], Int]]:
+    points: Union[list[Point], FloatNx3],
+    normals: Union[list[Vector], FloatNx3],
+) -> Tuple[FloatNx3, IntNx3]:
     """Reconstruct a surface from a point cloud using the Poisson surface reconstruction algorithm.
 
     Parameters
@@ -39,10 +37,10 @@ def poisson_surface_reconstruction(
 
 
 def pointset_outlier_removal(
-    points: Union[list[Point], NDArray[Shape["Any, 3"], Float]],
+    points: Union[list[Point], FloatNx3],
     nnnbrs: int = 10,
     radius: float = 1.0,
-) -> NDArray[Shape["Any, 3"], Float]:
+) -> FloatNx3:
     """Remove outliers from a point cloud using the point set outlier removal algorithm.
 
     Parameters
@@ -65,9 +63,9 @@ def pointset_outlier_removal(
 
 
 def pointset_reduction(
-    points: Union[list[Point], NDArray[Shape["Any, 3"], Float]],
+    points: Union[list[Point], FloatNx3],
     spacing: float = 2,
-) -> NDArray[Shape["Any, 3"], Float]:
+) -> FloatNx3:
     """Remove outliers from a point cloud using the point set outlier removal algorithm.
 
     Parameters
@@ -88,10 +86,10 @@ def pointset_reduction(
 
 
 def pointset_smoothing(
-    points: Union[list[Point], NDArray[Shape["Any, 3"], Float]],
+    points: Union[list[Point], FloatNx3],
     neighbors: int = 8,
     iterations: int = 1,
-) -> NDArray[Shape["Any, 3"], Float]:
+) -> FloatNx3:
     """Remove outliers from a point cloud using the point set outlier removal algorithm.
 
     Parameters
@@ -112,10 +110,10 @@ def pointset_smoothing(
 
 
 def pointset_normal_estimation(
-    points: Union[list[Point], NDArray[Shape["Any, 3"], Float]],
+    points: Union[list[Point], FloatNx3],
     neighbors: int = 8,
     erase: bool = False,
-) -> Tuple[NDArray[Shape["Any, 3"], Float], NDArray[Shape["Any, 3"], Float]]:
+) -> Tuple[FloatNx3, FloatNx3]:
     """Remove outliers from a point cloud using the point set outlier removal algorithm.
 
     Parameters
