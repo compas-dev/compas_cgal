@@ -1,12 +1,10 @@
-from compas.geometry import Point
-from compas.geometry import Box
-from compas.geometry import Sphere
-from compas.geometry import Polyline
 from compas.datastructures import Mesh
-
-from compas_view2.app import App
-
+from compas.geometry import Box
+from compas.geometry import Point
+from compas.geometry import Polyline
+from compas.geometry import Sphere
 from compas_cgal.intersections import intersection_mesh_mesh
+from compas_viewer import Viewer
 
 # ==============================================================================
 # Make a box and a sphere
@@ -38,19 +36,20 @@ for points in pointsets:
 # Visualize
 # ==============================================================================
 
-viewer = App(width=1600, height=900)
-viewer.view.camera.position = [5, -4, 2]
-viewer.view.camera.look_at([0, 1, 0])
+viewer = Viewer()
 
-viewer.add(Mesh.from_vertices_and_faces(*A), facecolor=(1, 0, 0), opacity=0.3)
-viewer.add(Mesh.from_vertices_and_faces(*B), facecolor=(0, 1, 0), opacity=0.3)
+# viewer.ui.window.viewport.view3d.camera.position = [...]
+# viewer.ui.window.viewport.view3d.camera.target = [...]
+
+viewer.scene.add(Mesh.from_vertices_and_faces(*A), facecolor=(1.0, 0.0, 0.0), show_points=False)
+viewer.scene.add(Mesh.from_vertices_and_faces(*B), facecolor=(0.0, 1.0, 0.0), show_points=False, opacity=0.3)
 
 for polyline in polylines:
-    viewer.add(
+    viewer.scene.add(
         polyline,
-        linecolor=(0, 0, 1),
+        linecolor=(0.0, 0.0, 1.0),
         linewidth=3,
-        pointcolor=(0, 0, 1),
+        pointcolor=(0.0, 0.0, 1.0),
         pointsize=20,
         show_points=True,
     )

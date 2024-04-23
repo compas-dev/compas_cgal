@@ -1,8 +1,9 @@
-from compas.geometry import Polygon, Translation
 from compas.datastructures import Mesh
+from compas.geometry import Polygon
+from compas.geometry import Translation
 from compas_cgal.triangulation import conforming_delaunay_triangulation
 from compas_cgal.triangulation import refined_delaunay_mesh
-from compas_view2.app import App
+from compas_viewer import Viewer
 
 # ==============================================================================
 # Constraints
@@ -43,11 +44,12 @@ rdm = Mesh.from_vertices_and_faces(V, F)
 # Viz
 # ==============================================================================
 
-viewer = App(width=1600, height=900)
-viewer.view.camera.position = [0, -1, 13]
-viewer.view.camera.look_at([0, 0, 0])
+viewer = Viewer(width=1600, height=900)
 
-viewer.add(cdt.transformed(Translation.from_vector([-5, 0, 0])))
-viewer.add(rdm.transformed(Translation.from_vector([+5, 0, 0])))
+# viewer.view.camera.position = [0, -1, 13]
+# viewer.view.camera.look_at([0, 0, 0])
+
+viewer.scene.add(cdt.transformed(Translation.from_vector([-5, 0, 0])))
+viewer.scene.add(rdm.transformed(Translation.from_vector([+5, 0, 0])))
 
 viewer.show()

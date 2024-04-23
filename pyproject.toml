@@ -30,19 +30,6 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: CPython",
 ]
 
-# [project.optional-dependencies]
-# dev = [
-#     "attrs >=17.4",
-#     "black >=22.12.0",
-#     "bump-my-version",
-#     "compas_invocations2",
-#     "invoke >=0.14",
-#     "ruff",
-#     "sphinx_compas2_theme",
-#     "twine",
-#     "wheel",
-# ]
-
 [project.urls]
 Homepage = "https://compas-dev.github.io/compas_cgal"
 Repository = "https://github.com/compas-dev/compas_cgal"
@@ -65,35 +52,6 @@ optional-dependencies = { dev = { file = "requirements-dev.txt" } }
 where = ["src"]
 
 [tool.setuptools.package-data]
-
-# ============================================================================
-# unidep
-# ============================================================================
-
-# [tool.unidep]
-# channels = ["conda-forge"]
-# dependencies = ["compas >=2.0.0", "compas_viewer"]
-# optional_dependencies = { dev = [
-#     "attrs >=17.4",
-#     "black >=22.12.0",
-#     "bump-my-version",
-#     "compas_invocations2",
-#     "invoke >=0.14",
-#     "ruff",
-#     "sphinx_compas2_theme",
-#     "twine",
-#     "wheel",
-# ] }
-
-# "pip >=19.0",
-# { conda = "python >=3.9" },
-# { conda = "gmp" },
-# { conda = "mpfr" },
-# { conda = "scip" },
-# { conda = "boost-cpp" },
-# { conda = "eigen =3.3" },
-# { conda = "cgal-cpp =5.2" },
-# { conda = "pybind11 >=2.6.1" },
 
 # ============================================================================
 # replace pytest.ini

@@ -1,7 +1,9 @@
 from pathlib import Path
-from compas.geometry import Pointcloud, Translation
-from compas_view2.app import App
+
+from compas.geometry import Pointcloud
+from compas.geometry import Translation
 from compas_cgal.reconstruction import pointset_smoothing
+from compas_viewer import Viewer
 
 # Define the path to the PLY file
 ply_file_path = Path(__file__).parent.parent.parent / "data" / "box.ply"
@@ -21,17 +23,18 @@ smoothed_points = pointset_smoothing(transformed_points, 1000, 3)
 cloud_original = Pointcloud(original_points)
 cloud_transformed = Pointcloud(smoothed_points)
 
-# Set up the viewer
-viewer = App(width=1600, height=900)
-viewer.view.camera.scale = 1000
-viewer.view.grid.cell_size = 1000
+# =============================================================================
+# Viz
+# =============================================================================
 
-# Add the Pointclouds to the viewer
-viewer.add(cloud_original)
-viewer.add(cloud_transformed)
+viewer = Viewer()
 
-# Adjust the camera and grid settings
-viewer.view.camera.zoom_extents()
+# viewer.view.camera.scale = 1000
+# viewer.view.grid.cell_size = 1000
 
-# Run the viewer
-viewer.run()
+# viewer.scene.add(cloud_original)
+# viewer.scene.add(cloud_transformed)
+
+# viewer.view.camera.zoom_extents()
+
+viewer.show()

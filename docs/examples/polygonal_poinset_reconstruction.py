@@ -1,12 +1,13 @@
 from pathlib import Path
-from compas.geometry import Pointcloud, Point, Line, Polygon
-from compas_view2.app import App
-from compas_view2.collections import Collection
+
 from compas.colors import Color
+from compas.geometry import Line
+from compas.geometry import Point
+from compas.geometry import Pointcloud
+from compas.geometry import Polygon
+from compas_cgal.polygonal_surface_reconstruction import polygonal_surface_reconstruction_ransac
 from compas_cgal.reconstruction import pointset_normal_estimation
-from compas_cgal.polygonal_surface_reconstruction import (
-    polygonal_surface_reconstruction_ransac,
-)
+from compas_viewer import Viewer
 
 # Define the file path for the point cloud data
 FILE = Path(__file__).parent.parent.parent / "data" / "two_intersecting_boxes.ply"
@@ -54,14 +55,21 @@ for p, v in zip(points, vectors):
     # Store line color properties
     line_properties.append({"linecolor": Color(r, g, b)})
 
-# Create a viewer
-viewer = App(width=1600, height=900)
-viewer.view.camera.position = [5, -4, 2]
-viewer.view.camera.look_at([0, 1, 0])
-viewer.add(Pointcloud(points))
-line_collection = Collection(lines, line_properties)
-# Uncomment to see the normals:
-# viewer.add(line_collection)
+# =============================================================================
+# Viz
+# =============================================================================
+
+viewer = Viewer()
+
+# viewer.view.camera.position = [5, -4, 2]
+# viewer.view.camera.look_at([0, 1, 0])
+
+# viewer.scene.add(Pointcloud(points))
+
+# line_collection = Collection(lines, line_properties)
+# viewer.scene.add(line_collection)
+
 for polygon in polygons:
-    viewer.add(polygon, linewidth=2)
-viewer.run()
+    viewer.scene.add(polygon, linewidth=2)
+
+viewer.show()

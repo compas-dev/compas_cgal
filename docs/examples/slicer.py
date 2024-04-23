@@ -1,15 +1,14 @@
 from pathlib import Path
+
 import numpy as np
-
-from compas.geometry import Point
-from compas.geometry import Vector
-from compas.geometry import Plane
-from compas.geometry import Polyline
-from compas.datastructures import Mesh
 from compas.colors import Color
-from compas_view2.app import App
-
+from compas.datastructures import Mesh
+from compas.geometry import Plane
+from compas.geometry import Point
+from compas.geometry import Polyline
+from compas.geometry import Vector
 from compas_cgal.slicer import slice_mesh_planes
+from compas_viewer import Viewer
 
 FILE = Path(__file__).parent.parent.parent / "data" / "3DBenchy.stl"
 
@@ -25,14 +24,11 @@ benchy = Mesh.from_stl(FILE)
 
 # replace by planes along a curve
 
-bbox = benchy.bounding_box()
-
-x, y, z = zip(*bbox)
-zmin, zmax = min(z), max(z)
+bbox = benchy.aabb()
 
 normal = Vector(0, 0, 1)
 planes = []
-for i in np.linspace(zmin, zmax, 50):
+for i in np.linspace(bbox.zmin, bbox.zmax, 50):
     plane = Plane(Point(0, 0, i), normal)
     planes.append(plane)
 
@@ -58,13 +54,14 @@ for points in pointsets:
 # Visualize
 # ==============================================================================
 
-viewer = App(width=1600, height=900)
-viewer.view.camera.position = [-40, -70, 40]
-viewer.view.camera.look_at([0, 0, 20])
+viewer = Viewer(width=1600, height=900)
 
-viewer.add(benchy, show_lines=False, opacity=0.5)
+# viewer.view.camera.position = [-40, -70, 40]
+# viewer.view.camera.look_at([0, 0, 20])
+
+viewer.scene.add(benchy, show_lines=False, show_points=False, opacity=0.5)
 
 for polyline in polylines:
-    viewer.add(polyline, linecolor=Color.grey(), linewidth=2)
+    viewer.scene.add(polyline, linecolor=Color.grey(), linewidth=2, show_points=False)
 
-viewer.run()
+viewer.show()

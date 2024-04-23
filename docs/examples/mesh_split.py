@@ -1,9 +1,9 @@
-from compas.geometry import Box, Sphere
-from compas.datastructures import Mesh
 from compas.colors import Color
-from compas_view2.app import App
-
+from compas.datastructures import Mesh
+from compas.geometry import Box
+from compas.geometry import Sphere
 from compas_cgal.booleans import split_mesh_mesh
+from compas_viewer import Viewer
 
 # ==============================================================================
 # Make a box and a sphere
@@ -27,17 +27,19 @@ mesh = Mesh.from_vertices_and_faces(V, F)
 # Seperate disjoint faces and visualize
 # ==============================================================================
 
-viewer = App(width=1600, height=900)
-viewer.view.camera.position = [5, -4, 2]
-viewer.view.camera.look_at([0, 0, 0])
+viewer = Viewer()
 
-for color, vertices in zip([Color.blue(), Color.pink()], mesh.connected_components()):
+# viewer.ui.window.viewport.view3d.camera.position = [...]
+# viewer.ui.window.viewport.view3d.camera.target = [...]
+
+for color, vertices in zip([Color.blue(), Color.pink()], mesh.connected_vertices()):
     faces = []
     for indices in F:
         if all(index in vertices for index in indices):
             faces.append(indices)
     mesh = Mesh.from_vertices_and_faces(V, faces)
     mesh.remove_unused_vertices()
-    viewer.add(mesh, facecolor=color)
 
-viewer.run()
+    viewer.scene.add(mesh, facecolor=color, show_points=False)
+
+viewer.show()
