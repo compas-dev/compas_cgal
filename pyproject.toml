@@ -1,0 +1,166 @@
+[build-system]
+requires = ["setuptools>=66", "pybind11>=2.6.1", "unidep[toml]"]
+build-backend = "setuptools.build_meta"
+
+# ============================================================================
+# project info
+# ============================================================================
+
+[project]
+name = "compas_cgal"
+dynamic = ["version", "dependencies", "optional-dependencies"]
+description = "COMPAS friedly bindings for the CGAL library."
+keywords = []
+authors = [
+    { name = "tom van mele", email = "tom.v.mele@gmail.com" },
+    { name = "Petras Vestartas", email = "vestartas@arch.ethz.ch" },
+]
+license = { file = "LICENSE" }
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Topic :: Scientific/Engineering",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+]
+
+# [project.optional-dependencies]
+# dev = [
+#     "attrs >=17.4",
+#     "black >=22.12.0",
+#     "bump-my-version",
+#     "compas_invocations2",
+#     "invoke >=0.14",
+#     "ruff",
+#     "sphinx_compas2_theme",
+#     "twine",
+#     "wheel",
+# ]
+
+[project.urls]
+Homepage = "https://compas-dev.github.io/compas_cgal"
+Repository = "https://github.com/compas-dev/compas_cgal"
+
+# ============================================================================
+# setuptools config
+# ============================================================================
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+include-package-data = true
+zip-safe = false
+
+[tool.setuptools.dynamic]
+version = { attr = "compas_cgal.__version__" }
+dependencies = { file = "requirements.txt" }
+optional-dependencies = { dev = { file = "requirements-dev.txt" } }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+
+# ============================================================================
+# unidep
+# ============================================================================
+
+# [tool.unidep]
+# channels = ["conda-forge"]
+# dependencies = ["compas >=2.0.0", "compas_viewer"]
+# optional_dependencies = { dev = [
+#     "attrs >=17.4",
+#     "black >=22.12.0",
+#     "bump-my-version",
+#     "compas_invocations2",
+#     "invoke >=0.14",
+#     "ruff",
+#     "sphinx_compas2_theme",
+#     "twine",
+#     "wheel",
+# ] }
+
+# "pip >=19.0",
+# { conda = "python >=3.9" },
+# { conda = "gmp" },
+# { conda = "mpfr" },
+# { conda = "scip" },
+# { conda = "boost-cpp" },
+# { conda = "eigen =3.3" },
+# { conda = "cgal-cpp =5.2" },
+# { conda = "pybind11 >=2.6.1" },
+
+# ============================================================================
+# replace pytest.ini
+# ============================================================================
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = ["tests", "src/compas_cgal"]
+python_files = ["test_*.py", "*_test.py", "test.py"]
+addopts = ["-ra", "--strict-markers", "--doctest-glob=*.rst", "--tb=short"]
+doctest_optionflags = [
+    "NORMALIZE_WHITESPACE",
+    "IGNORE_EXCEPTION_DETAIL",
+    "ALLOW_UNICODE",
+    "ALLOW_BYTES",
+    "NUMBER",
+]
+
+# ============================================================================
+# replace bumpversion.cfg
+# ============================================================================
+
+[tool.bumpversion]
+current_version = "0.6.0"
+message = "Bump version to {new_version}"
+commit = true
+tag = true
+
+[[tool.bumpversion.files]]
+filename = "src/compas_cgal/__init__.py"
+search = "{current_version}"
+replace = "{new_version}"
+
+[[tool.bumpversion.files]]
+filename = "CHANGELOG.md"
+search = "Unreleased"
+replace = "[{new_version}] {now:%Y-%m-%d}"
+
+# ============================================================================
+# replace setup.cfg
+# ============================================================================
+
+[tool.black]
+line-length = 179
+
+[tool.ruff]
+line-length = 179
+indent-width = 4
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["I001"]
+"tests/*" = ["I001"]
+"tasks.py" = ["I001"]
+
+[tool.ruff.lint.isort]
+force-single-line = true
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 179
+
+[tool.ruff.format]
+docstring-code-format = true
+docstring-code-line-length = "dynamic"

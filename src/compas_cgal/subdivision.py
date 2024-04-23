@@ -1,7 +1,9 @@
+import numpy as np
+
+from compas_cgal._cgal import subdivision
+
 from .types import VerticesFaces
 from .types import VerticesFacesNumpy
-import numpy as np
-from compas_cgal._cgal import subdivision
 
 
 def mesh_subdivide_catmull_clark(mesh: VerticesFaces, k=1) -> VerticesFacesNumpy:

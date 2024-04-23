@@ -2,15 +2,15 @@ name: cgal-dev
 channels:
   - conda-forge
 dependencies:
-  - python>=3.6
+  - python>=3.9
   - pip>=19.0
   - gmp
   - mpfr
   - scip
   - boost-cpp
   - eigen=3.3
-  - cgal-cpp=5.2
+  - cgal-cpp
   - pybind11
   - compas
   - pip:
-    - -r requirements-dev.txt
+      - -e .[DEV]

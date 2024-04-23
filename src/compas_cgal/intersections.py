@@ -1,8 +1,10 @@
-from .types import VerticesFaces
-from .types import PolylinesNumpy
 import numpy as np
-from compas_cgal._cgal import intersections
 from compas.plugins import plugin
+
+from compas_cgal._cgal import intersections
+
+from .types import PolylinesNumpy
+from .types import VerticesFaces
 
 
 @plugin(category="intersections")

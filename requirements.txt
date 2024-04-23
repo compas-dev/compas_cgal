@@ -1,3 +1,2 @@
 compas >=2.0.0
-nptyping
-typing_extensions
+compas_viewer

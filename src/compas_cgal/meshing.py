@@ -1,8 +1,10 @@
+import numpy as np
+from compas.plugins import plugin
+
+from compas_cgal._cgal import meshing
+
 from .types import VerticesFaces
 from .types import VerticesFacesNumpy
-import numpy as np
-from compas_cgal._cgal import meshing
-from compas.plugins import plugin
 
 
 @plugin(category="trimesh", pluggable_name="trimesh_remesh")

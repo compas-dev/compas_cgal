@@ -1,7 +1,9 @@
-from .types import VerticesFaces
-from .types import PolylinesNumpy
 import numpy as np
+
 from compas_cgal._cgal import skeletonization
+
+from .types import PolylinesNumpy
+from .types import VerticesFaces
 
 
 def mesh_skeleton(mesh: VerticesFaces) -> PolylinesNumpy:
