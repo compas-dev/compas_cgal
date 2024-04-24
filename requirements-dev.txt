@@ -2,6 +2,7 @@ attrs >=17.4
 black ==24.3.0
 bump-my-version
 compas_invocations2
+compas_viewer
 invoke >=0.14
 ruff
 sphinx_compas2_theme
