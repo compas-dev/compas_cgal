@@ -12,7 +12,7 @@ Stable releases of :mod:`compas_cgal` can be installed via ``conda-forge``.
     conda create -n cgal -c conda-forge compas_cgal
 
 Several examples use the COMPAS Viewer for visualisation.
-To install :mod:`compas_view2` in the same environment
+To install :mod:`compas_viewer` in the same environment
 
 .. code-block:: bash
 
