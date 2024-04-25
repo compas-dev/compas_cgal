@@ -18,7 +18,7 @@ def create_interior_straight_skeleton(points) -> PolylinesNumpy:
     Returns
     -------
     :attr:`compas_cgal.types.PolylinesNumpy`
-        The skeleton of the mesh.
+        The skeleton of the polygon.
 
     Raises
     ------
