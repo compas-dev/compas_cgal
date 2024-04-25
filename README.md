@@ -28,7 +28,7 @@ and compile and install an editable version of `compas_cgal` using `setuptools`.
 **Windows**:
 
 ```bash
-conda create -n cgal-dev python=3.8 mpir mpfr boost-cpp eigen=3.3 cgal-cpp=5.2 pybind11 compas compas_view2 --yes
+conda create -n cgal-dev python=3.8 mpir mpfr boost-cpp eigen=3.3 cgal-cpp=5.2 pybind11 compas compas_view2 scip --yes
 conda activate cgal-dev
 git clone https://github.com/compas-dev/compas_cgal
 cd compas_cgal
