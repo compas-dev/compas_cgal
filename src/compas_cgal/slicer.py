@@ -1,7 +1,11 @@
-from .types import VerticesFaces, Planes, PolylinesNumpy
 import numpy as np
-from compas_cgal._cgal import slicer
 from compas.plugins import plugin
+
+from compas_cgal._cgal import slicer
+
+from .types import Planes
+from .types import PolylinesNumpy
+from .types import VerticesFaces
 
 
 @plugin(category="trimesh", pluggable_name="trimesh_slice")

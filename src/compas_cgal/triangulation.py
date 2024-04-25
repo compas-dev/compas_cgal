@@ -1,9 +1,11 @@
-from .types import FacesNumpy
-from .types import VerticesFacesNumpy
 import numpy as np
 from compas.geometry import Point
 from compas.plugins import plugin
+
 from compas_cgal._cgal import triangulations
+
+from .types import FacesNumpy
+from .types import VerticesFacesNumpy
 
 
 @plugin(category="traingulation", requires=["compas_cgal"])
@@ -76,9 +78,7 @@ def constrained_delaunay_triangulation(
     else:
         curves = []
 
-    return triangulations.constrained_delaunay_triangulation(
-        boundary, points, holes, curves, is_conforming=False
-    )
+    return triangulations.constrained_delaunay_triangulation(boundary, points, holes, curves, is_conforming=False)
 
 
 @plugin(category="triangulation", requires=["compas_cgal"])
@@ -121,9 +121,7 @@ def conforming_delaunay_triangulation(
     else:
         curves = []
 
-    return triangulations.constrained_delaunay_triangulation(
-        boundary, points, holes, curves, is_conforming=True
-    )
+    return triangulations.constrained_delaunay_triangulation(boundary, points, holes, curves, is_conforming=True)
 
 
 def refined_delaunay_mesh(
@@ -177,6 +175,4 @@ def refined_delaunay_mesh(
 
     maxlength = maxlength or 0.0
 
-    return triangulations.refined_delaunay_mesh(
-        boundary, points, holes, curves, maxlength=maxlength, is_optimized=is_optimized
-    )
+    return triangulations.refined_delaunay_mesh(boundary, points, holes, curves, maxlength=maxlength, is_optimized=is_optimized)

@@ -9,8 +9,8 @@ dependencies:
   - scip
   - boost-cpp
   - eigen=3.3
-  - cgal-cpp=5.2
+  - cgal-cpp
   - pybind11
   - compas
   - pip:
-    - -r requirements-dev.txt
+      - -e .[DEV]

@@ -1,10 +1,12 @@
 from typing import Literal
-from .types import VerticesFaces
-from .types import VerticesFacesNumpy
 
 import numpy as np
 from compas.plugins import plugin
+
 from compas_cgal._cgal import booleans
+
+from .types import VerticesFaces
+from .types import VerticesFacesNumpy
 
 
 def _boolean(

@@ -1,7 +1,8 @@
-from compas.geometry import Box, Polyhedron
+from compas.geometry import Box
+from compas.geometry import Polyhedron
 from compas.geometry import Translation
 from compas_cgal.subdivision import mesh_subdivide_sqrt3 as mesh_subdivide
-from compas_view2.app import App
+from compas_viewer import Viewer
 
 # ==============================================================================
 # Input
@@ -30,13 +31,15 @@ S8.transform(Translation.from_vector([4, 0, 0]))
 # Viz
 # ==============================================================================
 
-viewer = App(width=1600, height=900)
-viewer.view.camera.position = [5, -2, 0.5]
-viewer.view.camera.look_at([3, 1, 0.5])
+viewer = Viewer(width=1600, height=900)
 
-viewer.add(box)
-viewer.add(S2)
-viewer.add(S4)
-viewer.add(S6)
-viewer.add(S8)
+# viewer.view.camera.position = [5, -2, 0.5]
+# viewer.view.camera.look_at([3, 1, 0.5])
+
+viewer.scene.add(box.to_mesh(), show_points=False)
+viewer.scene.add(S2.to_mesh(), show_points=False)
+viewer.scene.add(S4.to_mesh(), show_points=False)
+viewer.scene.add(S6.to_mesh(), show_points=False)
+viewer.scene.add(S8.to_mesh(), show_points=False)
+
 viewer.show()

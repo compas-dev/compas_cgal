@@ -1,14 +1,14 @@
 import math
 from pathlib import Path
 
-from compas.geometry import scale_vector
-from compas.geometry import Vector
-from compas.geometry import Rotation
-from compas.geometry import Translation
-from compas.geometry import Scale
 from compas.datastructures import Mesh
+from compas.geometry import Rotation
+from compas.geometry import Scale
+from compas.geometry import Translation
+from compas.geometry import Vector
+from compas.geometry import scale_vector
 from compas_cgal.meshing import mesh_remesh
-from compas_view2.app import App
+from compas_viewer import Viewer
 
 FILE = Path(__file__).parent.parent.parent / "data" / "Bunny.ply"
 
@@ -44,10 +44,11 @@ mesh = Mesh.from_vertices_and_faces(V, F)
 # Visualize
 # ==============================================================================
 
-viewer = App(width=1600, height=900)
-viewer.view.camera.position = [0, -25, 10]
-viewer.view.camera.look_at([0, 0, 0])
+viewer = Viewer(width=1600, height=900)
+# viewer.view.camera.position = [0, -25, 10]
+# viewer.view.camera.look_at([0, 0, 0])
 
-viewer.add(bunny.transformed(Translation.from_vector([-10, 0, 0])))
-viewer.add(mesh.transformed(Translation.from_vector([+10, 0, 0])))
-viewer.run()
+viewer.scene.add(bunny.transformed(Translation.from_vector([-10, 0, 0])), show_points=False)
+viewer.scene.add(mesh.transformed(Translation.from_vector([+10, 0, 0])), show_points=False)
+
+viewer.show()

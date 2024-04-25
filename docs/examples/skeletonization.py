@@ -1,12 +1,16 @@
 import math
 from pathlib import Path
+
 from compas.datastructures import Mesh
 from compas.geometry import Polyline
-from compas.geometry import Rotation, Scale, Translation
-from compas_view2.app import App
-from compas_view2.objects import Collection
+from compas.geometry import Rotation
+from compas.geometry import Scale
+from compas.geometry import Translation
 from compas_cgal.skeletonization import mesh_skeleton
 from compas_cgal.subdivision import mesh_subdivide_sqrt3
+
+# from compas_view2.objects import Collection
+from compas_viewer import Viewer
 
 FILE = Path(__file__).parent.parent.parent / "data" / "elephant.off"
 
@@ -27,10 +31,16 @@ for points in pointsets:
     polyline = Polyline(points)
     polylines.append(polyline)
 
-viewer = App(width=1600, height=900)
-viewer.view.camera.position = [-5, -5, 1.5]
-viewer.view.camera.look_at([0, 0, 1.5])
+# =============================================================================
+# Viz
+# =============================================================================
 
-viewer.add(mesh, opacity=0.5)
-viewer.add(Collection(polylines), linewidth=5)
-viewer.run()
+viewer = Viewer(width=1600, height=900)
+
+# viewer.view.camera.position = [-5, -5, 1.5]
+# viewer.view.camera.look_at([0, 0, 1.5])
+
+viewer.scene.add(mesh, opacity=0.5, show_points=False)
+# viewer.scene.add(Collection(polylines), linewidth=5)
+
+viewer.show()

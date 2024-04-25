@@ -1,7 +1,11 @@
 from pathlib import Path
-from compas.geometry import Pointcloud, Translation
-from compas_view2.app import App
+
+from compas.colors import Color
+from compas.geometry import Point
+from compas.geometry import Pointcloud
+from compas.geometry import Translation
 from compas_cgal.reconstruction import pointset_reduction
+from compas_viewer import Viewer
 
 # Define the file path for the point cloud data
 FILE = Path(__file__).parent.parent.parent / "data" / "forked_branch_1.ply"
@@ -19,19 +23,22 @@ cloud.transform(Translation.from_vector([-1000, 0, 0]))
 points = pointset_reduction(cloud, 50)
 print(f"Original points: {len(cloud)}, Reduced points: {len(points)}")
 
+# =============================================================================
+# Viz
+# =============================================================================
+
 # Initialize the COMPAS viewer
-viewer = App(width=1600, height=900)
+viewer = Viewer()
 
-# Adjust viewer settings
-viewer.view.camera.scale = 1000
-viewer.view.grid.cell_size = 1000
+# viewer.ui.window.viewport.view3d.camera.position = [...]
+# viewer.ui.window.viewport.view3d.camera.target = [...]
 
-# Add the reduced point cloud and the original point cloud to the viewer
-viewer.add(Pointcloud(points))
-viewer.add(Pointcloud(original_points))
+# viewer.scene.add(Pointcloud(points))
+# viewer.scene.add(Pointcloud(original_points))
 
-# Set the camera to zoom to fit all points
-viewer.view.camera.zoom_extents()
+for x, y, z in points:
+    viewer.scene.add(Point(x, y, z).scaled(1e-3, 1e-3, 1e-3))
 
-# Run the viewer
-viewer.run()
+# viewer.view.camera.zoom_extents()
+
+viewer.show()
