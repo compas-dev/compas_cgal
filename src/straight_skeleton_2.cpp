@@ -19,7 +19,6 @@ Edges pmp_create_interior_straight_skeleton(
     {
         poly.push_back(Point(V(i, 0), V(i, 1)));
     }
-    assert(poly.is_counterclockwise_oriented());
     SsPtr iss = CGAL::create_interior_straight_skeleton_2(poly.vertices_begin(), poly.vertices_end());
     Edges edgelist;
     for(auto hit = iss->halfedges_begin(); hit != iss->halfedges_end(); ++hit){
