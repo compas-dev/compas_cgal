@@ -24,6 +24,8 @@ namespace compas
     using Mesh = CGAL::Surface_mesh<Point>;
     using RowMatrixXd = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
     using RowMatrixXi = Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+    using Edge = std::tuple<std::vector<double>, std::vector<double>>;
+    using Edges = std::list<Edge>;
 
     Polyhedron polyhedron_from_vertices_and_faces(const RowMatrixXd &V, const RowMatrixXi &F);
 

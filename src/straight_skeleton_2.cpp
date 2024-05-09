@@ -11,7 +11,7 @@ typedef boost::shared_ptr<Ss> SsPtr;
 typedef CGAL::Straight_skeleton_2<K>::Halfedge_const_handle Halfedge_const_handle;
 typedef CGAL::Straight_skeleton_2<K>::Vertex_const_handle Vertex_const_handle;
 
-Edges pmp_create_interior_straight_skeleton(
+compas::Edges pmp_create_interior_straight_skeleton(
     Eigen::Ref<const compas::RowMatrixXd> &V)
 {
     Polygon_2 poly;
@@ -20,7 +20,7 @@ Edges pmp_create_interior_straight_skeleton(
         poly.push_back(Point(V(i, 0), V(i, 1)));
     }
     SsPtr iss = CGAL::create_interior_straight_skeleton_2(poly.vertices_begin(), poly.vertices_end());
-    Edges edgelist;
+    compas::Edges edgelist;
     for(auto hit = iss->halfedges_begin(); hit != iss->halfedges_end(); ++hit){
         const Halfedge_const_handle h = hit;
         if(!h->is_bisector()){
@@ -31,7 +31,7 @@ Edges pmp_create_interior_straight_skeleton(
         if(&*v1 < &*v2){
             std::vector<double> s_vec = {v1->point().x(), v1->point().y(), 0};
             std::vector<double> t_vec = {v2->point().x(), v2->point().y(), 0};
-            Edge edge = std::make_tuple(s_vec, t_vec);
+            compas::Edge edge = std::make_tuple(s_vec, t_vec);
             edgelist.push_back(edge);
         }
 

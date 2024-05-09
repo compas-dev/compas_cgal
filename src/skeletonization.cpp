@@ -39,7 +39,7 @@ struct Split_polylines
     }
 };
 
-Edges pmp_mesh_skeleton(
+compas::Edges pmp_mesh_skeleton(
     Eigen::Ref<const compas::RowMatrixXd> &V,
     Eigen::Ref<const compas::RowMatrixXi> &F)
 {
@@ -63,7 +63,7 @@ Edges pmp_mesh_skeleton(
     // Split_polylines splitter(skeleton, polylines);
     // CGAL::split_graph_into_polylines(skeleton, splitter);
 
-    Edges edgelist;
+    compas::Edges edgelist;
 
     for (Skeleton_edge e : CGAL::make_range(edges(skeleton)))
     {
@@ -72,7 +72,7 @@ Edges pmp_mesh_skeleton(
 
         std::vector<double> s_vec = {s.x(), s.y(), s.z()};
         std::vector<double> t_vec = {t.x(), t.y(), t.z()};
-        Edge edge = std::make_tuple(s_vec, t_vec);
+        compas::Edge edge = std::make_tuple(s_vec, t_vec);
 
         edgelist.push_back(edge);
     }
