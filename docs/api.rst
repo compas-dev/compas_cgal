@@ -12,6 +12,7 @@ API Reference
     api/compas_cgal.reconstruction
     api/compas_cgal.slicer
     api/compas_cgal.skeletonization
+    api/compas_cgal.straight_skeleton_2
     api/compas_cgal.subdivision
     api/compas_cgal.triangulation
     api/compas_cgal.types
