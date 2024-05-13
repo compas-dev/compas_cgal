@@ -2,10 +2,12 @@
 #include "straight_skeleton_2.h"
 #include <CGAL/Polygon_2.h>
 #include <CGAL/create_straight_skeleton_2.h>
+#include <CGAL/create_straight_skeleton_from_polygon_with_holes_2.h>
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
 typedef K::Point_2 Point;
 typedef CGAL::Polygon_2<K> Polygon_2;
+typedef CGAL::Polygon_with_holes_2<K> Polygon_with_holes;
 typedef CGAL::Straight_skeleton_2<K> Ss;
 typedef boost::shared_ptr<Ss> SsPtr;
 typedef CGAL::Straight_skeleton_2<K>::Halfedge_const_handle Halfedge_const_handle;
@@ -39,6 +41,50 @@ compas::Edges pmp_create_interior_straight_skeleton(
     return edgelist;
 };
 
+compas::Edges pmp_create_interior_straight_skeleton_with_holes(
+    Eigen::Ref<const compas::RowMatrixXd> &V,
+    std::vector<Eigen::Ref<const compas::RowMatrixXd>> &holes)
+{
+    Polygon_2 outer;
+    for (int i = 0; i < V.rows(); i++)
+    {
+        outer.push_back(Point(V(i, 0), V(i, 1)));
+    }
+    Polygon_with_holes poly(outer);
+
+
+    for (auto hit : holes)
+    {
+        compas::RowMatrixXd H = hit;
+        Polygon_2 hole;
+        for (int i = 0; i < H.rows(); i++)
+        {
+            hole.push_back(Point(H(i, 0), H(i, 1)));
+        }
+        poly.add_hole(hole);
+
+    }
+
+    SsPtr iss = CGAL::create_interior_straight_skeleton_2(poly);
+    compas::Edges edgelist;
+    for(auto hit = iss->halfedges_begin(); hit != iss->halfedges_end(); ++hit){
+        const Halfedge_const_handle h = hit;
+        if(!h->is_bisector()){
+            continue;
+        }
+        const Vertex_const_handle& v1 = h->vertex();
+        const Vertex_const_handle& v2 = h->opposite()->vertex();
+        if(&*v1 < &*v2){
+            std::vector<double> s_vec = {v1->point().x(), v1->point().y(), 0};
+            std::vector<double> t_vec = {v2->point().x(), v2->point().y(), 0};
+            compas::Edge edge = std::make_tuple(s_vec, t_vec);
+            edgelist.push_back(edge);
+        }
+
+    }
+    return edgelist;
+
+}
 
 // ===========================================================================
 // PyBind11
@@ -52,4 +98,10 @@ void init_straight_skeleton_2(pybind11::module &m)
         "create_interior_straight_skeleton",
         &pmp_create_interior_straight_skeleton,
         pybind11::arg("V").noconvert());
+
+    submodule.def(
+        "create_interior_straight_skeleton_with_holes",
+        &pmp_create_interior_straight_skeleton_with_holes,
+        pybind11::arg("V").noconvert(),
+        pybind11::arg("holes").noconvert());
 };

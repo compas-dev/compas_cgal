@@ -1,5 +1,7 @@
-from compas_cgal.straight_skeleton_2 import create_interior_straight_skeleton
 from compas.tolerance import TOL
+
+from compas_cgal.straight_skeleton_2 import create_interior_straight_skeleton
+from compas_cgal.straight_skeleton_2 import create_interior_straight_skeleton_with_holes
 
 
 def test_straight_polygon():
@@ -15,6 +17,22 @@ def test_straight_polygon():
     ]
     lines = create_interior_straight_skeleton(points)
     assert len(lines) == 8
+
+
+def test_straight_skeleton_with_holes():
+    points = [
+        (-1, -1, 0),
+        (0, -12, 0),
+        (1, -1, 0),
+        (12, 0, 0),
+        (1, 1, 0),
+        (0, 12, 0),
+        (-1, 1, 0),
+        (-12, 0, 0),
+    ]
+    hole = [(-1, 0, 0), (0, 1, 0), (1, 0, 0), (0, -1, 0)]
+    lines = create_interior_straight_skeleton_with_holes(points, [hole])
+    assert len(lines) == 20
 
 
 def test_straight_polygon_2_compare():
