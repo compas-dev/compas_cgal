@@ -57,6 +57,7 @@ def create_interior_straight_skeleton_with_holes(points, holes) -> PolylinesNump
     if not TOL.is_allclose(normal_polygon(points, True), [0, 0, 1]):
         raise ValueError("Please pass a polygon with a normal vector of [0, 0, 1].")
     V = np.asarray(points, dtype=np.float64)
+
     H = []
     for hole in holes:
         points = list(hole)
