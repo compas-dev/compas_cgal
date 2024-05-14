@@ -27,7 +27,7 @@ def slice_mesh_planes(mesh: VerticesFaces, planes: Planes) -> PolylinesNumpy:
     Examples
     --------
     >>> from compas.geometry import Sphere, Plane, Polyline
-    >>> from compas.utilities import linspace
+    >>> from compas.itertools import linspace
     >>> from compas_cgal.slicer import slice_mesh
 
     >>> sphere = Sphere(1.0, point=[0, 0, 1.0])
