@@ -61,8 +61,8 @@ for p, v in zip(points, vectors):
 
 viewer = Viewer()
 
-# viewer.view.camera.position = [5, -4, 2]
-# viewer.view.camera.look_at([0, 1, 0])
+# viewer.renderer.camera.position = [5, -4, 2]
+# viewer.renderer.camera.target = [0, 1, 0])
 
 # viewer.scene.add(Pointcloud(points))
 

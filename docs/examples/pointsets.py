@@ -19,11 +19,11 @@ could3 = cloud1.difference(cloud2)
 
 viewer = Viewer()
 
-# viewer.view.camera.scale = 1000
+# viewer.renderer.camera.scale = 1000
 # viewer.view.grid.cell_size = 1000
 
 viewer.scene.add(cloud2)
 viewer.scene.add(could3, pointcolor=(1.0, 0.0, 0.0))
 
-# viewer.view.camera.zoom_extents()
+# viewer.renderer.camera.zoom_extents()
 viewer.show()

@@ -29,8 +29,8 @@ mesh = Mesh.from_vertices_and_faces(V, F)
 
 viewer = Viewer()
 
-# viewer.ui.window.viewport.view3d.camera.position = [...]
-# viewer.ui.window.viewport.view3d.camera.target = [...]
+viewer.renderer.camera.target = [0, 0, 0]
+viewer.renderer.camera.position = [4, -6, 3]
 
 for color, vertices in zip([Color.blue(), Color.pink()], mesh.connected_vertices()):
     faces = []

@@ -1,8 +1,7 @@
 from compas.datastructures import Graph
 from compas.geometry import Polygon
-from compas_viewer import Viewer
-
 from compas_cgal.straight_skeleton_2 import create_interior_straight_skeleton
+from compas_viewer import Viewer
 
 points = [
     (-1.91, 3.59, 0.0),
@@ -25,7 +24,6 @@ graph = Graph.from_lines(lines)
 # ==============================================================================
 
 viewer = Viewer(width=1600, height=900)
-viewer.renderer_config.show_grid = False
 viewer.scene.add(graph, edgecolor=(1.0, 0.0, 0.0))
 viewer.scene.add(polygon)
 viewer.show()

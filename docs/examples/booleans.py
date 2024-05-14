@@ -13,7 +13,7 @@ box = Box(2)
 A = box.to_vertices_and_faces(triangulated=True)
 
 sphere = Sphere(1, point=[1, 1, 1])
-B = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
+B = sphere.to_vertices_and_faces(u=64, v=64, triangulated=True)
 
 # ==============================================================================
 # Remesh the sphere
@@ -37,8 +37,8 @@ shape = shape.to_mesh()
 
 viewer = Viewer()
 
-# viewer.ui.window.viewport.view3d.camera.position = [...]
-# viewer.ui.window.viewport.view3d.camera.target = [...]
+viewer.renderer.camera.target = [0, 0, 0]
+viewer.renderer.camera.position = [4, -6, 3]
 
-viewer.scene.add(shape, linewidth=2, show_points=False)
+viewer.scene.add(shape, lineswidth=1, show_points=False)
 viewer.show()

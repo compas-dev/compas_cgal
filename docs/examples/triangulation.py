@@ -46,8 +46,8 @@ rdm = Mesh.from_vertices_and_faces(V, F)
 
 viewer = Viewer(width=1600, height=900)
 
-# viewer.view.camera.position = [0, -1, 13]
-# viewer.view.camera.look_at([0, 0, 0])
+viewer.renderer.camera.target = [0, 0, 0]
+viewer.renderer.camera.position = [0, -1, 13]
 
 viewer.scene.add(cdt.transformed(Translation.from_vector([-5, 0, 0])))
 viewer.scene.add(rdm.transformed(Translation.from_vector([+5, 0, 0])))

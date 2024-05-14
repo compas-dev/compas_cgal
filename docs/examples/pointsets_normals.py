@@ -47,13 +47,13 @@ for p, v in zip(points, vectors):
 
 viewer = Viewer()
 
-# viewer.view.camera.scale = 1000
+# viewer.renderer.camera.scale = 1000
 # viewer.view.grid.cell_size = 1000
 
 # line_collection = Collection(lines, line_properties)
 # viewer.scene.add(Pointcloud(points))
 # viewer.scene.add(line_collection)
 
-# viewer.view.camera.zoom_extents()
+# viewer.renderer.camera.zoom_extents()
 
 viewer.show()

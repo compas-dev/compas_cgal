@@ -29,12 +29,12 @@ cloud_transformed = Pointcloud(smoothed_points)
 
 viewer = Viewer()
 
-# viewer.view.camera.scale = 1000
+# viewer.renderer.camera.scale = 1000
 # viewer.view.grid.cell_size = 1000
 
 # viewer.scene.add(cloud_original)
 # viewer.scene.add(cloud_transformed)
 
-# viewer.view.camera.zoom_extents()
+# viewer.renderer.camera.zoom_extents()
 
 viewer.show()

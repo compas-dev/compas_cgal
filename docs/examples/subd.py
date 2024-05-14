@@ -33,8 +33,8 @@ S8.transform(Translation.from_vector([4, 0, 0]))
 
 viewer = Viewer(width=1600, height=900)
 
-# viewer.view.camera.position = [5, -2, 0.5]
-# viewer.view.camera.look_at([3, 1, 0.5])
+viewer.renderer.camera.target = [3, 1, 0.5]
+viewer.renderer.camera.position = [5, -2, 0.5]
 
 viewer.scene.add(box.to_mesh(), show_points=False)
 viewer.scene.add(S2.to_mesh(), show_points=False)

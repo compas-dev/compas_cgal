@@ -37,10 +37,12 @@ for points in pointsets:
 
 viewer = Viewer(width=1600, height=900)
 
-# viewer.view.camera.position = [-5, -5, 1.5]
-# viewer.view.camera.look_at([0, 0, 1.5])
+viewer.renderer.camera.target = [0, 0, 1.5]
+viewer.renderer.camera.position = [-5, -5, 1.5]
 
 viewer.scene.add(mesh, opacity=0.5, show_points=False)
-# viewer.scene.add(Collection(polylines), linewidth=5)
+
+for polyline in polylines:
+    viewer.scene.add(polyline, lineswidth=5, show_points=False)
 
 viewer.show()

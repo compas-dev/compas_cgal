@@ -38,8 +38,8 @@ for points in pointsets:
 
 viewer = Viewer()
 
-# viewer.ui.window.viewport.view3d.camera.position = [...]
-# viewer.ui.window.viewport.view3d.camera.target = [...]
+viewer.renderer.camera.target = [0, 0, 0]
+viewer.renderer.camera.position = [4, -6, 3]
 
 viewer.scene.add(Mesh.from_vertices_and_faces(*A), facecolor=(1.0, 0.0, 0.0), show_points=False)
 viewer.scene.add(Mesh.from_vertices_and_faces(*B), facecolor=(0.0, 1.0, 0.0), show_points=False, opacity=0.3)
@@ -48,7 +48,7 @@ for polyline in polylines:
     viewer.scene.add(
         polyline,
         linecolor=(0.0, 0.0, 1.0),
-        linewidth=3,
+        lineswidth=3,
         pointcolor=(0.0, 0.0, 1.0),
         pointsize=20,
         show_points=True,

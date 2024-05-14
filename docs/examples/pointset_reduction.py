@@ -39,6 +39,6 @@ viewer = Viewer()
 for x, y, z in points:
     viewer.scene.add(Point(x, y, z).scaled(1e-3, 1e-3, 1e-3))
 
-# viewer.view.camera.zoom_extents()
+# viewer.renderer.camera.zoom_extents()
 
 viewer.show()

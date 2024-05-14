@@ -45,8 +45,9 @@ mesh = Mesh.from_vertices_and_faces(V, F)
 # ==============================================================================
 
 viewer = Viewer(width=1600, height=900)
-# viewer.view.camera.position = [0, -25, 10]
-# viewer.view.camera.look_at([0, 0, 0])
+
+viewer.renderer.camera.target = [0, 0, 0]
+viewer.renderer.camera.position = [0, -25, 10]
 
 viewer.scene.add(bunny.transformed(Translation.from_vector([-10, 0, 0])), show_points=False)
 viewer.scene.add(mesh.transformed(Translation.from_vector([+10, 0, 0])), show_points=False)

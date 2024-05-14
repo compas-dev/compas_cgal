@@ -56,12 +56,12 @@ for points in pointsets:
 
 viewer = Viewer(width=1600, height=900)
 
-# viewer.view.camera.position = [-40, -70, 40]
-# viewer.view.camera.look_at([0, 0, 20])
+viewer.renderer.camera.target = [0, 0, 20]
+viewer.renderer.camera.position = [-40, -70, 40]
 
 viewer.scene.add(benchy, show_lines=False, show_points=False, opacity=0.5)
 
 for polyline in polylines:
-    viewer.scene.add(polyline, linecolor=Color.grey(), linewidth=2, show_points=False)
+    viewer.scene.add(polyline, linecolor=Color.grey(), lineswidth=2, show_points=False)
 
 viewer.show()
