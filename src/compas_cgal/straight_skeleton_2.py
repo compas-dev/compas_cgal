@@ -123,7 +123,7 @@ def create_weighted_offset_polygons_2(points, offset, weights):
     ValueError
         If the normal of the polygon is not [0, 0, 1].
     ValueError
-        If the number of weights do not match the number of points.
+        If the number of weights does not match the number of points.
     """
     points = list(points)
     if not TOL.is_allclose(normal_polygon(points, True), [0, 0, 1]):
