@@ -1,5 +1,6 @@
 import numpy as np
-from compas.geometry import Polygon, normal_polygon
+from compas.geometry import Polygon
+from compas.geometry import normal_polygon
 from compas.tolerance import TOL
 
 from compas_cgal._cgal import straight_skeleton_2
@@ -131,9 +132,7 @@ def create_weighted_offset_polygons_2(points, offset, weights):
     offset = float(offset)
     W = np.asarray(weights, dtype=np.float64)
     if W.shape[0] != V.shape[0]:
-        raise ValueError(
-            "The number of weights should be equal to the number of points %d != %d." % (W.shape[0], V.shape[0])
-        )
+        raise ValueError("The number of weights should be equal to the number of points %d != %d." % (W.shape[0], V.shape[0]))
     if offset < 0:
         offset_polygons = straight_skeleton_2.create_weighted_offset_polygons_2_outer(V, abs(offset), W)[1:]
     else:
