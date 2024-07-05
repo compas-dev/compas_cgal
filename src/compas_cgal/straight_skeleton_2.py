@@ -1,6 +1,5 @@
 import numpy as np
 from compas.geometry import normal_polygon
-from compas.geometry import Polygon
 from compas.tolerance import TOL
 
 from compas_cgal._cgal import straight_skeleton_2
@@ -67,17 +66,3 @@ def create_interior_straight_skeleton_with_holes(points, holes) -> PolylinesNump
         hole = np.asarray(points, dtype=np.float64)
         H.append(hole)
     return straight_skeleton_2.create_interior_straight_skeleton_with_holes(V, H)
-
-
-def create_offset_polygons_2(points, offset) -> PolylinesNumpy:
-    points = list(points)
-    if not TOL.is_allclose(normal_polygon(points, True), [0, 0, 1]):
-        raise ValueError("Please pass a polygon with a normal vector of [0, 0, 1].")
-    V = np.asarray(points, dtype=np.float64)
-    offset = float(offset)
-    if offset < 0: # outside
-        offset_polygons = straight_skeleton_2.create_offset_polygons_2_outer(V, abs(offset))[1:] # first one is box
-    else: # inside
-        offset_polygons = straight_skeleton_2.create_offset_polygons_2_inner(V, offset)
-    return [Polygon(points.tolist()) for points in offset_polygons]
-

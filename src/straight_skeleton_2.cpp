@@ -3,7 +3,6 @@
 #include <CGAL/Polygon_2.h>
 #include <CGAL/create_straight_skeleton_2.h>
 #include <CGAL/create_straight_skeleton_from_polygon_with_holes_2.h>
-#include <CGAL/create_offset_polygons_2.h>
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
 typedef K::Point_2 Point;
@@ -13,8 +12,6 @@ typedef CGAL::Straight_skeleton_2<K> Ss;
 typedef boost::shared_ptr<Ss> SsPtr;
 typedef CGAL::Straight_skeleton_2<K>::Halfedge_const_handle Halfedge_const_handle;
 typedef CGAL::Straight_skeleton_2<K>::Vertex_const_handle Vertex_const_handle;
-typedef boost::shared_ptr<Polygon_2> PolygonPtr;
-typedef std::vector<PolygonPtr> PolygonPtrVector;
 
 compas::Edges pmp_create_interior_straight_skeleton(
     Eigen::Ref<const compas::RowMatrixXd> &V)
@@ -89,52 +86,6 @@ compas::Edges pmp_create_interior_straight_skeleton_with_holes(
 
 }
 
-std::vector<compas::RowMatrixXd> pmp_create_offset_polygons_2_inner(Eigen::Ref<const compas::RowMatrixXd> &V, double &offset){
-    Polygon_2 poly;
-    for (int i = 0; i < V.rows(); i++){
-        poly.push_back(Point(V(i, 0), V(i, 1)));
-    }
-    PolygonPtrVector offset_polygons = CGAL::create_interior_skeleton_and_offset_polygons_2(offset, poly);
-
-    std::vector<compas::RowMatrixXd> result;
-    for(auto pi = offset_polygons.begin(); pi != offset_polygons.end(); ++pi){
-        std::size_t n = (*pi)->size();
-        compas::RowMatrixXd points(n, 3);
-        int j = 0;
-        for (auto vi = (*pi)->vertices_begin(); vi != (*pi)->vertices_end(); ++vi){
-            points(j, 0) = (double)(*vi).x();
-            points(j, 1) = (double)(*vi).y();
-            points(j, 2) = 0;
-            j++;
-        }
-        result.push_back(points);
-    }
-    return result;
-}
-
-std::vector<compas::RowMatrixXd> pmp_create_offset_polygons_2_outer(Eigen::Ref<const compas::RowMatrixXd> &V, double &offset){
-    Polygon_2 poly;
-    for (int i = 0; i < V.rows(); i++){
-        poly.push_back(Point(V(i, 0), V(i, 1)));
-    }
-    PolygonPtrVector offset_polygons = CGAL::create_exterior_skeleton_and_offset_polygons_2(offset, poly);
-
-    std::vector<compas::RowMatrixXd> result;
-    for(auto pi = offset_polygons.begin(); pi != offset_polygons.end(); ++pi){
-        std::size_t n = (*pi)->size();
-        compas::RowMatrixXd points(n, 3);
-        int j = 0;
-        for (auto vi = (*pi)->vertices_begin(); vi != (*pi)->vertices_end(); ++vi){
-            points(j, 0) = (double)(*vi).x();
-            points(j, 1) = (double)(*vi).y();
-            points(j, 2) = 0;
-            j++;
-        }
-        result.push_back(points);
-    }
-    return result;
-}
-
 // ===========================================================================
 // PyBind11
 // ===========================================================================
@@ -153,16 +104,4 @@ void init_straight_skeleton_2(pybind11::module &m)
         &pmp_create_interior_straight_skeleton_with_holes,
         pybind11::arg("V").noconvert(),
         pybind11::arg("holes").noconvert());
-
-    submodule.def(
-        "create_offset_polygons_2_inner",
-        &pmp_create_offset_polygons_2_inner,
-        pybind11::arg("V").noconvert(),
-        pybind11::arg("offset").noconvert());
-
-    submodule.def(
-        "create_offset_polygons_2_outer",
-        &pmp_create_offset_polygons_2_outer,
-        pybind11::arg("V").noconvert(),
-        pybind11::arg("offset").noconvert());
 };

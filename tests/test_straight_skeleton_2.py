@@ -2,7 +2,7 @@ from compas.tolerance import TOL
 
 from compas_cgal.straight_skeleton_2 import create_interior_straight_skeleton
 from compas_cgal.straight_skeleton_2 import create_interior_straight_skeleton_with_holes
-from compas_cgal.straight_skeleton_2 import create_offset_polygons_2
+
 
 def test_straight_polygon():
     points = [
@@ -73,21 +73,3 @@ def test_straight_polygon_2_compare():
         # the line direction sometimes changes ...
         assert TOL.is_allclose(sa, se) or TOL.is_allclose(sa, ee)
         assert TOL.is_allclose(ea, ee) or TOL.is_allclose(ea, se)
-
-
-def test_offset():
-    points = [
-        (-1, -1, 0),
-        (0, -12, 0),
-        (1, -1, 0),
-        (12, 0, 0),
-        (1, 1, 0),
-        (0, 12, 0),
-        (-1, 1, 0),
-        (-12, 0, 0),
-    ]
-    offset = 0.5
-    polygons = create_offset_polygons_2(points, offset)
-    assert len(polygons) == 1, len(polygons)
-    polygons = create_offset_polygons_2(points, -offset)
-    assert len(polygons) == 1, len(polygons)
