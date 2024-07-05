@@ -15,6 +15,8 @@ typedef CGAL::Straight_skeleton_2<K> Ss;
 typedef boost::shared_ptr<Ss> SsPtr;
 typedef CGAL::Straight_skeleton_2<K>::Halfedge_const_handle Halfedge_const_handle;
 typedef CGAL::Straight_skeleton_2<K>::Vertex_const_handle Vertex_const_handle;
+typedef boost::shared_ptr<Polygon_2> PolygonPtr;
+typedef std::vector<PolygonPtr> PolygonPtrVector;
 
 compas::Edges pmp_create_interior_straight_skeleton(
     Eigen::Ref<const compas::RowMatrixXd> &V)
