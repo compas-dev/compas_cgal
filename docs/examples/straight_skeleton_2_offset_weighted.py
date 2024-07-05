@@ -1,7 +1,7 @@
-from compas.datastructures import Graph
 from compas.geometry import Polygon
-from compas_cgal.straight_skeleton_2 import create_offset_polygons_2
 from compas_viewer import Viewer
+
+from compas_cgal.straight_skeleton_2 import create_weighted_offset_polygons_2
 
 points = [
     (-1.91, 3.59, 0.0),
@@ -16,10 +16,12 @@ points = [
     (-1.91, 3.59, 0.0),
 ]
 polygon = Polygon(points)
-offset = 1.5
 
-offset_polygons_inner = create_offset_polygons_2(points, offset)
-offset_polygons_outer = create_offset_polygons_2(points, -offset)
+
+distances = [0.1, 0.3, 0.6, 0.1, 0.7, 0.5, 0.2, 0.4, 0.8, 0.2]
+weights = [1.0 / d for d in distances]
+offset = 1.0
+offset_polygons_outer = create_weighted_offset_polygons_2(points, -offset, weights)
 
 # ==============================================================================
 # Viz
@@ -27,10 +29,9 @@ offset_polygons_outer = create_offset_polygons_2(points, -offset)
 
 viewer = Viewer(width=1600, height=900)
 viewer.scene.add(polygon)
+viewer.config.renderer.show_grid = False
 
-for opolygon in offset_polygons_inner:
-    viewer.scene.add(opolygon, linecolor=(1.0, 0.0, 0.0))
 for opolygon in offset_polygons_outer:
-    viewer.scene.add(opolygon, linecolor=(0.0, 0.0, 1.0))
+    viewer.scene.add(opolygon, linecolor=(0.0, 0.0, 1.0), facecolor=(1.0, 1.0, 1.0, 0.0))
 
 viewer.show()
