@@ -72,7 +72,7 @@ def create_interior_straight_skeleton_with_holes(points, holes) -> PolylinesNump
     return straight_skeleton_2.create_interior_straight_skeleton_with_holes(V, H)
 
 
-def create_offset_polygons_2(points, offset):
+def create_offset_polygons_2(points, offset) -> list[Polygon]:
     """Compute the polygon offset.
 
     Parameters
@@ -84,7 +84,7 @@ def create_offset_polygons_2(points, offset):
 
     Returns
     -------
-    list of Polygon
+    list[:class:`Polygon`]
         The offset polygon(s).
 
     Raises
@@ -105,7 +105,7 @@ def create_offset_polygons_2(points, offset):
     return [Polygon(points.tolist()) for points in offset_polygons]
 
 
-def create_weighted_offset_polygons_2(points, offset, weights):
+def create_weighted_offset_polygons_2(points, offset, weights) -> list[Polygon]:
     """Compute the polygon offset with weights.
 
     Parameters
@@ -119,7 +119,7 @@ def create_weighted_offset_polygons_2(points, offset, weights):
 
     Returns
     -------
-    list of Polygon
+    list[:class:`Polygon`]
         The offset polygon(s).
 
     Raises
