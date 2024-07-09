@@ -27,8 +27,9 @@ def create_interior_straight_skeleton(points) -> PolylinesNumpy:
         If the normal of the polygon is not [0, 0, 1].
     """
     points = list(points)
-    if not TOL.is_allclose(normal_polygon(points, True), [0, 0, 1]):
-        raise ValueError("Please pass a polygon with a normal vector of [0, 0, 1].")
+    normal = normal_polygon(points, True)
+    if not TOL.is_allclose(normal, [0, 0, 1]):
+        raise ValueError("The normal of the polygon should be [0, 0, 1]. The normal of the provided polygon is {}".format(normal))
     V = np.asarray(points, dtype=np.float64)
     return straight_skeleton_2.create_interior_straight_skeleton(V)
 
@@ -55,15 +56,17 @@ def create_interior_straight_skeleton_with_holes(points, holes) -> PolylinesNump
         If the normal of a hole is not [0, 0, -1].
     """
     points = list(points)
-    if not TOL.is_allclose(normal_polygon(points, True), [0, 0, 1]):
-        raise ValueError("Please pass a polygon with a normal vector of [0, 0, 1].")
+    normal = normal_polygon(points, True)
+    if not TOL.is_allclose(normal, [0, 0, 1]):
+        raise ValueError("The normal of the polygon should be [0, 0, 1]. The normal of the provided polygon is {}".format(normal))
     V = np.asarray(points, dtype=np.float64)
 
     H = []
-    for hole in holes:
+    for i, hole in enumerate(holes):
         points = list(hole)
-        if not TOL.is_allclose(normal_polygon(points, True), [0, 0, -1]):
-            raise ValueError("Please pass a hole with a normal vector of [0, 0, -1].")
+        normal_hole = normal_polygon(points, True)
+        if not TOL.is_allclose(normal_hole, [0, 0, -1]):
+            raise ValueError("The normal of the hole should be [0, 0, -1]. The normal of the provided {}-th hole is {}".format(i, normal_hole))
         hole = np.asarray(points, dtype=np.float64)
         H.append(hole)
     return straight_skeleton_2.create_interior_straight_skeleton_with_holes(V, H)
@@ -90,8 +93,9 @@ def create_offset_polygons_2(points, offset):
         If the normal of the polygon is not [0, 0, 1].
     """
     points = list(points)
-    if not TOL.is_allclose(normal_polygon(points, True), [0, 0, 1]):
-        raise ValueError("Please pass a polygon with a normal vector of [0, 0, 1].")
+    normal = normal_polygon(points, True)
+    if not TOL.is_allclose(normal, [0, 0, 1]):
+        raise ValueError("The normal of the polygon should be [0, 0, 1]. The normal of the provided polygon is {}".format(normal))
     V = np.asarray(points, dtype=np.float64)
     offset = float(offset)
     if offset < 0:  # outside
@@ -126,8 +130,10 @@ def create_weighted_offset_polygons_2(points, offset, weights):
         If the number of weights does not match the number of points.
     """
     points = list(points)
-    if not TOL.is_allclose(normal_polygon(points, True), [0, 0, 1]):
-        raise ValueError("Please pass a polygon with a normal vector of [0, 0, 1].")
+    normal = normal_polygon(points, True)
+    if not TOL.is_allclose(normal, [0, 0, 1]):
+        raise ValueError("The normal of the polygon should be [0, 0, 1]. The normal of the provided polygon is {}".format(normal))
+
     V = np.asarray(points, dtype=np.float64)
     offset = float(offset)
     W = np.asarray(weights, dtype=np.float64)
