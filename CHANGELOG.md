@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Added `compas_cgal.straight_skeleton_2.create_interior_straight_skeleton`.
+* Added `compas_cgal.straight_skeleton_2.create_interior_straight_skeleton_with_holes`.
+* Added `compas_cgal.straight_skeleton_2.create_offset_polygons_2_inner`.
+* Added `compas_cgal.straight_skeleton_2.create_offset_polygons_2_outer`.
+* Added `compas_cgal.straight_skeleton_2.create_weighted_offset_polygons_2_inner`.
+* Added `compas_cgal.straight_skeleton_2.create_weighted_offset_polygons_2_outer`.
 
 ### Changed
 
