@@ -18,7 +18,51 @@ typedef CGAL::Straight_skeleton_2<K>::Vertex_const_handle Vertex_const_handle;
 typedef boost::shared_ptr<Polygon_2> PolygonPtr;
 typedef std::vector<PolygonPtr> PolygonPtrVector;
 
-compas::Edges pmp_create_interior_straight_skeleton(
+
+std::tuple<compas::RowMatrixXd, std::vector<int>, compas::RowMatrixXi, std::vector<int>> mesh_data_from_skeleton(boost::shared_ptr<Ss> &iss){
+    std::size_t v = iss->size_of_vertices();
+    std::size_t e = iss->size_of_halfedges() / 2; // halfedges are stored twice
+
+    compas::RowMatrixXd Mv(v, 3);
+    std::vector<int> Mvi; // to save the vertex ids
+    compas::RowMatrixXi Me(e, 2);
+    std::vector<int> Mei; // to save the edge type: 0: inner bisector, 1: bisector, 2: boundary
+
+    std::size_t i = 0;
+    for(auto hit = iss->vertices_begin(); hit != iss->vertices_end(); ++hit){
+        const Vertex_const_handle vh = hit;
+        Mv(i, 0) = (double)vh->point().x();
+        Mv(i, 1) = (double)vh->point().y();
+        Mv(i, 2) = 0;
+        Mvi.push_back((int)vh->id());
+        i++;
+    }
+    i = 0;
+    for(auto hit = iss->halfedges_begin(); hit != iss->halfedges_end(); ++hit){
+        const Halfedge_const_handle h = hit;
+        const Vertex_const_handle& v1 = h->vertex();
+        const Vertex_const_handle& v2 = h->opposite()->vertex();
+
+        if(&*v1 < &*v2){
+            Me(i, 0) = (int)v1->id();
+            Me(i, 1) = (int)v2->id();
+
+            if(h->is_inner_bisector()){
+                Mei.push_back(0);
+            }
+            else if(h->is_bisector()){
+                Mei.push_back(1);
+            }else{
+                Mei.push_back(2);
+            }
+            i++;
+        }
+    }
+    std::tuple<compas::RowMatrixXd, std::vector<int>, compas::RowMatrixXi, std::vector<int>> result = std::make_tuple(Mv, Mvi, Me, Mei);
+    return result;
+}
+
+std::tuple<compas::RowMatrixXd, std::vector<int>, compas::RowMatrixXi, std::vector<int>> pmp_create_interior_straight_skeleton(
     Eigen::Ref<const compas::RowMatrixXd> &V)
 {
     Polygon_2 poly;
@@ -27,26 +71,11 @@ compas::Edges pmp_create_interior_straight_skeleton(
         poly.push_back(Point(V(i, 0), V(i, 1)));
     }
     SsPtr iss = CGAL::create_interior_straight_skeleton_2(poly.vertices_begin(), poly.vertices_end());
-    compas::Edges edgelist;
-    for(auto hit = iss->halfedges_begin(); hit != iss->halfedges_end(); ++hit){
-        const Halfedge_const_handle h = hit;
-        if(!h->is_bisector()){
-            continue;
-        }
-        const Vertex_const_handle& v1 = h->vertex();
-        const Vertex_const_handle& v2 = h->opposite()->vertex();
-        if(&*v1 < &*v2){
-            std::vector<double> s_vec = {v1->point().x(), v1->point().y(), 0};
-            std::vector<double> t_vec = {v2->point().x(), v2->point().y(), 0};
-            compas::Edge edge = std::make_tuple(s_vec, t_vec);
-            edgelist.push_back(edge);
-        }
 
-    }
-    return edgelist;
+    return mesh_data_from_skeleton(iss);
 };
 
-compas::Edges pmp_create_interior_straight_skeleton_with_holes(
+std::tuple<compas::RowMatrixXd, std::vector<int>, compas::RowMatrixXi, std::vector<int>> pmp_create_interior_straight_skeleton_with_holes(
     Eigen::Ref<const compas::RowMatrixXd> &V,
     std::vector<Eigen::Ref<const compas::RowMatrixXd>> &holes)
 {
@@ -56,7 +85,6 @@ compas::Edges pmp_create_interior_straight_skeleton_with_holes(
         outer.push_back(Point(V(i, 0), V(i, 1)));
     }
     Polygon_with_holes poly(outer);
-
 
     for (auto hit : holes)
     {
@@ -71,24 +99,7 @@ compas::Edges pmp_create_interior_straight_skeleton_with_holes(
     }
 
     SsPtr iss = CGAL::create_interior_straight_skeleton_2(poly);
-    compas::Edges edgelist;
-    for(auto hit = iss->halfedges_begin(); hit != iss->halfedges_end(); ++hit){
-        const Halfedge_const_handle h = hit;
-        if(!h->is_bisector()){
-            continue;
-        }
-        const Vertex_const_handle& v1 = h->vertex();
-        const Vertex_const_handle& v2 = h->opposite()->vertex();
-        if(&*v1 < &*v2){
-            std::vector<double> s_vec = {v1->point().x(), v1->point().y(), 0};
-            std::vector<double> t_vec = {v2->point().x(), v2->point().y(), 0};
-            compas::Edge edge = std::make_tuple(s_vec, t_vec);
-            edgelist.push_back(edge);
-        }
-
-    }
-    return edgelist;
-
+    return mesh_data_from_skeleton(iss);
 }
 
 std::vector<compas::RowMatrixXd> pmp_create_offset_polygons_2_inner(Eigen::Ref<const compas::RowMatrixXd> &V, double &offset){
