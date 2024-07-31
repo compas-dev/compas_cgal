@@ -1,14 +1,31 @@
 import numpy as np
+from compas.datastructures import Graph
 from compas.geometry import Polygon
 from compas.geometry import normal_polygon
 from compas.tolerance import TOL
 
 from compas_cgal._cgal import straight_skeleton_2
 
-from .types import PolylinesNumpy
+
+def graph_from_skeleton_data(skeleton_data) -> Graph:
+    Mv, Mvi, Me, Mei = skeleton_data
+
+    graph = Graph()
+    for pt, i in zip(Mv, Mvi):
+        graph.add_node(key=i, x=pt[0], y=pt[1], z=pt[2])
+
+    for edge, etype in zip(Me, Mei):
+        edge = graph.add_edge(*edge)
+        if etype == 0:
+            graph.edge_attribute(edge, "inner_bisector", True)
+        elif etype == 1:
+            graph.edge_attribute(edge, "bisector", True)
+        else:
+            graph.edge_attribute(edge, "boundary", True)
+    return graph
 
 
-def create_interior_straight_skeleton(points) -> PolylinesNumpy:
+def create_interior_straight_skeleton(points) -> Graph:
     """Compute the skeleton of a polygon.
 
     Parameters
@@ -31,10 +48,10 @@ def create_interior_straight_skeleton(points) -> PolylinesNumpy:
     if not TOL.is_allclose(normal, [0, 0, 1]):
         raise ValueError("The normal of the polygon should be [0, 0, 1]. The normal of the provided polygon is {}".format(normal))
     V = np.asarray(points, dtype=np.float64)
-    return straight_skeleton_2.create_interior_straight_skeleton(V)
+    return graph_from_skeleton_data(straight_skeleton_2.create_interior_straight_skeleton(V))
 
 
-def create_interior_straight_skeleton_with_holes(points, holes) -> PolylinesNumpy:
+def create_interior_straight_skeleton_with_holes(points, holes) -> Graph:
     """Compute the skeleton of a polygon with holes.
 
     Parameters
@@ -69,7 +86,7 @@ def create_interior_straight_skeleton_with_holes(points, holes) -> PolylinesNump
             raise ValueError("The normal of the hole should be [0, 0, -1]. The normal of the provided {}-th hole is {}".format(i, normal_hole))
         hole = np.asarray(points, dtype=np.float64)
         H.append(hole)
-    return straight_skeleton_2.create_interior_straight_skeleton_with_holes(V, H)
+    return graph_from_skeleton_data(straight_skeleton_2.create_interior_straight_skeleton_with_holes(V, H))
 
 
 def create_offset_polygons_2(points, offset) -> list[Polygon]:

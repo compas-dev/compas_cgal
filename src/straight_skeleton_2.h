@@ -4,11 +4,11 @@
 #include <compas.h>
 
 
-compas::Edges pmp_create_interior_straight_skeleton(
+std::tuple<compas::RowMatrixXd, std::vector<int>, compas::RowMatrixXi, std::vector<int>> pmp_create_interior_straight_skeleton(
     Eigen::Ref<const compas::RowMatrixXd> &V);
 
 
-compas::Edges pmp_create_interior_straight_skeleton_with_holes(
+std::tuple<compas::RowMatrixXd, std::vector<int>, compas::RowMatrixXi, std::vector<int>> pmp_create_interior_straight_skeleton_with_holes(
     Eigen::Ref<const compas::RowMatrixXd> &V,
     std::vector<Eigen::Ref<const compas::RowMatrixXd>> &holes);
 
