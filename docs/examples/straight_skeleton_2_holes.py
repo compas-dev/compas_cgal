@@ -1,5 +1,4 @@
-from compas.datastructures import Graph
-from compas.geometry import Polygon
+from compas.geometry import Polygon, Line
 from compas_viewer import Viewer
 
 from compas_cgal.straight_skeleton_2 import create_interior_straight_skeleton_with_holes
@@ -26,17 +25,20 @@ holes = [
 
 polygon = Polygon(points)
 holes = [Polygon(hole) for hole in holes]
-lines = create_interior_straight_skeleton_with_holes(polygon, holes)
-graph = Graph.from_lines(lines)
+graph = create_interior_straight_skeleton_with_holes(polygon, holes)
 
 # ==============================================================================
 # Viz
 # ==============================================================================
 
 viewer = Viewer(width=1600, height=900)
-viewer.renderer_config.show_grid = False
-viewer.scene.add(graph, edgecolor=(1.0, 0.0, 0.0))
-viewer.scene.add(polygon)
-for hole in holes:
-    viewer.scene.add(hole)
+
+for edge in graph.edges():
+    line = Line(*graph.edge_coordinates(edge))
+    if graph.edge_attribute(edge, "inner_bisector"):
+        viewer.add(line, linecolor=(1.0, 0.0, 0.0), linewidth=2)
+    elif graph.edge_attribute(edge, "bisector"):
+        viewer.add(line, linecolor=(0.0, 0.0, 1.0))
+    else:
+        viewer.add(line, linecolor=(0.0, 0.0, 0.0))
 viewer.show()
