@@ -12,7 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* Changed the return values of `compas_cgal.straight_skeleton_2.create_interior_straight_skeleton` and `compas_cgal.straight_skeleton_2.create_interior_straight_skeleton_with_holes` into graph data.
+* Changed the return values of `compas_cgal.straight_skeleton_2.create_interior_straight_skeleton` and `compas_cgal.straight_skeleton_2.create_interior_straight_skeleton_with_holes`.
+* Changed the return values of `compas_cgal.create_interior_straight_skeleton`.
 
 ### Removed
 
