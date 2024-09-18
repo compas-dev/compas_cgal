@@ -12,6 +12,8 @@ from numpy.typing import NDArray
 
 FloatNx3 = Annotated[NDArray[float64], Literal["N", 3]]
 IntNx3 = Annotated[NDArray[int64], Literal["N", 3]]
+IntNx2 = Annotated[NDArray[int64], Literal["N", 2]]
+IntNx1 = Annotated[NDArray[int64], Literal["N", 1]]
 
 VerticesNumpy = FloatNx3
 """An array of vertices, with each vertex defined by 3 spatial coordinates."""
