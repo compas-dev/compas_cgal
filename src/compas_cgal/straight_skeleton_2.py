@@ -102,7 +102,7 @@ def create_interior_straight_skeleton_with_holes(points, holes) -> Graph:
             raise ValueError("The normal of the hole should be [0, 0, -1]. The normal of the provided {}-th hole is {}".format(i, normal_hole))
         hole = np.asarray(points, dtype=np.float64)
         H.append(hole)
-    return graph_from_skeleton_data(straight_skeleton_2.create_interior_straight_skeleton_with_holes(V, H))
+    return graph_from_skeleton_data(*straight_skeleton_2.create_interior_straight_skeleton_with_holes(V, H))
 
 
 def create_offset_polygons_2(points, offset) -> list[Polygon]:
