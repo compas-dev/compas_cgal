@@ -60,7 +60,7 @@ def create_interior_straight_skeleton(points, as_graph=True) -> Union[Graph, Tup
 
     Returns
     -------
-    :attr:`compas_cgal.types.PolylinesNumpy`
+    :attr:`compas.datastructures.Graph` or tuple of (vertices, indices, edges, edge_types)
         The skeleton of the polygon.
 
     Raises
@@ -93,7 +93,7 @@ def create_interior_straight_skeleton_with_holes(points, holes, as_graph=True) -
 
     Returns
     -------
-    :attr:`compas_cgal.types.PolylinesNumpy`
+    :attr:`compas.datastructures.Graph` or tuple of (vertices, indices, edges, edge_types)
         The skeleton of the polygon.
 
     Raises
