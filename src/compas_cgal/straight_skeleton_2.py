@@ -7,14 +7,30 @@ from compas.tolerance import TOL
 from compas_cgal._cgal import straight_skeleton_2
 
 
-def graph_from_skeleton_data(skeleton_data) -> Graph:
-    Mv, Mvi, Me, Mei = skeleton_data
+def graph_from_skeleton_data(points, indices, edges, edge_types) -> Graph:
+    """Create a graph from the skeleton data.
 
+    Parameters
+    ----------
+    points : list of point coordinates
+        The vertices of the skeleton.
+    indices : list of int
+        The vertex indices of the skeleton, corresponding to the points.
+    edges : list of tuple of int
+        The edges of the skeleton.
+    edge_types : list of int
+        The type per edge, `0` for inner bisector, `1` for bisector, and `2` for boundary.
+
+    Returns
+    -------
+    :class:`compas.datastructures.Graph`
+        The skeleton as a graph.
+    """
     graph = Graph()
-    for pt, i in zip(Mv, Mvi):
+    for pt, i in zip(points, indices):
         graph.add_node(key=i, x=pt[0], y=pt[1], z=pt[2])
 
-    for edge, etype in zip(Me, Mei):
+    for edge, etype in zip(edges, edge_types):
         edge = graph.add_edge(*edge)
         if etype == 0:
             graph.edge_attribute(edge, "inner_bisector", True)
@@ -48,7 +64,7 @@ def create_interior_straight_skeleton(points) -> Graph:
     if not TOL.is_allclose(normal, [0, 0, 1]):
         raise ValueError("The normal of the polygon should be [0, 0, 1]. The normal of the provided polygon is {}".format(normal))
     V = np.asarray(points, dtype=np.float64)
-    return graph_from_skeleton_data(straight_skeleton_2.create_interior_straight_skeleton(V))
+    return graph_from_skeleton_data(*straight_skeleton_2.create_interior_straight_skeleton(V))
 
 
 def create_interior_straight_skeleton_with_holes(points, holes) -> Graph:
