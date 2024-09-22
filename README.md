@@ -38,7 +38,7 @@ pip install -e .'[dev]'
 **Mac**:
 
 ```bash
-conda create -n cgal-dev python=3.9 gmp mpfr boost-cpp eigen=3.3 cgal-cpp pybind11 --yes
+conda create -n cgal-dev python=3.9 gmp mpfr boost-cpp eigen=3.3 cgal-cpp pybind11 scip --yes
 conda activate cgal-dev
 git clone https://github.com/compas-dev/compas_cgal
 cd compas_cgal
