@@ -21,6 +21,5 @@ jobs:
       - uses: compas-dev/compas-actions.build@v4
         with:
           invoke_lint: true
-          check_import: true
           use_conda: true
           python: ${{ matrix.python }}

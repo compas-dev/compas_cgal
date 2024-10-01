@@ -18,7 +18,3 @@ def test_intersections():
         polylines.append(polyline)
 
     print(pointsets)
-
-
-if __name__ == "__main__":
-    test_intersections()
