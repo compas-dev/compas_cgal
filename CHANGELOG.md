@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Added recipe hasher.
 * Added `scip` to dev install instructions in README.md
+* Added `compas_cgal.straight_skeleton_2.create_offset_polygons_with_holes_2`.
 
 ### Changed
 

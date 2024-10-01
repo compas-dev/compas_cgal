@@ -16,8 +16,18 @@ std::vector<compas::RowMatrixXd> pmp_create_offset_polygons_2_inner(
     Eigen::Ref<const compas::RowMatrixXd> &V,
     double &offset);
 
+std::vector<std::tuple<compas::RowMatrixXd, std::vector<compas::RowMatrixXd>>> pmp_create_offset_polygons_2_inner_with_holes(
+    Eigen::Ref<const compas::RowMatrixXd> &V,
+    std::vector<Eigen::Ref<const compas::RowMatrixXd>> &holes,
+    double &offset);
+
 std::vector<compas::RowMatrixXd> pmp_create_offset_polygons_2_outer(
     Eigen::Ref<const compas::RowMatrixXd> &V,
+    double &offset);
+
+std::vector<std::tuple<compas::RowMatrixXd, std::vector<compas::RowMatrixXd>>> pmp_create_offset_polygons_2_outer_with_holes(
+    Eigen::Ref<const compas::RowMatrixXd> &V,
+    std::vector<Eigen::Ref<const compas::RowMatrixXd>> &holes,
     double &offset);
 
 std::vector<compas::RowMatrixXd> pmp_create_weighted_offset_polygons_2_inner(

@@ -155,6 +155,63 @@ def create_offset_polygons_2(points, offset) -> list[Polygon]:
     return [Polygon(points.tolist()) for points in offset_polygons]
 
 
+def create_offset_polygons_with_holes_2(points, holes, offset) -> list[Tuple[Polygon, list[Polygon]]]:
+    """Compute the polygon offset with holes.
+
+    Parameters
+    ----------
+    points : list of point coordinates or :class:`compas.geometry.Polygon`
+        The points of the polygon.
+    holes : list of list of point coordinates or list of :class:`compas.geometry.Polygon`
+        The holes of the polygon.
+    offset : float
+        The offset distance. If negative, the offset is outside the polygon, otherwise inside.
+
+    Returns
+    -------
+
+    Returns
+    -------
+    list of tuple of (:class:`Polygon`, list[:class:`Polygon`])
+        The polygons with holes.
+
+    Raises
+    ------
+    ValueError
+        If the normal of the polygon is not [0, 0, 1].
+        If the normal of a hole is not [0, 0, -1].
+    """
+    points = list(points)
+    normal = normal_polygon(points, True)
+    if not TOL.is_allclose(normal, [0, 0, 1]):
+        raise ValueError("The normal of the polygon should be [0, 0, 1]. The normal of the provided polygon is {}".format(normal))
+    V = np.asarray(points, dtype=np.float64)
+
+    H = []
+    for i, hole in enumerate(holes):
+        points = list(hole)
+        normal_hole = normal_polygon(points, True)
+        if not TOL.is_allclose(normal_hole, [0, 0, -1]):
+            raise ValueError("The normal of the hole should be [0, 0, -1]. The normal of the provided {}-th hole is {}".format(i, normal_hole))
+        hole = np.asarray(points, dtype=np.float64)
+        H.append(hole)
+
+    offset = float(offset)
+    if offset < 0:  # outside
+        offset_polygons = straight_skeleton_2.create_offset_polygons_2_outer_with_holes(V, H, abs(offset))
+    else:  # inside
+        offset_polygons = straight_skeleton_2.create_offset_polygons_2_inner_with_holes(V, H, offset)
+
+    result = []
+    for points, holes_np in offset_polygons:
+        polygon = Polygon(points.tolist())
+        holes = []
+        for hole in holes_np:
+            holes.append(Polygon(hole.tolist()))
+        result.append((polygon, holes))
+    return result
+
+
 def create_weighted_offset_polygons_2(points, offset, weights) -> list[Polygon]:
     """Compute the polygon offset with weights.
 
