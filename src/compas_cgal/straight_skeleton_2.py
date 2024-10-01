@@ -49,7 +49,7 @@ def graph_from_skeleton_data(points: VerticesNumpy, indices: IntNx1, edges: IntN
 
 
 def create_interior_straight_skeleton(points, as_graph=True) -> Union[Graph, Tuple[VerticesNumpy, IntNx1, IntNx2, IntNx1]]:
-    """Compute the skeleton of a polygon.
+    """Compute the skeleton of a 2D polygon.
 
     Parameters
     ----------
@@ -66,7 +66,7 @@ def create_interior_straight_skeleton(points, as_graph=True) -> Union[Graph, Tup
     Raises
     ------
     ValueError
-        If the normal of the polygon is not [0, 0, 1].
+        If the normal of the polygon is not directed vertically upwards like [0, 0, 1].
     """
     points = list(points)
     normal = normal_polygon(points, True)
@@ -80,12 +80,12 @@ def create_interior_straight_skeleton(points, as_graph=True) -> Union[Graph, Tup
 
 
 def create_interior_straight_skeleton_with_holes(points, holes, as_graph=True) -> Union[Graph, Tuple[VerticesNumpy, IntNx1, IntNx2, IntNx1]]:
-    """Compute the skeleton of a polygon with holes.
+    """Compute the skeleton of a 2D polygon with holes.
 
     Parameters
     ----------
     points : list of point coordinates or :class:`compas.geometry.Polygon`
-        The points of the polygon.
+        The points of the 2D polygon.
     holes : list of list of point coordinates or list of :class:`compas.geometry.Polygon`
         The holes of the polygon.
     as_graph : bool, optional
@@ -99,8 +99,8 @@ def create_interior_straight_skeleton_with_holes(points, holes, as_graph=True) -
     Raises
     ------
     ValueError
-        If the normal of the polygon is not [0, 0, 1].
-        If the normal of a hole is not [0, 0, -1].
+        If the normal of the polygon is not directed vertically upwards like [0, 0, 1].
+        If the normal of a hole is not directed vertically downwards like [0, 0, -1].
     """
     points = list(points)
     normal = normal_polygon(points, True)
@@ -123,12 +123,12 @@ def create_interior_straight_skeleton_with_holes(points, holes, as_graph=True) -
 
 
 def create_offset_polygons_2(points, offset) -> list[Polygon]:
-    """Compute the polygon offset.
+    """Compute the offset from a 2D polygon.
 
     Parameters
     ----------
     points : list of point coordinates or :class:`compas.geometry.Polygon`
-        The points of the polygon.
+        The points of the 2D polygon.
     offset : float
         The offset distance. If negative, the offset is outside the polygon, otherwise inside.
 
@@ -140,7 +140,7 @@ def create_offset_polygons_2(points, offset) -> list[Polygon]:
     Raises
     ------
     ValueError
-        If the normal of the polygon is not [0, 0, 1].
+        If the normal of the polygon is not directed vertically upwards like [0, 0, 1].
     """
     points = list(points)
     normal = normal_polygon(points, True)
@@ -156,19 +156,16 @@ def create_offset_polygons_2(points, offset) -> list[Polygon]:
 
 
 def create_offset_polygons_with_holes_2(points, holes, offset) -> list[Tuple[Polygon, list[Polygon]]]:
-    """Compute the polygon offset with holes.
+    """Compute the offset from a 2D polygon with holes.
 
     Parameters
     ----------
     points : list of point coordinates or :class:`compas.geometry.Polygon`
-        The points of the polygon.
+        The points of the 2D polygon.
     holes : list of list of point coordinates or list of :class:`compas.geometry.Polygon`
         The holes of the polygon.
     offset : float
         The offset distance. If negative, the offset is outside the polygon, otherwise inside.
-
-    Returns
-    -------
 
     Returns
     -------
@@ -178,8 +175,8 @@ def create_offset_polygons_with_holes_2(points, holes, offset) -> list[Tuple[Pol
     Raises
     ------
     ValueError
-        If the normal of the polygon is not [0, 0, 1].
-        If the normal of a hole is not [0, 0, -1].
+        If the normal of the polygon is not directed vertically upwards like [0, 0, 1].
+        If the normal of a hole is not directed vertically downwards like [0, 0, -1].
     """
     points = list(points)
     normal = normal_polygon(points, True)
@@ -189,14 +186,13 @@ def create_offset_polygons_with_holes_2(points, holes, offset) -> list[Tuple[Pol
 
     H = []
     for i, hole in enumerate(holes):
-        points = list(hole)
+        points = hole
         normal_hole = normal_polygon(points, True)
         if not TOL.is_allclose(normal_hole, [0, 0, -1]):
             raise ValueError("The normal of the hole should be [0, 0, -1]. The normal of the provided {}-th hole is {}".format(i, normal_hole))
         hole = np.asarray(points, dtype=np.float64)
         H.append(hole)
 
-    offset = float(offset)
     if offset < 0:  # outside
         offset_polygons = straight_skeleton_2.create_offset_polygons_2_outer_with_holes(V, H, abs(offset))
     else:  # inside
@@ -213,12 +209,12 @@ def create_offset_polygons_with_holes_2(points, holes, offset) -> list[Tuple[Pol
 
 
 def create_weighted_offset_polygons_2(points, offset, weights) -> list[Polygon]:
-    """Compute the polygon offset with weights.
+    """Compute the offset from a 2D polygon with weights.
 
     Parameters
     ----------
     points : list of point coordinates or :class:`compas.geometry.Polygon`
-        The points of the polygon.
+        The points of the 2D polygon.
     offset : float
         The offset distance. If negative, the offset is outside the polygon, otherwise inside.
     weights : list of float
@@ -232,7 +228,7 @@ def create_weighted_offset_polygons_2(points, offset, weights) -> list[Polygon]:
     Raises
     ------
     ValueError
-        If the normal of the polygon is not [0, 0, 1].
+        If the normal of the polygon is not directed vertically upwards like [0, 0, 1].
     ValueError
         If the number of weights does not match the number of points.
     """
