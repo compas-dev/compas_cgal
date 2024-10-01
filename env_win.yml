@@ -7,9 +7,9 @@ dependencies:
   - mpir
   - mpfr
   - scip
-  - libboost-devel
+  - boost-cpp
   - eigen=3.3
-  - cgal-cpp
+  - cgal-cpp<=5.6
   - pybind11
   - compas
   - pip:
