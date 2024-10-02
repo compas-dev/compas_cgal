@@ -1,7 +1,6 @@
 from compas.geometry import Polygon
-from compas_viewer import Viewer
-
 from compas_cgal.straight_skeleton_2 import create_interior_straight_skeleton_with_holes
+from compas_viewer import Viewer
 
 points = [
     (-1.91, 3.59, 0.0),
@@ -36,9 +35,9 @@ viewer = Viewer(width=1600, height=900)
 for edge in graph.edges():
     line = graph.edge_line(edge)
     if graph.edge_attribute(edge, "inner_bisector"):
-        viewer.add(line, linecolor=(1.0, 0.0, 0.0), linewidth=2)
+        viewer.scene.add(line, linecolor=(1.0, 0.0, 0.0), linewidth=2)
     elif graph.edge_attribute(edge, "bisector"):
-        viewer.add(line, linecolor=(0.0, 0.0, 1.0))
+        viewer.scene.add(line, linecolor=(0.0, 0.0, 1.0))
     else:
-        viewer.add(line, linecolor=(0.0, 0.0, 0.0))
+        viewer.scene.add(line, linecolor=(0.0, 0.0, 0.0))
 viewer.show()

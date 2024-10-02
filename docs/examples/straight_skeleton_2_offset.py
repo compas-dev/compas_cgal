@@ -1,7 +1,6 @@
 from compas.geometry import Polygon
-from compas_viewer import Viewer
-
 from compas_cgal.straight_skeleton_2 import create_offset_polygons_2
+from compas_viewer import Viewer
 
 points = [
     (-1.91, 3.59, 0.0),

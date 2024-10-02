@@ -59,7 +59,7 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-testpaths = []
+testpaths = ["tests", "src/compas_cgal"]
 python_files = ["test_*.py", "*_test.py", "test.py"]
 addopts = ["-ra", "--strict-markers", "--doctest-glob=*.rst", "--tb=short"]
 doctest_optionflags = [

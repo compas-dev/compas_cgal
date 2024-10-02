@@ -37,7 +37,7 @@ def get_scip_library():
 
 ext_modules = [
     Extension(
-        "compas_cgal._cgal",
+        "compas_cgal.cgal",
         sorted(
             [
                 "src/compas_cgal.cpp",
@@ -88,7 +88,7 @@ def cpp_flag(compiler):
 
     The newer version is prefered over c++11 (when it is available).
     """
-    flags = ["-std=c++17", "-std=c++14", "-std=c++11"]
+    flags = ["-std=c++14", "-std=c++11"]
 
     for flag in flags:
         if has_flag(compiler, flag):
