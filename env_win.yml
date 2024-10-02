@@ -14,4 +14,4 @@ dependencies:
   - compas>=2.4
   - pytest
   - pip:
-      - -e .[DEV]
+      - .[DEV]
