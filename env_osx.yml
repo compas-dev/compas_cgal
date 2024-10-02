@@ -12,6 +12,5 @@ dependencies:
   - cgal-cpp
   - pybind11
   - compas >=2.4
-  - pytest
   - pip:
       - .[DEV]
