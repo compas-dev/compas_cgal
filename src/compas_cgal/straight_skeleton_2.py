@@ -7,7 +7,7 @@ from compas.geometry import Polygon
 from compas.geometry import normal_polygon
 from compas.tolerance import TOL
 
-from compas_cgal._cgal import straight_skeleton_2
+from compas_cgal.cgal import straight_skeleton_2
 
 from .types import IntNx1
 from .types import IntNx2

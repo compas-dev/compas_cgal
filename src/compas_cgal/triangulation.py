@@ -2,7 +2,7 @@ import numpy as np
 from compas.geometry import Point
 from compas.plugins import plugin
 
-from compas_cgal._cgal import triangulations
+from compas_cgal.cgal import triangulations
 
 from .types import FacesNumpy
 from .types import VerticesFacesNumpy

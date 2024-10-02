@@ -1,6 +1,6 @@
 import numpy as np
 
-from compas_cgal._cgal import subdivision
+from compas_cgal.cgal import subdivision
 
 from .types import VerticesFaces
 from .types import VerticesFacesNumpy

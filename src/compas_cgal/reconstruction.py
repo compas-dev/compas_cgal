@@ -5,7 +5,7 @@ import numpy as np
 from compas.geometry import Point
 from compas.geometry import Vector
 
-from compas_cgal._cgal import reconstruction
+from compas_cgal.cgal import reconstruction
 
 from .types import FloatNx3
 from .types import IntNx3
