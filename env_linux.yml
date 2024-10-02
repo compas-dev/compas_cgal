@@ -1,0 +1,16 @@
+name: cgal-dev
+channels:
+  - conda-forge
+dependencies:
+  - python >=3.9
+  - pip >=19.0
+  - gmp
+  - mpfr
+  - scip >=9
+  - boost-cpp
+  - eigen =3.3
+  - cgal-cpp
+  - pybind11
+  - compas >=2.4
+  - pip:
+      - .[DEV]
