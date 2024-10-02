@@ -618,9 +618,8 @@ document.write(`
 <img alt="../_images/cgal_straight_skeleton_2_holes.png" class="figure-img img-fluid" src="../_images/cgal_straight_skeleton_2_holes.png" />
 </figure>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Polygon</span>
-<span class="kn">from</span> <span class="nn">compas_viewer</span> <span class="kn">import</span> <span class="n">Viewer</span>
-
 <span class="kn">from</span> <span class="nn">compas_cgal.straight_skeleton_2</span> <span class="kn">import</span> <span class="n">create_interior_straight_skeleton_with_holes</span>
+<span class="kn">from</span> <span class="nn">compas_viewer</span> <span class="kn">import</span> <span class="n">Viewer</span>
 
 <span class="n">points</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">(</span><span class="o">-</span><span class="mf">1.91</span><span class="p">,</span> <span class="mf">3.59</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
@@ -655,11 +654,11 @@ document.write(`
 <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
     <span class="n">line</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">edge_line</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">graph</span><span class="o">.</span><span class="n">edge_attribute</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="s2">&quot;inner_bisector&quot;</span><span class="p">):</span>
-        <span class="n">viewer</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">linecolor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">viewer</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">linecolor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">graph</span><span class="o">.</span><span class="n">edge_attribute</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="s2">&quot;bisector&quot;</span><span class="p">):</span>
-        <span class="n">viewer</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">linecolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
+        <span class="n">viewer</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">linecolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">viewer</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">linecolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
+        <span class="n">viewer</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">linecolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
 <span class="n">viewer</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -667,9 +666,8 @@ document.write(`
 <img alt="../_images/cgal_straight_skeleton_2_offset.png" class="figure-img img-fluid" src="../_images/cgal_straight_skeleton_2_offset.png" />
 </figure>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Polygon</span>
-<span class="kn">from</span> <span class="nn">compas_viewer</span> <span class="kn">import</span> <span class="n">Viewer</span>
-
 <span class="kn">from</span> <span class="nn">compas_cgal.straight_skeleton_2</span> <span class="kn">import</span> <span class="n">create_offset_polygons_2</span>
+<span class="kn">from</span> <span class="nn">compas_viewer</span> <span class="kn">import</span> <span class="n">Viewer</span>
 
 <span class="n">points</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">(</span><span class="o">-</span><span class="mf">1.91</span><span class="p">,</span> <span class="mf">3.59</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
@@ -709,9 +707,8 @@ document.write(`
 <img alt="../_images/cgal_straight_skeleton_2_offset_weighted.png" class="figure-img img-fluid" src="../_images/cgal_straight_skeleton_2_offset_weighted.png" />
 </figure>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Polygon</span>
-<span class="kn">from</span> <span class="nn">compas_viewer</span> <span class="kn">import</span> <span class="n">Viewer</span>
-
 <span class="kn">from</span> <span class="nn">compas_cgal.straight_skeleton_2</span> <span class="kn">import</span> <span class="n">create_weighted_offset_polygons_2</span>
+<span class="kn">from</span> <span class="nn">compas_viewer</span> <span class="kn">import</span> <span class="n">Viewer</span>
 
 <span class="n">points</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">(</span><span class="o">-</span><span class="mf">1.91</span><span class="p">,</span> <span class="mf">3.59</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
