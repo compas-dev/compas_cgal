@@ -8,5 +8,8 @@ compas_cgal.straight_skeleton_2
     :toctree: generated/
     :nosignatures:
 
-    create_interior_straight_skeleton
-    create_interior_straight_skeleton_with_holes
+    interior_straight_skeleton
+    interior_straight_skeleton_with_holes
+    offset_polygon
+    weighted_offset_polygon
+    offset_polygon_with_holes

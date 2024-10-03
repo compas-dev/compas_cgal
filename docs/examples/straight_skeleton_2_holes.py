@@ -1,7 +1,7 @@
 from compas.geometry import Polygon
 from compas_viewer import Viewer
 
-from compas_cgal.straight_skeleton_2 import create_interior_straight_skeleton_with_holes
+from compas_cgal.straight_skeleton_2 import interior_straight_skeleton_with_holes
 
 points = [
     (-1.91, 3.59, 0.0),
@@ -25,7 +25,7 @@ holes = [
 
 polygon = Polygon(points)
 holes = [Polygon(hole) for hole in holes]
-graph = create_interior_straight_skeleton_with_holes(polygon, holes)
+graph = interior_straight_skeleton_with_holes(polygon, holes)
 
 # ==============================================================================
 # Viz

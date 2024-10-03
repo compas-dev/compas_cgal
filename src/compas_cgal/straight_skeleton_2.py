@@ -48,7 +48,7 @@ def graph_from_skeleton_data(points: VerticesNumpy, indices: IntNx1, edges: IntN
     return graph
 
 
-def create_interior_straight_skeleton(points, as_graph=True) -> Union[Graph, Tuple[VerticesNumpy, IntNx1, IntNx2, IntNx1]]:
+def interior_straight_skeleton(points, as_graph=True) -> Union[Graph, Tuple[VerticesNumpy, IntNx1, IntNx2, IntNx1]]:
     """Compute the skeleton of a 2D polygon.
 
     Parameters
@@ -79,7 +79,7 @@ def create_interior_straight_skeleton(points, as_graph=True) -> Union[Graph, Tup
     return points, indices, edges, edge_types
 
 
-def create_interior_straight_skeleton_with_holes(points, holes, as_graph=True) -> Union[Graph, Tuple[VerticesNumpy, IntNx1, IntNx2, IntNx1]]:
+def interior_straight_skeleton_with_holes(points, holes, as_graph=True) -> Union[Graph, Tuple[VerticesNumpy, IntNx1, IntNx2, IntNx1]]:
     """Compute the skeleton of a 2D polygon with holes.
 
     Parameters
@@ -122,7 +122,7 @@ def create_interior_straight_skeleton_with_holes(points, holes, as_graph=True) -
     return points, indices, edges, edge_types
 
 
-def create_offset_polygons_2(points, offset) -> list[Polygon]:
+def offset_polygon(points, offset) -> list[Polygon]:
     """Compute the offset from a 2D polygon.
 
     Parameters
@@ -155,7 +155,7 @@ def create_offset_polygons_2(points, offset) -> list[Polygon]:
     return [Polygon(points.tolist()) for points in offset_polygons]
 
 
-def create_offset_polygons_with_holes_2(points, holes, offset) -> list[Tuple[Polygon, list[Polygon]]]:
+def offset_polygon_with_holes(points, holes, offset) -> list[Tuple[Polygon, list[Polygon]]]:
     """Compute the offset from a 2D polygon with holes.
 
     Parameters
@@ -208,7 +208,7 @@ def create_offset_polygons_with_holes_2(points, holes, offset) -> list[Tuple[Pol
     return result
 
 
-def create_weighted_offset_polygons_2(points, offset, weights) -> list[Polygon]:
+def weighted_offset_polygon(points, offset, weights) -> list[Polygon]:
     """Compute the offset from a 2D polygon with weights.
 
     Parameters
