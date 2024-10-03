@@ -37,7 +37,7 @@ def get_scip_library():
 
 ext_modules = [
     Extension(
-        "compas_cgal._cgal",
+        "compas_cgal.cgal",
         sorted(
             [
                 "src/compas_cgal.cpp",

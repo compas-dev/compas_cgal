@@ -14,13 +14,13 @@ void init_reconstruction(pybind11::module &);
 void init_polygonal_surface_reconstruction(pybind11::module &);
 void init_straight_skeleton_2(pybind11::module &);
 
-// the first parameter here ("_cgal") will be the name of the "so" or "pyd" file that will be produced by PyBind11
+// the first parameter here ("cgal") will be the name of the "so" or "pyd" file that will be produced by PyBind11
 // which is the entry point from where all other modules will be accessible.
-PYBIND11_MODULE(_cgal, m)
+PYBIND11_MODULE(cgal, m)
 {
     m.doc() = "";
 
-    // here all modules of "_cgal" are initializied.
+    // here all modules of "cgal" are initializied.
     init_meshing(m);
     init_booleans(m);
     init_slicer(m);

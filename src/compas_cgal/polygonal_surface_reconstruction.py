@@ -4,7 +4,7 @@ import numpy as np
 from compas.geometry import Point
 from compas.geometry import Vector
 
-from compas_cgal._cgal import polygonal_surface_reconstruction
+from compas_cgal.cgal import polygonal_surface_reconstruction
 
 from .types import FloatNx3
 

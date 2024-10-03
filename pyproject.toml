@@ -61,7 +61,13 @@ where = ["src"]
 minversion = "6.0"
 testpaths = ["tests", "src/compas_cgal"]
 python_files = ["test_*.py", "*_test.py", "test.py"]
-addopts = ["-ra", "--strict-markers", "--doctest-glob=*.rst", "--tb=short"]
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--doctest-glob=*.rst",
+    "--tb=short",
+    "--import-mode=importlib",
+]
 doctest_optionflags = [
     "NORMALIZE_WHITESPACE",
     "IGNORE_EXCEPTION_DETAIL",

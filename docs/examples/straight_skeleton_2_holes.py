@@ -36,9 +36,9 @@ viewer = Viewer(width=1600, height=900)
 for edge in graph.edges():
     line = graph.edge_line(edge)
     if graph.edge_attribute(edge, "inner_bisector"):
-        viewer.add(line, linecolor=(1.0, 0.0, 0.0), linewidth=2)
+        viewer.scene.add(line, linecolor=(1.0, 0.0, 0.0), linewidth=2)
     elif graph.edge_attribute(edge, "bisector"):
-        viewer.add(line, linecolor=(0.0, 0.0, 1.0))
+        viewer.scene.add(line, linecolor=(0.0, 0.0, 1.0))
     else:
-        viewer.add(line, linecolor=(0.0, 0.0, 0.0))
+        viewer.scene.add(line, linecolor=(0.0, 0.0, 0.0))
 viewer.show()

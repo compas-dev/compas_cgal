@@ -1,7 +1,7 @@
 import numpy as np
 from compas.plugins import plugin
 
-from compas_cgal._cgal import intersections
+from compas_cgal.cgal import intersections
 
 from .types import PolylinesNumpy
 from .types import VerticesFaces

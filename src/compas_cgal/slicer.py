@@ -1,7 +1,7 @@
 import numpy as np
 from compas.plugins import plugin
 
-from compas_cgal._cgal import slicer
+from compas_cgal.cgal import slicer
 
 from .types import Planes
 from .types import PolylinesNumpy
