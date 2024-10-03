@@ -7,5 +7,5 @@ Polygonal PointSet Reconstruction
     :class: figure-img img-fluid
 
 
-.. literalinclude:: polygonal_poinset_reconstruction_ransac.py
+.. literalinclude:: polygonal_poinset_reconstruction.py
     :language: python
