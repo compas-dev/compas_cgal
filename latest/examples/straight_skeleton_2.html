@@ -578,7 +578,7 @@ document.write(`
 <figure class="figure align-default">
 <img alt="../_images/cgal_straight_skeleton_2.png" class="figure-img img-fluid" src="../_images/cgal_straight_skeleton_2.png" />
 </figure>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compas_cgal.straight_skeleton_2</span> <span class="kn">import</span> <span class="n">create_interior_straight_skeleton</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compas_cgal.straight_skeleton_2</span> <span class="kn">import</span> <span class="n">interior_straight_skeleton</span>
 <span class="kn">from</span> <span class="nn">compas_viewer</span> <span class="kn">import</span> <span class="n">Viewer</span>
 
 <span class="n">points</span> <span class="o">=</span> <span class="p">[</span>
@@ -595,7 +595,7 @@ document.write(`
 <span class="p">]</span>
 
 
-<span class="n">graph</span> <span class="o">=</span> <span class="n">create_interior_straight_skeleton</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+<span class="n">graph</span> <span class="o">=</span> <span class="n">interior_straight_skeleton</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
 
 <span class="c1"># ==============================================================================</span>
 <span class="c1"># Viz</span>
@@ -618,8 +618,9 @@ document.write(`
 <img alt="../_images/cgal_straight_skeleton_2_holes.png" class="figure-img img-fluid" src="../_images/cgal_straight_skeleton_2_holes.png" />
 </figure>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Polygon</span>
-<span class="kn">from</span> <span class="nn">compas_cgal.straight_skeleton_2</span> <span class="kn">import</span> <span class="n">create_interior_straight_skeleton_with_holes</span>
 <span class="kn">from</span> <span class="nn">compas_viewer</span> <span class="kn">import</span> <span class="n">Viewer</span>
+
+<span class="kn">from</span> <span class="nn">compas_cgal.straight_skeleton_2</span> <span class="kn">import</span> <span class="n">interior_straight_skeleton_with_holes</span>
 
 <span class="n">points</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">(</span><span class="o">-</span><span class="mf">1.91</span><span class="p">,</span> <span class="mf">3.59</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
@@ -643,7 +644,7 @@ document.write(`
 
 <span class="n">polygon</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
 <span class="n">holes</span> <span class="o">=</span> <span class="p">[</span><span class="n">Polygon</span><span class="p">(</span><span class="n">hole</span><span class="p">)</span> <span class="k">for</span> <span class="n">hole</span> <span class="ow">in</span> <span class="n">holes</span><span class="p">]</span>
-<span class="n">graph</span> <span class="o">=</span> <span class="n">create_interior_straight_skeleton_with_holes</span><span class="p">(</span><span class="n">polygon</span><span class="p">,</span> <span class="n">holes</span><span class="p">)</span>
+<span class="n">graph</span> <span class="o">=</span> <span class="n">interior_straight_skeleton_with_holes</span><span class="p">(</span><span class="n">polygon</span><span class="p">,</span> <span class="n">holes</span><span class="p">)</span>
 
 <span class="c1"># ==============================================================================</span>
 <span class="c1"># Viz</span>
@@ -666,8 +667,9 @@ document.write(`
 <img alt="../_images/cgal_straight_skeleton_2_offset.png" class="figure-img img-fluid" src="../_images/cgal_straight_skeleton_2_offset.png" />
 </figure>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Polygon</span>
-<span class="kn">from</span> <span class="nn">compas_cgal.straight_skeleton_2</span> <span class="kn">import</span> <span class="n">create_offset_polygons_2</span>
 <span class="kn">from</span> <span class="nn">compas_viewer</span> <span class="kn">import</span> <span class="n">Viewer</span>
+
+<span class="kn">from</span> <span class="nn">compas_cgal.straight_skeleton_2</span> <span class="kn">import</span> <span class="n">offset_polygon</span>
 
 <span class="n">points</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">(</span><span class="o">-</span><span class="mf">1.91</span><span class="p">,</span> <span class="mf">3.59</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
@@ -684,8 +686,8 @@ document.write(`
 <span class="n">polygon</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
 <span class="n">offset</span> <span class="o">=</span> <span class="mf">1.5</span>
 
-<span class="n">offset_polygons_inner</span> <span class="o">=</span> <span class="n">create_offset_polygons_2</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span>
-<span class="n">offset_polygons_outer</span> <span class="o">=</span> <span class="n">create_offset_polygons_2</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="o">-</span><span class="n">offset</span><span class="p">)</span>
+<span class="n">offset_polygon_inner</span> <span class="o">=</span> <span class="n">offset_polygon</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span>
+<span class="n">offset_polygon_outer</span> <span class="o">=</span> <span class="n">offset_polygon</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="o">-</span><span class="n">offset</span><span class="p">)</span>
 
 <span class="c1"># ==============================================================================</span>
 <span class="c1"># Viz</span>
@@ -695,9 +697,9 @@ document.write(`
 <span class="n">viewer</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">polygon</span><span class="p">)</span>
 <span class="n">viewer</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">show_grid</span> <span class="o">=</span> <span class="kc">False</span>
 
-<span class="k">for</span> <span class="n">opolygon</span> <span class="ow">in</span> <span class="n">offset_polygons_inner</span><span class="p">:</span>
+<span class="k">for</span> <span class="n">opolygon</span> <span class="ow">in</span> <span class="n">offset_polygon_inner</span><span class="p">:</span>
     <span class="n">viewer</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">opolygon</span><span class="p">,</span> <span class="n">linecolor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="n">facecolor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
-<span class="k">for</span> <span class="n">opolygon</span> <span class="ow">in</span> <span class="n">offset_polygons_outer</span><span class="p">:</span>
+<span class="k">for</span> <span class="n">opolygon</span> <span class="ow">in</span> <span class="n">offset_polygon_outer</span><span class="p">:</span>
     <span class="n">viewer</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">opolygon</span><span class="p">,</span> <span class="n">linecolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="n">facecolor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
 
 <span class="n">viewer</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -707,8 +709,9 @@ document.write(`
 <img alt="../_images/cgal_straight_skeleton_2_offset_weighted.png" class="figure-img img-fluid" src="../_images/cgal_straight_skeleton_2_offset_weighted.png" />
 </figure>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">compas.geometry</span> <span class="kn">import</span> <span class="n">Polygon</span>
-<span class="kn">from</span> <span class="nn">compas_cgal.straight_skeleton_2</span> <span class="kn">import</span> <span class="n">create_weighted_offset_polygons_2</span>
 <span class="kn">from</span> <span class="nn">compas_viewer</span> <span class="kn">import</span> <span class="n">Viewer</span>
+
+<span class="kn">from</span> <span class="nn">compas_cgal.straight_skeleton_2</span> <span class="kn">import</span> <span class="n">weighted_offset_polygons</span>
 
 <span class="n">points</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">(</span><span class="o">-</span><span class="mf">1.91</span><span class="p">,</span> <span class="mf">3.59</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
@@ -728,7 +731,7 @@ document.write(`
 <span class="n">distances</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">]</span>
 <span class="n">weights</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">distances</span><span class="p">]</span>
 <span class="n">offset</span> <span class="o">=</span> <span class="mf">1.0</span>
-<span class="n">offset_polygons_outer</span> <span class="o">=</span> <span class="n">create_weighted_offset_polygons_2</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="o">-</span><span class="n">offset</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
+<span class="n">offset_polygons_outer</span> <span class="o">=</span> <span class="n">weighted_offset_polygons</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="o">-</span><span class="n">offset</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
 
 <span class="c1"># ==============================================================================</span>
 <span class="c1"># Viz</span>
