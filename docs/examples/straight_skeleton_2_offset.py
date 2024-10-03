@@ -1,6 +1,7 @@
 from compas.geometry import Polygon
-from compas_cgal.straight_skeleton_2 import create_offset_polygons_2
 from compas_viewer import Viewer
+
+from compas_cgal.straight_skeleton_2 import offset_polygon
 
 points = [
     (-1.91, 3.59, 0.0),
@@ -17,8 +18,8 @@ points = [
 polygon = Polygon(points)
 offset = 1.5
 
-offset_polygons_inner = create_offset_polygons_2(points, offset)
-offset_polygons_outer = create_offset_polygons_2(points, -offset)
+offset_polygon_inner = offset_polygon(points, offset)
+offset_polygon_outer = offset_polygon(points, -offset)
 
 # ==============================================================================
 # Viz
@@ -28,9 +29,9 @@ viewer = Viewer(width=1600, height=900)
 viewer.scene.add(polygon)
 viewer.config.renderer.show_grid = False
 
-for opolygon in offset_polygons_inner:
+for opolygon in offset_polygon_inner:
     viewer.scene.add(opolygon, linecolor=(1.0, 0.0, 0.0), facecolor=(1.0, 1.0, 1.0, 0.0))
-for opolygon in offset_polygons_outer:
+for opolygon in offset_polygon_outer:
     viewer.scene.add(opolygon, linecolor=(0.0, 0.0, 1.0), facecolor=(1.0, 1.0, 1.0, 0.0))
 
 viewer.show()

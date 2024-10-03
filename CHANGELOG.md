@@ -11,8 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Added recipe hasher.
 * Added `scip` to dev install instructions in README.md
+* Added `compas_cgal.straight_skeleton_2.offset_polygon_with_holes`.
 
 ### Changed
+* Changed name of `compas_cgal.straight_skeleton_2.create_interior_straight_skeleton` to `interior_straight_skeleton`
+* Changed name of `compas_cgal.straight_skeleton_2.create_interior_straight_skeleton_with_holes` to `interior_straight_skeleton_with_holes`
+* Changed name of `compas_cgal.straight_skeleton_2.create_offset_polygons_2` to `offset_polygon`
+* Changed name of `compas_cgal.straight_skeleton_2.create_weighted_offset_polygons_2` to `weighted_offset_polygon`
 
 ### Removed
 

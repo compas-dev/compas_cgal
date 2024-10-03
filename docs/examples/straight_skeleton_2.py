@@ -1,4 +1,4 @@
-from compas_cgal.straight_skeleton_2 import create_interior_straight_skeleton
+from compas_cgal.straight_skeleton_2 import interior_straight_skeleton
 from compas_viewer import Viewer
 
 points = [
@@ -15,7 +15,7 @@ points = [
 ]
 
 
-graph = create_interior_straight_skeleton(points)
+graph = interior_straight_skeleton(points)
 
 # ==============================================================================
 # Viz
