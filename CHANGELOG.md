@@ -19,8 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Changed name of `compas_cgal.straight_skeleton_2.create_interior_straight_skeleton_with_holes` to `interior_straight_skeleton_with_holes`
 * Changed name of `compas_cgal.straight_skeleton_2.create_offset_polygons_2` to `offset_polygon`
 * Changed name of `compas_cgal.straight_skeleton_2.create_weighted_offset_polygons_2` to `weighted_offset_polygon`
+* Changed version to `scip=9.0.0` for windows.
 
 ### Removed
+
+* Removed optional support for GLPK for polygonal surface reconstruction.
 
 ## [0.7.1] 2024-09-26
 
