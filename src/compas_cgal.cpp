@@ -11,7 +11,7 @@ void init_triangulations(pybind11::module &);
 void init_subdivision(pybind11::module &);
 void init_skeletonization(pybind11::module &);
 void init_reconstruction(pybind11::module &);
-// void init_polygonal_surface_reconstruction(pybind11::module &);
+void init_polygonal_surface_reconstruction(pybind11::module &);
 // void init_straight_skeleton_2(pybind11::module &);
 
 // the first parameter here ("_cgal") will be the name of the "so" or "pyd" file that will be produced by PyBind11
@@ -30,6 +30,6 @@ PYBIND11_MODULE(_cgal, m)
     init_subdivision(m);
     init_skeletonization(m);
     init_reconstruction(m);
-    // init_polygonal_surface_reconstruction(m);
+    init_polygonal_surface_reconstruction(m);
     // init_straight_skeleton_2(m);
 }

@@ -63,7 +63,7 @@ ext_modules = [
                 "src/triangulations.cpp",
                 "src/skeletonization.cpp",
                 "src/reconstruction.cpp",
-                # "src/polygonal_surface_reconstruction.cpp",
+                "src/polygonal_surface_reconstruction.cpp",
                 # "src/straight_skeleton_2.cpp",
             ]
         ),
