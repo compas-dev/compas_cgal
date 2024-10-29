@@ -5,17 +5,7 @@
 #include <CGAL/Surface_mesh.h>
 #include <CGAL/Shape_detection/Efficient_RANSAC.h>
 #include <CGAL/Polygonal_surface_reconstruction.h>
-
-#define CGAL_USE_SCIP
-#ifdef CGAL_USE_SCIP
 #include <CGAL/SCIP_mixed_integer_program_traits.h>
-typedef CGAL::SCIP_mixed_integer_program_traits<double> MIP_Solver;
-#elif defined(CGAL_USE_GLPK)
-#include <CGAL/GLPK_mixed_integer_program_traits.h>
-typedef CGAL::GLPK_mixed_integer_program_traits<double> MIP_Solver;
-#endif
-
-#if defined(CGAL_USE_GLPK) || defined(CGAL_USE_SCIP)
 #include <CGAL/Timer.h>
 #include <fstream>
 
@@ -32,6 +22,8 @@ typedef CGAL::Shape_detection::Point_to_shape_index_map<Traits> Point_to_shape_i
 typedef CGAL::Polygonal_surface_reconstruction<compas::Kernel> Polygonal_surface_reconstruction;
 typedef CGAL::Surface_mesh<compas::Point> Surface_mesh;
 
+typedef CGAL::SCIP_mixed_integer_program_traits<double> MIP_Solver;
+
 // Function for polygonal surface reconstruction using RANSAC
 std::tuple<compas::RowMatrixXd, std::vector<std::vector<int>>>
 polygonal_surface_reconstruction_ransac(
@@ -44,8 +36,7 @@ polygonal_surface_reconstruction_ransac(
 
     for (int i = 0; i < p; i++)
     {
-        points.push_back(boost::tuple<compas::Point, compas::Vector, int>(compas::Point(P.row(i)[0], P.row(i)[1], P.row(i)[2]),
-                                                          compas::Vector(N.row(i)[0], N.row(i)[1], N.row(i)[2]), -1));
+        points.push_back(boost::tuple<compas::Point, compas::Vector, int>(compas::Point(P.row(i)[0], P.row(i)[1], P.row(i)[2]), compas::Vector(N.row(i)[0], N.row(i)[1], N.row(i)[2]), -1));
     }
 
     std::cout << "Done. " << points.size() << " points loaded." << std::endl;
@@ -135,4 +126,3 @@ void init_polygonal_surface_reconstruction(pybind11::module &m)
         pybind11::arg("P").noconvert(),
         pybind11::arg("N").noconvert());
 };
-#endif  // defined(CGAL_USE_GLPK) || defined(CGAL_USE_SCIP)
