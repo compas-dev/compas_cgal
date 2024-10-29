@@ -14,13 +14,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added `compas_cgal.straight_skeleton_2.offset_polygon_with_holes`.
 
 ### Changed
+
 * Changed name of `compas_cgal.straight_skeleton_2.create_interior_straight_skeleton` to `interior_straight_skeleton`
 * Changed name of `compas_cgal.straight_skeleton_2.create_interior_straight_skeleton_with_holes` to `interior_straight_skeleton_with_holes`
 * Changed name of `compas_cgal.straight_skeleton_2.create_offset_polygons_2` to `offset_polygon`
 * Changed name of `compas_cgal.straight_skeleton_2.create_weighted_offset_polygons_2` to `weighted_offset_polygon`
 
 ### Removed
-
 
 ## [0.7.1] 2024-09-26
 
@@ -32,7 +32,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Changed the return values of `compas_cgal.create_interior_straight_skeleton`.
 
 ### Removed
-
 
 ## [0.7.0] 2024-05-14
 
@@ -48,7 +47,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 ### Removed
-
 
 ## [0.6.0] 2024-02-01
 
@@ -84,7 +82,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Updated github workflow.
 
 ### Removed
-
 
 ## [0.4.0] 2022-01-20
 
