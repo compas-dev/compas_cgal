@@ -1,6 +1,6 @@
 import numpy as np
 
-from compas_cgal.cgal import skeletonization
+from compas_cgal._cgal import skeletonization
 
 from .types import PolylinesNumpy
 from .types import VerticesFaces

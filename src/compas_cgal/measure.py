@@ -1,7 +1,7 @@
 import numpy as np
 from compas.plugins import plugin
 
-from compas_cgal.cgal import measure
+from compas_cgal._cgal import measure
 
 from .types import VerticesFaces
 

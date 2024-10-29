@@ -1,7 +1,7 @@
 import numpy as np
 from compas.plugins import plugin
 
-from compas_cgal.cgal import meshing
+from compas_cgal._cgal import meshing
 
 from .types import VerticesFaces
 from .types import VerticesFacesNumpy
