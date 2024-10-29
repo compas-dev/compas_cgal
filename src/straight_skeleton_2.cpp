@@ -20,7 +20,8 @@ typedef std::vector<PolygonPtr> PolygonPtrVector;
 typedef boost::shared_ptr<Polygon_with_holes> PolygonWithHolesPtr;
 typedef std::vector<PolygonWithHolesPtr> PolygonWithHolesPtrVector;
 
-std::tuple<compas::RowMatrixXd, std::vector<int>, compas::RowMatrixXi, std::vector<int>> mesh_data_from_skeleton(boost::shared_ptr<Ss> &iss)
+std::tuple<compas::RowMatrixXd, std::vector<int>, compas::RowMatrixXi, std::vector<int>>
+mesh_data_from_skeleton(boost::shared_ptr<Ss> &iss)
 {
     std::size_t v = iss->size_of_vertices();
     std::size_t e = iss->size_of_halfedges() / 2; // halfedges are stored twice
@@ -71,7 +72,9 @@ std::tuple<compas::RowMatrixXd, std::vector<int>, compas::RowMatrixXi, std::vect
     return result;
 }
 
-compas::RowMatrixXd polygon_to_data(Polygon_2 const& poly){
+compas::RowMatrixXd 
+polygon_to_data(Polygon_2 const& poly)
+{
     std::size_t n = poly.size();
     compas::RowMatrixXd points(n, 3);
     int j = 0;
@@ -84,7 +87,9 @@ compas::RowMatrixXd polygon_to_data(Polygon_2 const& poly){
     return points;
 }
 
-std::tuple<compas::RowMatrixXd, std::vector<compas::RowMatrixXd>> polygon_with_holes_to_data(Polygon_with_holes const& polywh){
+std::tuple<compas::RowMatrixXd, std::vector<compas::RowMatrixXd>>
+polygon_with_holes_to_data(Polygon_with_holes const& polywh)
+{
     std::vector<compas::RowMatrixXd> holes;
     compas::RowMatrixXd points = polygon_to_data(polywh.outer_boundary());
     for(typename Polygon_with_holes::Hole_const_iterator hi = polywh.holes_begin() ; hi != polywh.holes_end() ; ++ hi){
@@ -95,7 +100,9 @@ std::tuple<compas::RowMatrixXd, std::vector<compas::RowMatrixXd>> polygon_with_h
     return result;
 }
 
-Polygon_2 data_to_polygon(Eigen::Ref<const compas::RowMatrixXd> &V){
+Polygon_2
+data_to_polygon(Eigen::Ref<const compas::RowMatrixXd> &V)
+{
     Polygon_2 poly;
     for (int i = 0; i < V.rows(); i++){
         poly.push_back(Point(V(i, 0), V(i, 1)));
@@ -103,7 +110,11 @@ Polygon_2 data_to_polygon(Eigen::Ref<const compas::RowMatrixXd> &V){
     return poly;
 }
 
-Polygon_with_holes data_to_polygon_with_holes(Eigen::Ref<const compas::RowMatrixXd> &V, std::vector<Eigen::Ref<const compas::RowMatrixXd>> &holes){
+Polygon_with_holes
+data_to_polygon_with_holes(
+    Eigen::Ref<const compas::RowMatrixXd> &V,
+    std::vector<Eigen::Ref<const compas::RowMatrixXd>> &holes)
+{
     Polygon_2 outer = data_to_polygon(V);
     Polygon_with_holes poly(outer);
     for (auto hit : holes){
@@ -118,22 +129,28 @@ Polygon_with_holes data_to_polygon_with_holes(Eigen::Ref<const compas::RowMatrix
     return poly;
 }
 
-std::tuple<compas::RowMatrixXd, std::vector<int>, compas::RowMatrixXi, std::vector<int>> pmp_create_interior_straight_skeleton(
-    Eigen::Ref<const compas::RowMatrixXd> &V){
+std::tuple<compas::RowMatrixXd, std::vector<int>, compas::RowMatrixXi, std::vector<int>>
+pmp_create_interior_straight_skeleton(
+    Eigen::Ref<const compas::RowMatrixXd> &V)
+{
     Polygon_2 poly = data_to_polygon(V);
     SsPtr iss = CGAL::create_interior_straight_skeleton_2(poly.vertices_begin(), poly.vertices_end());
     return mesh_data_from_skeleton(iss);
 };
 
-std::tuple<compas::RowMatrixXd, std::vector<int>, compas::RowMatrixXi, std::vector<int>> pmp_create_interior_straight_skeleton_with_holes(
+std::tuple<compas::RowMatrixXd, std::vector<int>, compas::RowMatrixXi, std::vector<int>>
+pmp_create_interior_straight_skeleton_with_holes(
     Eigen::Ref<const compas::RowMatrixXd> &V,
-    std::vector<Eigen::Ref<const compas::RowMatrixXd>> &holes){
+    std::vector<Eigen::Ref<const compas::RowMatrixXd>> &holes)
+{
     Polygon_with_holes poly = data_to_polygon_with_holes(V, holes);
     SsPtr iss = CGAL::create_interior_straight_skeleton_2(poly);
     return mesh_data_from_skeleton(iss);
 }
 
-std::vector<compas::RowMatrixXd> pmp_create_offset_polygons_2_inner(Eigen::Ref<const compas::RowMatrixXd> &V, double &offset){
+std::vector<compas::RowMatrixXd>
+pmp_create_offset_polygons_2_inner(Eigen::Ref<const compas::RowMatrixXd> &V, double &offset)
+{
     Polygon_2 poly = data_to_polygon(V);
     PolygonPtrVector offset_polygons = CGAL::create_interior_skeleton_and_offset_polygons_2(offset, poly);
 
@@ -145,7 +162,12 @@ std::vector<compas::RowMatrixXd> pmp_create_offset_polygons_2_inner(Eigen::Ref<c
     return result;
 }
 
-std::vector<std::tuple<compas::RowMatrixXd, std::vector<compas::RowMatrixXd>>> pmp_create_offset_polygons_2_inner_with_holes(Eigen::Ref<const compas::RowMatrixXd> &V, std::vector<Eigen::Ref<const compas::RowMatrixXd>> &holes, double &offset){
+std::vector<std::tuple<compas::RowMatrixXd, std::vector<compas::RowMatrixXd>>>
+pmp_create_offset_polygons_2_inner_with_holes(
+    Eigen::Ref<const compas::RowMatrixXd> &V,
+    std::vector<Eigen::Ref<const compas::RowMatrixXd>> &holes,
+    double &offset)
+{
 
     Polygon_with_holes poly = data_to_polygon_with_holes(V, holes);
     PolygonWithHolesPtrVector offset_polygons = CGAL::create_interior_skeleton_and_offset_polygons_with_holes_2(offset, poly);
@@ -158,7 +180,9 @@ std::vector<std::tuple<compas::RowMatrixXd, std::vector<compas::RowMatrixXd>>> p
     return result;
 }
 
-std::vector<compas::RowMatrixXd> pmp_create_offset_polygons_2_outer(Eigen::Ref<const compas::RowMatrixXd> &V, double &offset){
+std::vector<compas::RowMatrixXd>
+pmp_create_offset_polygons_2_outer(Eigen::Ref<const compas::RowMatrixXd> &V, double &offset)
+{
     Polygon_2 poly = data_to_polygon(V);
     PolygonPtrVector offset_polygons = CGAL::create_exterior_skeleton_and_offset_polygons_2(offset, poly);
 
@@ -170,7 +194,12 @@ std::vector<compas::RowMatrixXd> pmp_create_offset_polygons_2_outer(Eigen::Ref<c
     return result;
 }
 
-std::vector<std::tuple<compas::RowMatrixXd, std::vector<compas::RowMatrixXd>>> pmp_create_offset_polygons_2_outer_with_holes(Eigen::Ref<const compas::RowMatrixXd> &V, std::vector<Eigen::Ref<const compas::RowMatrixXd>> &holes, double &offset){
+std::vector<std::tuple<compas::RowMatrixXd, std::vector<compas::RowMatrixXd>>>
+pmp_create_offset_polygons_2_outer_with_holes(
+    Eigen::Ref<const compas::RowMatrixXd> &V,
+    std::vector<Eigen::Ref<const compas::RowMatrixXd>> &holes,
+    double &offset)
+{
     Polygon_with_holes poly = data_to_polygon_with_holes(V, holes);
     PolygonWithHolesPtrVector offset_polygons = CGAL::create_exterior_skeleton_and_offset_polygons_with_holes_2(offset, poly);
 
@@ -182,7 +211,12 @@ std::vector<std::tuple<compas::RowMatrixXd, std::vector<compas::RowMatrixXd>>> p
     return result;
 }
 
-std::vector<compas::RowMatrixXd> pmp_create_weighted_offset_polygons_2_inner(Eigen::Ref<const compas::RowMatrixXd> &V, double &offset, Eigen::Ref<const compas::RowMatrixXd> &weights){
+std::vector<compas::RowMatrixXd>
+pmp_create_weighted_offset_polygons_2_inner(
+    Eigen::Ref<const compas::RowMatrixXd> &V,
+    double &offset,
+    Eigen::Ref<const compas::RowMatrixXd> &weights)
+{
     Polygon_2 poly = data_to_polygon(V);
     std::vector<double> weights_vec;
     for (int i = 0; i < weights.rows(); i++)
@@ -200,7 +234,12 @@ std::vector<compas::RowMatrixXd> pmp_create_weighted_offset_polygons_2_inner(Eig
     return result;
 }
 
-std::vector<compas::RowMatrixXd> pmp_create_weighted_offset_polygons_2_outer(Eigen::Ref<const compas::RowMatrixXd> &V, double &offset, Eigen::Ref<const compas::RowMatrixXd> &weights){
+std::vector<compas::RowMatrixXd>
+pmp_create_weighted_offset_polygons_2_outer(
+    Eigen::Ref<const compas::RowMatrixXd> &V,
+    double &offset,
+    Eigen::Ref<const compas::RowMatrixXd> &weights)
+{
     Polygon_2 poly = data_to_polygon(V);
     std::vector<double> weights_vec;
     for (int i = 0; i < weights.rows(); i++)

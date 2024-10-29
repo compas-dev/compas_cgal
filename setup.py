@@ -64,7 +64,7 @@ ext_modules = [
                 "src/skeletonization.cpp",
                 "src/reconstruction.cpp",
                 "src/polygonal_surface_reconstruction.cpp",
-                # "src/straight_skeleton_2.cpp",
+                "src/straight_skeleton_2.cpp",
             ]
         ),
         include_dirs=["./include", get_eigen_include(), get_pybind_include()],
