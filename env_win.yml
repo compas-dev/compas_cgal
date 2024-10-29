@@ -6,7 +6,7 @@ dependencies:
   - pip >=19.0
   - mpir
   - mpfr
-  - scip >=9
+  - scip =9.0.0
   - boost-cpp
   - eigen =3.3
   - cgal-cpp
