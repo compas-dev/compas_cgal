@@ -100,7 +100,7 @@ def cpp_flag(compiler):
 
     The newer version is prefered over c++11 (when it is available).
     """
-    flags = ["-std=c++14", "-std=c++11"]
+    flags = ["-std=c++17", "-std=c++14", "-std=c++11"]
 
     for flag in flags:
         if has_flag(compiler, flag):
@@ -140,37 +140,7 @@ class BuildExt(build_ext):
 
 setup(
     name="compas_cgal",
-    version="0.7.2",
-    description="COMPAS friedly bindings for the CGAL library.",
-    url="https://github.com/compas-dev/compas_cgal",
-    author="tom van mele",
-    author_email="tom.v.mele@gmail.com",
-    license="GPL-3 License",
-    classifiers=[
-        "Development Status :: 5 - Production/Stable",
-        "Intended Audience :: Developers",
-        "Topic :: Scientific/Engineering",
-        "License :: OSI Approved :: GPL-3 License",
-        "Operating System :: Unix",
-        "Operating System :: POSIX",
-        "Operating System :: Microsoft :: Windows",
-        "Programming Language :: Python",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3.11",
-        "Programming Language :: Python :: 3.12",
-        "Programming Language :: Python :: 3.13",
-        "Programming Language :: Python :: Implementation :: CPython",
-    ],
-    keywords=[],
-    project_urls={},
     packages=["compas_cgal"],
-    package_dir={"": "src"},
     ext_modules=ext_modules,
     cmdclass={"build_ext": BuildExt},
-    setup_requires=["pybind11>=2.6.1"],
-    install_requires=requirements,
-    python_requires=">=3.10",
-    extras_require=optional_requirements,
-    zip_safe=False,
 )

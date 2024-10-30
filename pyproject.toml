@@ -1,3 +1,59 @@
+[build-system]
+requires = ["setuptools>=66", "pybind11>=2.6.1"]
+build-backend = "setuptools.build_meta"
+
+# ============================================================================
+# project info
+# ============================================================================
+
+[project]
+name = "compas_cgal"
+dynamic = ["version", "dependencies", "optional-dependencies"]
+description = "COMPAS friedly bindings for the CGAL library."
+keywords = []
+authors = [
+    { name = "tom van mele", email = "tom.v.mele@gmail.com" },
+    { name = "Petras Vestartas", email = "vestartas@arch.ethz.ch" },
+]
+license = { file = "LICENSE" }
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Topic :: Scientific/Engineering",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: Implementation :: CPython",
+]
+
+[project.urls]
+Homepage = "https://compas-dev.github.io/compas_cgal"
+Repository = "https://github.com/compas-dev/compas_cgal"
+
+# ============================================================================
+# setuptools config
+# ============================================================================
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+include-package-data = true
+zip-safe = false
+
+[tool.setuptools.dynamic]
+version = { attr = "compas_cgal.__version__" }
+dependencies = { file = "requirements.txt" }
+optional-dependencies = { dev = { file = "requirements-dev.txt" } }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+
 # ============================================================================
 # replace pytest.ini
 # ============================================================================
@@ -30,11 +86,6 @@ current_version = "0.7.2"
 message = "Bump version to {new_version}"
 commit = true
 tag = true
-
-[[tool.bumpversion.files]]
-filename = "setup.py"
-search = "{current_version}"
-replace = "{new_version}"
 
 [[tool.bumpversion.files]]
 filename = "src/compas_cgal/__init__.py"

@@ -1,4 +1,4 @@
-name: cgal-dev
+name: cgal-dev2
 channels:
   - conda-forge
 dependencies:
