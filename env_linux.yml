@@ -13,4 +13,4 @@ dependencies:
   - pybind11
   - compas >=2.4
   - pip:
-      - -r requirements-dev.txt
+      - -e .[dev]
