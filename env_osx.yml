@@ -6,10 +6,10 @@ dependencies:
   - pip >=19.0
   - gmp
   - mpfr
-  - scip >=9
+  - scip =9.1
   - boost-cpp
-  - eigen =3.3
-  - cgal-cpp
+  - eigen
+  - cgal-cpp >=6.0
   - pybind11
   - compas >=2.4
   - pip:
