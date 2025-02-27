@@ -7,8 +7,9 @@ from compas.geometry import Scale
 from compas.geometry import Translation
 from compas.geometry import Vector
 from compas.geometry import scale_vector
-from compas_cgal.meshing import mesh_remesh
 from compas_viewer import Viewer
+
+from compas_cgal.meshing import mesh_remesh
 
 FILE = Path(__file__).parent.parent.parent / "data" / "Bunny.ply"
 

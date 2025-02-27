@@ -1,8 +1,9 @@
 from pathlib import Path
 
 from compas.geometry import Pointcloud
-from compas_cgal.reconstruction import pointset_outlier_removal
 from compas_viewer import Viewer
+
+from compas_cgal.reconstruction import pointset_outlier_removal
 
 FILE = Path(__file__).parent.parent.parent / "data" / "forked_branch_1.ply"
 

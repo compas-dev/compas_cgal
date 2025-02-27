@@ -2,8 +2,9 @@ from compas.colors import Color
 from compas.datastructures import Mesh
 from compas.geometry import Box
 from compas.geometry import Sphere
-from compas_cgal.booleans import split_mesh_mesh
 from compas_viewer import Viewer
+
+from compas_cgal.booleans import split_mesh_mesh
 
 # ==============================================================================
 # Make a box and a sphere

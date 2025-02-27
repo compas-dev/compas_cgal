@@ -7,7 +7,6 @@ dependencies:
   - gmp
   - mpfr
   - scip =9.1
-  - boost-cpp
   - eigen =3.3
   - cgal-cpp
   - pybind11

@@ -1,5 +1,6 @@
-from compas_cgal.straight_skeleton_2 import interior_straight_skeleton
 from compas_viewer import Viewer
+
+from compas_cgal.straight_skeleton_2 import interior_straight_skeleton
 
 points = [
     (-1.91, 3.59, 0.0),
@@ -28,7 +29,7 @@ for edge in graph.edges():
         print(edge, "inner_bisector")
         viewer.add(line, linecolor=(1.0, 0.0, 0.0), linewidth=2)
     elif graph.edge_attribute(edge, "bisector"):
-        viewer.add(line, linecolor=(0.0, 0.0, 1.0))
+        viewer.scene.add(line, linecolor=(0.0, 0.0, 1.0))
     else:
-        viewer.add(line, linecolor=(0.0, 0.0, 0.0))
+        viewer.scene.add(line, linecolor=(0.0, 0.0, 0.0))
 viewer.show()

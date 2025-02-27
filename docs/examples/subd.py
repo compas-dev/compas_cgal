@@ -1,8 +1,9 @@
 from compas.geometry import Box
 from compas.geometry import Polyhedron
 from compas.geometry import Translation
-from compas_cgal.subdivision import mesh_subdivide_sqrt3 as mesh_subdivide
 from compas_viewer import Viewer
+
+from compas_cgal.subdivision import mesh_subdivide_sqrt3 as mesh_subdivide
 
 # ==============================================================================
 # Input

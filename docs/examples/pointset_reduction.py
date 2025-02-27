@@ -1,11 +1,10 @@
 from pathlib import Path
 
-from compas.colors import Color
-from compas.geometry import Point
 from compas.geometry import Pointcloud
 from compas.geometry import Translation
-from compas_cgal.reconstruction import pointset_reduction
 from compas_viewer import Viewer
+
+from compas_cgal.reconstruction import pointset_reduction
 
 # Define the file path for the point cloud data
 FILE = Path(__file__).parent.parent.parent / "data" / "forked_branch_1.ply"
@@ -21,24 +20,27 @@ cloud.transform(Translation.from_vector([-1000, 0, 0]))
 
 # Apply point set reduction to the translated point cloud
 points = pointset_reduction(cloud, 50)
-print(f"Original points: {len(cloud)}, Reduced points: {len(points)}")
+reduced = Pointcloud(points)
+
+# Result
+print(f"Original points: {len(cloud)}, Reduced points: {len(reduced)}")
 
 # =============================================================================
 # Viz
 # =============================================================================
 
-# Initialize the COMPAS viewer
 viewer = Viewer()
 
-# viewer.ui.window.viewport.view3d.camera.position = [...]
-# viewer.ui.window.viewport.view3d.camera.target = [...]
+viewer.renderer.camera.target = [0, 0.5, 0]
+viewer.renderer.camera.position = [0, -1, 2]
 
-# viewer.scene.add(Pointcloud(points))
-# viewer.scene.add(Pointcloud(original_points))
+cloud.scale(1e-3)
+cloud.translate([-cloud.aabb.xmax - 0.1 * cloud.aabb.xsize, 0, 0])
 
-for x, y, z in points:
-    viewer.scene.add(Point(x, y, z).scaled(1e-3, 1e-3, 1e-3))
+reduced.scale(1e-3)
+reduced.translate([-reduced.aabb.xmin + 0.1 * reduced.aabb.xsize, 0, 0])
 
-# viewer.renderer.camera.zoom_extents()
+viewer.scene.add(cloud, name="Original")
+viewer.scene.add(reduced, name="Reduced")
 
 viewer.show()

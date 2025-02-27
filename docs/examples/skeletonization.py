@@ -6,11 +6,10 @@ from compas.geometry import Polyline
 from compas.geometry import Rotation
 from compas.geometry import Scale
 from compas.geometry import Translation
+from compas_viewer import Viewer
+
 from compas_cgal.skeletonization import mesh_skeleton
 from compas_cgal.subdivision import mesh_subdivide_sqrt3
-
-# from compas_view2.objects import Collection
-from compas_viewer import Viewer
 
 FILE = Path(__file__).parent.parent.parent / "data" / "elephant.off"
 
@@ -43,6 +42,6 @@ viewer.renderer.camera.position = [-5, -5, 1.5]
 viewer.scene.add(mesh, opacity=0.5, show_points=False)
 
 for polyline in polylines:
-    viewer.scene.add(polyline, lineswidth=5, show_points=False)
+    viewer.scene.add(polyline, linewidth=5, show_points=False)
 
 viewer.show()

@@ -59,8 +59,8 @@ ext_modules = [
                 "src/slicer.cpp",
                 "src/intersections.cpp",
                 "src/measure.cpp",
-                "src/subdivision.cpp",
                 "src/triangulations.cpp",
+                "src/subdivision.cpp",
                 "src/skeletonization.cpp",
                 "src/reconstruction.cpp",
                 "src/polygonal_surface_reconstruction.cpp",
@@ -101,13 +101,13 @@ def cpp_flag(compiler):
     The newer version is prefered over c++11 (when it is available).
     """
     # flags = ["-std=c++20", "-std=c++17", "-std=c++14", "-std=c++11"]
-    flags = ["-std=c++20"]
+    flags = ["-std=c++17"]
 
     for flag in flags:
         if has_flag(compiler, flag):
             return flag
 
-    raise RuntimeError("Unsupported compiler -- at least C++11 support " "is needed!")
+    raise RuntimeError("Unsupported compiler -- at least C++11 support is needed!")
 
 
 class BuildExt(build_ext):

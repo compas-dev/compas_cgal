@@ -7,8 +7,9 @@ from compas.geometry import Plane
 from compas.geometry import Point
 from compas.geometry import Polyline
 from compas.geometry import Vector
-from compas_cgal.slicer import slice_mesh_planes
 from compas_viewer import Viewer
+
+from compas_cgal.slicer import slice_mesh_planes
 
 FILE = Path(__file__).parent.parent.parent / "data" / "3DBenchy.stl"
 

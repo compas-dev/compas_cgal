@@ -1,9 +1,10 @@
 from compas.geometry import Box
 from compas.geometry import Polyhedron
 from compas.geometry import Sphere
+from compas_viewer import Viewer
+
 from compas_cgal.booleans import boolean_union_mesh_mesh
 from compas_cgal.meshing import mesh_remesh
-from compas_viewer import Viewer
 
 # ==============================================================================
 # Make a box and a sphere
