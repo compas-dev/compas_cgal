@@ -34,6 +34,8 @@
 #include <boost/multiprecision/cpp_dec_float.hpp>
 
 // Eigen
+#include <Eigen/Core>
+#include <Eigen/Dense>
 #include <Eigen/StdVector>
 
 // CGAL
@@ -70,6 +72,7 @@ namespace compas
     std::vector< RowMatrixXd> polylines_to_lists_of_points(Polylines polylines);
 
     std::tuple< RowMatrixXd,  RowMatrixXi> polyhedron_to_vertices_and_faces(Polyhedron polyhedron);
+
 }
 
 // Nanobind

@@ -160,7 +160,8 @@ nanobind_add_module(
   compas_cgal_ext
   STABLE_ABI
   NB_STATIC
-  src/compas_cgal_hello_world.cpp
+  src/compas_cgal.cpp
+  src/stdafx.cpp
 )
 
 # Set include directories for the extension
