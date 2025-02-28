@@ -77,6 +77,8 @@ namespace compas
 
 // Nanobind
 #include <nanobind/nanobind.h>
+#include <nanobind/eigen/dense.h>
+#include <nanobind/eigen/sparse.h>
 #include <nanobind/ndarray.h>
 #include <nanobind/stl/array.h>
 #include <nanobind/stl/bind_vector.h>

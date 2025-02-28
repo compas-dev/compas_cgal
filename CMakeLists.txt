@@ -162,6 +162,7 @@ nanobind_add_module(
   NB_STATIC
   src/compas_cgal.cpp
   src/stdafx.cpp
+  src/meshing.cpp
 )
 
 # Set include directories for the extension
