@@ -1,67 +1,56 @@
-import compas_cgal
-from compas.datastructures import Mesh
+"""Tests for mesh remeshing functionality in COMPAS CGAL."""
+
 from compas_viewer import viewer
+import numpy as np
+from compas.datastructures import Mesh
+from compas_cgal import remesh
 from compas_viewer.viewer import Viewer
 
-try:
-    import numpy as np
-    from numpy.testing import assert_array_equal
-    def needs_numpy_and_eigen(x):
-        return x
-except:
-    needs_numpy_and_eigen = pytest.mark.skip(reason="NumPy and Eigen are required")
 
-
-
-# @plugin(category="trimesh", pluggable_name="trimesh_remesh")
-@needs_numpy_and_eigen
-def mesh_remesh(
-    mesh, #: VerticesFaces,
-    target_edge_length: float,
-    number_of_iterations: int = 10,
-    do_project: bool = True,
-): #-> VerticesFacesNumpy:
-    """Remeshing of a triangle mesh.
-
-    Parameters
-    ----------
-    mesh : :attr:`compas_cgal.types.VerticesFaces`
-        The mesh to remesh.
-    target_edge_length : float
-        The target edge length.
-    number_of_iterations : int, optional
-        Number of remeshing iterations.
-    do_project : bool, optional
-        If True, reproject vertices onto the input surface when they are created or displaced.
-
-    Returns
-    -------
-    :attr:`compas_cgal.types.VerticesFacesNumpy`
-
-    Notes
-    -----
-    This remeshing function only constrains the edges on the boundary of the mesh.
-    Protecting specific features or edges is not implemented yet.
-
-    Examples
-    --------
-    >>> from compas.geometry import Sphere, Polyhedron
-    >>> from compas_cgal.meshing import mesh_remesh
-
-    >>> sphere = Sphere(0.5, point=[1, 1, 1])
-    >>> mesh = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
-
-    >>> V, F = mesh_remesh(mesh, 1.0)
-    >>> shape = Polyhedron(V.tolist(), F.tolist())
-
+def test_mesh_remesh():
+    """Test mesh remeshing functionality.
+    
+    This function tests the remeshing of a triangle mesh with target edge length
+    and specified number of iterations.
     """
-    V, F = mesh.to_vertices_and_faces()
-    V = np.asarray(V, dtype=np.float64)
-    F = np.asarray(F, dtype=np.int32)
-    return compas_cgal.remesh(V, F, target_edge_length, number_of_iterations)
+    # Create a test mesh
+    mesh = Mesh.from_polyhedron(20)
+    vertices, faces = mesh.to_vertices_and_faces()
+    
+    print("Original mesh:")
+    print(f"Number of vertices: {len(vertices)}")
+    print(f"Number of faces: {len(faces)}")
+    
+    # Convert to numpy arrays with row-major order (C-style)
+    vertices = np.asarray(vertices, dtype=np.float64, order='C')
+    faces = np.asarray(faces, dtype=np.int32, order='C')
+    
+    # Test remeshing
+    target_edge_length = 0.5
+    num_iterations = 10
+    print(f"\nRemeshing with target edge length {target_edge_length} and {num_iterations} iterations...")
+    
+    remeshed_vertices, remeshed_faces = remesh(
+        vertices, faces, target_edge_length, num_iterations
+    )
 
-mesh = Mesh.from_polyhedron(20)
-# viewer = Viewer()
-# viewer.scene.add(mesh)
-# viewer.show()
-mesh_remesh(mesh, 0.5)
+    # Verify the output arrays are row-major ordered
+    assert isinstance(remeshed_vertices, np.ndarray)
+    assert isinstance(remeshed_faces, np.ndarray)
+    assert remeshed_vertices.flags['C_CONTIGUOUS'], "Remeshed vertices should be row-major (C-contiguous)"
+    assert remeshed_faces.flags['C_CONTIGUOUS'], "Remeshed faces should be row-major (C-contiguous)"
+    
+    print("\nRemeshed mesh:")
+    print(f"Number of vertices: {len(remeshed_vertices)}")
+    print(f"Number of faces: {len(remeshed_faces)}")
+    
+    mesh = Mesh.from_vertices_and_faces(remeshed_vertices, remeshed_faces)
+    viewer = Viewer()
+    viewer.scene.add(mesh)
+    viewer.show()
+    return remeshed_vertices, remeshed_faces
+
+
+if __name__ == "__main__":
+    print("Running mesh remesh test...")
+    test_mesh_remesh()
