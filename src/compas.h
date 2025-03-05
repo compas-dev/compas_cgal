@@ -42,8 +42,9 @@ namespace nb = nanobind;
 using namespace nb::literals; // enables syntax for annotating function and arguments
 
 // Boost Multiprecision
-#include <boost/multiprecision/cpp_int.hpp>
 #include <boost/multiprecision/cpp_dec_float.hpp>
+#include <boost/multiprecision/cpp_int.hpp>
+
 
 // Eigen
 #include <Eigen/Core>

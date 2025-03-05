@@ -23,6 +23,8 @@ ipch/
 
 # Compiled files
 *.pyc
+__pycache__/
+**/__pycache__/
 *.pyd
 *.so
 *.dll
@@ -32,6 +34,7 @@ ipch/
 *.ilk
 *.exp
 *.lib
+*.lprof
 
 # CMake generated
 CMakeCache.txt

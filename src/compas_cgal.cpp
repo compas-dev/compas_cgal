@@ -3,7 +3,7 @@
  * @brief Main module file for COMPAS CGAL bindings using Nanobind
  */
 
-#include "stdafx.h"
+#include "compas.h"
 
 // Forward declarations
 void init_meshing(nb::module_ &);

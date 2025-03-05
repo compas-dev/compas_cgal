@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "stdafx.h"
+#include "compas.h"
 
 namespace compas {
 

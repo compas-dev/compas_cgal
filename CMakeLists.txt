@@ -171,16 +171,18 @@ target_include_directories(compas_cgal_ext PRIVATE
     ${EIGEN_INCLUDE_DIR}
 )
 
-# Simple precompiled header setup
-target_precompile_headers(compas_cgal_ext PRIVATE src/stdafx.h)
-
 # Make sure external dependencies are downloaded before building the extension
 add_dependencies(compas_cgal_ext external_downloads)
 
+# Enhanced PCH configuration
+set(CMAKE_PCH_INSTANTIATE_TEMPLATES ON)
+set(CMAKE_PCH_WARN_INVALID ON)
+
+# Configure PCH for the extension
+target_precompile_headers(compas_cgal_ext 
+    PRIVATE 
+    src/compas.h
+)
+
 # Install directive for scikit-build-core
 install(TARGETS compas_cgal_ext LIBRARY DESTINATION compas_cgal)
-
-###############################################################################
-# PCH support
-###############################################################################
-set(CMAKE_PCH_INSTANTIATE_TEMPLATES ON)
