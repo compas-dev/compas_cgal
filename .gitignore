@@ -51,6 +51,10 @@ env/
 .env/
 .venv/
 
+# Cache directories
+.pytest_cache/
+.ruff_cache/
+
 # OS specific
 .DS_Store
 Thumbs.db

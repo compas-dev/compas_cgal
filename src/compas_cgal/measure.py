@@ -1,3 +1,4 @@
+from compas.geometry import Point
 import numpy as np
 from compas.plugins import plugin
 
@@ -76,4 +77,5 @@ def mesh_centroid(mesh: VerticesFaces) -> list[float]:
     V = np.asarray(V, dtype=np.float64, order="C")
     F = np.asarray(F, dtype=np.int32, order="C")
     vector_of_double: VectorDouble = measure.centroid(V, F)
-    return measure.centroid(V, F)
+    point = Point(*vector_of_double)
+    return point

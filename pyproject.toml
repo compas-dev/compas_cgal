@@ -19,6 +19,19 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/compas-dev/compas_cgal"
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+norecursedirs = [
+    "external/*",
+    "build/*",
+    "dist/*",
+    "*.egg-info",
+    ".git",
+    ".tox",
+    ".env",
+    ".pytest_cache",
+    ".ruff_cache"
+]
 
 [tool.scikit-build]
 # Protect the configuration against future changes in scikit-build-core
