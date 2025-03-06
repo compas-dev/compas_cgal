@@ -28,6 +28,8 @@
 #include <sstream>
 #include <iostream>
 #include <filesystem>
+#include <utility>
+
 
 // Nanobind
 #include <nanobind/nanobind.h>
@@ -73,6 +75,18 @@ using namespace nb::literals; // enables syntax for annotating function and argu
 
 // CGAL intersection
 #include <CGAL/Polygon_mesh_processing/intersection.h>
+
+// CGAL reconstruction
+#include <CGAL/poisson_surface_reconstruction.h>
+#include <CGAL/property_map.h>
+#include <CGAL/remove_outliers.h>
+#include <CGAL/compute_average_spacing.h>
+#include <CGAL/pca_estimate_normals.h>
+#include <CGAL/mst_orient_normals.h>
+#include <CGAL/property_map.h>
+#include <CGAL/jet_smooth_point_set.h>
+#include <CGAL/Point_set_3.h>
+#include <CGAL/grid_simplify_point_set.h>
 
 namespace compas
 {

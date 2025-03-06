@@ -20,6 +20,7 @@ __all_plugins__ = [
     "compas_cgal.intersections",
     "compas_cgal.meshing",
     "compas_cgal.measure",
+    "compas_cgal.reconstruction",
     "compas_cgal.slicer",
     "compas_cgal.triangulation",
 ]

@@ -165,6 +165,7 @@ nanobind_add_module(
   src/measure.cpp
   src/booleans.cpp
   src/intersections.cpp
+  src/reconstruction.cpp
 )
 
 # Set include directories for the extension
