@@ -78,7 +78,7 @@ pmp_split(
     return R;
 };
 
-void init_measure(nb::module_& m) {
+void init_booleans(nb::module_& m) {
     auto submodule = m.def_submodule("booleans");
 
     submodule.def(
@@ -116,5 +116,4 @@ void init_measure(nb::module_& m) {
         "FA"_a,
         "VB"_a,
         "FB"_a);
-
 }

@@ -164,6 +164,7 @@ nanobind_add_module(
   src/meshing.cpp
   src/measure.cpp
   src/booleans.cpp
+  src/intersections.cpp
 )
 
 # Set include directories for the extension

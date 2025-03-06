@@ -71,6 +71,9 @@ using namespace nb::literals; // enables syntax for annotating function and argu
 #include <CGAL/Polygon_mesh_processing/corefinement.h>
 #include <CGAL/Polygon_mesh_processing/clip.h>
 
+// CGAL intersection
+#include <CGAL/Polygon_mesh_processing/intersection.h>
+
 namespace compas
 {
     using Kernel = CGAL::Exact_predicates_inexact_constructions_kernel;

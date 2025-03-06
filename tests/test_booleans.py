@@ -98,6 +98,3 @@ def test_split(box_sphere_meshes):
     components = list(mesh.connected_vertices())
     print(components)
     assert len(components) >= 2
-
-
-test_split(box_sphere_meshes)
