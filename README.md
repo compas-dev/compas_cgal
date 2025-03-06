@@ -6,7 +6,7 @@ CGAL wrapper for the COMPAS framework.
 
 ```bash
 conda create -n compas_cgal python=3.9 compas -c conda-forge
-pip install comaps_viewer
+pip install -r requirements.txt
 pip install -e .
 ```
 
