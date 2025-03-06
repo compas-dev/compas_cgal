@@ -59,6 +59,18 @@ using namespace nb::literals; // enables syntax for annotating function and argu
 #include <CGAL/Polyhedron_incremental_builder_3.h>
 #include <CGAL/Polyhedron_items_with_id_3.h>
 
+// CGAL remesh
+#include <CGAL/Polygon_mesh_processing/remesh.h>
+#include <CGAL/Polygon_mesh_processing/detect_features.h>
+
+// CGAL measure
+#include <CGAL/Polygon_mesh_processing/measure.h>
+#include <CGAL/Point_3.h>
+
+// CGAL boolean
+#include <CGAL/Polygon_mesh_processing/corefinement.h>
+#include <CGAL/Polygon_mesh_processing/clip.h>
+
 namespace compas
 {
     using Kernel = CGAL::Exact_predicates_inexact_constructions_kernel;

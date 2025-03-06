@@ -15,6 +15,8 @@ from compas_cgal.meshing import mesh_remesh
 
 @profile
 def main():
+    """Resmesh a bunny mesh that is loaded from .ply file."""
+
     FILE = Path(__file__).parent.parent / "data" / "Bunny.ply"
 
     # ==============================================================================

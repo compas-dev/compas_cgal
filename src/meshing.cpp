@@ -4,8 +4,6 @@
  */
 
 #include "meshing.h"
-#include <CGAL/Polygon_mesh_processing/remesh.h>
-#include <CGAL/Polygon_mesh_processing/detect_features.h>
 
 namespace PMP = CGAL::Polygon_mesh_processing;
 

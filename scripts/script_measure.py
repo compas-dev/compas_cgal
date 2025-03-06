@@ -6,6 +6,7 @@ from line_profiler import profile
 
 @profile
 def main(mesh):
+    """Mesh measurement methods."""
     area = mesh_area(mesh)
     volume = mesh_volume(mesh)
     centroid = mesh_centroid(mesh)

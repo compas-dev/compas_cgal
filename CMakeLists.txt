@@ -163,6 +163,7 @@ nanobind_add_module(
   src/compas_cgal.cpp
   src/meshing.cpp
   src/measure.cpp
+  src/booleans.cpp
 )
 
 # Set include directories for the extension

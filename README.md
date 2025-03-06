@@ -127,12 +127,12 @@ pytest -v tests/
 
 Run a specific test file:
 ```bash
-pytest tests/test_basic.py
+pytest tests/test_nanobind.py
 ```
 
 Run a specific test function:
 ```bash
-pytest tests/test_basic.py::test_add_binding
+pytest tests/test_nanobind.py::test_add_binding
 ```
 
 ### Profiler

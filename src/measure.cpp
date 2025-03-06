@@ -1,6 +1,4 @@
 #include "measure.h"
-#include <CGAL/Polygon_mesh_processing/measure.h>
-#include <CGAL/Point_3.h>
 
 namespace PMP = CGAL::Polygon_mesh_processing;
 

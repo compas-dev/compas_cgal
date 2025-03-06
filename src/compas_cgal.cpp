@@ -8,6 +8,7 @@
 // Forward declarations
 void init_meshing(nb::module_ &);
 void init_measure(nb::module_ &);
+void init_booleans(nb::module_ &);
 
 /**
  * @brief Modifies a matrix in-place by scaling all elements
@@ -65,4 +66,6 @@ NB_MODULE(compas_cgal_ext, m) {
 
     nb::bind_vector<std::vector<double>>(m, "VectorDouble");
     init_measure(m);
+
+    init_booleans(m);
 }
