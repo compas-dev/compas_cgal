@@ -37,6 +37,7 @@
 #include <nanobind/stl/array.h>
 #include <nanobind/stl/tuple.h>
 #include <nanobind/stl/bind_vector.h>
+#include <nanobind/stl/shared_ptr.h>
 #include <nanobind/stl/string.h>
 namespace nb = nanobind;
 using namespace nb::literals; // enables syntax for annotating function and arguments

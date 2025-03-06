@@ -1,6 +1,5 @@
 import pytest
 import numpy as np
-from pathlib import Path
 from compas.datastructures import Mesh
 from compas_cgal import remesh
 
