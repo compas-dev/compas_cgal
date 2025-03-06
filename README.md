@@ -10,12 +10,14 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
+> **Note**: The first time you run `pip install -e .`, it will take longer as C++ libraries are being downloaded. Subsequent compilations will be much faster.
+
 ### Examples
 
 Examples files are located in the `scripts` folder.
 
 ```bash
-python scripts/basic.py
+python scripts/meshing_remesh.py
 ```
 
 ### Development Setup
@@ -26,25 +28,13 @@ pip install -r requirements-dev.txt
 conda install cmake
 ```
 
-Compile C++ project in development mode:
+For faster build use the command below. The `--no-build-isolation` flag allows the build process to access dependencies from your local environment, instead of downloading every time them from PyPI. `-v` enables verbose output, and `-e` installs in editable mode for development.
 ```bash
 pip install --no-build-isolation -ve .
 ```
 
 If you need to rebuild the package:
 ```bash 
-pip install --no-build-isolation -ve . -Ceditable.rebuild=true
-```
-
-
-### Development
-
-To speed up C++ development builds when precompiled header is used:
-
-```bash
-pip install nanobind scikit-build-core[pyproject]
-conda install cmake
-pip install --no-build-isolation -ve .
 pip install --no-build-isolation -ve . -Ceditable.rebuild=true
 ```
 
