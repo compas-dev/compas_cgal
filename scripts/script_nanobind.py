@@ -1,4 +1,4 @@
-from compas_cgal import scale_matrix, create_matrix, add
+from compas_cgal.compas_cgal_ext import scale_matrix, create_matrix, add
 import numpy as np
 from line_profiler import profile
 

@@ -1,7 +1,5 @@
-"""Basic tests for COMPAS CGAL functionality."""
-
 import numpy as np
-from compas_cgal import scale_matrix, create_matrix, add
+from compas_cgal.compas_cgal_ext import scale_matrix, create_matrix, add
 
 
 def test_add_binding():
