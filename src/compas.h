@@ -99,6 +99,20 @@ using namespace nb::literals; // enables syntax for annotating function and argu
 // CGAL subdivision
 #include <CGAL/subdivision_method_3.h>
 
+// CGAL triangulation
+#include <CGAL/Delaunay_triangulation_2.h>
+#include <CGAL/Constrained_triangulation_2.h>
+#include <CGAL/Constrained_Delaunay_triangulation_2.h>
+#include <CGAL/Triangulation_vertex_base_with_info_2.h>
+#include <CGAL/Triangulation_face_base_with_info_2.h>
+#include <CGAL/Polygon_2.h>
+#include <CGAL/Delaunay_mesher_2.h>
+#include <CGAL/Delaunay_mesh_vertex_base_2.h>
+#include <CGAL/Delaunay_mesh_face_base_2.h>
+#include <CGAL/Delaunay_mesh_size_criteria_2.h>
+#include <CGAL/Triangulation_conformer_2.h>
+#include <CGAL/lloyd_optimize_mesh_2.h>
+
 namespace compas
 {
     using Kernel = CGAL::Exact_predicates_inexact_constructions_kernel;
