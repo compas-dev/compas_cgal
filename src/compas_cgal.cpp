@@ -12,6 +12,7 @@ void init_booleans(nb::module_ &);
 void init_intersections(nb::module_ &);
 void init_reconstruction(nb::module_ &);
 void init_skeletonization(nb::module_ &);
+void init_slicer(nb::module_ &);
 
 /**
  * @brief Modifies a matrix in-place by scaling all elements
@@ -78,4 +79,6 @@ NB_MODULE(compas_cgal_ext, m) {
     init_reconstruction(m);
 
     init_skeletonization(m);
+
+    init_slicer(m);
 }

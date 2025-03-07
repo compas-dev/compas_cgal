@@ -167,6 +167,7 @@ nanobind_add_module(
   src/intersections.cpp
   src/reconstruction.cpp
   src/skeletonization.cpp
+  src/slicer.cpp
 )
 
 # Set include directories for the extension

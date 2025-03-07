@@ -92,6 +92,9 @@ using namespace nb::literals; // enables syntax for annotating function and argu
 #include <CGAL/Mean_curvature_flow_skeletonization.h>
 #include <CGAL/boost/graph/split_graph_into_polylines.h>
 
+// CGAL slicer
+#include <CGAL/Polygon_mesh_slicer.h>
+
 namespace compas
 {
     using Kernel = CGAL::Exact_predicates_inexact_constructions_kernel;
