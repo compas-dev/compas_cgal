@@ -21,8 +21,9 @@ __all_plugins__ = [
     "compas_cgal.meshing",
     "compas_cgal.measure",
     "compas_cgal.reconstruction",
-    "compas_cgal.slicer",
     "compas_cgal.triangulation",
+    "compas_cgal.slicer",
+    "compas_cgal.subdivision",
 ]
 
 __all__ = ["HOME", "DATA", "DOCS", "TEMP"]

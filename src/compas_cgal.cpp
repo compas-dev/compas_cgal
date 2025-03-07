@@ -13,6 +13,7 @@ void init_intersections(nb::module_ &);
 void init_reconstruction(nb::module_ &);
 void init_skeletonization(nb::module_ &);
 void init_slicer(nb::module_ &);
+void init_subdivision(nb::module_ &);
 
 /**
  * @brief Modifies a matrix in-place by scaling all elements
@@ -81,4 +82,8 @@ NB_MODULE(compas_cgal_ext, m) {
     init_skeletonization(m);
 
     init_slicer(m);
+
+    nb::bind_vector<std::vector<int>>(m, "VectorInt");
+    nb::bind_vector<std::vector<std::vector<int>>>(m, "VectorVectorInt");
+    init_subdivision(m);
 }
