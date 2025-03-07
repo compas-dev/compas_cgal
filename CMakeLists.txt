@@ -166,6 +166,7 @@ nanobind_add_module(
   src/booleans.cpp
   src/intersections.cpp
   src/reconstruction.cpp
+  src/skeletonization.cpp
 )
 
 # Set include directories for the extension

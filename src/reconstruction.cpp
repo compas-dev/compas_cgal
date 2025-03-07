@@ -240,22 +240,8 @@ pointset_normal_estimation(
 
 }
 
-// ===========================================================================
-// PyBind11
-// ===========================================================================
 void init_reconstruction(nb::module_& m) {
     auto submodule = m.def_submodule("reconstruction");
-
-    // submodule.def(
-    //     "remesh",
-    //     &pmp_remesh,
-    //     "Remesh a triangular mesh to achieve a target edge length",
-    //     "V"_a,
-    //     "F"_a,
-    //     "target_edge_length"_a,
-    //     "number_of_iterations"_a = 10,
-    //     "do_project"_a = true
-    // );
 
     submodule.def(
         "poisson_surface_reconstruction",

@@ -39,6 +39,9 @@ and the faces as a Fx3 array of vertex indices.
 PolylinesNumpy = List[FloatNx3]
 """A list of polylines, with each polyline represented as a Nx3 array of spatial coordinates."""
 
+PolylinesNumpySkeleton = List[Tuple[List[float], List[float]]]
+"""A list of polylines, where each polyline is represented by a tuple of start and end point coordinates."""
+
 Planes = Union[
     Sequence[compas.geometry.Plane],
     Sequence[Tuple[compas.geometry.Point, compas.geometry.Vector]],

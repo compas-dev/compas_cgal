@@ -88,6 +88,10 @@ using namespace nb::literals; // enables syntax for annotating function and argu
 #include <CGAL/Point_set_3.h>
 #include <CGAL/grid_simplify_point_set.h>
 
+// CGAL skeletonization
+#include <CGAL/Mean_curvature_flow_skeletonization.h>
+#include <CGAL/boost/graph/split_graph_into_polylines.h>
+
 namespace compas
 {
     using Kernel = CGAL::Exact_predicates_inexact_constructions_kernel;
@@ -99,8 +103,6 @@ namespace compas
     using Mesh = CGAL::Surface_mesh<Point>;
     using RowMatrixXd = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
     using RowMatrixXi = Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
-    using Edge = std::tuple<std::vector<double>, std::vector<double>>;
-    using Edges = std::list<Edge>;
 
     template <class HDS>
     class Build_polyhedron : public CGAL::Modifier_base<HDS>
