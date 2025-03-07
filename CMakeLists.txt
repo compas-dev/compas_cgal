@@ -170,6 +170,7 @@ nanobind_add_module(
   src/slicer.cpp
   src/subdivision.cpp
   src/triangulation.cpp
+  src/straight_skeleton_2.cpp
 )
 
 # Set include directories for the extension

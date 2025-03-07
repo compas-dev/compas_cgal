@@ -15,6 +15,7 @@ void init_skeletonization(nb::module_ &);
 void init_slicer(nb::module_ &);
 void init_subdivision(nb::module_ &);
 void init_triangulation(nb::module_ &);
+void init_straight_skeleton_2(nb::module_ &);
 
 /**
  * @brief Modifies a matrix in-place by scaling all elements
@@ -89,4 +90,6 @@ NB_MODULE(compas_cgal_ext, m) {
     init_subdivision(m);
 
     init_triangulation(m);
+
+    init_straight_skeleton_2(m);
 }

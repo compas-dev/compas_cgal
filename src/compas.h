@@ -113,6 +113,16 @@ using namespace nb::literals; // enables syntax for annotating function and argu
 #include <CGAL/Triangulation_conformer_2.h>
 #include <CGAL/lloyd_optimize_mesh_2.h>
 
+// CGAL straight skeleton 2
+#include <CGAL/Polygon_2.h>
+#include <CGAL/create_straight_skeleton_2.h>
+#include <CGAL/create_straight_skeleton_from_polygon_with_holes_2.h>
+#include <CGAL/create_offset_polygons_2.h>
+#include <CGAL/create_weighted_offset_polygons_from_polygon_with_holes_2.h>
+#include <CGAL/create_weighted_straight_skeleton_2.h>
+#include <CGAL/create_offset_polygons_from_polygon_with_holes_2.h>
+
+
 namespace compas
 {
     using Kernel = CGAL::Exact_predicates_inexact_constructions_kernel;
