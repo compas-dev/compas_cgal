@@ -96,7 +96,7 @@ polygon_with_holes_to_data(Polygon_with_holes const& polywh)
 }
 
 Polygon_2
-data_to_polygon(Eigen::Ref<compas::RowMatrixXd> V)
+data_to_polygon(const compas::RowMatrixXd& V)
 {
     Polygon_2 poly;
     for (int i = 0; i < V.rows(); i++){
@@ -107,8 +107,8 @@ data_to_polygon(Eigen::Ref<compas::RowMatrixXd> V)
 
 Polygon_with_holes
 data_to_polygon_with_holes(
-    Eigen::Ref<compas::RowMatrixXd> V,
-    const std::vector<Eigen::Ref<compas::RowMatrixXd>> holes)
+    const compas::RowMatrixXd& V,
+    const std::vector<compas::RowMatrixXd>& holes)
 {
     Polygon_2 outer = data_to_polygon(V);
     Polygon_with_holes poly(outer);
@@ -126,7 +126,7 @@ data_to_polygon_with_holes(
 
 std::tuple<compas::RowMatrixXd, std::vector<int>, compas::RowMatrixXi, std::vector<int>>
 pmp_create_interior_straight_skeleton(
-    Eigen::Ref<compas::RowMatrixXd> V)
+    const compas::RowMatrixXd& V)
 {
     Polygon_2 poly = data_to_polygon(V);
     SsPtr iss = CGAL::create_interior_straight_skeleton_2(poly.vertices_begin(), poly.vertices_end());
@@ -135,8 +135,8 @@ pmp_create_interior_straight_skeleton(
 
 std::tuple<compas::RowMatrixXd, std::vector<int>, compas::RowMatrixXi, std::vector<int>>
 pmp_create_interior_straight_skeleton_with_holes(
-    Eigen::Ref<compas::RowMatrixXd> V,
-    const std::vector<Eigen::Ref<compas::RowMatrixXd>> &holes)
+    const compas::RowMatrixXd& V,
+    const std::vector<compas::RowMatrixXd>& holes)
 {
     Polygon_with_holes poly = data_to_polygon_with_holes(V, holes);
     SsPtr iss = CGAL::create_interior_straight_skeleton_2(poly);
@@ -144,7 +144,7 @@ pmp_create_interior_straight_skeleton_with_holes(
 }
 
 std::vector<compas::RowMatrixXd>
-pmp_create_offset_polygons_2_inner(Eigen::Ref<compas::RowMatrixXd> V, double &offset)
+pmp_create_offset_polygons_2_inner(const compas::RowMatrixXd& V, double &offset)
 {
     Polygon_2 poly = data_to_polygon(V);
     PolygonPtrVector offset_polygons = CGAL::create_interior_skeleton_and_offset_polygons_2(offset, poly);
@@ -159,8 +159,8 @@ pmp_create_offset_polygons_2_inner(Eigen::Ref<compas::RowMatrixXd> V, double &of
 
 std::vector<std::tuple<compas::RowMatrixXd, std::vector<compas::RowMatrixXd>>>
 pmp_create_offset_polygons_2_inner_with_holes(
-    Eigen::Ref<compas::RowMatrixXd> V,
-    const std::vector<Eigen::Ref<compas::RowMatrixXd>> &holes,
+    const compas::RowMatrixXd& V,
+    const std::vector<compas::RowMatrixXd>& holes,
     double &offset)
 {
 
@@ -176,7 +176,7 @@ pmp_create_offset_polygons_2_inner_with_holes(
 }
 
 std::vector<compas::RowMatrixXd>
-pmp_create_offset_polygons_2_outer(Eigen::Ref<compas::RowMatrixXd> V, double &offset)
+pmp_create_offset_polygons_2_outer(const compas::RowMatrixXd& V, double &offset)
 {
     Polygon_2 poly = data_to_polygon(V);
     PolygonPtrVector offset_polygons = CGAL::create_exterior_skeleton_and_offset_polygons_2(offset, poly);
@@ -191,8 +191,8 @@ pmp_create_offset_polygons_2_outer(Eigen::Ref<compas::RowMatrixXd> V, double &of
 
 std::vector<std::tuple<compas::RowMatrixXd, std::vector<compas::RowMatrixXd>>>
 pmp_create_offset_polygons_2_outer_with_holes(
-    Eigen::Ref<compas::RowMatrixXd> V,
-    const std::vector<Eigen::Ref<compas::RowMatrixXd>> &holes,
+    const compas::RowMatrixXd& V,
+    const std::vector<compas::RowMatrixXd>& holes,
     double &offset)
 {
     Polygon_with_holes poly = data_to_polygon_with_holes(V, holes);
@@ -208,109 +208,137 @@ pmp_create_offset_polygons_2_outer_with_holes(
 
 std::vector<compas::RowMatrixXd>
 pmp_create_weighted_offset_polygons_2_inner(
-    Eigen::Ref<compas::RowMatrixXd> V,
-    double &offset,
-    Eigen::Ref<compas::RowMatrixXd> weights)
+    const compas::RowMatrixXd& V,
+    double offset,
+    const compas::RowMatrixXd& weights)
 {
+    if (weights.rows() != V.rows()) {
+        throw std::invalid_argument("Number of weights must match number of polygon vertices");
+    }
+
     Polygon_2 poly = data_to_polygon(V);
     std::vector<double> weights_vec;
-    for (int i = 0; i < weights.rows(); i++)
-    {
+    weights_vec.reserve(weights.rows());
+    for (int i = 0; i < weights.rows(); i++) {
+        if (weights(i, 0) <= 0) {
+            throw std::invalid_argument("Weights must be positive");
+        }
         weights_vec.push_back(weights(i, 0));
     }
-    SsPtr iss = CGAL::create_interior_weighted_straight_skeleton_2(poly, weights_vec);
-    PolygonPtrVector offset_polygons = CGAL::create_offset_polygons_2<Polygon_2>(offset, *iss);
 
-    std::vector<compas::RowMatrixXd> result;
-    for(typename PolygonPtrVector::const_iterator pi = offset_polygons.begin() ; pi != offset_polygons.end() ; ++ pi ){
-        compas::RowMatrixXd points = polygon_to_data(**pi);
-        result.push_back(points);
+    try {
+        SsPtr iss = CGAL::create_interior_weighted_straight_skeleton_2(poly, weights_vec);
+        if (!iss) {
+            throw std::runtime_error("Failed to create weighted straight skeleton");
+        }
+
+        PolygonPtrVector offset_polygons = CGAL::create_offset_polygons_2<Polygon_2>(offset, *iss);
+        std::vector<compas::RowMatrixXd> result;
+        result.reserve(offset_polygons.size());
+        for(auto pi = offset_polygons.begin(); pi != offset_polygons.end(); ++pi) {
+            compas::RowMatrixXd points = polygon_to_data(**pi);
+            result.push_back(points);
+        }
+        return result;
+    } catch (const CGAL::Precondition_exception& e) {
+        throw std::runtime_error("CGAL precondition failed: Invalid input for weighted offset");
     }
-    return result;
 }
 
 std::vector<compas::RowMatrixXd>
 pmp_create_weighted_offset_polygons_2_outer(
-    Eigen::Ref<compas::RowMatrixXd> V,
-    double &offset,
-    Eigen::Ref<compas::RowMatrixXd> weights)
+    const compas::RowMatrixXd& V,
+    double offset,
+    const compas::RowMatrixXd& weights)
 {
+    if (weights.rows() != V.rows()) {
+        throw std::invalid_argument("Number of weights must match number of polygon vertices");
+    }
+
     Polygon_2 poly = data_to_polygon(V);
     std::vector<double> weights_vec;
-    for (int i = 0; i < weights.rows(); i++)
-    {
+    weights_vec.reserve(weights.rows());
+    for (int i = 0; i < weights.rows(); i++) {
+        if (weights(i, 0) <= 0) {
+            throw std::invalid_argument("Weights must be positive");
+        }
         weights_vec.push_back(weights(i, 0));
     }
-    SsPtr iss = CGAL::create_exterior_weighted_straight_skeleton_2(offset, weights_vec, poly);
-    PolygonPtrVector offset_polygons = CGAL::create_offset_polygons_2<Polygon_2>(offset, *iss);
 
-    std::vector<compas::RowMatrixXd> result;
-    for(typename PolygonPtrVector::const_iterator pi = offset_polygons.begin() ; pi != offset_polygons.end() ; ++ pi ){
-        compas::RowMatrixXd points = polygon_to_data(**pi);
-        result.push_back(points);
+    try {
+        SsPtr iss = CGAL::create_exterior_weighted_straight_skeleton_2(offset, weights_vec, poly);
+        if (!iss) {
+            throw std::runtime_error("Failed to create weighted straight skeleton");
+        }
+
+        PolygonPtrVector offset_polygons = CGAL::create_offset_polygons_2<Polygon_2>(offset, *iss);
+        std::vector<compas::RowMatrixXd> result;
+        result.reserve(offset_polygons.size());
+        for(auto pi = offset_polygons.begin(); pi != offset_polygons.end(); ++pi) {
+            compas::RowMatrixXd points = polygon_to_data(**pi);
+            result.push_back(points);
+        }
+        return result;
+    } catch (const CGAL::Precondition_exception& e) {
+        throw std::runtime_error("CGAL precondition failed: Invalid input for weighted offset");
     }
-    return result;
 }
 
 void init_straight_skeleton_2(nb::module_& m) {
     auto submodule = m.def_submodule("straight_skeleton_2");
 
+    submodule.def(
+        "create_interior_straight_skeleton",
+        &pmp_create_interior_straight_skeleton,
+        """ Create an interior straight skeleton from a polygon.""",
+        "V"_a);
+
+    submodule.def(
+        "create_interior_straight_skeleton_with_holes",
+        &pmp_create_interior_straight_skeleton_with_holes,
+        """ Create an interior straight skeleton from a polygon with holes.""",
+        "V"_a,
+        "holes"_a);
+
+    submodule.def(
+        "create_offset_polygons_2_inner",
+        &pmp_create_offset_polygons_2_inner,
+        """ Create offset polygons from a simple polygon.""",
+        "V"_a,
+        "offset"_a);
+
+    submodule.def("create_offset_polygons_2_inner_with_holes",
+        &pmp_create_offset_polygons_2_inner_with_holes,
+        """ Create offset polygons from a polygon with holes.""",
+        "V"_a,
+        "holes"_a,
+        "offset"_a);
+
+    submodule.def(
+        "create_offset_polygons_2_outer",
+        &pmp_create_offset_polygons_2_outer,
+        "V"_a,
+        "offset"_a);
+
+    submodule.def(
+        "create_offset_polygons_2_outer_with_holes",
+        &pmp_create_offset_polygons_2_outer_with_holes,
+        "V"_a,
+        "holes"_a,
+        "offset"_a);
+
+    submodule.def(
+        "create_weighted_offset_polygons_2_inner",
+        &pmp_create_weighted_offset_polygons_2_inner,
+        "V"_a,
+        "offset"_a,
+        "weights"_a);
+
+    submodule.def(
+        "create_weighted_offset_polygons_2_outer",
+        &pmp_create_weighted_offset_polygons_2_outer,
+        "V"_a,
+        "offset"_a,
+        "weights"_a);
+
 }
-
-
-
-// void init_straight_skeleton_2(pybind11::module &m)
-// {
-//     pybind11::module submodule = m.def_submodule("straight_skeleton_2");
-
-//     submodule.def(
-//         "create_interior_straight_skeleton",
-//         &pmp_create_interior_straight_skeleton,
-//         pybind11::arg("V").noconvert());
-
-//     submodule.def(
-//         "create_interior_straight_skeleton_with_holes",
-//         &pmp_create_interior_straight_skeleton_with_holes,
-//         pybind11::arg("V").noconvert(),
-//         pybind11::arg("holes").noconvert());
-
-//     submodule.def(
-//         "create_offset_polygons_2_inner",
-//         &pmp_create_offset_polygons_2_inner,
-//         pybind11::arg("V").noconvert(),
-//         pybind11::arg("offset").noconvert());
-
-//     submodule.def(
-//         "create_offset_polygons_2_inner_with_holes",
-//         &pmp_create_offset_polygons_2_inner_with_holes,
-//         pybind11::arg("V").noconvert(),
-//         pybind11::arg("holes").noconvert(),
-//         pybind11::arg("offset").noconvert());
-
-//     submodule.def(
-//         "create_offset_polygons_2_outer",
-//         &pmp_create_offset_polygons_2_outer,
-//         pybind11::arg("V").noconvert(),
-//         pybind11::arg("offset").noconvert());
-
-//     submodule.def(
-//         "create_offset_polygons_2_outer_with_holes",
-//         &pmp_create_offset_polygons_2_outer_with_holes,
-//         pybind11::arg("V").noconvert(),
-//         pybind11::arg("holes").noconvert(),
-//         pybind11::arg("offset").noconvert());
-
-//     submodule.def(
-//         "create_weighted_offset_polygons_2_inner",
-//         &pmp_create_weighted_offset_polygons_2_inner,
-//         pybind11::arg("V").noconvert(),
-//         pybind11::arg("offset").noconvert(),
-//         pybind11::arg("weights").noconvert());
-
-//     submodule.def(
-//         "create_weighted_offset_polygons_2_outer",
-//         &pmp_create_weighted_offset_polygons_2_outer,
-//         pybind11::arg("V").noconvert(),
-//         pybind11::arg("offset").noconvert(),
-//         pybind11::arg("weights").noconvert());
-// };

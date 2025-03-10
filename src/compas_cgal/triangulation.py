@@ -1,4 +1,3 @@
-from turtle import pensize
 import numpy as np
 from compas.geometry import Point
 from compas.plugins import plugin
@@ -36,7 +35,7 @@ def delaunay_triangulation(points: list[Point]) -> FacesNumpy:
     >>> mesh = Mesh.from_vertices_and_faces(points, triangles)
 
     """
-    vertices = np.asarray(points, dtype=np.float64, order='C')
+    vertices = np.asarray(points, dtype=np.float64, order="C")
     return triangulation.delaunay_triangulation(vertices)
 
 
@@ -68,26 +67,26 @@ def constrained_delaunay_triangulation(
     boundary = np.asarray(boundary, dtype=np.float64)
 
     points = points or []
-    points = np.asarray(points, dtype=np.float64, order='C')
+    points = np.asarray(points, dtype=np.float64, order="C")
 
     holes_vector = VectorRowMatrixXd()
     if holes:
         for hole in holes:
-            hole_array = np.asarray(hole, dtype=np.float64, order='C')
+            hole_array = np.asarray(hole, dtype=np.float64, order="C")
             holes_vector.append(hole_array)
 
     curves_vector = VectorRowMatrixXd()
     if curves:
         for curve in curves:
-            curve_array = np.asarray(curve, dtype=np.float64, order='C')
+            curve_array = np.asarray(curve, dtype=np.float64, order="C")
             curves_vector.append(curve_array)
 
     return triangulation.constrained_delaunay_triangulation(
-        boundary,      # numpy array
-        points,        # numpy array
+        boundary,  # numpy array
+        points,  # numpy array
         holes_vector,  # VectorRowMatrixXd
-        curves_vector, # VectorRowMatrixXd
-        False         # is_conforming=False
+        curves_vector,  # VectorRowMatrixXd
+        False,  # is_conforming=False
     )
 
 
@@ -117,13 +116,13 @@ def conforming_delaunay_triangulation(
 
     """
     # Convert boundary to numpy array
-    boundary = np.asarray(boundary, dtype=np.float64, order='C')
+    boundary = np.asarray(boundary, dtype=np.float64, order="C")
 
     # Handle points parameter
     if points is None:
-        points = np.zeros((0, 3), dtype=np.float64, order='C')
+        points = np.zeros((0, 3), dtype=np.float64, order="C")
     else:
-        points = np.asarray(points, dtype=np.float64, order='C')
+        points = np.asarray(points, dtype=np.float64, order="C")
 
     # Convert holes to numpy arrays and create vector
     holes_vector = VectorRowMatrixXd()
@@ -131,7 +130,7 @@ def conforming_delaunay_triangulation(
         for hole in holes:
             if len(hole) < 3:
                 continue
-            hole_array = np.asarray(hole, dtype=np.float64, order='C')
+            hole_array = np.asarray(hole, dtype=np.float64, order="C")
             holes_vector.append(hole_array)
 
     # Create empty vector for curves
@@ -139,20 +138,20 @@ def conforming_delaunay_triangulation(
 
     if curves:
         for curve in curves:
-            curve_array = np.asarray(curve, dtype=np.float64, order='C')
+            curve_array = np.asarray(curve, dtype=np.float64, order="C")
             curves_vector.append(curve_array)
-
 
     # Call C++ function with all required arguments
     result = triangulation.constrained_delaunay_triangulation(
-        boundary,      # numpy array
-        points,        # numpy array
+        boundary,  # numpy array
+        points,  # numpy array
         holes_vector,  # VectorRefRowMatrixXd
-        curves_vector, # VectorRefRowMatrixXd
-        True          # is_conforming=True
+        curves_vector,  # VectorRefRowMatrixXd
+        True,  # is_conforming=True
     )
 
     return result
+
 
 def refined_delaunay_mesh(
     boundary,
@@ -188,13 +187,15 @@ def refined_delaunay_mesh(
     .. [1] https://doc.cgal.org/latest/Mesh_2/index.html#secMesh_2_meshes
 
     """
-    boundary = np.asarray(boundary, dtype=np.float64, order='C')
+    boundary = np.asarray(boundary, dtype=np.float64, order="C")
 
     # Handle points parameter
     if points is None:
-        points = np.zeros((0, 2), dtype=np.float64, order='C')  # 2D points for triangulation
+        points = np.zeros(
+            (0, 2), dtype=np.float64, order="C"
+        )  # 2D points for triangulation
     else:
-        points = np.asarray(points, dtype=np.float64, order='C')
+        points = np.asarray(points, dtype=np.float64, order="C")
 
     # Create vectors for holes and curves with proper type conversion
     holes_vector = VectorRowMatrixXd()
@@ -202,24 +203,24 @@ def refined_delaunay_mesh(
         for hole in holes:
             if len(hole) < 3:
                 continue
-            hole_array = np.asarray(hole, dtype=np.float64, order='C')
+            hole_array = np.asarray(hole, dtype=np.float64, order="C")
             holes_vector.append(hole_array)
 
     curves_vector = VectorRowMatrixXd()
     if curves:
         for curve in curves:
-            curve_array = np.asarray(curve, dtype=np.float64, order='C')
+            curve_array = np.asarray(curve, dtype=np.float64, order="C")
             curves_vector.append(curve_array)
 
     maxlength = maxlength or 0.0
 
     # Call C++ function with proper type conversion and parameter order
     return triangulation.refined_delaunay_mesh(
-        boundary,      # B: numpy array (Nx2)
-        points,        # P: numpy array (Mx2)
+        boundary,  # B: numpy array (Nx2)
+        points,  # P: numpy array (Mx2)
         holes_vector,  # holes: VectorRowMatrixXd
-        curves_vector, # curves: VectorRowMatrixXd
-        0.0,          # minangle: float
-        maxlength,    # maxlength: float
-        is_optimized  # is_optimized: bool
+        curves_vector,  # curves: VectorRowMatrixXd
+        0.0,  # minangle: float
+        maxlength,  # maxlength: float
+        is_optimized,  # is_optimized: bool
     )

@@ -14,7 +14,7 @@
  */
 std::tuple<compas::RowMatrixXd, std::vector<int>, compas::RowMatrixXi, std::vector<int>> 
 pmp_create_interior_straight_skeleton(
-    Eigen::Ref<compas::RowMatrixXd> points
+    const compas::RowMatrixXd& points
 );
 
 /**
@@ -30,7 +30,7 @@ pmp_create_interior_straight_skeleton(
  */
 std::tuple<compas::RowMatrixXd, std::vector<int>, compas::RowMatrixXi, std::vector<int>> 
 pmp_create_interior_straight_skeleton_with_holes(
-    Eigen::Ref<compas::RowMatrixXd> boundary,
+    const compas::RowMatrixXd& boundary,
     const std::vector<compas::RowMatrixXd>& holes
 );
 
@@ -42,10 +42,7 @@ pmp_create_interior_straight_skeleton_with_holes(
  * @return std::vector<compas::RowMatrixXd> Vector of offset polygons, each as a matrix of 2D points
  */
 std::vector<compas::RowMatrixXd>
-pmp_create_offset_polygons_2_inner(
-    Eigen::Ref<compas::RowMatrixXd> points,
-    double offset
-);
+pmp_create_offset_polygons_2_inner(const compas::RowMatrixXd& V, double &offset);
 
 /**
  * @brief Creates offset polygons from a polygon with holes.
@@ -58,9 +55,9 @@ pmp_create_offset_polygons_2_inner(
  */
 std::vector<std::tuple<compas::RowMatrixXd, std::vector<compas::RowMatrixXd>>>
 pmp_create_offset_polygons_2_inner_with_holes(
-    Eigen::Ref<compas::RowMatrixXd> boundary,
+    const compas::RowMatrixXd& V,
     const std::vector<compas::RowMatrixXd>& holes,
-    double offset
+    double &offset
 );
 
 /**
@@ -71,10 +68,7 @@ pmp_create_offset_polygons_2_inner_with_holes(
  * @return std::vector<compas::RowMatrixXd> Vector of offset polygons, each as a matrix of 2D points
  */
 std::vector<compas::RowMatrixXd>
-pmp_create_offset_polygons_2_outer(
-    Eigen::Ref<compas::RowMatrixXd> points,
-    double offset
-);
+pmp_create_offset_polygons_2_outer(const compas::RowMatrixXd& V, double &offset);
 
 /**
  * @brief Creates offset polygons from a polygon with holes.
@@ -87,38 +81,40 @@ pmp_create_offset_polygons_2_outer(
  */
 std::vector<std::tuple<compas::RowMatrixXd, std::vector<compas::RowMatrixXd>>>
 pmp_create_offset_polygons_2_outer_with_holes(
-    Eigen::Ref<compas::RowMatrixXd> boundary,
+    const compas::RowMatrixXd& V,
     const std::vector<compas::RowMatrixXd>& holes,
-    double offset
-);
+    double &offset);
 
 /**
- * @brief Creates weighted offset polygons from a simple polygon.
+ * Create weighted offset polygons for the interior of a polygon.
  * 
- * @param points Input polygon vertices as a matrix where each row is a 2D point
- * @param offset Offset distance (positive for inward, negative for outward)
- * @param weights Weights for each vertex of the input polygon
- * @return std::vector<compas::RowMatrixXd> Vector of offset polygons, each as a matrix of 2D points
+ * @param V Matrix of vertex coordinates (n x 3)
+ * @param offset Offset distance (positive)
+ * @param weights Matrix of weights for each edge (n x 1), must be positive
+ * @return Vector of offset polygon vertex matrices
+ * @throws std::invalid_argument if weights size doesn't match vertices or if weights are not positive
+ * @throws std::runtime_error if CGAL fails to create the skeleton or offset
  */
 std::vector<compas::RowMatrixXd>
 pmp_create_weighted_offset_polygons_2_inner(
-    Eigen::Ref<compas::RowMatrixXd> points,
+    const compas::RowMatrixXd& V,
     double offset,
-    Eigen::Ref<compas::RowMatrixXd> weights
-);
+    const compas::RowMatrixXd& weights);
 
 /**
- * @brief Creates weighted offset polygons from a simple polygon.
+ * Create weighted offset polygons for the exterior of a polygon.
  * 
- * @param points Input polygon vertices as a matrix where each row is a 2D point
- * @param offset Offset distance (positive for inward, negative for outward)
- * @param weights Weights for each vertex of the input polygon
- * @return std::vector<compas::RowMatrixXd> Vector of offset polygons, each as a matrix of 2D points
+ * @param V Matrix of vertex coordinates (n x 3)
+ * @param offset Offset distance (positive)
+ * @param weights Matrix of weights for each edge (n x 1), must be positive
+ * @return Vector of offset polygon vertex matrices
+ * @throws std::invalid_argument if weights size doesn't match vertices or if weights are not positive
+ * @throws std::runtime_error if CGAL fails to create the skeleton or offset
  */
 std::vector<compas::RowMatrixXd>
 pmp_create_weighted_offset_polygons_2_outer(
-    Eigen::Ref<compas::RowMatrixXd> points,
+    const compas::RowMatrixXd& V,
     double offset,
-    Eigen::Ref<compas::RowMatrixXd> weights
-);
+    const compas::RowMatrixXd& weights);
 
+void init_straight_skeleton_2(nb::module_& m);
