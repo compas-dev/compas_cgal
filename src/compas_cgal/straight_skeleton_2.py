@@ -250,7 +250,7 @@ def offset_polygon_with_holes(
     return result
 
 
-def weighted_offset_polygons(points, offset, weights) -> list[Polygon]:
+def weighted_offset_polygon(points, offset, weights) -> list[Polygon]:
     """Compute the offset from a 2D polygon with weights.
 
     Parameters

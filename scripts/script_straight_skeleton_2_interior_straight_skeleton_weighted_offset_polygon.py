@@ -1,7 +1,7 @@
 from compas.geometry import Polygon
 from compas_viewer import Viewer
 
-from compas_cgal.straight_skeleton_2 import weighted_offset_polygons
+from compas_cgal.straight_skeleton_2 import weighted_offset_polygon
 from line_profiler import profile
 
 
@@ -25,7 +25,7 @@ def main():
     distances = [0.1, 0.3, 0.6, 0.1, 0.7, 0.5, 0.2, 0.4, 0.8, 0.2]
     weights = [1.0 / d for d in distances]
     offset = 1.0
-    offset_polygons_outer = weighted_offset_polygons(points, -offset, weights)
+    offset_polygons_outer = weighted_offset_polygon(points, -offset, weights)
 
     return offset_polygons_outer, polygon
 
