@@ -37,6 +37,4 @@ def test_pointset_outlier_removal():
     # Basic checks
     assert filtered_points.shape[0] == 4  # Should have removed one point
     assert filtered_points.shape[1] == 3  # Each point should be 3D
-    assert not np.any(
-        np.all(filtered_points == [10, 10, 10], axis=1)
-    )  # Outlier should be removed
+    assert not np.any(np.all(filtered_points == [10, 10, 10], axis=1))  # Outlier should be removed

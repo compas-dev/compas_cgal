@@ -2,9 +2,8 @@ import numpy as np
 from compas.geometry import Point
 from compas.plugins import plugin
 
-from compas_cgal.compas_cgal_ext import triangulation
 from compas_cgal.compas_cgal_ext import VectorRowMatrixXd
-
+from compas_cgal.compas_cgal_ext import triangulation
 from compas_cgal.types import FacesNumpy
 from compas_cgal.types import VerticesFacesNumpy
 
@@ -191,9 +190,7 @@ def refined_delaunay_mesh(
 
     # Handle points parameter
     if points is None:
-        points = np.zeros(
-            (0, 2), dtype=np.float64, order="C"
-        )  # 2D points for triangulation
+        points = np.zeros((0, 2), dtype=np.float64, order="C")  # 2D points for triangulation
     else:
         points = np.asarray(points, dtype=np.float64, order="C")
 

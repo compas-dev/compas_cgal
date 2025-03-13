@@ -1,8 +1,9 @@
-from compas.geometry import Point
 import numpy as np
+from compas.geometry import Point
 from compas.plugins import plugin
 
-from compas_cgal.compas_cgal_ext import measure, VectorDouble
+from compas_cgal.compas_cgal_ext import VectorDouble
+from compas_cgal.compas_cgal_ext import measure
 
 from .types import VerticesFaces
 

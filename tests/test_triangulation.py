@@ -49,9 +49,7 @@ def test_conforming_delaunay_triangulation(boundary_polygon, hole_polygons):
     assert len(F) > 0
 
     # Check that we have more vertices than the input due to conforming constraints
-    input_points = len(boundary_polygon.points) + sum(
-        len(h.points) for h in hole_polygons
-    )
+    input_points = len(boundary_polygon.points) + sum(len(h.points) for h in hole_polygons)
     assert len(V) >= input_points
 
 

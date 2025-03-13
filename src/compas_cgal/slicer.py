@@ -1,8 +1,8 @@
 import numpy as np
+from compas.geometry import Plane
 from compas.plugins import plugin
 
 from compas_cgal.compas_cgal_ext import slicer
-from compas.geometry import Plane
 
 from .types import PolylinesNumpy
 from .types import VerticesFaces

@@ -156,21 +156,34 @@ find_package(Python 3.8
 find_package(nanobind CONFIG REQUIRED)
 
 # We are now ready to compile the actual extension module
+
+# Automatically include all C++ source files from the main src directory
+# Note: Any new source files must follow nanobind type conversion guidelines
+# for proper Python/C++ type handling, especially for:
+# - Eigen::Ref for matrix passing
+# - std::tuple return types
+# - numpy array handling (float64, int32)
+# - row-major order enforcement
+# See: https://github.com/wjakob/nanobind/tree/master/tests
+#
+# Important: If you add a new .cpp file, you must rebuild the project with:
+#   pip install --no-build-isolation -ve . -Ceditable.rebuild=true
+file(GLOB CPP_SOURCES 
+    CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+)
+
+# Verify we found all expected source files and remind about type handling
+message(STATUS "Found C++ source files (ensure proper type conversion in each):")
+foreach(source ${CPP_SOURCES})
+    message(STATUS "  ${source}")
+endforeach()
+
 nanobind_add_module(
   compas_cgal_ext
   STABLE_ABI
   NB_STATIC
-  src/compas_cgal.cpp
-  src/meshing.cpp
-  src/measure.cpp
-  src/booleans.cpp
-  src/intersections.cpp
-  src/reconstruction.cpp
-  src/skeletonization.cpp
-  src/slicer.cpp
-  src/subdivision.cpp
-  src/triangulation.cpp
-  src/straight_skeleton_2.cpp
+  ${CPP_SOURCES}
 )
 
 # Set include directories for the extension
