@@ -23,7 +23,7 @@ def main():
     rotation = rotation_y * rotation_x
     scale = Scale.from_factors([5, 5, 5])
     translation = Translation.from_vector([0, 0, 2])
-    
+
     # Apply transformations to mesh
     mesh = Mesh.from_off(input_file).transformed(translation * rotation * scale)
     mesh = mesh.subdivided("loop")
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     viewer = Viewer(width=1600, height=900)
     viewer.renderer.camera.target = [0, 0, 1.5]
     viewer.renderer.camera.position = [-5, -5, 1.5]
-    
+
     # Add mesh to scene
     viewer.scene.add(mesh, opacity=0.5, show_points=False)
 

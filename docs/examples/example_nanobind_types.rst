@@ -18,5 +18,5 @@ Key Features:
    * Demonstrates both input and output matrix conversions
    * Shows in-place matrix modification patterns
 
-.. literalinclude:: example_nanobind.py
+.. literalinclude:: example_nanobind_types.py
    :language: python
