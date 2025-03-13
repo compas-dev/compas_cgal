@@ -1,9 +1,5 @@
-/**
- * @file compas_cgal.cpp
- * @brief Main module file for COMPAS CGAL bindings using Nanobind
- */
-
 #include "compas.h"
+#include "nanobind_types.h"
 
 // Forward declarations
 void init_meshing(nb::module_ &);
@@ -16,34 +12,6 @@ void init_slicer(nb::module_ &);
 void init_subdivision(nb::module_ &);
 void init_triangulation(nb::module_ &);
 void init_straight_skeleton_2(nb::module_ &);
-
-/**
- * @brief Modifies a matrix in-place by scaling all elements
- * 
- * @param mat Reference to an Eigen matrix to be modified in-place
- * @details Scales every element of the input matrix by a factor of 2.
- *          The modification is done directly on the input matrix.
- *          Uses row-major order to match NumPy's default.
- */
-void scale_matrix(Eigen::Ref<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>> mat) {
-    mat *= 2;  // Scale every element by 2 (modifies input directly)
-}
-
-/**
- * @brief Creates and returns a new 3x3 matrix with predefined values
- * 
- * @return Eigen::Matrix<double, Dynamic, Dynamic, RowMajor> A new matrix that will be automatically converted to NumPy array
- * @details Creates a 3x3 matrix with predefined double values.
- *          Uses row-major order to match NumPy's default.
- *          The matrix is automatically converted to a NumPy array by Nanobind.
- */
-Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> create_matrix() {
-    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> mat(3, 3);
-    mat << 1.1, 2.2, 3.3,
-           4.4, 5.5, 6.6,
-           7.7, 8.8, 9.9;
-    return mat;
-}
 
 /**
  * @brief Module initialization function for COMPAS CGAL extension

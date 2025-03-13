@@ -1,26 +1,21 @@
 #include "intersections.h"
 
-namespace PMP = CGAL::Polygon_mesh_processing;
-
 std::vector<compas::RowMatrixXd>
 pmp_intersection_mesh_mesh(
-    Eigen::Ref<const compas::RowMatrixXd> VA,
-    Eigen::Ref<const compas::RowMatrixXi> FA,
-    Eigen::Ref<const compas::RowMatrixXd> VB,
-    Eigen::Ref<const compas::RowMatrixXi> FB)
+    Eigen::Ref<const compas::RowMatrixXd> vertices_a,
+    Eigen::Ref<const compas::RowMatrixXi> faces_a,
+    Eigen::Ref<const compas::RowMatrixXd> vertices_b,
+    Eigen::Ref<const compas::RowMatrixXi> faces_b)
 {
-    compas::Mesh A = compas::mesh_from_vertices_and_faces(VA, FA);
-    compas::Mesh B = compas::mesh_from_vertices_and_faces(VB, FB);
+    compas::Mesh mesh_a = compas::mesh_from_vertices_and_faces(vertices_a, faces_a);
+    compas::Mesh mesh_b = compas::mesh_from_vertices_and_faces(vertices_b, faces_b);
 
     compas::Polylines polylines;
-
-    PMP::surface_intersection(A, B, std::back_inserter(polylines));
+    CGAL::Polygon_mesh_processing::surface_intersection(mesh_a, mesh_b, std::back_inserter(polylines));
 
     std::vector<compas::RowMatrixXd> result = compas::polylines_to_lists_of_points(polylines);
-
     return result;
-};
-
+}
 
 void init_intersections(nb::module_& m) {
     auto submodule = m.def_submodule("intersections");
@@ -28,10 +23,9 @@ void init_intersections(nb::module_& m) {
     submodule.def(
         "intersection_mesh_mesh",
         &pmp_intersection_mesh_mesh,
-        "Intersection from triangular mesh vertices and faces.",
-        "VA"_a,
-        "FA"_a,
-        "VB"_a,
-        "FB"_a);
-
+        "Compute intersection polylines between two triangle meshes.",
+        "vertices_a"_a,
+        "faces_a"_a,
+        "vertices_b"_a,
+        "faces_b"_a);
 }
