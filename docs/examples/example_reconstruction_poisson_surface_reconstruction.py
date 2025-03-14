@@ -12,6 +12,10 @@ from line_profiler import profile
 
 @profile
 def reconstruction_poisson_surface_reconstruction():
+    # ==============================================================================
+    # Input geometry
+    # ==============================================================================
+
     FILE = Path(__file__).parent.parent.parent / "data" / "oni.xyz"
 
     points = []
@@ -21,6 +25,10 @@ def reconstruction_poisson_surface_reconstruction():
             x, y, z, nx, ny, nz = line.strip().split()
             points.append([float(x), float(y), float(z)])
             normals.append([float(nx), float(ny), float(nz)])
+
+    # ==============================================================================
+    # Compute
+    # ==============================================================================
 
     V, F = poisson_surface_reconstruction(points, normals)
     mesh = Mesh.from_vertices_and_faces(V, F)
@@ -37,9 +45,13 @@ def reconstruction_poisson_surface_reconstruction():
     return points, mesh
 
 
-if __name__ == "__main__":
-    points, mesh = reconstruction_poisson_surface_reconstruction()
-    viewer = Viewer(width=1600, height=900)
-    viewer.scene.add(points, pointsize=10, pointcolor=(255, 0, 0))
-    viewer.scene.add(mesh, show_points=False)
-    viewer.show()
+points, mesh = reconstruction_poisson_surface_reconstruction()
+
+# ==============================================================================
+# Visualize
+# ==============================================================================
+
+viewer = Viewer()
+viewer.scene.add(points, pointsize=10, pointcolor=(255, 0, 0))
+viewer.scene.add(mesh, show_points=False)
+viewer.show()

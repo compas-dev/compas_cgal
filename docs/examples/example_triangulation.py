@@ -47,19 +47,18 @@ def main():
     return cdt, rdm
 
 
-if __name__ == "__main__":
-    cdt, rdm = main()
+cdt, rdm = main()
 
-    # ==============================================================================
-    # Viz
-    # ==============================================================================
+# ==============================================================================
+# Visualize
+# ==============================================================================
 
-    viewer = Viewer(width=1600, height=900)
+viewer = Viewer()
 
-    viewer.renderer.camera.target = [0, 0, 0]
-    viewer.renderer.camera.position = [0, -1, 13]
+viewer.renderer.camera.target = [0, 0, 0]
+viewer.renderer.camera.position = [0, -1, 13]
 
-    viewer.scene.add(cdt.transformed(Translation.from_vector([-5, 0, 0])))
-    viewer.scene.add(rdm.transformed(Translation.from_vector([+5, 0, 0])))
+viewer.scene.add(cdt.transformed(Translation.from_vector([-5, 0, 0])))
+viewer.scene.add(rdm.transformed(Translation.from_vector([+5, 0, 0])))
 
-    viewer.show()
+viewer.show()

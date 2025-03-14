@@ -13,11 +13,19 @@ from compas_viewer.config import Config
 
 @profile
 def main():
+    # ==============================================================================
+    # Input geometry
+    # ==============================================================================
+
     # Get Mesh from STL
     FILE = Path(__file__).parent.parent.parent / "data" / "3DBenchy.stl"
     benchy = Mesh.from_stl(FILE)
 
     V, F = benchy.to_vertices_and_faces()
+
+    # ==============================================================================
+    # Create slicing planes
+    # ==============================================================================
 
     # Get Slice planes from the bounding box
     bbox = benchy.aabb()
@@ -26,6 +34,10 @@ def main():
     for i in np.linspace(bbox.zmin, bbox.zmax, 50):
         plane = Plane(Point(0, 0, i), normal)
         planes.append(plane)
+
+    # ==============================================================================
+    # Compute
+    # ==============================================================================
 
     # Slice
     slicer_polylines = slice_mesh((V, F), planes)
@@ -41,19 +53,21 @@ def main():
     return benchy, polylines
 
 
-if __name__ == "__main__":
-    mesh, polylines = main()
+mesh, polylines = main()
 
-    # =============================================================================
-    # Viz
-    # =============================================================================
-    config = Config()
-    config.camera.target = [0, 100, 0]
-    config.camera.position = [0, -75, 50]
-    config.camera.scale = 10
-    viewer = Viewer(config=config)
-    viewer.scene.add(mesh, opacity=0.5, show_lines=False, show_points=False)
-    for polyline in polylines:
-        viewer.scene.add(polyline, linewidth=2, show_points=False)
+# ==============================================================================
+# Visualize
+# ==============================================================================
 
-    viewer.show()
+config = Config()
+config.camera.target = [0, 100, 0]
+config.camera.position = [0, -75, 50]
+config.camera.scale = 10
+
+viewer = Viewer(config=config)
+
+viewer.scene.add(mesh, opacity=0.5, show_lines=False, show_points=False)
+for polyline in polylines:
+    viewer.scene.add(polyline, linewidth=2, show_points=False)
+
+viewer.show()

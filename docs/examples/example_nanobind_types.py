@@ -25,14 +25,13 @@ def create_matrix_binding() -> np.ndarray:
     return mat
 
 
-if __name__ == "__main__":
-    m = np.array(
-        [[1.1, 2.2, 3.3], [4.4, 5.5, 6.6], [7.7, 8.8, 9.9]],
-        dtype=np.float64,
-        order="C",  # C-style, row-major order to match Eigen::RowMajor
-    )
+m = np.array(
+    [[1.1, 2.2, 3.3], [4.4, 5.5, 6.6], [7.7, 8.8, 9.9]],
+    dtype=np.float64,
+    order="C",  # C-style, row-major order to match Eigen::RowMajor
+)
 
-    print("Sum of 1 and 2 is:\n", add_binding(1, 2), "\n")
-    print("Input matrix:\n", m)
-    print("Scaled matrix:\n", scale_matrix_binding(m), "\n")
-    print("Created matrix:\n", create_matrix_binding(), "\n")
+print("Sum of 1 and 2 is:\n", add_binding(1, 2), "\n")
+print("Input matrix:\n", m)
+print("Scaled matrix:\n", scale_matrix_binding(m), "\n")
+print("Created matrix:\n", create_matrix_binding(), "\n")

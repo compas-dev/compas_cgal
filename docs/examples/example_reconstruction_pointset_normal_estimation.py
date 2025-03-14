@@ -12,11 +12,19 @@ from line_profiler import profile
 
 @profile
 def reconstruction_pointset_normal_estimation():
+    # ==============================================================================
+    # Input geometry
+    # ==============================================================================
+
     FILE = Path(__file__).parent.parent.parent / "data" / "forked_branch_1.ply"
 
     cloud = Pointcloud.from_ply(FILE)
     reduced_cloud = Pointcloud(pointset_reduction(cloud, 10))
     points, vectors = pointset_normal_estimation(reduced_cloud, 16, True)
+
+    # ==============================================================================
+    # Compute
+    # ==============================================================================
 
     lines = []
     line_scale = 10
@@ -35,14 +43,18 @@ def reconstruction_pointset_normal_estimation():
     return lines
 
 
-if __name__ == "__main__":
-    lines = reconstruction_pointset_normal_estimation()
+lines = reconstruction_pointset_normal_estimation()
 
-    config = Config()
-    config.camera.target = [600, 500, 200]
-    config.camera.position = [600, -1000, 1500]
-    config.camera.scale = 100
-    config.renderer.gridsize = (20000, 20, 20000, 20)
-    viewer = Viewer(config=config)
-    viewer.scene.add(Collection(lines))
-    viewer.show()
+# ==============================================================================
+# Visualize
+# ==============================================================================
+
+config = Config()
+config.camera.target = [600, 500, 200]
+config.camera.position = [600, -1000, 1500]
+config.camera.scale = 100
+config.renderer.gridsize = (20000, 20, 20000, 20)
+
+viewer = Viewer(config=config)
+viewer.scene.add(Collection(lines))
+viewer.show()

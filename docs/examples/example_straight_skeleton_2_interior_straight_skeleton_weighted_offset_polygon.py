@@ -29,18 +29,17 @@ def main():
     return offset_polygons_outer, polygon
 
 
-if __name__ == "__main__":
-    offset_polygons_outer, polygon = main()
+offset_polygons_outer, polygon = main()
 
-    # ==============================================================================
-    # Viz
-    # ==============================================================================
+# ==============================================================================
+# Visualize
+# ==============================================================================
 
-    viewer = Viewer(width=1600, height=900)
-    viewer.scene.add(polygon)
-    viewer.config.renderer.show_grid = False
+viewer = Viewer()
+viewer.scene.add(polygon)
+viewer.config.renderer.show_grid = False
 
-    for opolygon in offset_polygons_outer:
-        viewer.scene.add(opolygon, linecolor=(0.0, 0.0, 1.0), facecolor=(1.0, 1.0, 1.0, 0.0))
+for opolygon in offset_polygons_outer:
+    viewer.scene.add(opolygon, linecolor=(0.0, 0.0, 1.0), facecolor=(1.0, 1.0, 1.0, 0.0))
 
-    viewer.show()
+viewer.show()

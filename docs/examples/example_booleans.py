@@ -1,4 +1,3 @@
-from os import name
 from compas.geometry import Box
 from compas.geometry import Polyhedron
 from compas.geometry import Sphere
@@ -73,24 +72,24 @@ def main():
     return difference, intersection, union, splits
 
 
-if __name__ == "__main__":
-    difference, intersection, union, splits = main()
+difference, intersection, union, splits = main()
 
-    # ==============================================================================
-    # Visualize
-    # ==============================================================================
 
-    viewer = Viewer()
+# ==============================================================================
+# Visualize
+# ==============================================================================
 
-    difference.transform(Translation.from_vector([-6, 0, 0]))
-    intersection.transform(Translation.from_vector([-2, 0, 0]))
-    union.transform(Translation.from_vector([2, 0, 0]))
-    for m in splits:
-        m.transform(Translation.from_vector([6, 0, 0]))
+viewer = Viewer()
 
-    viewer.scene.add(difference, lineswidth=1, show_points=False)
-    viewer.scene.add(intersection, lineswidth=1, show_points=False)
-    viewer.scene.add(union, lineswidth=1, show_points=False)
-    viewer.scene.add(splits, lineswidth=1, show_points=False)
+difference.transform(Translation.from_vector([-6, 0, 0]))
+intersection.transform(Translation.from_vector([-2, 0, 0]))
+union.transform(Translation.from_vector([2, 0, 0]))
+for m in splits:
+    m.transform(Translation.from_vector([6, 0, 0]))
 
-    viewer.show()
+viewer.scene.add(difference, lineswidth=1, show_points=False)
+viewer.scene.add(intersection, lineswidth=1, show_points=False)
+viewer.scene.add(union, lineswidth=1, show_points=False)
+viewer.scene.add(splits, lineswidth=1, show_points=False)
+
+viewer.show()

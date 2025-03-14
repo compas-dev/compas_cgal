@@ -15,7 +15,7 @@ from compas_cgal.meshing import mesh_remesh
 
 @profile
 def main():
-    """Resmesh a bunny mesh that is loaded from .ply file."""
+    """Remesh a bunny mesh that is loaded from .ply file."""
 
     FILE = Path(__file__).parent.parent.parent / "data" / "Bunny.ply"
 
@@ -31,7 +31,8 @@ def main():
     # Move the bunny to the origin and rotate it upright.
     # ==============================================================================
 
-    centroid = bunny.centroid()
+    centroid = bunny.vertex_point(0)
+
     vector = scale_vector(centroid, -1)
 
     T = Translation.from_vector(vector)
@@ -50,19 +51,19 @@ def main():
     return bunny, mesh
 
 
-if __name__ == "__main__":
-    bunny, mesh = main()
+bunny, mesh = main()
 
-    # ==============================================================================
-    # Visualize
-    # ==============================================================================
 
-    viewer = Viewer(width=1600, height=900)
+# ==============================================================================
+# Visualize
+# ==============================================================================
 
-    viewer.renderer.camera.target = [0, 0, 0]
-    viewer.renderer.camera.position = [0, -25, 10]
+viewer = Viewer(width=1600, height=900)
 
-    viewer.scene.add(bunny.transformed(Translation.from_vector([-10, 0, 0])), show_points=False)
-    viewer.scene.add(mesh.transformed(Translation.from_vector([+10, 0, 0])), show_points=False)
+viewer.renderer.camera.target = [0, 0, 0]
+viewer.renderer.camera.position = [0, -25, 10]
 
-    viewer.show()
+viewer.scene.add(bunny.transformed(Translation.from_vector([-10, 0, 0])), show_points=False)
+viewer.scene.add(mesh.transformed(Translation.from_vector([+10, 0, 0])), show_points=False)
+
+viewer.show()
