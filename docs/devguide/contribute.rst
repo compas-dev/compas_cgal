@@ -19,7 +19,6 @@ Create and switch to a development branch:
     git branch <branch_name>
     git checkout <branch_name>
 
-********************************************************************************
 
 Binding Process
 ===============
@@ -121,7 +120,6 @@ After creating new source files, you must rebuild the project with:
     pip install --no-build-isolation -ve .
 
 
-********************************************************************************
 
 Document, Test, and Format
 ==========================
@@ -178,7 +176,6 @@ Run the formatter to ensure consistent code style:
     invoke lint
 
 
-********************************************************************************
 
 GitHub Pull Request
 ===================
