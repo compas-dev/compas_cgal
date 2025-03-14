@@ -91,6 +91,10 @@ coverage.xml
 # Documentation
 docs/_build/
 /site
+generated/
+docs/api/**
+!docs/api/*.rst
+!docs/api/*.py
 
 # COMPAS CGAL specific
 *.3dmbak
@@ -98,7 +102,6 @@ docs/_build/
 *.rhl
 *.rui_bak
 temp/
-generated/
 recipe/**
 !recipe/sha256.py
 
