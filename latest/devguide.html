@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script src="_static/documentation_options.js?v=bb99e320"></script>
-    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=f281be69"></script>
@@ -59,7 +59,7 @@
         </script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="License" href="license.html" />
+    <link rel="next" title="Overview" href="devguide/overview.html" />
     <link rel="prev" title="PolylinesNumpy" href="api/generated/compas_cgal.types.PolylinesNumpy.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -309,10 +309,6 @@ document.write(`
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary">
-      <span class="fa-solid fa-outdent"></span>
-    </label>
-  
 </div>
 
     </nav>
@@ -480,21 +476,24 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="index.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="examples.html">Examples</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="examples/booleans.html">Boolean operations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/intersections.html">Mesh intersections</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/mesh_split.html">Mesh Split</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/pointset_reduction.html">Pointset Reduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/pointsets.html">Pointset Outlier Removal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/pointsets_normals.html">Pointset Normal Estimation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/pointsets_smoothing.html">Pointset Smoothing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/polygonal_poinset_reconstruction.html">Polygonal PointSet Reconstruction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/reconstruction.html">Poisson Surface Reconstruction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/remeshing.html">Remeshing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/skeletonization.html">Triangle Mesh Skeletonization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/slicer.html">Mesh slicing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/straight_skeleton_2.html">2D Straight Skeleton</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/subd.html">Mesh Subdivision</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/triangulation.html">Triangulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/example_booleans.html">Boolean Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/example_intersections.html">Mesh Intersections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/example_measure.html">Mesh Measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/example_meshing.html">Mesh Remeshing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/example_nanobind_types.html">Type Conversion with Nanobind</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/example_reconstruction_pointset_normal_estimation.html">Point Cloud Normal Estimation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/example_reconstruction_pointset_outlier_removal.html">Point Cloud Outlier Removal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/example_reconstruction_pointset_reduction.html">Point Cloud Reduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/example_reconstruction_pointset_smoothing.html">Point Cloud Smoothing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/example_reconstruction_poisson_surface_reconstruction.html">Poisson Surface Reconstruction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/example_skeletonization.html">Mesh Skeletonization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/example_slicer.html">Mesh Slicing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/example_straight_skeleton_2_interior_straight_skeleton.html">Interior Straight Skeleton</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/example_straight_skeleton_2_interior_straight_skeleton_offset_polygon.html">Polygon Offsetting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/example_straight_skeleton_2_interior_straight_skeleton_weighted_offset_polygon.html">Weighted Polygon Offsetting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/example_straight_skeleton_2_interior_straight_skeleton_with_holes.html">Straight Skeleton with Holes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/example_subdivision.html">Mesh Subdivision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/example_triangulation.html">Mesh Triangulation</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="api.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -511,7 +510,16 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="api/compas_cgal.types.html">compas_cgal.types</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Development Guide</a></li>
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Development Guide</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="devguide/overview.html">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devguide/compiler.html">Compiler Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devguide/conda_environment.html">Conda Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devguide/contribute.html">Contribute</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devguide/cmake_configuration.html">CMake Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devguide/types.html">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devguide/style.html">Style</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="acknowledgements.html">Acknowledgements</a></li>
 </ul>
@@ -576,141 +584,17 @@ document.write(`
                   
   <section id="development-guide">
 <span id="devguide"></span><h1>Development Guide</h1>
-<section id="environment">
-<h2>Environment</h2>
-<p>To set up a local development environment, start by cloning the <code class="xref py py-mod docutils literal notranslate"><span class="pre">compas_cgal</span></code> repo.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/compas-dev/compas_cgal
-</pre></div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="devguide/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devguide/compiler.html">Compiler Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devguide/conda_environment.html">Conda Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devguide/contribute.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devguide/cmake_configuration.html">CMake Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devguide/types.html">Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devguide/style.html">Style</a></li>
+</ul>
 </div>
-<p>Then, create an environment with all requirements using the provided environment file.
-The requirements are slightly different on Windows…</p>
-<div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" for="sd-tab-item-0">
-OSX</label><div class="sd-tab-content docutils">
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>compas_cgal
-conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>env_osx.yml
-</pre></div>
-</div>
-</div>
-<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" for="sd-tab-item-1">
-Windows</label><div class="sd-tab-content docutils">
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>compas_cgal
-conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>env_win.yml
-</pre></div>
-</div>
-</div>
-</div>
-<p>Note, that this will immediately also build <code class="xref py py-mod docutils literal notranslate"><span class="pre">compas_cgal</span></code> for your system.</p>
-</section>
-<section id="build">
-<h2>Build</h2>
-<p>To manually build the extension modules,
-for example after making changes to one of the extension modules or adding a new one,
-simply run the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> file trough a local source install.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
-</pre></div>
-</div>
-</section>
-<section id="extension-modules">
-<h2>Extension modules</h2>
-<p>To control which extension modules are built,
-modify the list of extension modules in the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> file,
-and the corresponding declaration and initialisation of modules in <code class="docutils literal notranslate"><span class="pre">src/compas_cgal.cpp</span></code>.
-<code class="docutils literal notranslate"><span class="pre">src/compas_cgal.cpp</span></code> is the entry point for all extension modules.
-<code class="docutils literal notranslate"><span class="pre">src/compas.cpp</span></code> defines common functionality for all extension modules.
-They should not be removed.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># setup.py</span>
-
-<span class="n">ext_modules</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">Extension</span><span class="p">(</span>
-        <span class="s1">&#39;compas_cgal._cgal&#39;</span><span class="p">,</span>
-        <span class="nb">sorted</span><span class="p">([</span>
-            <span class="s1">&#39;src/compas_cgal.cpp&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;src/compas.cpp&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;src/meshing.cpp&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;src/booleans.cpp&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;src/slicer.cpp&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;src/intersections.cpp&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;src/measure.cpp&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;src/triangulations.cpp&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;src/subdivision.cpp&#39;</span><span class="p">,</span>
-        <span class="p">]),</span>
-        <span class="n">include_dirs</span><span class="o">=</span><span class="p">[</span>
-            <span class="s1">&#39;./include&#39;</span><span class="p">,</span>
-            <span class="n">get_eigen_include</span><span class="p">(),</span>
-            <span class="n">get_pybind_include</span><span class="p">()</span>
-        <span class="p">],</span>
-        <span class="n">library_dirs</span><span class="o">=</span><span class="p">[</span>
-            <span class="n">get_library_dirs</span><span class="p">(),</span>
-        <span class="p">],</span>
-        <span class="n">libraries</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mpfr&#39;</span><span class="p">,</span> <span class="s1">&#39;gmp&#39;</span><span class="p">],</span>
-        <span class="n">language</span><span class="o">=</span><span class="s1">&#39;c++&#39;</span>
-    <span class="p">),</span>
-<span class="p">]</span>
-</pre></div>
-</div>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// src/compas_cgal.cpp</span>
-
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;pybind11/pybind11.h&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;compas.h&gt;</span>
-
-
-<span class="c1">// here all modules of &quot;_cgal&quot; are declared.</span>
-<span class="kt">void</span><span class="w"> </span><span class="nf">init_meshing</span><span class="p">(</span><span class="n">pybind11</span><span class="o">::</span><span class="k">module</span><span class="o">&amp;</span><span class="p">);</span>
-<span class="kt">void</span><span class="w"> </span><span class="nf">init_booleans</span><span class="p">(</span><span class="n">pybind11</span><span class="o">::</span><span class="k">module</span><span class="o">&amp;</span><span class="p">);</span>
-<span class="kt">void</span><span class="w"> </span><span class="nf">init_slicer</span><span class="p">(</span><span class="n">pybind11</span><span class="o">::</span><span class="k">module</span><span class="o">&amp;</span><span class="p">);</span>
-<span class="kt">void</span><span class="w"> </span><span class="nf">init_intersections</span><span class="p">(</span><span class="n">pybind11</span><span class="o">::</span><span class="k">module</span><span class="o">&amp;</span><span class="p">);</span>
-<span class="kt">void</span><span class="w"> </span><span class="nf">init_measure</span><span class="p">(</span><span class="n">pybind11</span><span class="o">::</span><span class="k">module</span><span class="o">&amp;</span><span class="p">);</span>
-<span class="kt">void</span><span class="w"> </span><span class="nf">init_triangulations</span><span class="p">(</span><span class="n">pybind11</span><span class="o">::</span><span class="k">module</span><span class="o">&amp;</span><span class="p">);</span>
-<span class="kt">void</span><span class="w"> </span><span class="nf">init_subdivision</span><span class="p">(</span><span class="n">pybind11</span><span class="o">::</span><span class="k">module</span><span class="o">&amp;</span><span class="p">);</span>
-
-
-<span class="c1">// the first parameter here (&quot;_cgal&quot;) will be the name of the &quot;so&quot; or &quot;pyd&quot; file that will be produced by PyBind11</span>
-<span class="c1">// which is the entry point from where all other modules will be accessible.</span>
-<span class="n">PYBIND11_MODULE</span><span class="p">(</span><span class="n">_cgal</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">m</span><span class="p">.</span><span class="n">doc</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span>
-
-<span class="w">    </span><span class="c1">// register Result as a Python class</span>
-<span class="w">    </span><span class="n">pybind11</span><span class="o">::</span><span class="n">class_</span><span class="o">&lt;</span><span class="n">compas</span><span class="o">::</span><span class="n">Result</span><span class="o">&gt;</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Result&quot;</span><span class="p">)</span>
-<span class="w">        </span><span class="p">.</span><span class="n">def_readonly</span><span class="p">(</span><span class="s">&quot;vertices&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">compas</span><span class="o">::</span><span class="n">Result</span><span class="o">::</span><span class="n">vertices</span><span class="p">)</span>
-<span class="w">        </span><span class="p">.</span><span class="n">def_readonly</span><span class="p">(</span><span class="s">&quot;faces&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">compas</span><span class="o">::</span><span class="n">Result</span><span class="o">::</span><span class="n">faces</span><span class="p">);</span>
-
-<span class="w">    </span><span class="c1">// here all modules of &quot;_cgal&quot; are initializied.</span>
-<span class="w">    </span><span class="n">init_meshing</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
-<span class="w">    </span><span class="n">init_booleans</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
-<span class="w">    </span><span class="n">init_slicer</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
-<span class="w">    </span><span class="n">init_intersections</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
-<span class="w">    </span><span class="n">init_measure</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
-<span class="w">    </span><span class="n">init_triangulations</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
-<span class="w">    </span><span class="n">init_subdivision</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</section>
-<section id="example">
-<h2>Example</h2>
-<p>Coming soon!</p>
-</section>
-<section id="include-path">
-<h2>Include Path</h2>
-<p>To avoid having VS Code complain about missing includes, add the following to <code class="docutils literal notranslate"><span class="pre">.vscode/c_cpp_properties.json</span></code>.</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;configurations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;includePath&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                </span><span class="s2">&quot;${workspaceFolder}/**&quot;</span><span class="p">,</span>
-<span class="w">                </span><span class="s2">&quot;/path/to/(mini)conda/envs/cgal-dev/include&quot;</span><span class="p">,</span>
-<span class="w">                </span><span class="s2">&quot;/path/to/(mini)conda/envs/cgal-dev/include/python3.9&quot;</span><span class="p">,</span>
-<span class="w">                </span><span class="s2">&quot;/path/to/(mini)conda/envs/cgal-dev/include/eigen3&quot;</span>
-<span class="w">            </span><span class="p">]</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>Replace <code class="docutils literal notranslate"><span class="pre">/path/to/(mini)conda</span></code> with the actual path to your (mini)conda installation.</p>
-</section>
 </section>
 
 
@@ -725,24 +609,6 @@ They should not be removed.</p>
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#environment">Environment</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build">Build</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extension-modules">Extension modules</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example">Example</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#include-path">Include Path</a></li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>
@@ -774,7 +640,7 @@ They should not be removed.</p>
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
     <br/>
   </p>
 </div>
