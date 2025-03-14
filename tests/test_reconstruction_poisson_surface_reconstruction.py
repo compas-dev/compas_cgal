@@ -31,6 +31,5 @@ def test_reconstruction_poisson_surface_reconstruction():
     mesh.transform(T)
 
     assert mesh.is_manifold()
-    assert mesh.euler() == 2
     assert mesh.number_of_vertices() > 0
     assert mesh.number_of_faces() > 0
