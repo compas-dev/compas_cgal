@@ -9,4 +9,4 @@ dependencies:
   - pip
   - pip:
     - -r requirements-dev.txt
-    - --no-build-isolation -e . -Ceditable.rebuild=true
+    - -e .

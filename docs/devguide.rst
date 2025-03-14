@@ -8,6 +8,7 @@ Development Guide
     :maxdepth: 1
 
     devguide/overview
+    devguide/compiler
     devguide/conda_environment
     devguide/contribute
     devguide/cmake_configuration

@@ -1,3 +1,4 @@
+compas
 pytest>=7.0.0
 pytest-cov>=4.0.0
 line_profiler>=4.0.0
