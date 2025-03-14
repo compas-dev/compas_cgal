@@ -1,15 +1,14 @@
-# Byte-compiled / optimized / DLL files
+# Python bytecode and cache
 __pycache__/
+**/__pycache__/
 *.py[cod]
 *$py.class
 
-# C extensions
-*.so
-
-# Distribution / packaging
+# Distribution and packaging
 .Python
-env/
 build/
+_build/
+**/build/
 develop-eggs/
 dist/
 downloads/
@@ -20,22 +19,62 @@ lib64/
 parts/
 sdist/
 var/
-#wheels/
 *.egg-info/
 .installed.cfg
 *.egg
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+# External dependencies
+ext/**
+external/
+**/external/
+
+# IDE and editor settings
+.vscode/
+.vs/
+.idea/
+*.suo
+*.user
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+ipch/
+.spyderproject
+.spyproject
+.ropeproject
+scripts/.idea/**
+
+# Compiled files and binaries
+*.pyd
+*.so
+*.dll
+*.exe
+*.obj
+*.pdb
+*.ilk
+*.exp
+*.lib
+*.lprof
 *.manifest
 *.spec
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+# CMake generated
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+compile_commands.json
+CTestTestfile.cmake
+Testing/
+_deps/
 
-# Unit test / coverage reports
+# Virtual environments
+.env
+.venv
+venv/
+ENV/
+.python-version
+
+# Testing and coverage
 htmlcov/
 .tox/
 .coverage
@@ -45,90 +84,41 @@ nosetests.xml
 coverage.xml
 *.cover
 .hypothesis/
-
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-*.log
-local_settings.py
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-target/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# pyenv
-.python-version
-
-# celery beat schedule file
-celerybeat-schedule
-
-# SageMath parsed files
-*.sage.py
-
-# dotenv
-.env
-
-# virtualenv
-.venv
-venv/
-ENV/
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
+.pytest_cache/
+.ruff_cache/
 .mypy_cache/
 
-# ==============================================================================
-# COMPAS CGAL
-# ==============================================================================
+# Documentation
+docs/_build/
+/site
+generated/
+docs/api/**
+!docs/api/*.rst
+!docs/api/*.py
 
+# COMPAS CGAL specific
 *.3dmbak
+*.3dm
 *.rhl
 *.rui_bak
-*.so
-
-temp
-
-.DS_Store
-
-.vscode/**
-.idea/**
-
-ext/**
-
-dist/**
-
-scripts/.idea/**
-
-generated
-
-*.3dm
-
+temp/
 recipe/**
 !recipe/sha256.py
 
-.pytest_cache
-.ruff_cache
-.vscode
+# Logs and temporary files
+*.log
+pip-log.txt
+pip-delete-this-directory.txt
+local_settings.py
+celerybeat-schedule
+
+# Other
+*.mo
+*.pot
+*.sage.py
+instance/
+.webassets-cache
+.scrapy
+.DS_Store
+Thumbs.db
+.ipynb_checkpoints

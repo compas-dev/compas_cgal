@@ -1,0 +1,12 @@
+name: compas_cgal
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9
+  - compas
+  - cmake
+  - pip
+  - pip:
+    - -r requirements-dev.txt
+    - -e .

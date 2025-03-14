@@ -1,1 +1,2 @@
-compas >=2.0
+line_profiler
+compas_viewer

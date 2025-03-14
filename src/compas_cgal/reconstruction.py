@@ -5,7 +5,7 @@ import numpy as np
 from compas.geometry import Point
 from compas.geometry import Vector
 
-from compas_cgal._cgal import reconstruction
+from compas_cgal.compas_cgal_ext import reconstruction
 
 from .types import FloatNx3
 from .types import IntNx3
@@ -29,11 +29,46 @@ def poisson_surface_reconstruction(
     tuple of :class:`numpy.ndarray`
         The vertices and faces of the reconstructed surface.
 
-    """
+    Raises
+    ------
+    ValueError
+        If points or normals are not 3D
+        If number of points and normals don't match
+        If less than 3 points are provided
+        If points are not well-distributed for reconstruction
+    RuntimeError
+        If the reconstruction algorithm fails
 
-    P = np.asarray(points, dtype=np.float64)
-    N = np.asarray(normals, dtype=np.float64)
-    return reconstruction.poisson_surface_reconstruction(P, N)
+    Notes
+    -----
+    The Poisson surface reconstruction algorithm requires:
+    1. A sufficiently dense point cloud
+    2. Well-oriented normals
+    3. Points distributed across a meaningful surface
+    """
+    # Convert input to numpy arrays with proper type and memory layout
+    P = np.asarray(points, dtype=np.float64, order="C")
+    N = np.asarray(normals, dtype=np.float64, order="C")
+
+    # Input validation
+    if P.ndim != 2 or P.shape[1] != 3:
+        raise ValueError("Points must be an Nx3 array")
+    if N.ndim != 2 or N.shape[1] != 3:
+        raise ValueError("Normals must be an Nx3 array")
+    if P.shape[0] != N.shape[0]:
+        raise ValueError("Number of points and normals must match")
+    if len(P) < 3:
+        raise ValueError("At least 3 points are required")
+
+    # Ensure normals are unit vectors
+    norms = np.linalg.norm(N, axis=1)
+    if not np.allclose(norms, 1.0):
+        N = N / norms[:, np.newaxis]
+
+    try:
+        return reconstruction.poisson_surface_reconstruction(P, N)
+    except RuntimeError as e:
+        raise RuntimeError(f"Poisson surface reconstruction failed: {str(e)}")
 
 
 def pointset_outlier_removal(
@@ -58,7 +93,7 @@ def pointset_outlier_removal(
         The points of the point cloud without outliers.
 
     """
-    P = np.asarray(points, dtype=np.float64)
+    P = np.asarray(points, dtype=np.float64, order="C")
     return reconstruction.pointset_outlier_removal(P, nnnbrs, radius)
 
 
@@ -81,7 +116,7 @@ def pointset_reduction(
         The vectors of the point cloud.
 
     """
-    P = np.asarray(points, dtype=np.float64)
+    P = np.asarray(points, dtype=np.float64, order="C")
     return reconstruction.pointset_reduction(P, spacing)
 
 
@@ -105,7 +140,7 @@ def pointset_smoothing(
         The vectors of the point cloud.
 
     """
-    P = np.asarray(points, dtype=np.float64)
+    P = np.asarray(points, dtype=np.float64, order="C")
     return reconstruction.pointset_smoothing(P, neighbors, iterations)
 
 
@@ -131,5 +166,5 @@ def pointset_normal_estimation(
         The vectors of the point cloud.
 
     """
-    P = np.asarray(points, dtype=np.float64)
+    P = np.asarray(points, dtype=np.float64, order="C")
     return reconstruction.pointset_normal_estimation(P, neighbors, erase)

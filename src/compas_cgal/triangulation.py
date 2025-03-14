@@ -2,13 +2,13 @@ import numpy as np
 from compas.geometry import Point
 from compas.plugins import plugin
 
-from compas_cgal._cgal import triangulations
+from compas_cgal.compas_cgal_ext import VectorRowMatrixXd
+from compas_cgal.compas_cgal_ext import triangulation
+from compas_cgal.types import FacesNumpy
+from compas_cgal.types import VerticesFacesNumpy
 
-from .types import FacesNumpy
-from .types import VerticesFacesNumpy
 
-
-@plugin(category="traingulation", requires=["compas_cgal"])
+@plugin(category="triangulation", requires=["compas_cgal"])
 def delaunay_triangulation(points: list[Point]) -> FacesNumpy:
     """Construct a Delaunay triangulation from a set of points.
 
@@ -34,8 +34,8 @@ def delaunay_triangulation(points: list[Point]) -> FacesNumpy:
     >>> mesh = Mesh.from_vertices_and_faces(points, triangles)
 
     """
-    vertices = np.asarray(points, dtype=np.float64)
-    return triangulations.delaunay_triangulation(vertices)
+    vertices = np.asarray(points, dtype=np.float64, order="C")
+    return triangulation.delaunay_triangulation(vertices)
 
 
 @plugin(category="triangulation", requires=["compas_cgal"])
@@ -66,19 +66,27 @@ def constrained_delaunay_triangulation(
     boundary = np.asarray(boundary, dtype=np.float64)
 
     points = points or []
-    points = np.asarray(points, dtype=np.float64)
+    points = np.asarray(points, dtype=np.float64, order="C")
 
+    holes_vector = VectorRowMatrixXd()
     if holes:
-        holes = [np.asarray(hole, dtype=np.float64) for hole in holes]
-    else:
-        holes = []
+        for hole in holes:
+            hole_array = np.asarray(hole, dtype=np.float64, order="C")
+            holes_vector.append(hole_array)
 
+    curves_vector = VectorRowMatrixXd()
     if curves:
-        curves = [np.asarray(curve, dtype=np.float64) for curve in curves]
-    else:
-        curves = []
+        for curve in curves:
+            curve_array = np.asarray(curve, dtype=np.float64, order="C")
+            curves_vector.append(curve_array)
 
-    return triangulations.constrained_delaunay_triangulation(boundary, points, holes, curves, is_conforming=False)
+    return triangulation.constrained_delaunay_triangulation(
+        boundary,  # numpy array
+        points,  # numpy array
+        holes_vector,  # VectorRowMatrixXd
+        curves_vector,  # VectorRowMatrixXd
+        False,  # is_conforming=False
+    )
 
 
 @plugin(category="triangulation", requires=["compas_cgal"])
@@ -106,22 +114,42 @@ def conforming_delaunay_triangulation(
     :attr:`compas_cgal.types.VerticesFacesNumpy`
 
     """
-    boundary = np.asarray(boundary, dtype=np.float64)
+    # Convert boundary to numpy array
+    boundary = np.asarray(boundary, dtype=np.float64, order="C")
 
-    points = points or []
-    points = np.asarray(points, dtype=np.float64)
-
-    if holes:
-        holes = [np.asarray(hole, dtype=np.float64) for hole in holes]
+    # Handle points parameter
+    if points is None:
+        points = np.zeros((0, 3), dtype=np.float64, order="C")
     else:
-        holes = []
+        points = np.asarray(points, dtype=np.float64, order="C")
+
+    # Convert holes to numpy arrays and create vector
+    holes_vector = VectorRowMatrixXd()
+    if holes:
+        for hole in holes:
+            if len(hole) < 3:
+                continue
+            hole_array = np.asarray(hole, dtype=np.float64, order="C")
+            holes_vector.append(hole_array)
+
+    # Create empty vector for curves
+    curves_vector = VectorRowMatrixXd()
 
     if curves:
-        curves = [np.asarray(curve, dtype=np.float64) for curve in curves]
-    else:
-        curves = []
+        for curve in curves:
+            curve_array = np.asarray(curve, dtype=np.float64, order="C")
+            curves_vector.append(curve_array)
 
-    return triangulations.constrained_delaunay_triangulation(boundary, points, holes, curves, is_conforming=True)
+    # Call C++ function with all required arguments
+    result = triangulation.constrained_delaunay_triangulation(
+        boundary,  # numpy array
+        points,  # numpy array
+        holes_vector,  # VectorRefRowMatrixXd
+        curves_vector,  # VectorRefRowMatrixXd
+        True,  # is_conforming=True
+    )
+
+    return result
 
 
 def refined_delaunay_mesh(
@@ -158,21 +186,38 @@ def refined_delaunay_mesh(
     .. [1] https://doc.cgal.org/latest/Mesh_2/index.html#secMesh_2_meshes
 
     """
-    boundary = np.asarray(boundary, dtype=np.float64)
+    boundary = np.asarray(boundary, dtype=np.float64, order="C")
 
-    points = points or []
-    points = np.asarray(points, dtype=np.float64)
+    # Handle points parameter
+    if points is None:
+        points = np.zeros((0, 2), dtype=np.float64, order="C")  # 2D points for triangulation
+    else:
+        points = np.asarray(points, dtype=np.float64, order="C")
 
+    # Create vectors for holes and curves with proper type conversion
+    holes_vector = VectorRowMatrixXd()
     if holes:
-        holes = [np.asarray(hole, dtype=np.float64) for hole in holes]
-    else:
-        holes = []
+        for hole in holes:
+            if len(hole) < 3:
+                continue
+            hole_array = np.asarray(hole, dtype=np.float64, order="C")
+            holes_vector.append(hole_array)
 
+    curves_vector = VectorRowMatrixXd()
     if curves:
-        curves = [np.asarray(curve, dtype=np.float64) for curve in curves]
-    else:
-        curves = []
+        for curve in curves:
+            curve_array = np.asarray(curve, dtype=np.float64, order="C")
+            curves_vector.append(curve_array)
 
     maxlength = maxlength or 0.0
 
-    return triangulations.refined_delaunay_mesh(boundary, points, holes, curves, maxlength=maxlength, is_optimized=is_optimized)
+    # Call C++ function with proper type conversion and parameter order
+    return triangulation.refined_delaunay_mesh(
+        boundary,  # B: numpy array (Nx2)
+        points,  # P: numpy array (Mx2)
+        holes_vector,  # holes: VectorRowMatrixXd
+        curves_vector,  # curves: VectorRowMatrixXd
+        0.0,  # minangle: float
+        maxlength,  # maxlength: float
+        is_optimized,  # is_optimized: bool
+    )

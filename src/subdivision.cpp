@@ -1,76 +1,107 @@
 #include "subdivision.h"
-#include <CGAL/subdivision_method_3.h>
 
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 subd_catmullclark(
-    compas::RowMatrixXd &V,
-    std::vector<std::vector<int>> &faces,
-    unsigned int k)
+    compas::RowMatrixXd vertices,
+    std::vector<std::vector<int>> faces,
+    unsigned int num_iterations)
 {
-    compas::Mesh mesh = compas::ngon_from_vertices_and_faces(V, faces);
-
-    CGAL::Subdivision_method_3::CatmullClark_subdivision(mesh, CGAL::parameters::number_of_iterations(k));
-
+    compas::Mesh mesh = compas::ngon_from_vertices_and_faces(vertices, faces);
+    CGAL::Subdivision_method_3::CatmullClark_subdivision(mesh, CGAL::parameters::number_of_iterations(num_iterations));
     mesh.collect_garbage();
-
-    std::tuple<compas::RowMatrixXd, compas::RowMatrixXi> R = compas::quadmesh_to_vertices_and_faces(mesh);
-    return R;
-};
+    return compas::quadmesh_to_vertices_and_faces(mesh);
+}
 
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 subd_loop(
-    compas::RowMatrixXd &V,
-    compas::RowMatrixXi &F,
-    unsigned int k)
+    compas::RowMatrixXd vertices,
+    compas::RowMatrixXi faces,
+    unsigned int num_iterations)
 {
-    compas::Mesh mesh = compas::mesh_from_vertices_and_faces(V, F);
-
-    CGAL::Subdivision_method_3::Loop_subdivision(mesh, CGAL::parameters::number_of_iterations(k));
-
+    compas::Mesh mesh = compas::mesh_from_vertices_and_faces(vertices, faces);
+    CGAL::Subdivision_method_3::Loop_subdivision(mesh, CGAL::parameters::number_of_iterations(num_iterations));
     mesh.collect_garbage();
-
-    std::tuple<compas::RowMatrixXd, compas::RowMatrixXi> R = compas::mesh_to_vertices_and_faces(mesh);
-    return R;
-};
+    return compas::mesh_to_vertices_and_faces(mesh);
+}
 
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 subd_sqrt3(
-    compas::RowMatrixXd &V,
-    compas::RowMatrixXi &F,
-    unsigned int k)
+    compas::RowMatrixXd vertices,
+    compas::RowMatrixXi faces,
+    unsigned int num_iterations)
 {
-    compas::Mesh mesh = compas::mesh_from_vertices_and_faces(V, F);
-
-    CGAL::Subdivision_method_3::Sqrt3_subdivision(mesh, CGAL::parameters::number_of_iterations(k));
-
+    compas::Mesh mesh = compas::mesh_from_vertices_and_faces(vertices, faces);
+    CGAL::Subdivision_method_3::Sqrt3_subdivision(mesh, CGAL::parameters::number_of_iterations(num_iterations));
     mesh.collect_garbage();
+    return compas::mesh_to_vertices_and_faces(mesh);
+}
 
-    std::tuple<compas::RowMatrixXd, compas::RowMatrixXi> R = compas::mesh_to_vertices_and_faces(mesh);
-    return R;
-};
-
-void init_subdivision(pybind11::module &m)
-{
-    pybind11::module submodule = m.def_submodule("subdivision");
+void init_subdivision(nb::module_& m) {
+    auto submodule = m.def_submodule("subdivision");
 
     submodule.def(
         "subd_catmullclark",
         &subd_catmullclark,
-        pybind11::arg("V").noconvert(),
-        pybind11::arg("faces").noconvert(),
-        pybind11::arg("k"));
+        "Catmull-Clark subdivision of a polygonal mesh.\n\n"
+        "Parameters\n"
+        "----------\n"
+        "vertices : array-like\n"
+        "    Matrix of vertex positions (Nx3, float64)\n"
+        "faces : list\n"
+        "    List of face vertex indices (list of lists)\n"
+        "num_iterations : int\n"
+        "    Number of subdivision steps\n"
+        "\n"
+        "Returns\n"
+        "-------\n"
+        "tuple\n"
+        "    - Matrix of subdivided vertex positions (Mx3, float64)\n"
+        "    - Matrix of subdivided face vertex indices (Px4, int32)",
+        "vertices"_a,
+        "faces"_a,
+        "num_iterations"_a);
 
     submodule.def(
         "subd_loop",
         &subd_loop,
-        pybind11::arg("V").noconvert(),
-        pybind11::arg("F").noconvert(),
-        pybind11::arg("k"));
+        "Loop subdivision of a triangular mesh.\n\n"
+        "Parameters\n"
+        "----------\n"
+        "vertices : array-like\n"
+        "    Matrix of vertex positions (Nx3, float64)\n"
+        "faces : array-like\n"
+        "    Matrix of face vertex indices (Mx3, int32)\n"
+        "num_iterations : int\n"
+        "    Number of subdivision steps\n"
+        "\n"
+        "Returns\n"
+        "-------\n"
+        "tuple\n"
+        "    - Matrix of subdivided vertex positions (Px3, float64)\n"
+        "    - Matrix of subdivided face vertex indices (Qx3, int32)",
+        "vertices"_a,
+        "faces"_a,
+        "num_iterations"_a);
 
     submodule.def(
         "subd_sqrt3",
         &subd_sqrt3,
-        pybind11::arg("V").noconvert(),
-        pybind11::arg("F").noconvert(),
-        pybind11::arg("k"));
-};
+        "Sqrt3 subdivision of a triangular mesh.\n\n"
+        "Parameters\n"
+        "----------\n"
+        "vertices : array-like\n"
+        "    Matrix of vertex positions (Nx3, float64)\n"
+        "faces : array-like\n"
+        "    Matrix of face vertex indices (Mx3, int32)\n"
+        "num_iterations : int\n"
+        "    Number of subdivision steps\n"
+        "\n"
+        "Returns\n"
+        "-------\n"
+        "tuple\n"
+        "    - Matrix of subdivided vertex positions (Px3, float64)\n"
+        "    - Matrix of subdivided face vertex indices (Qx3, int32)",
+        "vertices"_a,
+        "faces"_a,
+        "num_iterations"_a);
+}

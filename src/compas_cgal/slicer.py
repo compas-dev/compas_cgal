@@ -1,15 +1,15 @@
 import numpy as np
+from compas.geometry import Plane
 from compas.plugins import plugin
 
-from compas_cgal._cgal import slicer
+from compas_cgal.compas_cgal_ext import slicer
 
-from .types import Planes
 from .types import PolylinesNumpy
 from .types import VerticesFaces
 
 
 @plugin(category="trimesh", pluggable_name="trimesh_slice")
-def slice_mesh_planes(mesh: VerticesFaces, planes: Planes) -> PolylinesNumpy:
+def slice_mesh_planes(mesh: VerticesFaces, planes: list[Plane]) -> PolylinesNumpy:
     """Slice a mesh by a list of planes.
 
     Parameters
@@ -41,10 +41,10 @@ def slice_mesh_planes(mesh: VerticesFaces, planes: Planes) -> PolylinesNumpy:
     """
     vertices, faces = mesh
     points, normals = zip(*planes)
-    V = np.asarray(vertices, dtype=np.float64)
-    F = np.asarray(faces, dtype=np.int32)
-    P = np.array(points, dtype=np.float64)
-    N = np.array(normals, dtype=np.float64)
+    V = np.asarray(vertices, dtype=np.float64, order="C")
+    F = np.asarray(faces, dtype=np.int32, order="C")
+    P = np.array(points, dtype=np.float64, order="C")
+    N = np.array(normals, dtype=np.float64, order="C")
 
     pointsets = slicer.slice_mesh(V, F, P, N)
     return pointsets

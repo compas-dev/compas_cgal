@@ -1,7 +1,9 @@
 import numpy as np
+from compas.geometry import Point
 from compas.plugins import plugin
 
-from compas_cgal._cgal import measure
+from compas_cgal.compas_cgal_ext import VectorDouble
+from compas_cgal.compas_cgal_ext import measure
 
 from .types import VerticesFaces
 
@@ -21,8 +23,8 @@ def mesh_area(mesh: VerticesFaces) -> float:
 
     """
     V, F = mesh
-    V = np.asarray(V, dtype=np.float64)
-    F = np.asarray(F, dtype=np.int32)
+    V = np.asarray(V, dtype=np.float64, order="C")
+    F = np.asarray(F, dtype=np.int32, order="C")
     return measure.area(V, F)
 
 
@@ -53,8 +55,8 @@ def mesh_volume(mesh: VerticesFaces) -> float:
 
     """
     V, F = mesh
-    V = np.asarray(V, dtype=np.float64)
-    F = np.asarray(F, dtype=np.int32)
+    V = np.asarray(V, dtype=np.float64, order="C")
+    F = np.asarray(F, dtype=np.int32, order="C")
     return measure.volume(V, F)
 
 
@@ -73,6 +75,8 @@ def mesh_centroid(mesh: VerticesFaces) -> list[float]:
 
     """
     V, F = mesh
-    V = np.asarray(V, dtype=np.float64)
-    F = np.asarray(F, dtype=np.int32)
-    return measure.centroid(V, F)
+    V = np.asarray(V, dtype=np.float64, order="C")
+    F = np.asarray(F, dtype=np.int32, order="C")
+    vector_of_double: VectorDouble = measure.centroid(V, F)
+    point = Point(*vector_of_double)
+    return point
