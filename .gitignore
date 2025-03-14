@@ -1,17 +1,37 @@
-# Build directories
+# Python bytecode and cache
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution and packaging
+.Python
 build/
 _build/
 **/build/
+develop-eggs/
 dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
 *.egg-info/
+.installed.cfg
+*.egg
 
 # External dependencies
+ext/**
 external/
 **/external/
 
-# IDE specific
+# IDE and editor settings
 .vscode/
 .vs/
+.idea/
 *.suo
 *.user
 *.sln
@@ -19,12 +39,12 @@ external/
 *.vcxproj.filters
 *.vcxproj.user
 ipch/
-.idea/
+.spyderproject
+.spyproject
+.ropeproject
+scripts/.idea/**
 
-# Compiled files
-*.pyc
-__pycache__/
-**/__pycache__/
+# Compiled files and binaries
 *.pyd
 *.so
 *.dll
@@ -35,6 +55,8 @@ __pycache__/
 *.exp
 *.lib
 *.lprof
+*.manifest
+*.spec
 
 # CMake generated
 CMakeCache.txt
@@ -45,16 +67,55 @@ CTestTestfile.cmake
 Testing/
 _deps/
 
-# Python virtual environments
+# Virtual environments
+.env
+.venv
 venv/
-env/
-.env/
-.venv/
+ENV/
+.python-version
 
-# Cache directories
+# Testing and coverage
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
 .pytest_cache/
 .ruff_cache/
+.mypy_cache/
 
-# OS specific
+# Documentation
+docs/_build/
+/site
+
+# COMPAS CGAL specific
+*.3dmbak
+*.3dm
+*.rhl
+*.rui_bak
+temp/
+generated/
+recipe/**
+!recipe/sha256.py
+
+# Logs and temporary files
+*.log
+pip-log.txt
+pip-delete-this-directory.txt
+local_settings.py
+celerybeat-schedule
+
+# Other
+*.mo
+*.pot
+*.sage.py
+instance/
+.webassets-cache
+.scrapy
 .DS_Store
 Thumbs.db
+.ipynb_checkpoints
