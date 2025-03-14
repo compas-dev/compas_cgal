@@ -10,10 +10,10 @@ readme = "README.md"
 requires-python = ">=3.8"
 authors = [
     { name = "tom van mele", email = "tom.v.mele@gmail.com" },
-    { name = "Petras Vestartas", email = "vestartas@arch.ethz.ch" },
+    { name = "Petras Vestartas", email = "petrasvestartas@gmail.com" },
 ]
 classifiers = [
-    "License :: OSI Approved :: BSD License",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
 ]
 
 [project.urls]
