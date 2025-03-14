@@ -9,8 +9,8 @@ description = "CGAL wrapper for COMPAS."
 readme = "README.md"
 requires-python = ">=3.8"
 authors = [
-    { name = "Petras Vestartas", email = "petrasvestartas@gmail.com" },
-    { name = "Tom van Mele", email = "van.mele@arch.ethz.ch" },
+    { name = "tom van mele", email = "tom.v.mele@gmail.com" },
+    { name = "Petras Vestartas", email = "vestartas@arch.ethz.ch" },
 ]
 classifiers = [
     "License :: OSI Approved :: BSD License",
