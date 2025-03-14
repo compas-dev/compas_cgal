@@ -9,9 +9,7 @@ from line_profiler import profile
 
 @profile
 def main():
-    # ==============================================================================
-    # Constraints
-    # ==============================================================================
+    """Triangulate a mesh with holes."""
 
     boundary = Polygon.from_sides_and_radius_xy(64, 4)
 
@@ -23,10 +21,6 @@ def main():
     hole4 = hole.transformed(Translation.from_vector([0, -2, 0]))
 
     holes = [hole1, hole2, hole3, hole4]
-
-    # ==============================================================================
-    # Triangulation
-    # ==============================================================================
 
     V, F = conforming_delaunay_triangulation(
         boundary,

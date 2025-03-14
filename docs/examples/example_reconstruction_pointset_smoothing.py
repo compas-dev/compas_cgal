@@ -3,6 +3,7 @@ from pathlib import Path
 from compas.geometry import Pointcloud
 from compas.geometry import Translation
 from compas_cgal.reconstruction import pointset_smoothing
+from compas.geometry import transform_points_numpy
 from compas_viewer import Viewer
 from compas_viewer.config import Config
 from line_profiler import profile
@@ -12,29 +13,12 @@ from line_profiler import profile
 def reconstruction_pointset_smoothing():
     """Smooth a point set."""
 
-    # ==============================================================================
-    # Input geometry
-    # ==============================================================================
-
     ply_file_path = Path(__file__).parent.parent.parent / "data" / "box.ply"
     original_points = Pointcloud.from_ply(ply_file_path)
-    original_points.transform(Translation.from_vector([-10000, 0, 0]))
-    transformed_points = Pointcloud.from_ply(ply_file_path)
-    transformed_points.transform(Translation.from_vector([10000, 0, 0]))
 
-    # ==============================================================================
-    # Compute
-    # ==============================================================================
+    smoothed_points = pointset_smoothing(original_points, 1000, 3)
 
-    smoothed_points = pointset_smoothing(transformed_points, 1000, 3)
-
-    # ==============================================================================
-    # Visualize
-    # ==============================================================================
-
-    c_original = Pointcloud(original_points)
-    c_transformed = Pointcloud(smoothed_points)
-    return c_original, c_transformed
+    return Pointcloud(original_points), Pointcloud(smoothed_points)
 
 
 c_smoothing_0, c_smoothing_1 = reconstruction_pointset_smoothing()

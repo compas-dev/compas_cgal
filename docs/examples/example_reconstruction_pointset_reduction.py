@@ -2,6 +2,7 @@ from pathlib import Path
 
 from compas.geometry import Pointcloud
 from compas.geometry import Translation
+from compas.geometry import transform_points_numpy
 from compas_cgal.reconstruction import pointset_reduction
 from compas_viewer import Viewer
 from compas_viewer.config import Config
@@ -12,28 +13,18 @@ from line_profiler import profile
 def reconstruction_pointset_reduction():
     """Reduce the number of points in a point set."""
 
-    # ==============================================================================
-    # Input geometry
-    # ==============================================================================
-
     FILE = Path(__file__).parent.parent.parent / "data" / "forked_branch_1.ply"
     c = Pointcloud.from_ply(FILE)
 
-    # ==============================================================================
-    # Compute
-    # ==============================================================================
-
     points = Pointcloud(pointset_reduction(c, 50))
+    transform_points_numpy(points, Translation.from_vector([-1000, 0, 0]))
+
     c.transform(Translation.from_vector([-1000, 0, 0]))
 
     return c, points
 
 
 c_reduction_0, c_reduction_1 = reconstruction_pointset_reduction()
-
-# ==============================================================================
-# Visualize
-# ==============================================================================
 
 config = Config()
 config.camera.target = [100, 500, 200]

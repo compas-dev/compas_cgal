@@ -7,6 +7,8 @@ from line_profiler import profile
 
 @profile
 def main():
+    """Create offset polygons."""
+
     points = [
         (-1.91, 3.59, 0.0),
         (-5.53, -5.22, 0.0),

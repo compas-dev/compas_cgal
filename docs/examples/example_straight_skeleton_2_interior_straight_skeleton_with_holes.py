@@ -9,10 +9,6 @@ from line_profiler import profile
 def main():
     """Compute the interior straight skeleton of a polygon with holes."""
 
-    # ==============================================================================
-    # Input geometry
-    # ==============================================================================
-
     # Outer boundary
     points_boundary = [
         (-1.91, 3.59, 0.0),
@@ -35,10 +31,6 @@ def main():
         [(10.6, 0.29, 0.0), (9.48, -1.54, 0.0), (5.48, -1.26, 0.0), (5.98, -0.04, 0.0)],
     ]
     holes = [Polygon(hole) for hole in holes]
-
-    # ==============================================================================
-    # Compute
-    # ==============================================================================
 
     graph = interior_straight_skeleton_with_holes(boundary, holes)
 

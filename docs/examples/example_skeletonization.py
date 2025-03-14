@@ -14,38 +14,22 @@ from compas_viewer import Viewer
 
 @profile
 def main():
-    # ==============================================================================
-    # Load and transform mesh
-    # ==============================================================================
+    """Skeletonize a mesh."""
 
     input_file = Path(__file__).parent.parent.parent / "data" / "elephant.off"
 
-    # Create transformation sequence
     rotation_x = Rotation.from_axis_and_angle([1, 0, 0], math.radians(60))
     rotation_y = Rotation.from_axis_and_angle([0, 1, 0], math.radians(5))
     rotation = rotation_y * rotation_x
     scale = Scale.from_factors([5, 5, 5])
     translation = Translation.from_vector([0, 0, 2])
 
-    # Apply transformations to mesh
     mesh = Mesh.from_off(input_file).transformed(translation * rotation * scale)
     mesh = mesh.subdivided("loop")
 
-    # ==============================================================================
-    # Convert mesh to vertices and faces
-    # ==============================================================================
-
     vertices, faces = mesh.to_vertices_and_faces()
 
-    # ==============================================================================
-    # Generate skeleton edges
-    # ==============================================================================
-
     skeleton_edges = mesh_skeleton((vertices, faces))
-
-    # ==============================================================================
-    # Convert skeleton edges to polylines
-    # ==============================================================================
 
     polylines = []
     for start_point, end_point in skeleton_edges:

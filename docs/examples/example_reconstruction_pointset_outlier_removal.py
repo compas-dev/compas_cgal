@@ -25,8 +25,6 @@ def reconstruction_pointset_outlier_removal():
     points = pointset_outlier_removal(c1, 30, 2.0)
     c2 = Pointcloud(points)
     c3 = c1.difference(c2)
-    c2.name = "pointset_outlier_removal"
-    c3.name = "pointset_outlier_removal"
 
     return c2, c3
 

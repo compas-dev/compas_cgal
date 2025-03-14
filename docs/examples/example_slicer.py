@@ -13,19 +13,11 @@ from compas_viewer.config import Config
 
 @profile
 def main():
-    # ==============================================================================
-    # Input geometry
-    # ==============================================================================
-
     # Get Mesh from STL
     FILE = Path(__file__).parent.parent.parent / "data" / "3DBenchy.stl"
     benchy = Mesh.from_stl(FILE)
 
     V, F = benchy.to_vertices_and_faces()
-
-    # ==============================================================================
-    # Create slicing planes
-    # ==============================================================================
 
     # Get Slice planes from the bounding box
     bbox = benchy.aabb()
@@ -34,10 +26,6 @@ def main():
     for i in np.linspace(bbox.zmin, bbox.zmax, 50):
         plane = Plane(Point(0, 0, i), normal)
         planes.append(plane)
-
-    # ==============================================================================
-    # Compute
-    # ==============================================================================
 
     # Slice
     slicer_polylines = slice_mesh((V, F), planes)
