@@ -4,6 +4,7 @@ Poisson Surface Reconstruction
 This example demonstrates how to perform Poisson surface reconstruction from a point cloud with normals using COMPAS CGAL.
 
 Key Features:
+
 * Loading point clouds with normals from XYZ files
 * Poisson surface reconstruction to create a mesh
 * Mesh transformation and visualization

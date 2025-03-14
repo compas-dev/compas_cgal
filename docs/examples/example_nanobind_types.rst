@@ -4,6 +4,7 @@ Type Conversion with Nanobind
 This example demonstrates proper type conversion patterns between C++ and Python using nanobind in COMPAS CGAL.
 
 Key Features:
+
 * Basic type conversion (integers)
 * Matrix passing with Eigen::Ref (in-place modification)
 * Matrix creation in C++ and transfer to Python

@@ -4,6 +4,7 @@ Weighted Polygon Offsetting
 This example demonstrates how to create weighted offset polygons using COMPAS CGAL.
 
 Key Features:
+
 * Creating weighted polygon offsets
 * Specifying different weights for each edge
 * Visualization of original and weighted offset polygons

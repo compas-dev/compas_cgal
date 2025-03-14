@@ -4,6 +4,7 @@ Mesh Remeshing
 This example demonstrates how to remesh a triangle mesh using COMPAS CGAL.
 
 Key Features:
+
 * Loading PLY mesh files
 * Mesh transformation and centering
 * Remeshing with target edge length

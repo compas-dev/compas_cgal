@@ -4,6 +4,7 @@ Straight Skeleton with Holes
 This example demonstrates how to compute the straight skeleton of a polygon with holes using COMPAS CGAL.
 
 Key Features:
+
 * Computing straight skeleton for polygons with holes
 * Handling multiple interior holes
 * Color-coded visualization of different edge types

@@ -4,6 +4,7 @@ Polygon Offsetting
 This example demonstrates how to create offset polygons (inward and outward) using COMPAS CGAL.
 
 Key Features:
+
 * Creating inner and outer polygon offsets
 * Handling complex polygon shapes
 * Color-coded visualization of original and offset polygons

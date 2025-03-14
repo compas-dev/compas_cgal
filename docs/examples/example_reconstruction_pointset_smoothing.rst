@@ -4,6 +4,7 @@ Point Cloud Smoothing
 This example demonstrates how to smooth a point cloud using COMPAS CGAL.
 
 Key Features:
+
 * Loading point clouds from PLY files
 * Point cloud smoothing with specified iterations and neighborhood size
 * Side-by-side visualization of original and smoothed point clouds

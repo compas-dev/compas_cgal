@@ -4,6 +4,7 @@ Mesh Subdivision
 This example demonstrates different mesh subdivision schemes available in COMPAS CGAL.
 
 Key Features:
+
 * Catmull-Clark subdivision for quad meshes
 * Loop subdivision for triangle meshes
 * √3 (sqrt3) subdivision for triangle meshes

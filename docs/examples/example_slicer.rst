@@ -4,6 +4,7 @@ Mesh Slicing
 This example demonstrates how to slice a mesh with multiple planes using COMPAS CGAL.
 
 Key Features:
+
 * Loading STL mesh files
 * Creating multiple slice planes from bounding box
 * Slicing mesh with multiple planes
