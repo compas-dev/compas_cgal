@@ -8,4 +8,4 @@ dependencies:
   - cmake
   - compas
   - pip:
-      - -r requirements-dev.txt
+      - .[dev]
