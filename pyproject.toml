@@ -105,7 +105,7 @@ MACOSX_DEPLOYMENT_TARGET = "10.14"
 # ============================================================================
 
 [tool.bumpversion]
-current_version = "0.7.2"
+current_version = "0.7.3"
 message = "Bump version to {new_version}"
 commit = true
 tag = true
