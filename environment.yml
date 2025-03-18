@@ -1,12 +1,11 @@
-name: compas_cgal
+name: cgal-dev
 channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.9
-  - compas
-  - cmake
+  - python
   - pip
+  - cmake
+  - compas
   - pip:
-    - -r requirements-dev.txt
-    - -e .
+      - -r requirements-dev.txt

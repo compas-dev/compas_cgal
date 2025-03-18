@@ -1,2 +1,1 @@
-line_profiler
-compas_viewer
+compas
