@@ -1,8 +1,8 @@
 from compas.geometry import Polygon
 from compas_viewer import Viewer
+from line_profiler import profile
 
 from compas_cgal.straight_skeleton_2 import offset_polygon
-from line_profiler import profile
 
 
 @profile

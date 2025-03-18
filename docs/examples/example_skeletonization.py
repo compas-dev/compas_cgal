@@ -6,10 +6,10 @@ from compas.geometry import Polyline
 from compas.geometry import Rotation
 from compas.geometry import Scale
 from compas.geometry import Translation
-from compas_cgal.skeletonization import mesh_skeleton
+from compas_viewer import Viewer
 from line_profiler import profile
 
-from compas_viewer import Viewer
+from compas_cgal.skeletonization import mesh_skeleton
 
 
 @profile

@@ -1,10 +1,11 @@
 from pathlib import Path
 
 from compas.geometry import Pointcloud
-from compas_cgal.reconstruction import pointset_outlier_removal
 from compas_viewer import Viewer
 from compas_viewer.config import Config
 from line_profiler import profile
+
+from compas_cgal.reconstruction import pointset_outlier_removal
 
 
 @profile

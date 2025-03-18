@@ -1,11 +1,10 @@
-from compas.geometry import Box
-from compas_cgal.measure import (
-    mesh_area,
-    mesh_volume,
-    mesh_centroid,
-)
 from compas.datastructures import Mesh
+from compas.geometry import Box
 from line_profiler import profile
+
+from compas_cgal.measure import mesh_area
+from compas_cgal.measure import mesh_centroid
+from compas_cgal.measure import mesh_volume
 
 
 @profile

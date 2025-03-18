@@ -1,14 +1,17 @@
 import math
 from pathlib import Path
 
-from compas.datastructures import Mesh
-from compas.geometry import Plane, Point, Vector
-from compas.geometry import Polyline
-from compas_cgal.slicer import slice_mesh
 import numpy as np
-from line_profiler import profile
+from compas.datastructures import Mesh
+from compas.geometry import Plane
+from compas.geometry import Point
+from compas.geometry import Polyline
+from compas.geometry import Vector
 from compas_viewer import Viewer
 from compas_viewer.config import Config
+from line_profiler import profile
+
+from compas_cgal.slicer import slice_mesh
 
 
 @profile

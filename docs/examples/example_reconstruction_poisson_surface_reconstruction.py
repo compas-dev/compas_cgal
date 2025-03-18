@@ -5,9 +5,10 @@ from compas.datastructures import Mesh
 from compas.geometry import Pointcloud
 from compas.geometry import Rotation
 from compas.geometry import Scale
-from compas_cgal.reconstruction import poisson_surface_reconstruction
 from compas_viewer import Viewer
 from line_profiler import profile
+
+from compas_cgal.reconstruction import poisson_surface_reconstruction
 
 
 @profile

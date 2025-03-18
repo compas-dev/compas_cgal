@@ -1,12 +1,14 @@
 import profile
+
 from compas.datastructures import Mesh
 from compas.geometry import Box
 from compas.geometry import Point
 from compas.geometry import Polyline
 from compas.geometry import Sphere
-from compas_cgal.intersections import intersection_mesh_mesh
 from compas_viewer import Viewer
 from line_profiler import profile
+
+from compas_cgal.intersections import intersection_mesh_mesh
 
 
 @profile

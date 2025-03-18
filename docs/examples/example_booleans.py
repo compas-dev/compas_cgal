@@ -1,17 +1,16 @@
+from compas.datastructures import Mesh
 from compas.geometry import Box
 from compas.geometry import Polyhedron
 from compas.geometry import Sphere
-from compas.datastructures import Mesh
-from compas_cgal.booleans import (
-    boolean_difference_mesh_mesh,
-    boolean_intersection_mesh_mesh,
-    boolean_union_mesh_mesh,
-    split_mesh_mesh,
-)
-from compas_cgal.meshing import mesh_remesh
-from compas_viewer import Viewer
 from compas.geometry import Translation
+from compas_viewer import Viewer
 from line_profiler import profile
+
+from compas_cgal.booleans import boolean_difference_mesh_mesh
+from compas_cgal.booleans import boolean_intersection_mesh_mesh
+from compas_cgal.booleans import boolean_union_mesh_mesh
+from compas_cgal.booleans import split_mesh_mesh
+from compas_cgal.meshing import mesh_remesh
 
 
 def input():

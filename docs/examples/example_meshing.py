@@ -1,15 +1,16 @@
-from compas.datastructures import Mesh
+import math
+from pathlib import Path
 
-from compas.geometry import scale_vector
-from compas.geometry import Translation
+from compas.datastructures import Mesh
 from compas.geometry import Rotation
 from compas.geometry import Scale
+from compas.geometry import Translation
 from compas.geometry import Vector
+from compas.geometry import scale_vector
 from compas.geometry import transform_points_numpy
-from pathlib import Path
-import math
-from line_profiler import profile
 from compas_viewer import Viewer
+from line_profiler import profile
+
 from compas_cgal.meshing import mesh_remesh
 
 

@@ -2,11 +2,12 @@ from pathlib import Path
 
 from compas.geometry import Pointcloud
 from compas.geometry import Translation
-from compas_cgal.reconstruction import pointset_smoothing
 from compas.geometry import transform_points_numpy
 from compas_viewer import Viewer
 from compas_viewer.config import Config
 from line_profiler import profile
+
+from compas_cgal.reconstruction import pointset_smoothing
 
 
 @profile
