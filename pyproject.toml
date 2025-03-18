@@ -4,10 +4,9 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "compas_cgal"
-version = "1.0.1"
 description = "CGAL wrapper for COMPAS."
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 authors = [
     { name = "tom van mele", email = "tom.v.mele@gmail.com" },
     { name = "Petras Vestartas", email = "petrasvestartas@gmail.com" },
@@ -15,9 +14,14 @@ authors = [
 classifiers = [
     "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
 ]
+dynamic = ["version"]
 
 [project.urls]
 Homepage = "https://github.com/compas-dev/compas_cgal"
+
+# ============================================================================
+# replace pytest.ini
+# ============================================================================
 
 [tool.pytest.ini_options]
 minversion = "6.0"
@@ -49,6 +53,10 @@ doctest_optionflags = [
     "NUMBER",
 ]
 
+# ============================================================================
+# scikit-build
+# ============================================================================
+
 [tool.scikit-build]
 # Protect the configuration against future changes in scikit-build-core
 minimum-version = "build-system.requires"
@@ -66,8 +74,16 @@ cmake.build-type = "Release"
 # Set CMake args for verbose output
 cmake.args = ["-DCMAKE_VERBOSE_MAKEFILE=ON"]
 
+[tool.scikit-build.metadata.version]
+provider = "scikit_build_core.metadata.regex"
+input = "src/compas_cgal/__init__.py"
+
 [tool.scikit-build.cmake.define]
 CMAKE_POLICY_DEFAULT_CMP0135 = "NEW"
+
+# ============================================================================
+# cibuildwheel
+# ============================================================================
 
 [tool.cibuildwheel]
 # Necessary to see build output from the actual compilation
@@ -84,8 +100,12 @@ test-skip = "cp38-macosx_*:arm64"
 [tool.cibuildwheel.macos.environment]
 MACOSX_DEPLOYMENT_TARGET = "10.14"
 
+# ============================================================================
+# replace bumpversion.cfg
+# ============================================================================
+
 [tool.bumpversion]
-current_version = "1.0.1"
+current_version = "0.7.2"
 message = "Bump version to {new_version}"
 commit = true
 tag = true
@@ -103,6 +123,7 @@ replace = "[{new_version}] {now:%Y-%m-%d}"
 # ============================================================================
 # replace setup.cfg
 # ============================================================================
+
 [tool.black]
 line-length = 179
 
