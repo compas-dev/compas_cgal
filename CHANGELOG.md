@@ -11,21 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* Changed `scip` version to `9.1` for linux and osx.
-
-### Removed
-
-## [1.0.1] 2025-03-06
-
-### Added
-
-### Changed
-
 * Nanobind integration.
 
 ### Removed
 
 * Files related to pybind11.
+
 
 ## [0.7.2] 2024-10-29
 
