@@ -18,9 +18,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Added build flags for file size reduction in `CMakeLists.txt`.
+
 ### Changed
 
+* Precompiled header is optional and set to OFF to reduce deployment built size.
+* Moved `compas.h` module specific headers to the individual source files.
+
 ### Removed
+
+* Remove unnecessary headers from `compas_cgal.h`.
 
 
 ## [0.7.3] 2025-03-18
