@@ -2,6 +2,10 @@
 
 #include "compas.h"
 
+// CGAL measure
+#include <CGAL/Polygon_mesh_processing/measure.h>
+#include <CGAL/Point_3.h>
+
 /**
  * @brief Computes the surface area of a triangle mesh.
  * 

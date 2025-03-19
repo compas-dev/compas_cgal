@@ -17,6 +17,7 @@ pmp_volume(
 {
     compas::Mesh mesh = compas::mesh_from_vertices_and_faces(vertices, faces);
     double volume = CGAL::Polygon_mesh_processing::volume(mesh);
+    int a = 0;
     return volume;
 }
 

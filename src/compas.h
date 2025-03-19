@@ -5,38 +5,12 @@
 // This file is referenced in CMakeLists PCH section.
 
 // STD
-#include <stdlib.h>
 #include <vector>
-#include <array>
-#include <map>
-#include <cstdlib>
-#include <ctime>
-#include <iomanip>
-#include <algorithm>
-#include <unordered_map>
-#include <numeric>
-#include <limits>
-#include <chrono>
-#include <float.h>
-#include <inttypes.h>
-#include <cstring>
-#include <set>
-#include <unordered_set>
-#include <list>
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include <filesystem>
-#include <utility>
-
 
 // Nanobind
 #include <nanobind/nanobind.h>
 #include <nanobind/eigen/dense.h>
 #include <nanobind/eigen/sparse.h>
-#include <nanobind/ndarray.h>
-#include <nanobind/stl/array.h>
 #include <nanobind/stl/tuple.h>
 #include <nanobind/stl/bind_vector.h>
 #include <nanobind/stl/shared_ptr.h>
@@ -49,7 +23,6 @@ using namespace nb::literals; // enables syntax for annotating function and argu
 #include <boost/multiprecision/cpp_dec_float.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
 
-
 // Eigen
 #include <Eigen/Core>
 #include <Eigen/Dense>
@@ -61,67 +34,6 @@ using namespace nb::literals; // enables syntax for annotating function and argu
 #include <CGAL/Polyhedron_3.h>
 #include <CGAL/Polyhedron_incremental_builder_3.h>
 #include <CGAL/Polyhedron_items_with_id_3.h>
-
-// CGAL remesh
-#include <CGAL/Polygon_mesh_processing/remesh.h>
-#include <CGAL/Polygon_mesh_processing/detect_features.h>
-
-// CGAL measure
-#include <CGAL/Polygon_mesh_processing/measure.h>
-#include <CGAL/Point_3.h>
-
-// CGAL boolean
-#include <CGAL/Polygon_mesh_processing/corefinement.h>
-#include <CGAL/Polygon_mesh_processing/clip.h>
-
-// CGAL intersection
-#include <CGAL/Polygon_mesh_processing/intersection.h>
-
-// CGAL reconstruction
-#include <CGAL/poisson_surface_reconstruction.h>
-#include <CGAL/property_map.h>
-#include <CGAL/remove_outliers.h>
-#include <CGAL/compute_average_spacing.h>
-#include <CGAL/pca_estimate_normals.h>
-#include <CGAL/mst_orient_normals.h>
-#include <CGAL/property_map.h>
-#include <CGAL/jet_smooth_point_set.h>
-#include <CGAL/Point_set_3.h>
-#include <CGAL/grid_simplify_point_set.h>
-
-// CGAL skeletonization
-#include <CGAL/Mean_curvature_flow_skeletonization.h>
-#include <CGAL/boost/graph/split_graph_into_polylines.h>
-
-// CGAL slicer
-#include <CGAL/Polygon_mesh_slicer.h>
-
-// CGAL subdivision
-#include <CGAL/subdivision_method_3.h>
-
-// CGAL triangulation
-#include <CGAL/Delaunay_triangulation_2.h>
-#include <CGAL/Constrained_triangulation_2.h>
-#include <CGAL/Constrained_Delaunay_triangulation_2.h>
-#include <CGAL/Triangulation_vertex_base_with_info_2.h>
-#include <CGAL/Triangulation_face_base_with_info_2.h>
-#include <CGAL/Polygon_2.h>
-#include <CGAL/Delaunay_mesher_2.h>
-#include <CGAL/Delaunay_mesh_vertex_base_2.h>
-#include <CGAL/Delaunay_mesh_face_base_2.h>
-#include <CGAL/Delaunay_mesh_size_criteria_2.h>
-#include <CGAL/Triangulation_conformer_2.h>
-#include <CGAL/lloyd_optimize_mesh_2.h>
-
-// CGAL straight skeleton 2
-#include <CGAL/Polygon_2.h>
-#include <CGAL/create_straight_skeleton_2.h>
-#include <CGAL/create_straight_skeleton_from_polygon_with_holes_2.h>
-#include <CGAL/create_offset_polygons_2.h>
-#include <CGAL/create_weighted_offset_polygons_from_polygon_with_holes_2.h>
-#include <CGAL/create_weighted_straight_skeleton_2.h>
-#include <CGAL/create_offset_polygons_from_polygon_with_holes_2.h>
-
 
 namespace compas
 {

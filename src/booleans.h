@@ -2,6 +2,10 @@
 
 #include "compas.h"
 
+// CGAL boolean
+#include <CGAL/Polygon_mesh_processing/corefinement.h>
+#include <CGAL/Polygon_mesh_processing/clip.h>
+
 /**
  * Compute the boolean union of two triangle meshes.
  * 
