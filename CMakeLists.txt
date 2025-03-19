@@ -13,6 +13,16 @@ set(CMAKE_CXX_FLAGS_DEBUG "")
 # =====================================================================
 option(ENABLE_PRECOMPILED_HEADERS "Enable precompiled headers for the build" OFF)
 
+
+# =====================================================================
+# Set maximum heap size for MSVC
+# =====================================================================
+
+if(MSVC)
+set(CMAKE_GENERATOR_PLATFORM x64)
+    add_compile_options(/Zm1200) 
+endif()
+
 # =====================================================================
 # Build size reduction.
 # =====================================================================
