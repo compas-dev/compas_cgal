@@ -66,6 +66,45 @@ pmp_split(
     return result;
 };
 
+NB_MODULE(booleans_ext, m) {
+
+    m.def(
+        "boolean_union",
+        &pmp_boolean_union,
+        "Boolean Union from triangular mesh vertices and faces.",
+        "VA"_a,
+        "FA"_a,
+        "VB"_a,
+        "FB"_a);
+
+    m.def(
+        "boolean_difference",
+        &pmp_boolean_difference,
+        "Boolean Difference from triangular mesh vertices and faces.",
+        "VA"_a,
+        "FA"_a,
+        "VB"_a,
+        "FB"_a);
+
+    m.def(
+        "boolean_intersection",
+        &pmp_boolean_intersection,
+        "Boolean Intersection from triangular mesh vertices and faces.",
+        "VA"_a,
+        "FA"_a,
+        "VB"_a,
+        "FB"_a);
+
+    m.def(
+        "split",
+        &pmp_split,
+        "Boolean Split from triangular mesh vertices and faces.",
+        "VA"_a,
+        "FA"_a,
+        "VB"_a,
+        "FB"_a);
+}
+
 void init_booleans(nb::module_& m) {
     auto submodule = m.def_submodule("booleans");
 

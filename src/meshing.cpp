@@ -26,10 +26,9 @@ pmp_remesh(
     return compas::mesh_to_vertices_and_faces(mesh_a);
 }
 
-void init_meshing(nb::module_& m) {
-    auto submodule = m.def_submodule("meshing");
 
-    submodule.def(
+NB_MODULE(meshing_ext, m) {
+    m.def(
         "remesh",
         &pmp_remesh,
         "Remesh a triangular mesh to achieve a target edge length",

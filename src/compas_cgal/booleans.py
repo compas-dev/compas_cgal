@@ -3,7 +3,7 @@ from typing import Literal
 import numpy as np
 from compas.plugins import plugin
 
-from compas_cgal.compas_cgal_ext import booleans
+from compas_cgal import booleans_ext
 
 from .types import VerticesFaces
 from .types import VerticesFacesNumpy
@@ -43,13 +43,13 @@ def _boolean(
     FB = np.asarray(FB, dtype=np.int32)
 
     if operation == "union":
-        result = booleans.boolean_union(VA, FA, VB, FB)
+        result = booleans_ext.boolean_union(VA, FA, VB, FB)
     elif operation == "difference":
-        result = booleans.boolean_difference(VA, FA, VB, FB)
+        result = booleans_ext.boolean_difference(VA, FA, VB, FB)
     elif operation == "intersection":
-        result = booleans.boolean_intersection(VA, FA, VB, FB)
+        result = booleans_ext.boolean_intersection(VA, FA, VB, FB)
     elif operation == "split":
-        result = booleans.split(VA, FA, VB, FB)
+        result = booleans_ext.split(VA, FA, VB, FB)
     else:
         raise NotImplementedError
 
