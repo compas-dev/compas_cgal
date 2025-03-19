@@ -27,14 +27,14 @@ if(NOT EXISTS "${CGAL_SOURCE_DIR}")
     ExternalProject_Add(
         cgal_download
         URL https://github.com/CGAL/cgal/releases/download/v6.0.1/CGAL-6.0.1.zip
-        SOURCE_DIR       "${CGAL_SOURCE_DIR}"
+        SOURCE_DIR "${CGAL_SOURCE_DIR}"
         CONFIGURE_COMMAND ""
-        BUILD_COMMAND     ""
-        INSTALL_COMMAND   ""
+        BUILD_COMMAND ""
+        INSTALL_COMMAND ""
         LOG_DOWNLOAD ON
-        UPDATE_COMMAND    ""
-        PATCH_COMMAND     ""
-        TLS_VERIFY       ON
+        UPDATE_COMMAND ""
+        PATCH_COMMAND ""
+        TLS_VERIFY ON
     )
     add_dependencies(external_downloads cgal_download)
 endif()
@@ -43,18 +43,18 @@ endif()
 # BOOST
 # ========================================================================
 if(NOT EXISTS "${BOOST_SOURCE_DIR}")
-  message(STATUS "Configuring Boost...")
-  ExternalProject_Add(boost_download
-      URL https://archives.boost.io/release/1.82.0/source/boost_1_82_0.tar.gz
-      SOURCE_DIR "${BOOST_SOURCE_DIR}"
-      CONFIGURE_COMMAND ""
-      BUILD_COMMAND ""
-      INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/boost ${BOOST_SOURCE_DIR}/boost
-      LOG_DOWNLOAD 
-      ON
-  )
-  
-  add_dependencies(external_downloads boost_download)
+    message(STATUS "Configuring Boost...")
+    ExternalProject_Add(boost_download
+        URL https://archives.boost.io/release/1.82.0/source/boost_1_82_0.tar.gz
+        SOURCE_DIR "${BOOST_SOURCE_DIR}"
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND ""
+        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/boost ${BOOST_SOURCE_DIR}/boost
+        LOG_DOWNLOAD
+        ON
+    )
+
+    add_dependencies(external_downloads boost_download)
 endif()
 
 # ========================================================================
@@ -65,13 +65,13 @@ if(NOT EXISTS "${EIGEN_SOURCE_DIR}")
     ExternalProject_Add(
         eigen_download
         URL https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz
-        SOURCE_DIR       "${EIGEN_SOURCE_DIR}"
+        SOURCE_DIR "${EIGEN_SOURCE_DIR}"
         CONFIGURE_COMMAND ""
-        BUILD_COMMAND     ""
-        INSTALL_COMMAND   ""
+        BUILD_COMMAND ""
+        INSTALL_COMMAND ""
         LOG_DOWNLOAD ON
-        UPDATE_COMMAND    ""
-        PATCH_COMMAND     ""
+        UPDATE_COMMAND ""
+        PATCH_COMMAND ""
     )
     add_dependencies(external_downloads eigen_download)
 endif()
@@ -95,12 +95,12 @@ include_directories(
 )
 
 # Incase linking is not working check the includes
-#  add_compile_options(/showIncludes)
+# add_compile_options(/showIncludes)
 
 # Define libraries as header only
 add_definitions(
     -DCGAL_HEADER_ONLY
-    -DBOOST_ALL_NO_LIB 
+    -DBOOST_ALL_NO_LIB
     -DBOOST_ALL_DYN_LINK=0
     -DCGAL_DISABLE_GMP
     -DCGAL_USE_BOOST_MP
@@ -121,9 +121,8 @@ set(CGAL_NT_USE_BOOST_MP ON CACHE BOOL "Use Boost Multiprecision")
 # =====================================================================
 # Binding
 # =====================================================================
-
-if (NOT SKBUILD)
-  message(WARNING "\
+if(NOT SKBUILD)
+    message(WARNING "\
   This CMake file is meant to be executed using 'scikit-build'. Running
   it directly will almost certainly not produce the desired result. If
   you are a user trying to install this package, please use the command
@@ -149,8 +148,8 @@ endif()
 
 # Try to import all Python components potentially needed by nanobind
 find_package(Python 3.8
-  REQUIRED COMPONENTS Interpreter Development.Module
-  OPTIONAL_COMPONENTS Development.SABIModule)
+    REQUIRED COMPONENTS Interpreter Development.Module
+    OPTIONAL_COMPONENTS Development.SABIModule)
 
 # Import nanobind through CMake's find_package mechanism
 find_package(nanobind CONFIG REQUIRED)
@@ -167,27 +166,28 @@ find_package(nanobind CONFIG REQUIRED)
 # See: https://github.com/wjakob/nanobind/tree/master/tests
 #
 # Important: If you add a new .cpp file, you must rebuild the project with:
-#   pip install --no-build-isolation -ve . -Ceditable.rebuild=true
-file(GLOB CPP_SOURCES 
+# pip install --no-build-isolation -ve . -Ceditable.rebuild=true
+file(GLOB CPP_SOURCES
     CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
 )
 
 # Verify we found all expected source files and remind about type handling
 message(STATUS "Found C++ source files (ensure proper type conversion in each):")
+
 foreach(source ${CPP_SOURCES})
     message(STATUS "  ${source}")
 endforeach()
 
 nanobind_add_module(
-  compas_cgal_ext
-  STABLE_ABI
-  NB_STATIC
-  ${CPP_SOURCES}
+    compas_cgal_ext
+    STABLE_ABI
+    NB_STATIC
+    ${CPP_SOURCES}
 )
 
 # Set include directories for the extension
-target_include_directories(compas_cgal_ext PRIVATE 
+target_include_directories(compas_cgal_ext PRIVATE
     ${CGAL_INCLUDE_DIR}
     ${BOOST_INCLUDE_DIR}
     ${EIGEN_INCLUDE_DIR}
@@ -197,12 +197,12 @@ target_include_directories(compas_cgal_ext PRIVATE
 add_dependencies(compas_cgal_ext external_downloads)
 
 # Enhanced PCH configuration
-set(CMAKE_PCH_INSTANTIATE_TEMPLATES ON)
-set(CMAKE_PCH_WARN_INVALID ON)
+set(CMAKE_PCH_INSTANTIATE_TEMPLATES OFF)
+set(CMAKE_PCH_WARN_INVALID OFF)
 
 # Configure PCH for the extension
-target_precompile_headers(compas_cgal_ext 
-    PRIVATE 
+target_precompile_headers(compas_cgal_ext
+    PRIVATE
     src/compas.h
 )
 
