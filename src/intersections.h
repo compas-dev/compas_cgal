@@ -2,6 +2,9 @@
 
 #include "compas.h"
 
+// CGAL intersection
+#include <CGAL/Polygon_mesh_processing/intersection.h>
+
 /**
  * Compute intersection between two triangle meshes.
  *

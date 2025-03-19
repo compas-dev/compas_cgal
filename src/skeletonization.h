@@ -2,6 +2,10 @@
 
 #include "compas.h"
 
+// CGAL skeletonization
+#include <CGAL/Mean_curvature_flow_skeletonization.h>
+#include <CGAL/boost/graph/split_graph_into_polylines.h>
+
 /**
  * @brief Compute the geometric skeleton of a triangle mesh using mean curvature flow.
  * 

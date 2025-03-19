@@ -2,6 +2,16 @@
 
 #include "compas.h"
 
+// CGAL straight skeleton 2
+#include <CGAL/Polygon_2.h>
+#include <CGAL/create_straight_skeleton_2.h>
+#include <CGAL/create_straight_skeleton_from_polygon_with_holes_2.h>
+#include <CGAL/create_offset_polygons_2.h>
+#include <CGAL/create_weighted_offset_polygons_from_polygon_with_holes_2.h>
+#include <CGAL/create_weighted_straight_skeleton_2.h>
+#include <CGAL/create_offset_polygons_from_polygon_with_holes_2.h>
+
+
 /**
  * @brief Creates a straight skeleton from a simple polygon without holes.
  * 

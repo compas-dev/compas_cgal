@@ -4,6 +4,27 @@ project(cgal_wrapper LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_CXX_FLAGS_DEBUG "")
+
+# =====================================================================
+# Set this flag to ON for developing to reduce build time.
+# Set this flag to OFF for publishing for file size reduction.
+# =====================================================================
+option(ENABLE_PRECOMPILED_HEADERS "Enable precompiled headers for the build" OFF)
+
+# =====================================================================
+# Build size reduction.
+# =====================================================================
+
+if (NOT ENABLE_PRECOMPILED_HEADERS)
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+    if(MSVC)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /O1") # Optimize for size on MSVC
+    else()
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Os") # Optimize for size on GCC/Clang
+    endif()
+endif()
 
 # =====================================================================
 # Dependencies
@@ -196,15 +217,17 @@ target_include_directories(compas_cgal_ext PRIVATE
 # Make sure external dependencies are downloaded before building the extension
 add_dependencies(compas_cgal_ext external_downloads)
 
-# Enhanced PCH configuration
-set(CMAKE_PCH_INSTANTIATE_TEMPLATES OFF)
-set(CMAKE_PCH_WARN_INVALID OFF)
+if (ENABLE_PRECOMPILED_HEADERS)
+    # Enhanced PCH configuration
+    set(CMAKE_PCH_INSTANTIATE_TEMPLATES ON)
+    set(CMAKE_PCH_WARN_INVALID ON)
 
-# Configure PCH for the extension
-target_precompile_headers(compas_cgal_ext
-    PRIVATE
-    src/compas.h
-)
+    # Configure PCH for the extension
+    target_precompile_headers(compas_cgal_ext
+        PRIVATE
+        src/compas.h
+    )
+endif() 
 
 # Install directive for scikit-build-core
 install(TARGETS compas_cgal_ext LIBRARY DESTINATION compas_cgal)

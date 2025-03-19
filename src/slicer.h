@@ -2,6 +2,9 @@
 
 #include "compas.h"
 
+// CGAL slicer
+#include <CGAL/Polygon_mesh_slicer.h>
+
 /**
  * @brief Slice a mesh with a set of planes defined by points and normals.
  *

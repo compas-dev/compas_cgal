@@ -2,6 +2,9 @@
 
 #include "compas.h"
 
+// CGAL subdivision
+#include <CGAL/subdivision_method_3.h>
+
 /**
  * @brief Subdivide a mesh with the Catmull-Clark scheme.
  * 

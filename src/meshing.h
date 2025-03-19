@@ -1,11 +1,10 @@
-/**
- * @file meshing.h
- * @brief Header file for mesh processing operations using CGAL
- */
-
 #pragma once
 
 #include "compas.h"
+
+// CGAL remesh
+#include <CGAL/Polygon_mesh_processing/remesh.h>
+#include <CGAL/Polygon_mesh_processing/detect_features.h>
 
 namespace compas {
 
