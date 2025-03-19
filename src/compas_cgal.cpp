@@ -6,12 +6,12 @@ void init_meshing(nb::module_ &);
 void init_measure(nb::module_ &);
 void init_booleans(nb::module_ &);
 void init_intersections(nb::module_ &);
-void init_reconstruction(nb::module_ &);
+// void init_reconstruction(nb::module_ &);
 void init_skeletonization(nb::module_ &);
 void init_slicer(nb::module_ &);
 void init_subdivision(nb::module_ &);
 void init_triangulation(nb::module_ &);
-void init_straight_skeleton_2(nb::module_ &);
+// void init_straight_skeleton_2(nb::module_ &);
 
 /**
  * @brief Module initialization function for COMPAS CGAL extension
@@ -47,7 +47,7 @@ NB_MODULE(compas_cgal_ext, m) {
     nb::bind_vector<std::vector<compas::RowMatrixXd>>(m, "VectorRowMatrixXd"); // Be aware that both Pybind11 and Nanobind makes copy for vectors
     init_intersections(m);
 
-    init_reconstruction(m);
+//     init_reconstruction(m);
 
     init_skeletonization(m);
 
@@ -59,5 +59,5 @@ NB_MODULE(compas_cgal_ext, m) {
 
     init_triangulation(m);
 
-    init_straight_skeleton_2(m);
+//     init_straight_skeleton_2(m);
 }

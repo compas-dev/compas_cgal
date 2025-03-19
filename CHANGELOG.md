@@ -37,6 +37,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 * Remove unnecessary headers from `compas_cgal.h`.
+* Remove `reconstruction.h` and `reconstruction.cpp`.
+* Remove `straight_skeleton_2.h` and `straight_skeleton_2.cpp`.
 
 
 ## [0.7.3] 2025-03-18
