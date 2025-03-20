@@ -58,8 +58,8 @@
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="pointset_normal_estimation" href="generated/compas_cgal.reconstruction.pointset_normal_estimation.html" />
-    <link rel="prev" title="mesh_remesh" href="generated/compas_cgal.meshing.mesh_remesh.html" />
+    <link rel="next" title="poisson_surface_reconstruction" href="generated/compas_cgal.reconstruction.poisson_surface_reconstruction.html" />
+    <link rel="prev" title="refined_delaunay_mesh" href="generated/compas_cgal.triangulation.refined_delaunay_mesh.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -477,9 +477,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../examples.html">Examples</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../examples/example_booleans.html">Boolean Operations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../examples/example_intersections.html">Mesh Intersections</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../examples/example_measure.html">Mesh Measurements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../examples/example_meshing.html">Mesh Remeshing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../examples/example_nanobind_types.html">Type Conversion with Nanobind</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../examples/example_reconstruction_pointset_normal_estimation.html">Point Cloud Normal Estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../examples/example_reconstruction_pointset_outlier_removal.html">Point Cloud Outlier Removal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../examples/example_reconstruction_pointset_reduction.html">Point Cloud Reduction</a></li>
@@ -500,12 +498,12 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="compas_cgal.intersections.html">compas_cgal.intersections</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_cgal.measure.html">compas_cgal.measure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_cgal.meshing.html">compas_cgal.meshing</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">compas_cgal.reconstruction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_cgal.slicer.html">compas_cgal.slicer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_cgal.skeletonization.html">compas_cgal.skeletonization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="compas_cgal.straight_skeleton_2.html">compas_cgal.straight_skeleton_2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compas_cgal.slicer.html">compas_cgal.slicer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_cgal.subdivision.html">compas_cgal.subdivision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_cgal.triangulation.html">compas_cgal.triangulation</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">compas_cgal.reconstruction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compas_cgal.straight_skeleton_2.html">compas_cgal.straight_skeleton_2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compas_cgal.types.html">compas_cgal.types</a></li>
 </ul>
 </li>
@@ -588,8 +586,8 @@ document.write(`
 <h1>compas_cgal.reconstruction</h1>
 <table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_cgal.reconstruction.pointset_normal_estimation.html" title="compas_cgal.reconstruction.pointset_normal_estimation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pointset_normal_estimation</span></code></a></p></td>
-<td><p>Remove outliers from a point cloud using the point set outlier removal algorithm.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_cgal.reconstruction.poisson_surface_reconstruction.html" title="compas_cgal.reconstruction.poisson_surface_reconstruction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">poisson_surface_reconstruction</span></code></a></p></td>
+<td><p>Reconstruct a surface from a point cloud using the Poisson surface reconstruction algorithm.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/compas_cgal.reconstruction.pointset_outlier_removal.html" title="compas_cgal.reconstruction.pointset_outlier_removal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pointset_outlier_removal</span></code></a></p></td>
 <td><p>Remove outliers from a point cloud using the point set outlier removal algorithm.</p></td>
@@ -600,8 +598,8 @@ document.write(`
 <tr class="row-even"><td><p><a class="reference internal" href="generated/compas_cgal.reconstruction.pointset_smoothing.html" title="compas_cgal.reconstruction.pointset_smoothing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pointset_smoothing</span></code></a></p></td>
 <td><p>Remove outliers from a point cloud using the point set outlier removal algorithm.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_cgal.reconstruction.poisson_surface_reconstruction.html" title="compas_cgal.reconstruction.poisson_surface_reconstruction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">poisson_surface_reconstruction</span></code></a></p></td>
-<td><p>Reconstruct a surface from a point cloud using the Poisson surface reconstruction algorithm.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/compas_cgal.reconstruction.pointset_normal_estimation.html" title="compas_cgal.reconstruction.pointset_normal_estimation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pointset_normal_estimation</span></code></a></p></td>
+<td><p>Remove outliers from a point cloud using the point set outlier removal algorithm.</p></td>
 </tr>
 </tbody>
 </table>

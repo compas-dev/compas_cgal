@@ -58,7 +58,7 @@
         </script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="compas_cgal.skeletonization" href="../compas_cgal.skeletonization.html" />
+    <link rel="next" title="compas_cgal.subdivision" href="../compas_cgal.subdivision.html" />
     <link rel="prev" title="compas_cgal.slicer" href="../compas_cgal.slicer.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -481,9 +481,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../examples.html">Examples</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../examples/example_booleans.html">Boolean Operations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../examples/example_intersections.html">Mesh Intersections</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../examples/example_measure.html">Mesh Measurements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../examples/example_meshing.html">Mesh Remeshing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../examples/example_nanobind_types.html">Type Conversion with Nanobind</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../examples/example_reconstruction_pointset_normal_estimation.html">Point Cloud Normal Estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../examples/example_reconstruction_pointset_outlier_removal.html">Point Cloud Outlier Removal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../examples/example_reconstruction_pointset_reduction.html">Point Cloud Reduction</a></li>
@@ -504,10 +502,12 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../compas_cgal.intersections.html">compas_cgal.intersections</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../compas_cgal.measure.html">compas_cgal.measure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../compas_cgal.meshing.html">compas_cgal.meshing</a></li>
-<li class="toctree-l2 current active"><a class="reference internal" href="../compas_cgal.slicer.html">compas_cgal.slicer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../compas_cgal.skeletonization.html">compas_cgal.skeletonization</a></li>
+<li class="toctree-l2 current active"><a class="reference internal" href="../compas_cgal.slicer.html">compas_cgal.slicer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../compas_cgal.subdivision.html">compas_cgal.subdivision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../compas_cgal.triangulation.html">compas_cgal.triangulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compas_cgal.reconstruction.html">compas_cgal.reconstruction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compas_cgal.straight_skeleton_2.html">compas_cgal.straight_skeleton_2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../compas_cgal.types.html">compas_cgal.types</a></li>
 </ul>
 </li>
@@ -593,7 +593,7 @@ document.write(`
 <h1>slice_mesh_planes</h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="compas_cgal.slicer.slice_mesh_planes">
-<span class="sig-prename descclassname"><span class="pre">compas_cgal.slicer.</span></span><span class="sig-name descname"><span class="pre">slice_mesh_planes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planes</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/compas-dev/compas_cgal/blob/a507e1f/src/compas_cgal/slicer.py#L11"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">compas_cgal.slicer.</span></span><span class="sig-name descname"><span class="pre">slice_mesh_planes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planes</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/compas-dev/compas_cgal/blob/ff11311/src/compas_cgal/slicer.py#L12"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Slice a mesh by a list of planes.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

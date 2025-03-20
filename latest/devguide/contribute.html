@@ -499,7 +499,16 @@ document.write(`
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../api/compas_cgal.booleans.html">compas_cgal.booleans</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/compas_cgal.intersections.html">compas_cgal.intersections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/compas_cgal.measure.html">compas_cgal.measure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/compas_cgal.meshing.html">compas_cgal.meshing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/compas_cgal.skeletonization.html">compas_cgal.skeletonization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/compas_cgal.slicer.html">compas_cgal.slicer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/compas_cgal.subdivision.html">compas_cgal.subdivision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/compas_cgal.triangulation.html">compas_cgal.triangulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/compas_cgal.reconstruction.html">compas_cgal.reconstruction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/compas_cgal.straight_skeleton_2.html">compas_cgal.straight_skeleton_2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/compas_cgal.types.html">compas_cgal.types</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../devguide.html">Development Guide</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
@@ -610,15 +619,14 @@ touch<span class="w"> </span>new_module.h
 <span class="c1">// Your method declarations here</span>
 </pre></div>
 </div>
-<p>Implement the functions and add the nanobind module registration: <code class="docutils literal notranslate"><span class="pre">src/new_module.cpp</span></code>:</p>
+<p>Implement the functions and add the nanobind module registration: <code class="docutils literal notranslate"><span class="pre">src/new_module.cpp</span></code>, we name modules started with <code class="docutils literal notranslate"><span class="pre">_</span></code>:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;new_module&quot;</span>
 
 <span class="c1">// Your method definitions here</span>
 
-<span class="kt">void</span><span class="w"> </span><span class="nf">init_new_module</span><span class="p">(</span><span class="n">nb</span><span class="o">::</span><span class="n">module_</span><span class="o">&amp;</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">submodule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="p">.</span><span class="n">def_submodule</span><span class="p">(</span><span class="s">&quot;new_module&quot;</span><span class="p">);</span>
+<span class="n">NB_MODULE</span><span class="p">(</span><span class="n">_new_module</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 
-<span class="w">    </span><span class="n">submodule</span><span class="p">.</span><span class="n">def</span><span class="p">(</span>
+<span class="w">    </span><span class="n">m</span><span class="p">.</span><span class="n">def</span><span class="p">(</span>
 <span class="w">        </span><span class="s">&quot;python_function_name&quot;</span><span class="p">,</span>
 <span class="w">        </span><span class="o">&amp;</span><span class="n">cpp_function_name</span><span class="p">,</span>
 <span class="w">        </span><span class="s">&quot;description&quot;</span><span class="p">,</span>
@@ -628,26 +636,24 @@ touch<span class="w"> </span>new_module.h
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Add the submodule registration to <code class="docutils literal notranslate"><span class="pre">src/compas_cgal.cpp</span></code>:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;compas.h&quot;</span>
-
-<span class="p">...</span>
-<span class="n">init_new_module</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
-<span class="p">...</span>
-
-<span class="n">NB_MODULE</span><span class="p">(</span><span class="n">compas_cgal_ext</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="p">...</span>
-<span class="w">    </span><span class="n">init_new_module</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
-<span class="p">}</span>
-</pre></div>
-</div>
 <p>Rebuild the project with:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--no-build-isolation<span class="w"> </span>-ve<span class="w"> </span>.<span class="w"> </span>-Ceditable.rebuild<span class="o">=</span><span class="nb">true</span>
 </pre></div>
 </div>
+</section>
+<section id="cmake">
+<h3>CMake</h3>
+<p>Add the new module to the CMakeLists.txt file:</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">add_nanobind_module</span><span class="p">(</span><span class="s">_new_module</span><span class="w"> </span><span class="s">src/new_module.cpp</span><span class="p">)</span>
+</pre></div>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>It is advisable to include all the headers from 3rd-party libraries to the precompiled header <code class="docutils literal notranslate"><span class="pre">src/compas.h</span></code> so that your compilation time decreases.</p>
+<ul class="simple">
+<li><p>We build small dynamic libraries for each module to avoid large monolithic libraries for two reasons: build time and file size.</p></li>
+<li><p>If your package requires C++ standard library data types (e.g., vector, array, map, etc.), bind them in the <cite>types_std.cpp</cite> file.</p></li>
+<li><p>Do not bind C++ types with the same names, as this will result in errors even if they are in different namespaces and libraries.</p></li>
+</ul>
 </div>
 </section>
 <section id="python-binding">
@@ -752,6 +758,7 @@ git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-started">Getting Started</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#binding-process">Binding Process</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#c-binding">C++ Binding</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cmake">CMake</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#python-binding">Python Binding</a></li>
 </ul>
 </li>

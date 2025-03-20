@@ -58,7 +58,7 @@
         </script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Development Guide" href="../../devguide.html" />
+    <link rel="next" title="compas_cgal.skeletonization" href="../compas_cgal.skeletonization.html" />
     <link rel="prev" title="compas_cgal.meshing" href="../compas_cgal.meshing.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -499,7 +499,16 @@ document.write(`
 </li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../../api.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../compas_cgal.booleans.html">compas_cgal.booleans</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compas_cgal.intersections.html">compas_cgal.intersections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compas_cgal.measure.html">compas_cgal.measure</a></li>
 <li class="toctree-l2 current active"><a class="reference internal" href="../compas_cgal.meshing.html">compas_cgal.meshing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compas_cgal.skeletonization.html">compas_cgal.skeletonization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compas_cgal.slicer.html">compas_cgal.slicer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compas_cgal.subdivision.html">compas_cgal.subdivision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compas_cgal.triangulation.html">compas_cgal.triangulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compas_cgal.reconstruction.html">compas_cgal.reconstruction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compas_cgal.straight_skeleton_2.html">compas_cgal.straight_skeleton_2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compas_cgal.types.html">compas_cgal.types</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../devguide.html">Development Guide</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -584,12 +593,12 @@ document.write(`
 <h1>mesh_remesh</h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="compas_cgal.meshing.mesh_remesh">
-<span class="sig-prename descclassname"><span class="pre">compas_cgal.meshing.</span></span><span class="sig-name descname"><span class="pre">mesh_remesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_edge_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_iterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/compas-dev/compas_cgal/blob/c3db632/src/compas_cgal/meshing.py#L10"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">compas_cgal.meshing.</span></span><span class="sig-name descname"><span class="pre">mesh_remesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_edge_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_iterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/compas-dev/compas_cgal/blob/ff11311/src/compas_cgal/meshing.py#L10"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Remeshing of a triangle mesh.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>mesh</strong><span class="classifier"><code class="xref py py-attr docutils literal notranslate"><span class="pre">compas_cgal.types.VerticesFaces</span></code></span></dt><dd><p>The mesh to remesh.</p>
+<dt><strong>mesh</strong><span class="classifier"><a class="reference internal" href="compas_cgal.types.VerticesFaces.html#compas_cgal.types.VerticesFaces" title="compas_cgal.types.VerticesFaces"><code class="xref py py-attr docutils literal notranslate"><span class="pre">compas_cgal.types.VerticesFaces</span></code></a></span></dt><dd><p>The mesh to remesh.</p>
 </dd>
 <dt><strong>target_edge_length</strong><span class="classifier">float</span></dt><dd><p>The target edge length.</p>
 </dd>
@@ -601,7 +610,7 @@ document.write(`
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt><code class="xref py py-attr docutils literal notranslate"><span class="pre">compas_cgal.types.VerticesFacesNumpy</span></code></dt><dd></dd>
+<dt><a class="reference internal" href="compas_cgal.types.VerticesFacesNumpy.html#compas_cgal.types.VerticesFacesNumpy" title="compas_cgal.types.VerticesFacesNumpy"><code class="xref py py-attr docutils literal notranslate"><span class="pre">compas_cgal.types.VerticesFacesNumpy</span></code></a></dt><dd></dd>
 </dl>
 </dd>
 </dl>
