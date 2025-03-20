@@ -5,7 +5,7 @@ from compas.datastructures import Mesh
 from compas.geometry import Pointcloud
 from compas.geometry import Rotation
 from compas.geometry import Scale
-from compas_cgal import reconstruction
+from compas_cgal.reconstruction import poisson_surface_reconstruction
 
 
 def test_reconstruction_poisson_surface_reconstruction():
@@ -19,7 +19,7 @@ def test_reconstruction_poisson_surface_reconstruction():
             points.append([float(x), float(y), float(z)])
             normals.append([float(nx), float(ny), float(nz)])
 
-    V, F = reconstruction.poisson_surface_reconstruction(points, normals)
+    V, F = poisson_surface_reconstruction(points, normals)
     mesh = Mesh.from_vertices_and_faces(V, F)
 
     R = Rotation.from_axis_and_angle([1, 0, 0], math.radians(90))

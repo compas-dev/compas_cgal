@@ -3,6 +3,7 @@ from compas.geometry import Point
 from compas.plugins import plugin
 
 from compas_cgal import measure_ext
+from compas_cgal import types_std
 
 from .types import VerticesFaces
 
@@ -76,6 +77,6 @@ def mesh_centroid(mesh: VerticesFaces) -> list[float]:
     V, F = mesh
     V = np.asarray(V, dtype=np.float64, order="C")
     F = np.asarray(F, dtype=np.int32, order="C")
-    vector_of_double: measure_ext.VectorDouble = measure_ext.centroid(V, F)
+    vector_of_double: types_std.VectorDouble = measure_ext.centroid(V, F)
     point = Point(*vector_of_double)
     return point

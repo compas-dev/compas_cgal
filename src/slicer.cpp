@@ -30,7 +30,6 @@ pmp_slice_mesh(
 
 NB_MODULE(slicer_ext, m) {
 
-    nb::bind_vector<std::vector<compas::RowMatrixXd>>(m, "VectorRowMatrixXd");
 
     m.def(
         "slice_mesh",

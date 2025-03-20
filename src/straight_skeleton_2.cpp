@@ -286,9 +286,6 @@ pmp_create_weighted_offset_polygons_2_outer(
 }
 NB_MODULE(straight_skeleton_2_ext, m) {
 
-    nb::bind_vector<std::vector<int>>(m, "VectorInt");
-    nb::bind_vector<std::vector<compas::RowMatrixXd>>(m, "VectorRowMatrixXd");
-
     m.def(
         "create_interior_straight_skeleton",
         &pmp_create_interior_straight_skeleton,

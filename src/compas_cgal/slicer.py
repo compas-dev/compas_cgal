@@ -3,6 +3,7 @@ from compas.geometry import Plane
 from compas.plugins import plugin
 
 from compas_cgal import slicer_ext
+from compas_cgal import types_std  # noqa: F401
 
 from .types import PolylinesNumpy
 from .types import VerticesFaces

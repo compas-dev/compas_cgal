@@ -225,6 +225,7 @@ function(add_nanobind_module module_name source_file)
 endfunction()
 
 # Add new modules here
+add_nanobind_module(types_std src/types_std.cpp)
 add_nanobind_module(booleans_ext src/booleans.cpp)
 add_nanobind_module(meshing_ext src/meshing.cpp)
 add_nanobind_module(intersections_ext src/intersections.cpp)
@@ -233,4 +234,7 @@ add_nanobind_module(reconstruction_ext src/reconstruction.cpp)
 add_nanobind_module(skeletonization_ext src/skeletonization.cpp)
 add_nanobind_module(slicer_ext src/slicer.cpp)
 add_nanobind_module(straight_skeleton_2_ext src/straight_skeleton_2.cpp)
+add_nanobind_module(triangulation_ext src/triangulation.cpp)
+add_nanobind_module(subdivision_ext src/subdivision.cpp)
+
 

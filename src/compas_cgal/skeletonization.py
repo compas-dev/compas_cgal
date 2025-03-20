@@ -2,6 +2,7 @@ import numpy as np
 from compas.plugins import plugin
 
 from compas_cgal import skeletonization_ext
+from compas_cgal import types_std  # noqa: F401
 
 from .types import PolylinesNumpySkeleton
 from .types import VerticesFaces

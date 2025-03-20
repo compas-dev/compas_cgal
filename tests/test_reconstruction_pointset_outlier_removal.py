@@ -1,8 +1,7 @@
 from pathlib import Path
 
 from compas.geometry import Pointcloud
-from compas_cgal import reconstruction
-
+from compas_cgal.reconstruction import pointset_outlier_removal
 import numpy as np
 from line_profiler import profile
 
@@ -11,7 +10,7 @@ from line_profiler import profile
 def reconstruction_pointset_outlier_removal():
     FILE = Path(__file__).parent.parent / "data" / "forked_branch_1.ply"
     c1 = Pointcloud.from_ply(FILE)
-    points = reconstruction.pointset_outlier_removal(c1, 30, 2.0)
+    points = pointset_outlier_removal(c1, 30, 2.0)
     c2 = Pointcloud(points)
     c3 = c1.difference(c2)
     c2.name = "pointset_outlier_removal"
@@ -33,7 +32,7 @@ def test_pointset_outlier_removal():
     )
 
     # Test outlier removal
-    filtered_points = reconstruction.pointset_outlier_removal(points, nnnbrs=3, radius=1.0)
+    filtered_points = pointset_outlier_removal(points, nnnbrs=3, radius=1.0)
 
     # Basic checks
     assert filtered_points.shape[0] == 4  # Should have removed one point

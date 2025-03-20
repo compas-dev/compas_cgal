@@ -19,7 +19,6 @@ pmp_intersection_mesh_mesh(
 
 NB_MODULE(intersections_ext, m) {
 
-    nb::bind_vector<std::vector<compas::RowMatrixXd>>(m, "VectorRowMatrixXd"); // Be aware that both Pybind11 and Nanobind makes copy for vectors
 
     m.def(
         "intersection_mesh_mesh",

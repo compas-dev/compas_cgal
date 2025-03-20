@@ -1,5 +1,5 @@
 import numpy as np
-from compas_cgal import reconstruction
+from compas_cgal.reconstruction import pointset_reduction
 
 
 def test_pointset_reduction():
@@ -11,7 +11,7 @@ def test_pointset_reduction():
 
     # Test point reduction
     spacing = 0.3  # Should reduce points significantly
-    reduced_points = reconstruction.pointset_reduction(points, spacing=spacing)
+    reduced_points = pointset_reduction(points, spacing=spacing)
 
     # Basic checks
     assert reduced_points.shape[0] < points.shape[0]  # Should have fewer points

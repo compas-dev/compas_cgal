@@ -8,6 +8,7 @@ from compas.geometry import normal_polygon
 from compas.tolerance import TOL
 
 from compas_cgal import straight_skeleton_2_ext
+from compas_cgal import types_std  # noqa: F401
 
 from .types import IntNx1
 from .types import IntNx2

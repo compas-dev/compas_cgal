@@ -1,5 +1,5 @@
 import numpy as np
-from compas_cgal import reconstruction
+from compas_cgal.reconstruction import pointset_smoothing
 
 
 def test_pointset_smoothing():
@@ -15,7 +15,7 @@ def test_pointset_smoothing():
     )
 
     # Test smoothing
-    smoothed_points = reconstruction.pointset_smoothing(points, neighbors=3, iterations=2)
+    smoothed_points = pointset_smoothing(points, neighbors=3, iterations=2)
 
     # Basic checks
     assert smoothed_points.shape == points.shape  # Should preserve point count

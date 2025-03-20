@@ -34,7 +34,6 @@ pmp_centroid(
 
 NB_MODULE(measure_ext, m) {
 
-    nb::bind_vector<std::vector<double>>(m, "VectorDouble"); // Be aware that both Pybind11 and Nanobind makes copy for vectors
 
     m.def(
         "area",

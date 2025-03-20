@@ -48,7 +48,6 @@ pmp_mesh_skeleton(
 
 NB_MODULE(skeletonization_ext, m) {
 
-    nb::bind_vector<std::vector<double>>(m, "VectorDouble");
 
     m.def(
         "mesh_skeleton",

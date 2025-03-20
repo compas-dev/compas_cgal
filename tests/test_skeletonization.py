@@ -10,7 +10,6 @@ def test_mesh_skeleton():
 
     # Get skeleton
     edges = mesh_skeleton(mesh)
-    print(edges)
 
     # Basic validation
     assert isinstance(edges, list)

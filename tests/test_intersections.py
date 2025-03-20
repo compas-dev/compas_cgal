@@ -4,8 +4,6 @@ import numpy as np
 from compas.geometry import Box, Sphere
 from compas_cgal.intersections import intersection_mesh_mesh
 
-from compas_cgal.intersections_ext import VectorRowMatrixXd
-
 
 @pytest.fixture
 def box_sphere_meshes():
@@ -27,7 +25,6 @@ def test_intersection_mesh_mesh(box_sphere_meshes):
     pointsets = intersection_mesh_mesh(mesh_a, mesh_b)
 
     # Basic validation
-    assert isinstance(pointsets, VectorRowMatrixXd), "Result should be a nanobind type"
     assert len(pointsets) > 0, "Should find at least one intersection curve"
 
     # Validate each pointset
