@@ -10,7 +10,6 @@ from compas_cgal.booleans import boolean_difference_mesh_mesh
 from compas_cgal.booleans import boolean_intersection_mesh_mesh
 from compas_cgal.booleans import boolean_union_mesh_mesh
 from compas_cgal.booleans import split_mesh_mesh
-# from compas_cgal.meshing import mesh_remesh
 
 
 def input():

@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * Split binding into separate dynamic libraries.
+* The documentation contribution guide has been updated based on the single-file and single dynamic library build process.
+* Example images in the documentation have been updated.
+* The Python/C++ module name has been changed from `name_ext` to `_name`.
 
 ### Removed
 

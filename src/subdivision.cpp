@@ -36,7 +36,7 @@ subd_sqrt3(
     return compas::mesh_to_vertices_and_faces(mesh);
 }
 
-NB_MODULE(subdivision_ext, m) {
+NB_MODULE(_subdivision, m) {
 
     m.def(
         "subd_catmullclark",

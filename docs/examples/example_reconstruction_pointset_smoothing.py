@@ -35,6 +35,6 @@ config.camera.scale = 1000
 config.renderer.gridsize = (20000, 20, 20000, 20)
 
 viewer = Viewer(config=config)
-viewer.scene.add(c_smoothing_0, pointcolor=(0.0, 0.0, 0.0))
-viewer.scene.add(c_smoothing_1, pointcolor=(1.0, 0.0, 0.0))
+viewer.scene.add(c_smoothing_0, pointcolor=(0.0, 0.0, 0.0), pointsize=3)
+viewer.scene.add(c_smoothing_1, pointcolor=(1.0, 0.0, 0.0), pointsize=7)
 viewer.show()

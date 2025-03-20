@@ -1,6 +1,6 @@
 #include "types_std.h"
 
-NB_MODULE(types_std, m) {
+NB_MODULE(_types_std, m) {
 
     nb::bind_vector<std::vector<double>>(m, "VectorDouble");
     nb::bind_vector<std::vector<int>>(m, "VectorInt");

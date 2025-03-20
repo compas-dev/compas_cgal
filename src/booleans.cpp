@@ -66,7 +66,7 @@ pmp_split(
     return result;
 };
 
-NB_MODULE(booleans_ext, m) {
+NB_MODULE(_booleans, m) {
 
     m.def(
         "boolean_union",

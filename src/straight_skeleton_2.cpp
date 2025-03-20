@@ -284,7 +284,7 @@ pmp_create_weighted_offset_polygons_2_outer(
         throw std::runtime_error("CGAL precondition failed: Invalid input for weighted offset");
     }
 }
-NB_MODULE(straight_skeleton_2_ext, m) {
+NB_MODULE(_straight_skeleton_2, m) {
 
     m.def(
         "create_interior_straight_skeleton",

@@ -394,7 +394,7 @@ pmp_refined_delaunay_mesh(
     return std::make_tuple(vertices_out, faces_out);
 }
 
-NB_MODULE(triangulation_ext, m) {
+NB_MODULE(_triangulation, m) {
 
     
     m.def(

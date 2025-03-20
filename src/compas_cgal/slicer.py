@@ -2,8 +2,8 @@ import numpy as np
 from compas.geometry import Plane
 from compas.plugins import plugin
 
-from compas_cgal import slicer_ext
-from compas_cgal import types_std  # noqa: F401
+from compas_cgal import _slicer
+from compas_cgal import _types_std  # noqa: F401
 
 from .types import PolylinesNumpy
 from .types import VerticesFaces
@@ -47,7 +47,7 @@ def slice_mesh_planes(mesh: VerticesFaces, planes: list[Plane]) -> PolylinesNump
     P = np.array(points, dtype=np.float64, order="C")
     N = np.array(normals, dtype=np.float64, order="C")
 
-    pointsets = slicer_ext.slice_mesh(V, F, P, N)
+    pointsets = _slicer.slice_mesh(V, F, P, N)
     return pointsets
 
 
