@@ -232,4 +232,5 @@ add_nanobind_module(measure_ext src/measure.cpp)
 add_nanobind_module(reconstruction_ext src/reconstruction.cpp)
 add_nanobind_module(skeletonization_ext src/skeletonization.cpp)
 add_nanobind_module(slicer_ext src/slicer.cpp)
+add_nanobind_module(straight_skeleton_2_ext src/straight_skeleton_2.cpp)
 

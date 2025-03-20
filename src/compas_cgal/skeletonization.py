@@ -45,7 +45,7 @@ def mesh_skeleton(mesh: VerticesFaces) -> PolylinesNumpySkeleton:
     V_numpy = np.asarray(V, dtype=np.float64, order="C")  # Ensure C-contiguous
     F_numpy = np.asarray(F, dtype=np.int32, order="C")  # Ensure C-contiguous
 
-    # Get start and end points as flattened vectorS    
+    # Get start and end points as flattened vectorS
     start_points, end_points = skeletonization_ext.mesh_skeleton(V_numpy, F_numpy)
 
     # Convert flattened vectors to list of point coordinates
