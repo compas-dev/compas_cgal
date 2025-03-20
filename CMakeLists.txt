@@ -227,3 +227,4 @@ endfunction()
 # Add new modules here
 add_nanobind_module(booleans_ext src/booleans.cpp)
 add_nanobind_module(meshing_ext src/meshing.cpp)
+add_nanobind_module(intersections_ext src/intersections.cpp)
