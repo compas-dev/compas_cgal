@@ -199,61 +199,31 @@ find_package(nanobind CONFIG REQUIRED)
 # Important: If you add a new .cpp file, you must rebuild the project with:
 # pip install --no-build-isolation -ve . -Ceditable.rebuild=true
 
-# Add the booleans module
-nanobind_add_module(
-    booleans_ext
-    STABLE_ABI
-    NB_STATIC
-    src/booleans.cpp)
-
-# Set include directories for the extension
-target_include_directories(booleans_ext PRIVATE
-    ${CGAL_INCLUDE_DIR}
-    ${BOOST_INCLUDE_DIR}
-    ${EIGEN_INCLUDE_DIR}
-)
-
-message(STATUS "Checking for src/meshing.cpp")
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/meshing.cpp")
-    message(STATUS "src/meshing.cpp found")
-else()
-    message(FATAL_ERROR "src/meshing.cpp NOT found")
-endif()
-
-# Add the meshing module
-nanobind_add_module(
-    meshing_ext
-    STABLE_ABI
-    NB_STATIC
-    src/meshing.cpp)
-
-# Set include directories for the extension
-target_include_directories(meshing_ext PRIVATE
-    ${CGAL_INCLUDE_DIR}
-    ${BOOST_INCLUDE_DIR}
-    ${EIGEN_INCLUDE_DIR}
-)
-
-# Make sure external dependencies are downloaded before building the extension
-add_dependencies(booleans_ext external_downloads)
-add_dependencies(meshing_ext external_downloads)
-
+# Enhanced PCH configuration
 if (ENABLE_PRECOMPILED_HEADERS)
-    # Enhanced PCH configuration
     set(CMAKE_PCH_INSTANTIATE_TEMPLATES ON)
     set(CMAKE_PCH_WARN_INVALID ON)
-
-    # Configure PCH for the extension
-    target_precompile_headers(booleans_ext
-        PRIVATE
-        src/compas.h
-    )
-    target_precompile_headers(meshing_ext
-        PRIVATE
-        src/compas.h
-    )
 endif() 
 
-# Install directive for scikit-build-core
-install(TARGETS booleans_ext LIBRARY DESTINATION compas_cgal)
-install(TARGETS meshing_ext LIBRARY DESTINATION compas_cgal)
+# Function to add a nanobind module with include directories
+function(add_nanobind_module module_name source_file)
+    nanobind_add_module(${module_name} STABLE_ABI NB_STATIC ${source_file})
+
+    target_include_directories(${module_name} PRIVATE
+        ${CGAL_INCLUDE_DIR}
+        ${BOOST_INCLUDE_DIR}
+        ${EIGEN_INCLUDE_DIR}
+    )
+
+    add_dependencies(${module_name} external_downloads)
+
+    if (ENABLE_PRECOMPILED_HEADERS)
+        target_precompile_headers(${module_name} PRIVATE src/compas.h)
+    endif()
+
+    install(TARGETS ${module_name} LIBRARY DESTINATION compas_cgal)
+endfunction()
+
+# Add new modules here
+add_nanobind_module(booleans_ext src/booleans.cpp)
+add_nanobind_module(meshing_ext src/meshing.cpp)
