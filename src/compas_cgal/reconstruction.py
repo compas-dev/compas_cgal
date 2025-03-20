@@ -5,7 +5,7 @@ import numpy as np
 from compas.geometry import Point
 from compas.geometry import Vector
 
-from compas_cgal import reconstruction_ext
+from compas_cgal import _reconstruction
 
 from .types import FloatNx3
 from .types import IntNx3
@@ -66,7 +66,7 @@ def poisson_surface_reconstruction(
         N = N / norms[:, np.newaxis]
 
     try:
-        return reconstruction_ext.poisson_surface_reconstruction(P, N)
+        return _reconstruction.poisson_surface_reconstruction(P, N)
     except RuntimeError as e:
         raise RuntimeError(f"Poisson surface reconstruction failed: {str(e)}")
 
@@ -94,7 +94,7 @@ def pointset_outlier_removal(
 
     """
     P = np.asarray(points, dtype=np.float64, order="C")
-    return reconstruction_ext.pointset_outlier_removal(P, nnnbrs, radius)
+    return _reconstruction.pointset_outlier_removal(P, nnnbrs, radius)
 
 
 def pointset_reduction(
@@ -117,7 +117,7 @@ def pointset_reduction(
 
     """
     P = np.asarray(points, dtype=np.float64, order="C")
-    return reconstruction_ext.pointset_reduction(P, spacing)
+    return _reconstruction.pointset_reduction(P, spacing)
 
 
 def pointset_smoothing(
@@ -141,7 +141,7 @@ def pointset_smoothing(
 
     """
     P = np.asarray(points, dtype=np.float64, order="C")
-    return reconstruction_ext.pointset_smoothing(P, neighbors, iterations)
+    return _reconstruction.pointset_smoothing(P, neighbors, iterations)
 
 
 def pointset_normal_estimation(
@@ -167,4 +167,4 @@ def pointset_normal_estimation(
 
     """
     P = np.asarray(points, dtype=np.float64, order="C")
-    return reconstruction_ext.pointset_normal_estimation(P, neighbors, erase)
+    return _reconstruction.pointset_normal_estimation(P, neighbors, erase)

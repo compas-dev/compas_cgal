@@ -44,7 +44,7 @@ Define new methods declarations in ``src/new_module.h``:
 
     // Your method declarations here
 
-Implement the functions and add the nanobind module registration: ``src/new_module.cpp``:
+Implement the functions and add the nanobind module registration: ``src/new_module.cpp``, we name modules started with ``_``:
 
 .. code-block:: cpp
 
@@ -52,31 +52,15 @@ Implement the functions and add the nanobind module registration: ``src/new_modu
 
     // Your method definitions here
 
-    void init_new_module(nb::module_& m) {
-        auto submodule = m.def_submodule("new_module");
+    NB_MODULE(_new_module, m) {
 
-        submodule.def(
+        m.def(
             "python_function_name",
             &cpp_function_name,
             "description",
             "my_argument1"_a,
             "my_argument2"_a,
         );
-    }
-
-Add the submodule registration to ``src/compas_cgal.cpp``:
-
-.. code-block:: cpp
-
-    #include "compas.h"
-
-    ...
-    init_new_module(m);
-    ...
-
-    NB_MODULE(compas_cgal_ext, m) {
-        ...
-        init_new_module(m);
     }
 
 Rebuild the project with:
@@ -86,8 +70,20 @@ Rebuild the project with:
     pip install --no-build-isolation -ve . -Ceditable.rebuild=true
 
 
-.. note:: 
-    It is advisable to include all the headers from 3rd-party libraries to the precompiled header ``src/compas.h`` so that your compilation time decreases.
+CMake
+-----
+
+Add the new module to the CMakeLists.txt file:
+
+.. code-block:: cmake
+
+    add_nanobind_module(_new_module src/new_module.cpp)
+
+.. note::
+    - We build small dynamic libraries for each module to avoid large monolithic libraries for two reasons: build time and file size.
+    - If your package requires C++ standard library data types (e.g., vector, array, map, etc.), bind them in the `types_std.cpp` file.
+    - Do not bind C++ types with the same names, as this will result in errors even if they are in different namespaces and libraries.
+
 
 Python Binding
 --------------

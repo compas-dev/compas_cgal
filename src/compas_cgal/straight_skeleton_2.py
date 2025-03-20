@@ -7,8 +7,8 @@ from compas.geometry import Polygon
 from compas.geometry import normal_polygon
 from compas.tolerance import TOL
 
-from compas_cgal import straight_skeleton_2_ext
-from compas_cgal import types_std  # noqa: F401
+from compas_cgal import _straight_skeleton_2
+from compas_cgal import _types_std  # noqa: F401
 
 from .types import IntNx1
 from .types import IntNx2
@@ -74,7 +74,7 @@ def interior_straight_skeleton(points, as_graph=True) -> Union[Graph, Tuple[Vert
     if not TOL.is_allclose(normal, [0, 0, 1]):
         raise ValueError("The normal of the polygon should be [0, 0, 1]. The normal of the provided polygon is {}".format(normal))
     V = np.asarray(points, dtype=np.float64, order="C")
-    points, indices, edges, edge_types = straight_skeleton_2_ext.create_interior_straight_skeleton(V)
+    points, indices, edges, edge_types = _straight_skeleton_2.create_interior_straight_skeleton(V)
     if as_graph:
         return graph_from_skeleton_data(points, indices, edges, edge_types)
     return points, indices, edges, edge_types
@@ -117,7 +117,7 @@ def interior_straight_skeleton_with_holes(points, holes, as_graph=True) -> Union
             raise ValueError("The normal of the hole should be [0, 0, -1]. The normal of the provided {}-th hole is {}".format(i, normal_hole))
         hole = np.asarray(points, dtype=np.float64)
         H.append(hole)
-    points, indices, edges, edge_types = straight_skeleton_2_ext.create_interior_straight_skeleton_with_holes(V, H)
+    points, indices, edges, edge_types = _straight_skeleton_2.create_interior_straight_skeleton_with_holes(V, H)
     if as_graph:
         return graph_from_skeleton_data(points, indices, edges, edge_types)
     return points, indices, edges, edge_types
@@ -150,9 +150,9 @@ def offset_polygon(points, offset) -> list[Polygon]:
     V = np.asarray(points, dtype=np.float64, order="C")
     offset = float(offset)
     if offset < 0:  # outside
-        offset_polygons = straight_skeleton_2_ext.create_offset_polygons_2_outer(V, abs(offset))[1:]  # first one is box
+        offset_polygons = _straight_skeleton_2.create_offset_polygons_2_outer(V, abs(offset))[1:]  # first one is box
     else:  # inside
-        offset_polygons = straight_skeleton_2_ext.create_offset_polygons_2_inner(V, offset)
+        offset_polygons = _straight_skeleton_2.create_offset_polygons_2_inner(V, offset)
     return [Polygon(points.tolist()) for points in offset_polygons]
 
 
@@ -195,9 +195,9 @@ def offset_polygon_with_holes(points, holes, offset) -> list[Tuple[Polygon, list
         H.append(hole)
 
     if offset < 0:  # outside
-        offset_polygons = straight_skeleton_2_ext.create_offset_polygons_2_outer_with_holes(V, H, abs(offset))
+        offset_polygons = _straight_skeleton_2.create_offset_polygons_2_outer_with_holes(V, H, abs(offset))
     else:  # inside
-        offset_polygons = straight_skeleton_2_ext.create_offset_polygons_2_inner_with_holes(V, H, offset)
+        offset_polygons = _straight_skeleton_2.create_offset_polygons_2_inner_with_holes(V, H, offset)
 
     result = []
     for points, holes_np in offset_polygons:
@@ -245,9 +245,9 @@ def weighted_offset_polygon(points, offset, weights) -> list[Polygon]:
     if W.shape[0] != V.shape[0]:
         raise ValueError("The number of weights should be equal to the number of points %d != %d." % (W.shape[0], V.shape[0]))
     if offset < 0:
-        offset_polygons = straight_skeleton_2_ext.create_weighted_offset_polygons_2_outer(V, abs(offset), W)
+        offset_polygons = _straight_skeleton_2.create_weighted_offset_polygons_2_outer(V, abs(offset), W)
         # Return all except the first polygon which is the bounding box
         return [Polygon(points.tolist()) for points in offset_polygons[1:]]
     else:
-        offset_polygons = straight_skeleton_2_ext.create_weighted_offset_polygons_2_inner(V, offset, W)
+        offset_polygons = _straight_skeleton_2.create_weighted_offset_polygons_2_inner(V, offset, W)
         return [Polygon(points.tolist()) for points in offset_polygons]

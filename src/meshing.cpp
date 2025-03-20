@@ -27,7 +27,7 @@ pmp_remesh(
 }
 
 
-NB_MODULE(meshing_ext, m) {
+NB_MODULE(_meshing, m) {
     m.def(
         "remesh",
         &pmp_remesh,

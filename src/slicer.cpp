@@ -28,7 +28,7 @@ pmp_slice_mesh(
     return result;
 };
 
-NB_MODULE(slicer_ext, m) {
+NB_MODULE(_slicer, m) {
 
 
     m.def(

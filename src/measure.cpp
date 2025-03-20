@@ -32,7 +32,7 @@ pmp_centroid(
 }
 
 
-NB_MODULE(measure_ext, m) {
+NB_MODULE(_measure, m) {
 
 
     m.def(

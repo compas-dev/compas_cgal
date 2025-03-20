@@ -1,7 +1,7 @@
 import numpy as np
 
-from compas_cgal import subdivision_ext
-from compas_cgal import types_std  # noqa: F401
+from compas_cgal import _subdivision
+from compas_cgal import _types_std  # noqa: F401
 
 from .types import VerticesFaces
 from .types import VerticesFacesNumpy
@@ -36,7 +36,7 @@ def mesh_subdivide_catmull_clark(mesh: VerticesFaces, k=1) -> VerticesFacesNumpy
     V, F = mesh
     V = np.asarray(V, dtype=np.float64, order="C")
     F = np.asarray(F, dtype=np.int32, order="C")
-    return subdivision_ext.subd_catmullclark(V, F, k)
+    return _subdivision.subd_catmullclark(V, F, k)
 
 
 def mesh_subdivide_loop(mesh: VerticesFaces, k=1) -> VerticesFacesNumpy:
@@ -57,7 +57,7 @@ def mesh_subdivide_loop(mesh: VerticesFaces, k=1) -> VerticesFacesNumpy:
     V, F = mesh
     V = np.asarray(V, dtype=np.float64, order="C")
     F = np.asarray(F, dtype=np.int32, order="C")
-    return subdivision_ext.subd_loop(V, F, k)
+    return _subdivision.subd_loop(V, F, k)
 
 
 def mesh_subdivide_sqrt3(mesh: VerticesFaces, k=1) -> VerticesFacesNumpy:
@@ -78,4 +78,4 @@ def mesh_subdivide_sqrt3(mesh: VerticesFaces, k=1) -> VerticesFacesNumpy:
     V, F = mesh
     V = np.asarray(V, dtype=np.float64, order="C")
     F = np.asarray(F, dtype=np.int32, order="C")
-    return subdivision_ext.subd_sqrt3(V, F, k)
+    return _subdivision.subd_sqrt3(V, F, k)

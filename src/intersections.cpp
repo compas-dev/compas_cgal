@@ -17,7 +17,7 @@ pmp_intersection_mesh_mesh(
     return result;
 }
 
-NB_MODULE(intersections_ext, m) {
+NB_MODULE(_intersections, m) {
 
 
     m.def(

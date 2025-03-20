@@ -231,7 +231,7 @@ pointset_normal_estimation(
 
 }
 
-NB_MODULE(reconstruction_ext, m) {
+NB_MODULE(_reconstruction, m) {
 
     m.def(
         "poisson_surface_reconstruction",

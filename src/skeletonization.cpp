@@ -46,7 +46,7 @@ pmp_mesh_skeleton(
     return std::make_tuple(start_points, end_points);
 };
 
-NB_MODULE(skeletonization_ext, m) {
+NB_MODULE(_skeletonization, m) {
 
 
     m.def(
