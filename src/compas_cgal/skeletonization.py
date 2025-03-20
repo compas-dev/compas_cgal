@@ -1,7 +1,8 @@
 import numpy as np
 from compas.plugins import plugin
 
-from compas_cgal.compas_cgal_ext import skeletonization
+from compas_cgal import skeletonization_ext
+from compas_cgal import types_std  # noqa: F401
 
 from .types import PolylinesNumpySkeleton
 from .types import VerticesFaces
@@ -42,11 +43,11 @@ def mesh_skeleton(mesh: VerticesFaces) -> PolylinesNumpySkeleton:
     The skeleton is computed using mean curvature flow.
     """
     V, F = mesh
-    V = np.asarray(V, dtype=np.float64, order="C")  # Ensure C-contiguous
-    F = np.asarray(F, dtype=np.int32, order="C")  # Ensure C-contiguous
+    V_numpy = np.asarray(V, dtype=np.float64, order="C")  # Ensure C-contiguous
+    F_numpy = np.asarray(F, dtype=np.int32, order="C")  # Ensure C-contiguous
 
-    # Get start and end points as flattened vectors
-    start_points, end_points = skeletonization.mesh_skeleton(V, F)
+    # Get start and end points as flattened vectorS
+    start_points, end_points = skeletonization_ext.mesh_skeleton(V_numpy, F_numpy)
 
     # Convert flattened vectors to list of point coordinates
     edges = []

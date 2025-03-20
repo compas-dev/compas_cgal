@@ -1,7 +1,7 @@
 import numpy as np
 from compas.plugins import plugin
 
-from compas_cgal.compas_cgal_ext import meshing
+from compas_cgal import meshing_ext
 
 from .types import VerticesFaces
 from .types import VerticesFacesNumpy
@@ -51,4 +51,4 @@ def mesh_remesh(
     V, F = mesh
     V = np.asarray(V, dtype=np.float64, order="C")
     F = np.asarray(F, dtype=np.int32, order="C")
-    return meshing.remesh(V, F, target_edge_length, number_of_iterations)
+    return meshing_ext.remesh(V, F, target_edge_length, number_of_iterations)

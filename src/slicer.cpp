@@ -28,10 +28,10 @@ pmp_slice_mesh(
     return result;
 };
 
-void init_slicer(nb::module_& m) {
-    auto submodule = m.def_submodule("slicer");
+NB_MODULE(slicer_ext, m) {
 
-    submodule.def(
+
+    m.def(
         "slice_mesh",
         &pmp_slice_mesh,
         "Slice a mesh with a set of planes defined by points and normals.\n\n"

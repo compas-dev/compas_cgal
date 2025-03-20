@@ -2,8 +2,8 @@ import numpy as np
 from compas.geometry import Point
 from compas.plugins import plugin
 
-from compas_cgal.compas_cgal_ext import VectorRowMatrixXd
-from compas_cgal.compas_cgal_ext import triangulation
+from compas_cgal import triangulation_ext
+from compas_cgal import types_std
 from compas_cgal.types import FacesNumpy
 from compas_cgal.types import VerticesFacesNumpy
 
@@ -35,7 +35,7 @@ def delaunay_triangulation(points: list[Point]) -> FacesNumpy:
 
     """
     vertices = np.asarray(points, dtype=np.float64, order="C")
-    return triangulation.delaunay_triangulation(vertices)
+    return triangulation_ext.delaunay_triangulation(vertices)
 
 
 @plugin(category="triangulation", requires=["compas_cgal"])
@@ -68,19 +68,19 @@ def constrained_delaunay_triangulation(
     points = points or []
     points = np.asarray(points, dtype=np.float64, order="C")
 
-    holes_vector = VectorRowMatrixXd()
+    holes_vector = types_std.VectorRowMatrixXd()
     if holes:
         for hole in holes:
             hole_array = np.asarray(hole, dtype=np.float64, order="C")
             holes_vector.append(hole_array)
 
-    curves_vector = VectorRowMatrixXd()
+    curves_vector = types_std.VectorRowMatrixXd()
     if curves:
         for curve in curves:
             curve_array = np.asarray(curve, dtype=np.float64, order="C")
             curves_vector.append(curve_array)
 
-    return triangulation.constrained_delaunay_triangulation(
+    return triangulation_ext.constrained_delaunay_triangulation(
         boundary,  # numpy array
         points,  # numpy array
         holes_vector,  # VectorRowMatrixXd
@@ -124,7 +124,7 @@ def conforming_delaunay_triangulation(
         points = np.asarray(points, dtype=np.float64, order="C")
 
     # Convert holes to numpy arrays and create vector
-    holes_vector = VectorRowMatrixXd()
+    holes_vector = types_std.VectorRowMatrixXd()
     if holes:
         for hole in holes:
             if len(hole) < 3:
@@ -133,7 +133,7 @@ def conforming_delaunay_triangulation(
             holes_vector.append(hole_array)
 
     # Create empty vector for curves
-    curves_vector = VectorRowMatrixXd()
+    curves_vector = types_std.VectorRowMatrixXd()
 
     if curves:
         for curve in curves:
@@ -141,7 +141,7 @@ def conforming_delaunay_triangulation(
             curves_vector.append(curve_array)
 
     # Call C++ function with all required arguments
-    result = triangulation.constrained_delaunay_triangulation(
+    result = triangulation_ext.constrained_delaunay_triangulation(
         boundary,  # numpy array
         points,  # numpy array
         holes_vector,  # VectorRefRowMatrixXd
@@ -195,7 +195,7 @@ def refined_delaunay_mesh(
         points = np.asarray(points, dtype=np.float64, order="C")
 
     # Create vectors for holes and curves with proper type conversion
-    holes_vector = VectorRowMatrixXd()
+    holes_vector = types_std.VectorRowMatrixXd()
     if holes:
         for hole in holes:
             if len(hole) < 3:
@@ -203,7 +203,7 @@ def refined_delaunay_mesh(
             hole_array = np.asarray(hole, dtype=np.float64, order="C")
             holes_vector.append(hole_array)
 
-    curves_vector = VectorRowMatrixXd()
+    curves_vector = types_std.VectorRowMatrixXd()
     if curves:
         for curve in curves:
             curve_array = np.asarray(curve, dtype=np.float64, order="C")
@@ -212,7 +212,7 @@ def refined_delaunay_mesh(
     maxlength = maxlength or 0.0
 
     # Call C++ function with proper type conversion and parameter order
-    return triangulation.refined_delaunay_mesh(
+    return triangulation_ext.refined_delaunay_mesh(
         boundary,  # B: numpy array (Nx2)
         points,  # P: numpy array (Mx2)
         holes_vector,  # holes: VectorRowMatrixXd

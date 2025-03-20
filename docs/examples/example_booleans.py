@@ -10,7 +10,7 @@ from compas_cgal.booleans import boolean_difference_mesh_mesh
 from compas_cgal.booleans import boolean_intersection_mesh_mesh
 from compas_cgal.booleans import boolean_union_mesh_mesh
 from compas_cgal.booleans import split_mesh_mesh
-from compas_cgal.meshing import mesh_remesh
+# from compas_cgal.meshing import mesh_remesh
 
 
 def input():
@@ -19,7 +19,6 @@ def input():
     A = box.to_vertices_and_faces(triangulated=True)
     sphere = Sphere(1, point=[1, 1, 1])
     B = sphere.to_vertices_and_faces(u=64, v=64, triangulated=True)
-    B = mesh_remesh(B, 0.3, 50)
     return A, B
 
 

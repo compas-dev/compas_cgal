@@ -31,24 +31,25 @@ pmp_centroid(
     return std::vector<double>{centroid.x(), centroid.y(), centroid.z()};
 }
 
-void init_measure(nb::module_& m) {
-    auto submodule = m.def_submodule("measure");
 
-    submodule.def(
+NB_MODULE(measure_ext, m) {
+
+
+    m.def(
         "area",
         &pmp_area,
         "Calculate the surface area of a mesh",
         "vertices"_a,
         "faces"_a);
 
-    submodule.def(
+    m.def(
         "volume",
         &pmp_volume,
         "Calculate the volume enclosed by a mesh",
         "vertices"_a,
         "faces"_a);
 
-    submodule.def(
+    m.def(
         "centroid",
         &pmp_centroid,
         "Calculate the centroid of a mesh",

@@ -1,4 +1,3 @@
-from compas.geometry import Point
 from compas.geometry import Polygon
 from compas_viewer import Viewer
 from line_profiler import profile

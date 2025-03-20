@@ -17,7 +17,7 @@ def reconstruction_pointset_smoothing():
     ply_file_path = Path(__file__).parent.parent.parent / "data" / "box.ply"
     original_points = Pointcloud.from_ply(ply_file_path)
 
-    smoothed_points = pointset_smoothing(original_points, 1000, 3)
+    smoothed_points = pointset_smoothing(original_points, 100, 3)
 
     return Pointcloud(original_points), Pointcloud(smoothed_points)
 

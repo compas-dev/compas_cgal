@@ -36,10 +36,9 @@ subd_sqrt3(
     return compas::mesh_to_vertices_and_faces(mesh);
 }
 
-void init_subdivision(nb::module_& m) {
-    auto submodule = m.def_submodule("subdivision");
+NB_MODULE(subdivision_ext, m) {
 
-    submodule.def(
+    m.def(
         "subd_catmullclark",
         &subd_catmullclark,
         "Catmull-Clark subdivision of a polygonal mesh.\n\n"
@@ -61,7 +60,7 @@ void init_subdivision(nb::module_& m) {
         "faces"_a,
         "num_iterations"_a);
 
-    submodule.def(
+    m.def(
         "subd_loop",
         &subd_loop,
         "Loop subdivision of a triangular mesh.\n\n"
@@ -83,7 +82,7 @@ void init_subdivision(nb::module_& m) {
         "faces"_a,
         "num_iterations"_a);
 
-    submodule.def(
+    m.def(
         "subd_sqrt3",
         &subd_sqrt3,
         "Sqrt3 subdivision of a triangular mesh.\n\n"

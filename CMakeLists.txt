@@ -198,46 +198,43 @@ find_package(nanobind CONFIG REQUIRED)
 #
 # Important: If you add a new .cpp file, you must rebuild the project with:
 # pip install --no-build-isolation -ve . -Ceditable.rebuild=true
-file(GLOB CPP_SOURCES
-    CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
-)
 
-# Verify we found all expected source files and remind about type handling
-message(STATUS "Found C++ source files (ensure proper type conversion in each):")
-
-foreach(source ${CPP_SOURCES})
-    message(STATUS "  ${source}")
-endforeach()
-
-nanobind_add_module(
-    compas_cgal_ext
-    STABLE_ABI
-    NB_STATIC
-    ${CPP_SOURCES}
-)
-
-# Set include directories for the extension
-target_include_directories(compas_cgal_ext PRIVATE
-    ${CGAL_INCLUDE_DIR}
-    ${BOOST_INCLUDE_DIR}
-    ${EIGEN_INCLUDE_DIR}
-)
-
-# Make sure external dependencies are downloaded before building the extension
-add_dependencies(compas_cgal_ext external_downloads)
-
+# Enhanced PCH configuration
 if (ENABLE_PRECOMPILED_HEADERS)
-    # Enhanced PCH configuration
     set(CMAKE_PCH_INSTANTIATE_TEMPLATES ON)
     set(CMAKE_PCH_WARN_INVALID ON)
-
-    # Configure PCH for the extension
-    target_precompile_headers(compas_cgal_ext
-        PRIVATE
-        src/compas.h
-    )
 endif() 
 
-# Install directive for scikit-build-core
-install(TARGETS compas_cgal_ext LIBRARY DESTINATION compas_cgal)
+# Function to add a nanobind module with include directories
+function(add_nanobind_module module_name source_file)
+    nanobind_add_module(${module_name} STABLE_ABI NB_STATIC ${source_file})
+
+    target_include_directories(${module_name} PRIVATE
+        ${CGAL_INCLUDE_DIR}
+        ${BOOST_INCLUDE_DIR}
+        ${EIGEN_INCLUDE_DIR}
+    )
+
+    add_dependencies(${module_name} external_downloads)
+
+    if (ENABLE_PRECOMPILED_HEADERS)
+        target_precompile_headers(${module_name} PRIVATE src/compas.h)
+    endif()
+
+    install(TARGETS ${module_name} LIBRARY DESTINATION compas_cgal)
+endfunction()
+
+# Add new modules here
+add_nanobind_module(types_std src/types_std.cpp)
+add_nanobind_module(booleans_ext src/booleans.cpp)
+add_nanobind_module(meshing_ext src/meshing.cpp)
+add_nanobind_module(intersections_ext src/intersections.cpp)
+add_nanobind_module(measure_ext src/measure.cpp)
+add_nanobind_module(reconstruction_ext src/reconstruction.cpp)
+add_nanobind_module(skeletonization_ext src/skeletonization.cpp)
+add_nanobind_module(slicer_ext src/slicer.cpp)
+add_nanobind_module(straight_skeleton_2_ext src/straight_skeleton_2.cpp)
+add_nanobind_module(triangulation_ext src/triangulation.cpp)
+add_nanobind_module(subdivision_ext src/subdivision.cpp)
+
+

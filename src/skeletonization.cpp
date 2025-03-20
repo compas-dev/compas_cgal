@@ -46,10 +46,10 @@ pmp_mesh_skeleton(
     return std::make_tuple(start_points, end_points);
 };
 
-void init_skeletonization(nb::module_& m) {
-    auto submodule = m.def_submodule("skeletonization");
+NB_MODULE(skeletonization_ext, m) {
 
-    submodule.def(
+
+    m.def(
         "mesh_skeleton",
         &pmp_mesh_skeleton,
         "Create a geometric skeleton from a mesh using mean curvature flow",

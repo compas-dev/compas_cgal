@@ -17,10 +17,10 @@ pmp_intersection_mesh_mesh(
     return result;
 }
 
-void init_intersections(nb::module_& m) {
-    auto submodule = m.def_submodule("intersections");
+NB_MODULE(intersections_ext, m) {
 
-    submodule.def(
+
+    m.def(
         "intersection_mesh_mesh",
         &pmp_intersection_mesh_mesh,
         "Compute intersection polylines between two triangle meshes.",

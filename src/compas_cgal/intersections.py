@@ -1,8 +1,8 @@
 import numpy as np
 from compas.plugins import plugin
 
-from compas_cgal.compas_cgal_ext import VectorRowMatrixXd
-from compas_cgal.compas_cgal_ext import intersections
+from compas_cgal import intersections_ext
+from compas_cgal import types_std
 
 from .types import PolylinesNumpy
 from .types import VerticesFaces
@@ -49,6 +49,6 @@ def intersection_mesh_mesh(
     VB = np.asarray(VB, dtype=np.float64, order="C")
     FB = np.asarray(FB, dtype=np.int32, order="C")
 
-    pointsets: VectorRowMatrixXd = intersections.intersection_mesh_mesh(VA, FA, VB, FB)
+    pointsets: types_std.VectorRowMatrixXd = intersections_ext.intersection_mesh_mesh(VA, FA, VB, FB)
 
     return pointsets

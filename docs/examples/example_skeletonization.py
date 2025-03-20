@@ -25,11 +25,10 @@ def main():
     translation = Translation.from_vector([0, 0, 2])
 
     mesh = Mesh.from_off(input_file).transformed(translation * rotation * scale)
-    mesh = mesh.subdivided("loop")
+    # mesh = mesh.subdivided("loop")
+    v, f = mesh.to_vertices_and_faces(triangulated=True)
 
-    vertices, faces = mesh.to_vertices_and_faces()
-
-    skeleton_edges = mesh_skeleton((vertices, faces))
+    skeleton_edges = mesh_skeleton((v, f))
 
     polylines = []
     for start_point, end_point in skeleton_edges:

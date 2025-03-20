@@ -394,16 +394,16 @@ pmp_refined_delaunay_mesh(
     return std::make_tuple(vertices_out, faces_out);
 }
 
-void init_triangulation(nb::module_& m) {
-    nb::module_ submodule = m.def_submodule("triangulation");
+NB_MODULE(triangulation_ext, m) {
 
-    submodule.def(
+    
+    m.def(
         "delaunay_triangulation",
         &pmp_delaunay_triangulation,
         "Create a Delaunay triangulation from a set of points.",
         "vertices"_a);
 
-    submodule.def(
+    m.def(
         "constrained_delaunay_triangulation",
         &pmp_constrained_delaunay_triangulation,
         "Create a constrained Delaunay triangulation with boundary, holes, and constraints.",
@@ -413,7 +413,7 @@ void init_triangulation(nb::module_& m) {
         "curves"_a,
         "is_conforming"_a = false);
 
-    submodule.def(
+    m.def(
         "refined_delaunay_mesh",
         &pmp_refined_delaunay_mesh,
         "Create a refined Delaunay mesh with quality constraints.",
