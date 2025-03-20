@@ -477,9 +477,7 @@ document.write(`
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../examples.html">Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="example_booleans.html">Boolean Operations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_intersections.html">Mesh Intersections</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_measure.html">Mesh Measurements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_meshing.html">Mesh Remeshing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_nanobind_types.html">Type Conversion with Nanobind</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_reconstruction_pointset_normal_estimation.html">Point Cloud Normal Estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_reconstruction_pointset_outlier_removal.html">Point Cloud Outlier Removal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_reconstruction_pointset_reduction.html">Point Cloud Reduction</a></li>
@@ -497,14 +495,7 @@ document.write(`
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../api/compas_cgal.booleans.html">compas_cgal.booleans</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/compas_cgal.intersections.html">compas_cgal.intersections</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/compas_cgal.measure.html">compas_cgal.measure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/compas_cgal.meshing.html">compas_cgal.meshing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/compas_cgal.slicer.html">compas_cgal.slicer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/compas_cgal.skeletonization.html">compas_cgal.skeletonization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/compas_cgal.subdivision.html">compas_cgal.subdivision</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/compas_cgal.triangulation.html">compas_cgal.triangulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/compas_cgal.types.html">compas_cgal.types</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../devguide.html">Development Guide</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -622,11 +613,10 @@ document.write(`
     <span class="n">translation</span> <span class="o">=</span> <span class="n">Translation</span><span class="o">.</span><span class="n">from_vector</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
 
     <span class="n">mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="o">.</span><span class="n">from_off</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span><span class="o">.</span><span class="n">transformed</span><span class="p">(</span><span class="n">translation</span> <span class="o">*</span> <span class="n">rotation</span> <span class="o">*</span> <span class="n">scale</span><span class="p">)</span>
-    <span class="n">mesh</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">subdivided</span><span class="p">(</span><span class="s2">&quot;loop&quot;</span><span class="p">)</span>
+    <span class="c1"># mesh = mesh.subdivided(&quot;loop&quot;)</span>
+    <span class="n">v</span><span class="p">,</span> <span class="n">f</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">to_vertices_and_faces</span><span class="p">(</span><span class="n">triangulated</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="n">vertices</span><span class="p">,</span> <span class="n">faces</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">to_vertices_and_faces</span><span class="p">()</span>
-
-    <span class="n">skeleton_edges</span> <span class="o">=</span> <span class="n">mesh_skeleton</span><span class="p">((</span><span class="n">vertices</span><span class="p">,</span> <span class="n">faces</span><span class="p">))</span>
+    <span class="n">skeleton_edges</span> <span class="o">=</span> <span class="n">mesh_skeleton</span><span class="p">((</span><span class="n">v</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
 
     <span class="n">polylines</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">start_point</span><span class="p">,</span> <span class="n">end_point</span> <span class="ow">in</span> <span class="n">skeleton_edges</span><span class="p">:</span>
