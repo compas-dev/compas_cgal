@@ -230,3 +230,6 @@ add_nanobind_module(meshing_ext src/meshing.cpp)
 add_nanobind_module(intersections_ext src/intersections.cpp)
 add_nanobind_module(measure_ext src/measure.cpp)
 add_nanobind_module(reconstruction_ext src/reconstruction.cpp)
+add_nanobind_module(skeletonization_ext src/skeletonization.cpp)
+add_nanobind_module(slicer_ext src/slicer.cpp)
+
