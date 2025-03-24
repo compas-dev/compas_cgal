@@ -5,7 +5,12 @@
     "url": "https://compas.dev/compas_cgal/latest/"
   },
   {
-    "name": "0.7.7 (stable)",
+    "name": "0.8.0 (stable)",
+    "version": "0.8.0",
+    "url": "https://compas.dev/compas_cgal/0.8.0/"
+  },
+  {
+    "name": "0.7.7",
     "version": "0.7.7",
     "url": "https://compas.dev/compas_cgal/0.7.7/"
   },
