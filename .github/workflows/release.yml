@@ -3,14 +3,15 @@ name: Release
 on:
   push:
     tags:
-      - "v*"
+      - "v*"  # Runs only when a version tag (e.g., v1.0.0) is pushed.
 
 jobs:
-  Release:
+  create_release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Create Release
+
+      - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -48,7 +49,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: wheels-${{ matrix.platform }}-${{ matrix.arch }}
+          name: wheels-${{ matrix.platform }}
           path: wheelhouse/*.whl
 
   build_sdist:
@@ -74,7 +75,7 @@ jobs:
       name: pypi
       url: https://pypi.org/project/compas_cgal
     permissions:
-      id-token: write
+      id-token: write  # Required for PyPI trusted publishing
 
     steps:
       - uses: actions/download-artifact@v4
@@ -88,17 +89,8 @@ jobs:
           name: sdist
           path: dist
 
-      - name: Install Twine
-        run: pip install twine
       - name: List files before upload
-        run: |
-          if [[ "$RUNNER_OS" == "Windows" ]]; then
-            pwsh -Command "Get-ChildItem -Path . -Recurse -Force"
-          else
-            ls -lhR
-          fi
+        run: ls -lhR dist
+
       - name: Publish to PyPI
-        run: python -m twine upload dist/*
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        uses: pypa/gh-action-pypi-publish@release/v1
