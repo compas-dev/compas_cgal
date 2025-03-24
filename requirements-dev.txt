@@ -13,3 +13,4 @@ scikit-build-core[pyproject] >=0.10
 sphinx_compas2_theme
 twine
 wheel
+cibuildwheel
