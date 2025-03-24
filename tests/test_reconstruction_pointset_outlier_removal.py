@@ -3,10 +3,8 @@ from pathlib import Path
 from compas.geometry import Pointcloud
 from compas_cgal.reconstruction import pointset_outlier_removal
 import numpy as np
-from line_profiler import profile
 
 
-@profile
 def reconstruction_pointset_outlier_removal():
     FILE = Path(__file__).parent.parent / "data" / "forked_branch_1.ply"
     c1 = Pointcloud.from_ply(FILE)
