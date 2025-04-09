@@ -1,9 +1,13 @@
-import pytest
 from compas.geometry import Polygon
+from compas_viewer import Viewer
+
 from compas_cgal.straight_skeleton_2 import offset_polygon, offset_polygon_with_holes
 
 
-def test_offset_polygon_with_holes():
+
+def main():
+    """Create offset polygons."""
+
     points = [
         (-1.91, 3.59, 0.0),
         (-5.53, -5.22, 0.0),
@@ -16,23 +20,38 @@ def test_offset_polygon_with_holes():
         (2.92, 4.03, 0.0),
         (-1.91, 3.59, 0.0),
     ]
-
     polygon = Polygon(points)
     offset = 1.5
 
-    inner = offset_polygon(points, offset)
-    outer = offset_polygon(points, -offset)
+    offset_polygon_inner = offset_polygon(points, offset)
+    offset_polygon_outer = offset_polygon(points, -offset)
 
-    assert len(inner) > 0, "Expected at least one inner offset polygon"
-    assert len(outer) > 0, "Expected at least one outer offset polygon"
 
-    result = offset_polygon_with_holes(outer[0], inner, -0.1)
+    result = offset_polygon_with_holes(offset_polygon_outer[0], offset_polygon_inner, -0.1)
 
-    assert isinstance(result, list)
-    assert all(isinstance(item, tuple) and len(item) == 2 for item in result), "Each item should be a (boundary, holes) tuple"
 
-    for boundary, holes in result:
-        assert hasattr(boundary, "__iter__")
-        assert isinstance(holes, list)
-        for hole in holes:
-            assert hasattr(hole, "__iter__")
+    return offset_polygon_inner, offset_polygon_outer, polygon, result
+
+
+offset_polygon_inner, offset_polygon_outer, polygon, result = main()
+
+# ==============================================================================
+# Visualize
+# ==============================================================================
+
+viewer = Viewer()
+viewer.scene.add(polygon, show_faces=False)
+viewer.config.renderer.show_grid = False
+
+for opolygon in offset_polygon_inner:
+    viewer.scene.add(opolygon, linecolor=(1.0, 0.0, 0.0), facecolor=(1.0, 0.0, 0.0, 0.0), show_faces=False)
+
+for opolygon in offset_polygon_outer:
+    viewer.scene.add(opolygon, linecolor=(0.0, 0.0, 1.0), facecolor=(0.0, 0.0, 1.0, 0.0), show_faces=False)
+
+for opolygon, holes in result:
+    viewer.scene.add(opolygon, linecolor=(0.0, 0.0, 1.0), facecolor=(0.0, 0.0, 1.0, 0.0), show_faces=False)
+    for hole in holes:
+        viewer.scene.add(hole, linecolor=(0.0, 0.0, 1.0), facecolor=(0.0, 0.0, 1.0, 0.0), show_faces=False)
+
+viewer.show()

@@ -1,12 +1,10 @@
 from compas.geometry import Polygon
 from compas_viewer import Viewer
-
-from compas_cgal.straight_skeleton_2 import offset_polygon, offset_polygon_with_holes
-
+from compas_cgal.straight_skeleton_2 import weighted_offset_polygon
 
 
 def main():
-    """Create offset polygons."""
+    """Create weighted offset polygons."""
 
     points = [
         (-1.91, 3.59, 0.0),
@@ -21,37 +19,26 @@ def main():
         (-1.91, 3.59, 0.0),
     ]
     polygon = Polygon(points)
-    offset = 1.5
 
-    offset_polygon_inner = offset_polygon(points, offset)
-    offset_polygon_outer = offset_polygon(points, -offset)
+    distances = [0.1, 0.3, 0.6, 0.1, 0.7, 0.5, 0.2, 0.4, 0.8, 0.2]
+    weights = [1.0 / d for d in distances]
+    offset = 1.0
+    offset_polygons_outer = weighted_offset_polygon(points, -offset, weights)
 
-
-    result = offset_polygon_with_holes(offset_polygon_outer[0], offset_polygon_inner, -0.1)
-
-
-    return offset_polygon_inner, offset_polygon_outer, polygon, result
+    return offset_polygons_outer, polygon
 
 
-offset_polygon_inner, offset_polygon_outer, polygon, result = main()
+offset_polygons_outer, polygon = main()
 
 # ==============================================================================
 # Visualize
 # ==============================================================================
 
 viewer = Viewer()
-viewer.scene.add(polygon, show_faces=False)
+viewer.scene.add(polygon)
 viewer.config.renderer.show_grid = False
 
-for opolygon in offset_polygon_inner:
-    viewer.scene.add(opolygon, linecolor=(1.0, 0.0, 0.0), facecolor=(1.0, 0.0, 0.0, 0.0), show_faces=False)
-
-for opolygon in offset_polygon_outer:
-    viewer.scene.add(opolygon, linecolor=(0.0, 0.0, 1.0), facecolor=(0.0, 0.0, 1.0, 0.0), show_faces=False)
-
-for opolygon, holes in result:
-    viewer.scene.add(opolygon, linecolor=(0.0, 0.0, 1.0), facecolor=(0.0, 0.0, 1.0, 0.0), show_faces=False)
-    for hole in holes:
-        viewer.scene.add(hole, linecolor=(0.0, 0.0, 1.0), facecolor=(0.0, 0.0, 1.0, 0.0), show_faces=False)
+for opolygon in offset_polygons_outer:
+    viewer.scene.add(opolygon, linecolor=(0.0, 0.0, 1.0), facecolor=(1.0, 1.0, 1.0, 0.0))
 
 viewer.show()
