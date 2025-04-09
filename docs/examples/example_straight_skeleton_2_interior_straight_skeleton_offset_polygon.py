@@ -1,14 +1,9 @@
+import pytest
 from compas.geometry import Polygon
-from compas_viewer import Viewer
-from line_profiler import profile
-
-from compas_cgal.straight_skeleton_2 import offset_polygon
+from compas_cgal.straight_skeleton_2 import offset_polygon, offset_polygon_with_holes
 
 
-@profile
-def main():
-    """Create offset polygons."""
-
+def test_offset_polygon_with_holes():
     points = [
         (-1.91, 3.59, 0.0),
         (-5.53, -5.22, 0.0),
@@ -21,29 +16,23 @@ def main():
         (2.92, 4.03, 0.0),
         (-1.91, 3.59, 0.0),
     ]
+
     polygon = Polygon(points)
     offset = 1.5
 
-    offset_polygon_inner = offset_polygon(points, offset)
-    offset_polygon_outer = offset_polygon(points, -offset)
+    inner = offset_polygon(points, offset)
+    outer = offset_polygon(points, -offset)
 
-    return offset_polygon_inner, offset_polygon_outer, polygon
+    assert len(inner) > 0, "Expected at least one inner offset polygon"
+    assert len(outer) > 0, "Expected at least one outer offset polygon"
 
+    result = offset_polygon_with_holes(outer[0], inner, -0.1)
 
-offset_polygon_inner, offset_polygon_outer, polygon = main()
+    assert isinstance(result, list)
+    assert all(isinstance(item, tuple) and len(item) == 2 for item in result), "Each item should be a (boundary, holes) tuple"
 
-# ==============================================================================
-# Visualize
-# ==============================================================================
-
-viewer = Viewer()
-viewer.scene.add(polygon)
-viewer.config.renderer.show_grid = False
-
-for opolygon in offset_polygon_inner:
-    viewer.scene.add(opolygon, linecolor=(1.0, 0.0, 0.0), facecolor=(1.0, 1.0, 1.0, 0.0))
-
-for opolygon in offset_polygon_outer:
-    viewer.scene.add(opolygon, linecolor=(0.0, 0.0, 1.0), facecolor=(1.0, 1.0, 1.0, 0.0))
-
-viewer.show()
+    for boundary, holes in result:
+        assert hasattr(boundary, "__iter__")
+        assert isinstance(holes, list)
+        for hole in holes:
+            assert hasattr(hole, "__iter__")

@@ -5,13 +5,11 @@ from compas.geometry import Pointcloud
 from compas_viewer import Viewer
 from compas_viewer.config import Config
 from compas_viewer.scene import Collection
-from line_profiler import profile
 
 from compas_cgal.reconstruction import pointset_normal_estimation
 from compas_cgal.reconstruction import pointset_reduction
 
 
-@profile
 def reconstruction_pointset_normal_estimation():
     # ==============================================================================
     # Input geometry

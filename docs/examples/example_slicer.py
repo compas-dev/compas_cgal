@@ -1,4 +1,3 @@
-import math
 from pathlib import Path
 
 import numpy as np
@@ -9,12 +8,10 @@ from compas.geometry import Polyline
 from compas.geometry import Vector
 from compas_viewer import Viewer
 from compas_viewer.config import Config
-from line_profiler import profile
 
 from compas_cgal.slicer import slice_mesh
 
 
-@profile
 def main():
     # Get Mesh from STL
     FILE = Path(__file__).parent.parent.parent / "data" / "3DBenchy.stl"

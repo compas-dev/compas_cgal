@@ -5,12 +5,10 @@ from compas.geometry import Translation
 from compas.geometry import transform_points_numpy
 from compas_viewer import Viewer
 from compas_viewer.config import Config
-from line_profiler import profile
 
 from compas_cgal.reconstruction import pointset_reduction
 
 
-@profile
 def reconstruction_pointset_reduction():
     """Reduce the number of points in a point set."""
 

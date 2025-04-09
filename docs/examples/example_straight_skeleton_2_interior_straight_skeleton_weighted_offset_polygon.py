@@ -1,13 +1,12 @@
 from compas.geometry import Polygon
 from compas_viewer import Viewer
-from line_profiler import profile
 
-from compas_cgal.straight_skeleton_2 import weighted_offset_polygon
+from compas_cgal.straight_skeleton_2 import offset_polygon, offset_polygon_with_holes
 
 
-@profile
+
 def main():
-    """Create weighted offset polygons."""
+    """Create offset polygons."""
 
     points = [
         (-1.91, 3.59, 0.0),
@@ -22,26 +21,37 @@ def main():
         (-1.91, 3.59, 0.0),
     ]
     polygon = Polygon(points)
+    offset = 1.5
 
-    distances = [0.1, 0.3, 0.6, 0.1, 0.7, 0.5, 0.2, 0.4, 0.8, 0.2]
-    weights = [1.0 / d for d in distances]
-    offset = 1.0
-    offset_polygons_outer = weighted_offset_polygon(points, -offset, weights)
-
-    return offset_polygons_outer, polygon
+    offset_polygon_inner = offset_polygon(points, offset)
+    offset_polygon_outer = offset_polygon(points, -offset)
 
 
-offset_polygons_outer, polygon = main()
+    result = offset_polygon_with_holes(offset_polygon_outer[0], offset_polygon_inner, -0.1)
+
+
+    return offset_polygon_inner, offset_polygon_outer, polygon, result
+
+
+offset_polygon_inner, offset_polygon_outer, polygon, result = main()
 
 # ==============================================================================
 # Visualize
 # ==============================================================================
 
 viewer = Viewer()
-viewer.scene.add(polygon)
+viewer.scene.add(polygon, show_faces=False)
 viewer.config.renderer.show_grid = False
 
-for opolygon in offset_polygons_outer:
-    viewer.scene.add(opolygon, linecolor=(0.0, 0.0, 1.0), facecolor=(1.0, 1.0, 1.0, 0.0))
+for opolygon in offset_polygon_inner:
+    viewer.scene.add(opolygon, linecolor=(1.0, 0.0, 0.0), facecolor=(1.0, 0.0, 0.0, 0.0), show_faces=False)
+
+for opolygon in offset_polygon_outer:
+    viewer.scene.add(opolygon, linecolor=(0.0, 0.0, 1.0), facecolor=(0.0, 0.0, 1.0, 0.0), show_faces=False)
+
+for opolygon, holes in result:
+    viewer.scene.add(opolygon, linecolor=(0.0, 0.0, 1.0), facecolor=(0.0, 0.0, 1.0, 0.0), show_faces=False)
+    for hole in holes:
+        viewer.scene.add(hole, linecolor=(0.0, 0.0, 1.0), facecolor=(0.0, 0.0, 1.0, 0.0), show_faces=False)
 
 viewer.show()

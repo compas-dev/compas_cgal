@@ -4,7 +4,6 @@ from compas.geometry import Polyhedron
 from compas.geometry import Sphere
 from compas.geometry import Translation
 from compas_viewer import Viewer
-from line_profiler import profile
 
 from compas_cgal.booleans import boolean_difference_mesh_mesh
 from compas_cgal.booleans import boolean_intersection_mesh_mesh
@@ -59,7 +58,6 @@ def split():
     return mesh.exploded()
 
 
-@profile
 def main():
     """Compute the boolean difference, intersection, union, and split of two triangle meshes."""
     difference = boolean_difference()

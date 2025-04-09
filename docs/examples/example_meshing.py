@@ -9,12 +9,9 @@ from compas.geometry import Vector
 from compas.geometry import scale_vector
 from compas.geometry import transform_points_numpy
 from compas_viewer import Viewer
-from line_profiler import profile
-
 from compas_cgal.meshing import mesh_remesh
 
 
-@profile
 def main():
     """Remesh a bunny mesh that is loaded from .ply file."""
 
