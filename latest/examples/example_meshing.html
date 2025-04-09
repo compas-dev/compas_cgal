@@ -606,12 +606,10 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">compas.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">scale_vector</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">compas.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">transform_points_numpy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">compas_viewer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Viewer</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">line_profiler</span><span class="w"> </span><span class="kn">import</span> <span class="n">profile</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">compas_cgal.meshing</span><span class="w"> </span><span class="kn">import</span> <span class="n">mesh_remesh</span>
 
 
-<span class="nd">@profile</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Remesh a bunny mesh that is loaded from .ply file.&quot;&quot;&quot;</span>
 
@@ -627,7 +625,7 @@ document.write(`
     <span class="n">S</span> <span class="o">=</span> <span class="n">Scale</span><span class="o">.</span><span class="n">from_factors</span><span class="p">([</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">])</span>
     <span class="n">R</span> <span class="o">=</span> <span class="n">Rotation</span><span class="o">.</span><span class="n">from_axis_and_angle</span><span class="p">(</span><span class="n">Vector</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="mi">90</span><span class="p">))</span>
 
-    <span class="n">bunny</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">R</span> <span class="o">*</span> <span class="n">S</span> <span class="o">*</span> <span class="n">T</span><span class="p">)</span>
+    <span class="c1"># bunny.transform(R * S * T)</span>
     <span class="n">V0</span><span class="p">,</span> <span class="n">F0</span> <span class="o">=</span> <span class="n">bunny</span><span class="o">.</span><span class="n">to_vertices_and_faces</span><span class="p">()</span>
     <span class="n">V1</span> <span class="o">=</span> <span class="n">transform_points_numpy</span><span class="p">(</span><span class="n">V0</span><span class="p">,</span> <span class="n">R</span> <span class="o">*</span> <span class="n">S</span> <span class="o">*</span> <span class="n">T</span><span class="p">)</span>
 

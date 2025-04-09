@@ -602,13 +602,11 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">compas_viewer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Viewer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">compas_viewer.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">compas_viewer.scene</span><span class="w"> </span><span class="kn">import</span> <span class="n">Collection</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">line_profiler</span><span class="w"> </span><span class="kn">import</span> <span class="n">profile</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">compas_cgal.reconstruction</span><span class="w"> </span><span class="kn">import</span> <span class="n">pointset_normal_estimation</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">compas_cgal.reconstruction</span><span class="w"> </span><span class="kn">import</span> <span class="n">pointset_reduction</span>
 
 
-<span class="nd">@profile</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">reconstruction_pointset_normal_estimation</span><span class="p">():</span>
     <span class="c1"># ==============================================================================</span>
     <span class="c1"># Input geometry</span>
