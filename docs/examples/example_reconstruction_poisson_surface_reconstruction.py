@@ -1,17 +1,12 @@
-import math
 from pathlib import Path
 
 from compas.datastructures import Mesh
 from compas.geometry import Pointcloud
-from compas.geometry import Rotation
-from compas.geometry import Scale
 from compas_viewer import Viewer
-from line_profiler import profile
 
 from compas_cgal.reconstruction import poisson_surface_reconstruction
 
 
-@profile
 def reconstruction_poisson_surface_reconstruction():
     FILE = Path(__file__).parent.parent.parent / "data" / "oni.xyz"
 

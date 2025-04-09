@@ -2,14 +2,12 @@ from compas.geometry import Box
 from compas.geometry import Polyhedron
 from compas.geometry import Translation
 from compas_viewer import Viewer
-from line_profiler import profile
 
 from compas_cgal.subdivision import mesh_subdivide_catmull_clark
 from compas_cgal.subdivision import mesh_subdivide_loop
 from compas_cgal.subdivision import mesh_subdivide_sqrt3
 
 
-@profile
 def main():
     """Subdivide a mesh using different subdivision algorithms."""
 

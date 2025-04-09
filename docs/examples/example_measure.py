@@ -1,13 +1,11 @@
 from compas.datastructures import Mesh
 from compas.geometry import Box
-from line_profiler import profile
 
 from compas_cgal.measure import mesh_area
 from compas_cgal.measure import mesh_centroid
 from compas_cgal.measure import mesh_volume
 
 
-@profile
 def main(mesh):
     """Mesh measurement methods."""
     area = mesh_area(mesh)

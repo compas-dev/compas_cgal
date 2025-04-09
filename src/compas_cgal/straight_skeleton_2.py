@@ -181,6 +181,11 @@ def offset_polygon_with_holes(points, holes, offset) -> list[Tuple[Polygon, list
     """
     points = list(points)
     normal = normal_polygon(points, True)
+
+    if TOL.is_allclose(normal, [0, 0, -1]):
+        points.reverse()
+        normal *= -1
+
     if not TOL.is_allclose(normal, [0, 0, 1]):
         raise ValueError("The normal of the polygon should be [0, 0, 1]. The normal of the provided polygon is {}".format(normal))
     V = np.asarray(points, dtype=np.float64, order="C")
@@ -189,8 +194,14 @@ def offset_polygon_with_holes(points, holes, offset) -> list[Tuple[Polygon, list
     for i, hole in enumerate(holes):
         points = hole
         normal_hole = normal_polygon(points, True)
+
+        if TOL.is_allclose(normal_hole, [0, 0, 1]):
+            points.points.reverse()
+            normal_hole *= -1
+
         if not TOL.is_allclose(normal_hole, [0, 0, -1]):
             raise ValueError("The normal of the hole should be [0, 0, -1]. The normal of the provided {}-th hole is {}".format(i, normal_hole))
+
         hole = np.asarray(points, dtype=np.float64, order="C")
         H.append(hole)
 
@@ -200,10 +211,10 @@ def offset_polygon_with_holes(points, holes, offset) -> list[Tuple[Polygon, list
         offset_polygons = _straight_skeleton_2.create_offset_polygons_2_inner_with_holes(V, H, offset)
 
     result = []
-    for points, holes_np in offset_polygons:
-        polygon = Polygon(points.tolist())
+    for points_list in offset_polygons:
+        polygon = Polygon(points_list[0].tolist())
         holes = []
-        for hole in holes_np:
+        for hole in points_list[1:]:
             holes.append(Polygon(hole.tolist()))
         result.append((polygon, holes))
     return result

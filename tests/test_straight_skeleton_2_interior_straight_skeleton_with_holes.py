@@ -1,12 +1,8 @@
 from compas.geometry import Polygon
-from compas_viewer import Viewer
-
 from compas_cgal.straight_skeleton_2 import interior_straight_skeleton_with_holes
 
 
-def main():
-    """Compute the interior straight skeleton of a polygon with holes."""
-
+def test_interior_straight_skeleton_with_holes():
     # Outer boundary
     points_boundary = [
         (-1.91, 3.59, 0.0),
@@ -30,26 +26,15 @@ def main():
     ]
     holes = [Polygon(hole) for hole in holes]
 
+    # Run the function
     graph = interior_straight_skeleton_with_holes(boundary, holes)
 
-    return graph
+    # Assertions
+    assert graph is not None, "Expected a graph object"
+    assert graph.number_of_edges() > 0, "Graph should have at least one edge"
+    assert graph.number_of_nodes() > 0, "Graph should have at least one node"
 
-
-graph = main()
-
-# ==============================================================================
-# Visualize
-# ==============================================================================
-
-viewer = Viewer()
-
-for edge in graph.edges():
-    line = graph.edge_line(edge)
-    if graph.edge_attribute(edge, "inner_bisector"):
-        viewer.scene.add(line, linecolor=(1.0, 0.0, 0.0), linewidth=2)
-    elif graph.edge_attribute(edge, "bisector"):
-        viewer.scene.add(line, linecolor=(0.0, 0.0, 1.0))
-    else:
-        viewer.scene.add(line, linecolor=(0.0, 0.0, 0.0))
-
-viewer.show()
+    for u, v in graph.edges():
+        line = graph.edge_line((u, v))
+        assert line, f"Edge {u}-{v} should have a line geometry"
+        assert hasattr(line, "length"), "Line object should have a length attribute"

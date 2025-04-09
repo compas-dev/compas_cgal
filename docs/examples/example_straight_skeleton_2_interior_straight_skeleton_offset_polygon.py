@@ -1,11 +1,10 @@
 from compas.geometry import Polygon
 from compas_viewer import Viewer
-from line_profiler import profile
 
 from compas_cgal.straight_skeleton_2 import offset_polygon
+from compas_cgal.straight_skeleton_2 import offset_polygon_with_holes
 
 
-@profile
 def main():
     """Create offset polygons."""
 
@@ -27,23 +26,32 @@ def main():
     offset_polygon_inner = offset_polygon(points, offset)
     offset_polygon_outer = offset_polygon(points, -offset)
 
-    return offset_polygon_inner, offset_polygon_outer, polygon
+
+    result = offset_polygon_with_holes(offset_polygon_outer[0], offset_polygon_inner, -0.1)
 
 
-offset_polygon_inner, offset_polygon_outer, polygon = main()
+    return offset_polygon_inner, offset_polygon_outer, polygon, result
+
+
+offset_polygon_inner, offset_polygon_outer, polygon, result = main()
 
 # ==============================================================================
 # Visualize
 # ==============================================================================
 
 viewer = Viewer()
-viewer.scene.add(polygon)
+viewer.scene.add(polygon, show_faces=False)
 viewer.config.renderer.show_grid = False
 
 for opolygon in offset_polygon_inner:
-    viewer.scene.add(opolygon, linecolor=(1.0, 0.0, 0.0), facecolor=(1.0, 1.0, 1.0, 0.0))
+    viewer.scene.add(opolygon, linecolor=(1.0, 0.0, 0.0), facecolor=(1.0, 0.0, 0.0, 0.0), show_faces=False)
 
 for opolygon in offset_polygon_outer:
-    viewer.scene.add(opolygon, linecolor=(0.0, 0.0, 1.0), facecolor=(1.0, 1.0, 1.0, 0.0))
+    viewer.scene.add(opolygon, linecolor=(0.0, 0.0, 1.0), facecolor=(0.0, 0.0, 1.0, 0.0), show_faces=False)
+
+for opolygon, holes in result:
+    viewer.scene.add(opolygon, linecolor=(0.0, 0.0, 1.0), facecolor=(0.0, 0.0, 1.0, 0.0), show_faces=False)
+    for hole in holes:
+        viewer.scene.add(hole, linecolor=(0.0, 0.0, 1.0), facecolor=(0.0, 0.0, 1.0, 0.0), show_faces=False)
 
 viewer.show()

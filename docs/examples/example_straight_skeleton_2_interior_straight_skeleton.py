@@ -1,12 +1,10 @@
 from compas.geometry import Point
 from compas.geometry import Polygon
 from compas_viewer import Viewer
-from line_profiler import profile
 
 from compas_cgal.straight_skeleton_2 import interior_straight_skeleton
 
 
-@profile
 def main():
     """Compute the interior straight skeleton of a polygon."""
 

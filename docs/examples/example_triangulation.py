@@ -2,13 +2,11 @@ from compas.datastructures import Mesh
 from compas.geometry import Polygon
 from compas.geometry import Translation
 from compas_viewer import Viewer
-from line_profiler import profile
 
 from compas_cgal.triangulation import conforming_delaunay_triangulation
 from compas_cgal.triangulation import refined_delaunay_mesh
 
 
-@profile
 def main():
     """Triangulate a mesh with holes."""
 
