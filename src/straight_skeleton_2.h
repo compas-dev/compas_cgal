@@ -66,12 +66,18 @@ pmp_create_offset_polygons_2_inner(
  * @return std::vector<std::tuple<compas::RowMatrixXd, std::vector<compas::RowMatrixXd>>> Vector containing:
  *         - For each offset: tuple of outer polygon (Px2, float64) and vector of inner polygons (each Qx2, float64)
  */
-std::vector<std::tuple<compas::RowMatrixXd, std::vector<compas::RowMatrixXd>>>
+std::vector<std::vector<compas::RowMatrixXd>>
 pmp_create_offset_polygons_2_inner_with_holes(
     const compas::RowMatrixXd& boundary_vertices,
     const std::vector<compas::RowMatrixXd>& hole_vertices,
     double& offset_distance
 );
+// std::vector<std::tuple<compas::RowMatrixXd, std::vector<compas::RowMatrixXd>>>
+// pmp_create_offset_polygons_2_inner_with_holes(
+//     const compas::RowMatrixXd& boundary_vertices,
+//     const std::vector<compas::RowMatrixXd>& hole_vertices,
+//     double& offset_distance
+// );
 
 /**
  * @brief Creates outward offset polygons from a simple polygon.
@@ -92,10 +98,10 @@ pmp_create_offset_polygons_2_outer(
  * @param boundary_vertices Matrix of boundary polygon vertices as Nx2 matrix in row-major order (float64)
  * @param hole_vertices Vector of hole polygons, each as Mx2 matrix in row-major order (float64)
  * @param offset_distance Offset distance (positive for inward, negative for outward)
- * @return std::vector<std::tuple<compas::RowMatrixXd, std::vector<compas::RowMatrixXd>>> Vector containing:
+ * @return std::vector<std::vector<compas::RowMatrixXd>> Vector containing:
  *         - For each offset: tuple of outer polygon (Px2, float64) and vector of inner polygons (each Qx2, float64)
  */
-std::vector<std::tuple<compas::RowMatrixXd, std::vector<compas::RowMatrixXd>>>
+std::vector<std::vector<compas::RowMatrixXd>>
 pmp_create_offset_polygons_2_outer_with_holes(
     const compas::RowMatrixXd& boundary_vertices,
     const std::vector<compas::RowMatrixXd>& hole_vertices,

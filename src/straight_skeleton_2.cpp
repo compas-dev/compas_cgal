@@ -159,7 +159,7 @@ pmp_create_offset_polygons_2_inner(
     return result;
 }
 
-std::vector<std::tuple<compas::RowMatrixXd, std::vector<compas::RowMatrixXd>>>
+std::vector<std::vector<compas::RowMatrixXd>>
 pmp_create_offset_polygons_2_inner_with_holes(
     const compas::RowMatrixXd& boundary_vertices,
     const std::vector<compas::RowMatrixXd>& hole_vertices,
@@ -169,9 +169,19 @@ pmp_create_offset_polygons_2_inner_with_holes(
     PolygonWithHolesPtrVector offset_polygons = CGAL::create_interior_skeleton_and_offset_polygons_with_holes_2(
         offset_distance, polygon);
 
-    std::vector<std::tuple<compas::RowMatrixXd, std::vector<compas::RowMatrixXd>>> result;
-    for(const auto& offset_polygon : offset_polygons) {
-        result.push_back(polygon_with_holes_to_data(*offset_polygon));
+    std::vector<std::vector<compas::RowMatrixXd>> result;
+    for(const PolygonWithHolesPtr& offset_polygon : offset_polygons) {
+
+
+        std::vector<compas::RowMatrixXd> polygon_with_holes;
+
+        polygon_with_holes.push_back(polygon_to_data(offset_polygon->outer_boundary()));
+
+        for(const auto& hole : offset_polygon->holes()) {
+            polygon_with_holes.push_back(polygon_to_data(hole));
+        }
+
+        result.push_back(polygon_with_holes);
     }
     return result;
 }
@@ -192,7 +202,7 @@ pmp_create_offset_polygons_2_outer(
     return result;
 }
 
-std::vector<std::tuple<compas::RowMatrixXd, std::vector<compas::RowMatrixXd>>>
+std::vector<std::vector<compas::RowMatrixXd>>
 pmp_create_offset_polygons_2_outer_with_holes(
     const compas::RowMatrixXd& boundary_vertices,
     const std::vector<compas::RowMatrixXd>& hole_vertices,
@@ -202,9 +212,14 @@ pmp_create_offset_polygons_2_outer_with_holes(
     PolygonWithHolesPtrVector offset_polygons = CGAL::create_exterior_skeleton_and_offset_polygons_with_holes_2(
         offset_distance, polygon);
 
-    std::vector<std::tuple<compas::RowMatrixXd, std::vector<compas::RowMatrixXd>>> result;
+    std::vector<std::vector<compas::RowMatrixXd>> result;
     for(const auto& offset_polygon : offset_polygons) {
-        result.push_back(polygon_with_holes_to_data(*offset_polygon));
+        std::vector<compas::RowMatrixXd> polygon_with_holes;
+        polygon_with_holes.push_back(polygon_to_data(offset_polygon->outer_boundary()));
+        for(const auto& hole : offset_polygon->holes()) {
+            polygon_with_holes.push_back(polygon_to_data(hole));
+        }
+      result.push_back(polygon_with_holes);
     }
     return result;
 }
