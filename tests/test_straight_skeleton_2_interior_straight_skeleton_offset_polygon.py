@@ -1,4 +1,3 @@
-from compas.geometry import Polygon
 from compas_cgal.straight_skeleton_2 import offset_polygon, offset_polygon_with_holes
 
 
@@ -16,7 +15,6 @@ def test_offset_polygon_with_holes():
         (-1.91, 3.59, 0.0),
     ]
 
-    polygon = Polygon(points)
     offset = 1.5
 
     inner = offset_polygon(points, offset)

@@ -9,6 +9,7 @@ from compas.geometry import Vector
 from compas.geometry import scale_vector
 from compas.geometry import transform_points_numpy
 from compas_viewer import Viewer
+
 from compas_cgal.meshing import mesh_remesh
 
 
@@ -27,7 +28,7 @@ def main():
     S = Scale.from_factors([100, 100, 100])
     R = Rotation.from_axis_and_angle(Vector(1, 0, 0), math.radians(90))
 
-    bunny.transform(R * S * T)
+    # bunny.transform(R * S * T)
     V0, F0 = bunny.to_vertices_and_faces()
     V1 = transform_points_numpy(V0, R * S * T)
 

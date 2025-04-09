@@ -1,8 +1,8 @@
 from compas.geometry import Polygon
 from compas_viewer import Viewer
 
-from compas_cgal.straight_skeleton_2 import offset_polygon, offset_polygon_with_holes
-
+from compas_cgal.straight_skeleton_2 import offset_polygon
+from compas_cgal.straight_skeleton_2 import offset_polygon_with_holes
 
 
 def main():

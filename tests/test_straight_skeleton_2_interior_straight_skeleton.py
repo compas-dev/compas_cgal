@@ -1,4 +1,3 @@
-import pytest
 from compas.geometry import Point, Polygon
 from compas_cgal.straight_skeleton_2 import interior_straight_skeleton
 

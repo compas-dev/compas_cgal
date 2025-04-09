@@ -202,9 +202,6 @@ def offset_polygon_with_holes(points, holes, offset) -> list[Tuple[Polygon, list
         if not TOL.is_allclose(normal_hole, [0, 0, -1]):
             raise ValueError("The normal of the hole should be [0, 0, -1]. The normal of the provided {}-th hole is {}".format(i, normal_hole))
 
-
-
-
         hole = np.asarray(points, dtype=np.float64, order="C")
         H.append(hole)
 
@@ -215,7 +212,6 @@ def offset_polygon_with_holes(points, holes, offset) -> list[Tuple[Polygon, list
 
     result = []
     for points_list in offset_polygons:
-
         polygon = Polygon(points_list[0].tolist())
         holes = []
         for hole in points_list[1:]:
