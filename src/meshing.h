@@ -5,6 +5,7 @@
 // CGAL remesh
 #include <CGAL/Polygon_mesh_processing/remesh.h>
 #include <CGAL/Polygon_mesh_processing/detect_features.h>
+#include <CGAL/boost/graph/Dual.h>
 
 namespace compas {
 
@@ -59,3 +60,26 @@ pmp_remesh(
     double target_edge_length,
     unsigned int number_of_iterations = 10,
     bool do_project = true);
+
+
+/**
+ * @brief Create a dual mesh from a triangular mesh.
+ * 
+ * @param vertices_a Matrix of vertex positions as Nx3 matrix in row-major order (float64)
+ * @param faces_a Matrix of face indices as Mx3 matrix in row-major order (int32)
+ * @param target_edge_length Desired length for mesh edges
+ * @param number_of_iterations Number of remeshing iterations
+ * @param angle_radians Angle limit in radians for boundary vertices
+ * @param circumcenter Whether to use the circumcenter of the triangle instead of the centroid
+ * @return std::tuple<RowMatrixXd, std::vector<std::vector<int>>> containing:
+ *         - New vertices as Rx3 matrix (float64)
+ *         - New faces as Sx3 matrix (int32)
+ */
+std::tuple<compas::RowMatrixXd, std::vector<std::vector<int>>>
+pmp_remesh_dual(
+    Eigen::Ref<compas::RowMatrixXd> vertices_a,
+    Eigen::Ref<compas::RowMatrixXi> faces_a,
+    double target_edge_length,
+    unsigned int number_of_iterations = 10,
+    double angle_radians = 0.5,
+    bool circumcenter = true);
