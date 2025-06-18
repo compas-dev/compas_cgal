@@ -63,36 +63,116 @@ pmp_remesh(
 }
 
 std::tuple<compas::RowMatrixXd, std::vector<std::vector<int>>>
-pmp_remesh_dual(
+pmp_dual(
     Eigen::Ref<compas::RowMatrixXd> vertices_a,
     Eigen::Ref<compas::RowMatrixXi> faces_a,
-    double target_edge_length,
-    unsigned int number_of_iterations,
     double angle_radians,
-    bool circumcenter)
+    bool circumcenter,
+    double scale_factor)
 {
+
     /////////////////////////////////////////////////////////////////////////////////
-    // Initial Mesh Preparation
+    // Mesh Creation
     /////////////////////////////////////////////////////////////////////////////////
-    // This section initializes the primal mesh and performs remeshing to create
-    // a high-quality input for dual mesh generation. The mesh is cleaned up
-    // to ensure a consistent structure without any stray elements.
+    compas::Mesh mesh_a = compas::mesh_from_vertices_and_faces(vertices_a, faces_a);
+
+
+    /////////////////////////////////////////////////////////////////////////////////
+    // Scalled inner vertices
+    /////////////////////////////////////////////////////////////////////////////////
+
+    if (scale_factor != 1.0 && scale_factor > 0.0){
+        // Make a copy of the original mesh before scaling
+        compas::Mesh original_mesh = mesh_a;
+
+        // Calculate mesh centroid first
+        CGAL::Point_3<compas::Kernel> centroid(0, 0, 0);
+        int vertex_count = 0;
+        for(auto v : vertices(mesh_a)) {
+            centroid = centroid + (mesh_a.point(v) - CGAL::ORIGIN);
+            vertex_count++;
+        }
+        centroid = CGAL::ORIGIN + (centroid - CGAL::ORIGIN) / vertex_count;
+
+        // Scale inner vertices relative to centroid
+        for(auto v : vertices(mesh_a)) {
+            // Check if the vertex is on the boundary
+            bool is_boundary = false;
+            for(auto h : CGAL::halfedges_around_target(v, mesh_a)) {
+                if(is_border(h, mesh_a)) {
+                    is_boundary = true;
+                    break;
+                }
+            }
+            
+            // Only scale inner vertices
+            if(!is_boundary) {
+                auto p = mesh_a.point(v);
+                // Calculate vector from centroid to point, scale it, then set the new position
+                CGAL::Vector_3<compas::Kernel> vec(centroid, p);
+                vec = vec * scale_factor;
+                mesh_a.point(v) = centroid + vec;
+            }
+        }
+
+        // After scaling, use proper AABB tree for projection
+        // Define triangle type
+        typedef CGAL::Kernel_traits<CGAL::Point_3<compas::Kernel>>::Kernel K;
+        typedef CGAL::Triangle_3<K> Triangle;
+        typedef std::vector<Triangle>::iterator Iterator;
+        
+        // Build a list of triangles from the original mesh
+        std::vector<Triangle> triangles;
+        for(auto face : faces(original_mesh)) {
+            auto halfedge = original_mesh.halfedge(face);
+            auto v0 = original_mesh.source(halfedge);
+            auto v1 = original_mesh.target(halfedge);
+            auto v2 = original_mesh.target(next(halfedge, original_mesh));
+            
+            // Add the triangle
+            triangles.push_back(Triangle(
+                original_mesh.point(v0),
+                original_mesh.point(v1),
+                original_mesh.point(v2)
+            ));
+        }
+        
+        // Create the AABB tree
+        typedef CGAL::AABB_triangle_primitive_3<K, Iterator> Primitive;
+        typedef CGAL::AABB_traits_3<K, Primitive> Traits;
+        typedef CGAL::AABB_tree<Traits> Tree;
+        
+        Tree tree(triangles.begin(), triangles.end());
+        tree.accelerate_distance_queries();
+        
+        // Project each inner vertex to closest point on original mesh
+        for(auto v : vertices(mesh_a)) {
+            bool is_boundary = false;
+            for(auto h : CGAL::halfedges_around_target(v, mesh_a)) {
+                if(is_border(h, mesh_a)) {
+                    is_boundary = true;
+                    break;
+                }
+            }
+            
+            if(!is_boundary) {
+                auto p = mesh_a.point(v);
+                auto closest = tree.closest_point(p);
+                mesh_a.point(v) = closest;
+            }
+        }
     
-    compas::Mesh mesh_a = compas::mesh_from_vertices_and_faces(vertices_a, faces_a); // Convert input matrices to CGAL mesh
-    CGAL::Polygon_mesh_processing::isotropic_remeshing(
-        faces(mesh_a),
-        target_edge_length,
-        mesh_a,
-        CGAL::Polygon_mesh_processing::parameters::number_of_iterations(number_of_iterations)
-                       .do_project(true));
-    mesh_a.collect_garbage(); // Clean up the mesh
-    
+
+    }
+
     /////////////////////////////////////////////////////////////////////////////////
     // Dual Graph Creation
     /////////////////////////////////////////////////////////////////////////////////
     // Create the dual graph structure and a filtered version that excludes border
     // elements. This filtered graph will be used to generate the interior portion
     // of the dual mesh.
+    
+    
     
     typedef CGAL::Dual<compas::Mesh> DualMesh;
     DualMesh dual(mesh_a);
@@ -452,14 +532,13 @@ NB_MODULE(_meshing, m) {
     );
     
     m.def(
-        "remesh_dual",
-        &pmp_remesh_dual,
+        "dual",
+        &pmp_dual,
         "Create a dual mesh from a triangular mesh",
         "vertices_a"_a,
         "faces_a"_a,
-        "target_edge_length"_a,
-        "number_of_iterations"_a = 10,
         "angle_radians"_a = 0.5,
-        "circumcenter"_a = true
+        "circumcenter"_a = true,
+        "scale_factor"_a = 1.0
     );
 }

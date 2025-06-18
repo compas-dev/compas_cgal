@@ -6,6 +6,10 @@
 #include <CGAL/Polygon_mesh_processing/remesh.h>
 #include <CGAL/Polygon_mesh_processing/detect_features.h>
 #include <CGAL/boost/graph/Dual.h>
+#include <CGAL/Polygon_mesh_processing/angle_and_area_smoothing.h>
+#include <CGAL/AABB_tree.h>
+#include <CGAL/AABB_traits_3.h>
+#include <CGAL/AABB_triangle_primitive_3.h>
 
 namespace compas {
 
@@ -67,19 +71,17 @@ pmp_remesh(
  * 
  * @param vertices_a Matrix of vertex positions as Nx3 matrix in row-major order (float64)
  * @param faces_a Matrix of face indices as Mx3 matrix in row-major order (int32)
- * @param target_edge_length Desired length for mesh edges
- * @param number_of_iterations Number of remeshing iterations
  * @param angle_radians Angle limit in radians for boundary vertices
- * @param circumcenter Whether to use the circumcenter of the triangle instead of the centroid
+ * @param circumcenter Whether to use the circumcenter of the triangle instead of the centroid.
+ * @param scale_factor Scale factor for inner vertices.
  * @return std::tuple<RowMatrixXd, std::vector<std::vector<int>>> containing:
  *         - New vertices as Rx3 matrix (float64)
  *         - New faces as Sx3 matrix (int32)
  */
 std::tuple<compas::RowMatrixXd, std::vector<std::vector<int>>>
-pmp_remesh_dual(
+pmp_dual(
     Eigen::Ref<compas::RowMatrixXd> vertices_a,
     Eigen::Ref<compas::RowMatrixXi> faces_a,
-    double target_edge_length,
-    unsigned int number_of_iterations = 10,
     double angle_radians = 0.5,
-    bool circumcenter = true);
+    bool circumcenter = true,
+    double scale_factor = 1.0);

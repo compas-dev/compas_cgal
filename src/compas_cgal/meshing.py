@@ -51,15 +51,14 @@ def mesh_remesh(
     V, F = mesh
     V = np.asarray(V, dtype=np.float64, order="C")
     F = np.asarray(F, dtype=np.int32, order="C")
-    return _meshing.remesh(V, F, target_edge_length, number_of_iterations)
+    return _meshing.remesh(V, F, target_edge_length, number_of_iterations, do_project)
 
 
-def mesh_remesh_dual(
+def mesh_dual(
     mesh: VerticesFaces,
-    target_edge_length: float,
-    number_of_iterations: int = 10,
     angle_radians: float = 0.0,
     circumcenter: bool = True,
+    scale_factor: float = 1.0,
 ) -> tuple[np.ndarray, list[list[int]]]:
     """Create a dual mesh from a triangular mesh with variable-length faces.
 
@@ -67,14 +66,12 @@ def mesh_remesh_dual(
     ----------
     mesh : :attr:`compas_cgal.types.VerticesFaces`
         The mesh to create a dual from.
-    target_edge_length : float
-        The target edge length for primal mesh remeshing before dual creation.
-    number_of_iterations : int, optional
-        Number of remeshing iterations for the primal mesh.
     angle_radians : double, optional
         Angle limit in radians for boundary vertices to remove.
     circumcenter : bool, optional
         Whether to use the circumcenter of the triangle instead of the centroid.
+    scale_factor : double, optional
+        Scale factor for inner vertices.
 
     Returns
     -------
@@ -110,5 +107,5 @@ def mesh_remesh_dual(
     V, F = mesh
     V = np.asarray(V, dtype=np.float64, order="C")
     F = np.asarray(F, dtype=np.int32, order="C")
-    vertices, var_faces = _meshing.remesh_dual(V, F, target_edge_length, number_of_iterations, angle_radians, circumcenter)
+    vertices, var_faces = _meshing.dual(V, F, angle_radians, circumcenter, scale_factor)
     return vertices, var_faces
