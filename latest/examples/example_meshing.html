@@ -595,48 +595,38 @@ document.write(`
 <figure class="figure align-default">
 <img alt="../_images/example_meshing.png" class="figure-img img-fluid" src="../_images/example_meshing.png" />
 </figure>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">compas.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sphere</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">compas.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mesh</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">compas.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rotation</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">compas.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Scale</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">compas.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Translation</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">compas.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Vector</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">compas.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">scale_vector</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">compas.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">transform_points_numpy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">compas_viewer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Viewer</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">compas_cgal.meshing</span><span class="w"> </span><span class="kn">import</span> <span class="n">mesh_remesh</span>
-
+<span class="kn">from</span><span class="w"> </span><span class="nn">compas_cgal.meshing</span><span class="w"> </span><span class="kn">import</span> <span class="n">mesh_remesh</span><span class="p">,</span> <span class="n">mesh_dual</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remesh a bunny mesh that is loaded from .ply file.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remesh a mesh.&quot;&quot;&quot;</span>
 
-    <span class="n">FILE</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span> <span class="o">/</span> <span class="s2">&quot;Bunny.ply&quot;</span>
-    <span class="n">bunny</span> <span class="o">=</span> <span class="n">Mesh</span><span class="o">.</span><span class="n">from_ply</span><span class="p">(</span><span class="n">FILE</span><span class="p">)</span>
-    <span class="n">bunny</span><span class="o">.</span><span class="n">remove_unused_vertices</span><span class="p">()</span>
+    <span class="n">mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="o">.</span><span class="n">from_shape</span><span class="p">(</span><span class="n">Sphere</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">mesh</span><span class="o">.</span><span class="n">quads_to_triangles</span><span class="p">()</span>
 
-    <span class="n">centroid</span> <span class="o">=</span> <span class="n">bunny</span><span class="o">.</span><span class="n">vertex_point</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">edge_length</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">iterations</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">x_translation</span> <span class="o">=</span> <span class="mi">2</span>
 
-    <span class="n">vector</span> <span class="o">=</span> <span class="n">scale_vector</span><span class="p">(</span><span class="n">centroid</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># Remesh</span>
+    <span class="n">V1</span><span class="p">,</span> <span class="n">F1</span> <span class="o">=</span> <span class="n">mesh_remesh</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">to_vertices_and_faces</span><span class="p">(),</span> <span class="n">edge_length</span><span class="p">,</span> <span class="n">iterations</span><span class="p">)</span>
+    <span class="n">V1</span> <span class="o">=</span> <span class="n">transform_points_numpy</span><span class="p">(</span><span class="n">V1</span><span class="p">,</span> <span class="n">Translation</span><span class="o">.</span><span class="n">from_vector</span><span class="p">([</span><span class="n">x_translation</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))</span>
+    <span class="n">remeshed</span> <span class="o">=</span> <span class="n">Mesh</span><span class="o">.</span><span class="n">from_vertices_and_faces</span><span class="p">(</span><span class="n">V1</span><span class="p">,</span> <span class="n">F1</span><span class="p">)</span>
+    
+    <span class="c1"># Dual</span>
+    <span class="n">V2</span><span class="p">,</span> <span class="n">F2</span> <span class="o">=</span> <span class="n">mesh_dual</span><span class="p">((</span><span class="n">V1</span><span class="p">,</span> <span class="n">F1</span><span class="p">),</span> <span class="mf">2.14</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">V2</span> <span class="o">=</span> <span class="n">transform_points_numpy</span><span class="p">(</span><span class="n">V2</span><span class="p">,</span> <span class="n">Translation</span><span class="o">.</span><span class="n">from_vector</span><span class="p">([</span><span class="n">x_translation</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))</span>
+    <span class="n">dual</span> <span class="o">=</span> <span class="n">Mesh</span><span class="o">.</span><span class="n">from_vertices_and_faces</span><span class="p">(</span><span class="n">V2</span><span class="p">,</span> <span class="n">F2</span><span class="p">)</span>
 
-    <span class="n">T</span> <span class="o">=</span> <span class="n">Translation</span><span class="o">.</span><span class="n">from_vector</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span>
-    <span class="n">S</span> <span class="o">=</span> <span class="n">Scale</span><span class="o">.</span><span class="n">from_factors</span><span class="p">([</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">])</span>
-    <span class="n">R</span> <span class="o">=</span> <span class="n">Rotation</span><span class="o">.</span><span class="n">from_axis_and_angle</span><span class="p">(</span><span class="n">Vector</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="mi">90</span><span class="p">))</span>
-
-    <span class="c1"># bunny.transform(R * S * T)</span>
-    <span class="n">V0</span><span class="p">,</span> <span class="n">F0</span> <span class="o">=</span> <span class="n">bunny</span><span class="o">.</span><span class="n">to_vertices_and_faces</span><span class="p">()</span>
-    <span class="n">V1</span> <span class="o">=</span> <span class="n">transform_points_numpy</span><span class="p">(</span><span class="n">V0</span><span class="p">,</span> <span class="n">R</span> <span class="o">*</span> <span class="n">S</span> <span class="o">*</span> <span class="n">T</span><span class="p">)</span>
-
-    <span class="n">V1</span><span class="p">,</span> <span class="n">F1</span> <span class="o">=</span> <span class="n">mesh_remesh</span><span class="p">((</span><span class="n">V0</span><span class="p">,</span> <span class="n">F0</span><span class="p">),</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-    <span class="n">V1</span> <span class="o">=</span> <span class="n">transform_points_numpy</span><span class="p">(</span><span class="n">V1</span><span class="p">,</span> <span class="n">Translation</span><span class="o">.</span><span class="n">from_vector</span><span class="p">([</span><span class="mi">20</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))</span>
-    <span class="n">mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="o">.</span><span class="n">from_vertices_and_faces</span><span class="p">(</span><span class="n">V1</span><span class="p">,</span> <span class="n">F1</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">bunny</span><span class="p">,</span> <span class="n">mesh</span>
+    <span class="k">return</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">remeshed</span><span class="p">,</span> <span class="n">dual</span>
 
 
-<span class="n">bunny</span><span class="p">,</span> <span class="n">mesh</span> <span class="o">=</span> <span class="n">main</span><span class="p">()</span>
+<span class="n">mesh</span><span class="p">,</span> <span class="n">remeshed</span><span class="p">,</span> <span class="n">dual</span> <span class="o">=</span> <span class="n">main</span><span class="p">()</span>
 
 
 <span class="c1"># ==============================================================================</span>
@@ -646,10 +636,11 @@ document.write(`
 <span class="n">viewer</span> <span class="o">=</span> <span class="n">Viewer</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">1600</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">900</span><span class="p">)</span>
 
 <span class="n">viewer</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">25</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.10</span><span class="p">]</span>
 
-<span class="n">viewer</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">bunny</span><span class="p">,</span> <span class="n">show_points</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">viewer</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">show_points</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">remeshed</span><span class="p">,</span> <span class="n">show_points</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">dual</span><span class="p">,</span> <span class="n">show_points</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="n">viewer</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
