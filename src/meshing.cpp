@@ -398,7 +398,7 @@ pmp_dual(
                 auto& current_edges = faces_edges[current_face_idx];
                 
                 for (auto edge1 : current_edges) {
-                    if (edge1 == e1 || edge1 == e2) continue; // Skip boundary edges
+                    if (CGAL::SM_Edge_index(edge1) == e1 || CGAL::SM_Edge_index(edge1) == e2) continue; // Skip boundary edges
                     
                     for (size_t j = 0; j < vertex_faces.size(); j++) {
                         if (visited[j]) continue;

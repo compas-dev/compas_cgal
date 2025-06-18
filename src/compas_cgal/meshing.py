@@ -88,22 +88,6 @@ def mesh_dual(
     2. Creating additional vertices at boundary edge midpoints
     3. Creating proper connections for boundary edges
 
-    Examples
-    --------
-    >>> from compas.datastructures import Mesh
-    >>> from compas_cgal.meshing import mesh_remesh_dual
-
-    >>> # Create a simple quad mesh
-    >>> mesh = Mesh.from_vertices_and_faces([[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]], [[0, 1, 2, 3]])
-    >>> vertices, faces = mesh.to_vertices_and_faces()
-
-    >>> # Create its dual mesh with variable-length faces
-    >>> V, F = mesh_remesh_dual((vertices, faces), 0.1)
-    >>> dual_mesh = Mesh.from_vertices_and_faces(V, [])
-    >>> # Add the variable-length faces to the mesh
-    >>> for face in F:
-    ...     dual_mesh.add_face(face)
-
     """
     V, F = mesh
     V = np.asarray(V, dtype=np.float64, order="C")
