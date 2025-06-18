@@ -10,7 +10,7 @@ on:
 
 jobs:
   Build:
-    if: "!contains(github.event.pull_request.labels.*.name, 'docs-only')"
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'docs-only') }} 
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -18,9 +18,73 @@ jobs:
         python: ["3.10"]
 
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Set up conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          python-version: ${{ matrix.python }}
+          channels: conda-forge
+          activate-environment: "compas_123-dev"
+          
+      - name: Configure conda channels
+        shell: bash -el {0}
+        run: |
+          conda config --add channels defaults
+          conda config --set channel_priority strict
+          
       - uses: compas-dev/compas-actions.build@v4
         with:
           invoke_lint: true
           use_conda: true
           check_import: true
           python: ${{ matrix.python }}
+          
+  build_wheels:
+    name: cibuildwheel on ${{ matrix.platform }}
+    needs: [Build]  # Only run if Build job succeeds
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: manylinux
+          - os: macos-latest
+            platform: mac
+          - os: windows-latest
+            platform: windows
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install cibuildwheel
+        run: pipx install cibuildwheel==2.23.1
+
+      - name: Build wheels
+        run: cibuildwheel --output-dir wheelhouse .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheels-${{ matrix.platform }}
+          path: wheelhouse/*.whl
+
+  build_sdist:
+    name: Test source distribution
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build SDist
+        run: pipx run build --sdist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sdist
+          path: dist/*.tar.gz
