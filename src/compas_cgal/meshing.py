@@ -2,6 +2,7 @@ import numpy as np
 from compas.plugins import plugin
 
 from compas_cgal import _meshing
+from compas_cgal import _types_std  # noqa: F401
 
 from .types import VerticesFaces
 from .types import VerticesFacesNumpy
