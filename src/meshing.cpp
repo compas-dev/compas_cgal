@@ -351,7 +351,7 @@ pmp_dual(
             // This information will be used to determine the adjacency between faces.
             
             std::vector<typename boost::graph_traits<compas::Mesh>::face_descriptor> vertex_faces;
-            std::vector<std::vector<size_t>> faces_edges;
+            std::vector<std::vector<typename boost::graph_traits<compas::Mesh>::edge_descriptor>> faces_edges;
 
             for(auto h : CGAL::halfedges_around_target(v, mesh_a)) {
                 auto f = face(h, mesh_a);
@@ -361,7 +361,7 @@ pmp_dual(
 
                     auto h = halfedge(f, mesh_a);
 
-                    std::vector<size_t> edges;
+                    std::vector<typename boost::graph_traits<compas::Mesh>::edge_descriptor> edges;
                     for(auto h : CGAL::halfedges_around_face(h, mesh_a)) {
                         auto e = edge(h, mesh_a);
                         edges.push_back(e);
@@ -398,7 +398,7 @@ pmp_dual(
                 auto& current_edges = faces_edges[current_face_idx];
                 
                 for (auto edge1 : current_edges) {
-                    if (CGAL::SM_Edge_index(edge1) == e1 || CGAL::SM_Edge_index(edge1) == e2) continue; // Skip boundary edges
+                    if (edge1 == e1 || edge1 == e2) continue; // Skip boundary edges
                     
                     for (size_t j = 0; j < vertex_faces.size(); j++) {
                         if (visited[j]) continue;
