@@ -1,5 +1,4 @@
 import numpy as np
-from typing import Optional
 from compas.plugins import plugin
 from compas.datastructures import Mesh
 
