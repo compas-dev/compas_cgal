@@ -3,6 +3,7 @@
 #include <CGAL/Simple_cartesian.h>
 #include <CGAL/Surface_mesh.h>
 #include <CGAL/boost/graph/Dual.h>
+#include <variant>
 #include <CGAL/boost/graph/helpers.h>
  
 #include <iostream>
@@ -60,6 +61,135 @@ pmp_remesh(
     mesh_a.collect_garbage();
     // Convert back to matrices - compiler will use RVO automatically
     return compas::mesh_to_vertices_and_faces(mesh_a);
+}
+
+void pmp_project(
+    Eigen::Ref<compas::RowMatrixXd> vertices_a,
+    Eigen::Ref<compas::RowMatrixXi> faces_a,
+    Eigen::Ref<compas::RowMatrixXd> vertices_b,
+    Eigen::Ref<compas::RowMatrixXd> normals_b)
+{
+        /////////////////////////////////////////////////////////////////////////////////
+        // Mesh Creation
+        /////////////////////////////////////////////////////////////////////////////////
+        compas::Mesh mesh_a = compas::mesh_from_vertices_and_faces(vertices_a, faces_a);
+
+        // After scaling, use proper AABB tree for projection
+        // Define triangle type
+        typedef CGAL::Kernel_traits<CGAL::Point_3<compas::Kernel>>::Kernel K;
+        typedef CGAL::Triangle_3<K> Triangle;
+        typedef std::vector<Triangle>::iterator Iterator;
+        typedef CGAL::Ray_3<K> Ray;
+        
+        // Build a list of triangles from the mesh
+        std::vector<Triangle> triangles;
+        for(auto face : mesh_a.faces()) {
+            auto halfedge = mesh_a.halfedge(face);
+            auto v0 = mesh_a.source(halfedge);
+            auto v1 = mesh_a.target(halfedge);
+            auto v2 = mesh_a.target(mesh_a.next(halfedge));
+            
+            // Add the triangle
+            triangles.push_back(Triangle(
+                mesh_a.point(v0),
+                mesh_a.point(v1),
+                mesh_a.point(v2)
+            ));
+        }
+        
+        // Create the AABB tree
+        typedef CGAL::AABB_triangle_primitive_3<K, Iterator> Primitive;
+        typedef CGAL::AABB_traits_3<K, Primitive> Traits;
+        typedef CGAL::AABB_tree<Traits> Tree;
+        
+        Tree tree(triangles.begin(), triangles.end());
+        tree.accelerate_distance_queries();
+        
+        // Check if we have valid normals (non-empty matrix)
+        bool use_normals = normals_b.rows() == vertices_b.rows() && normals_b.cols() == 3;
+        
+        // Project each vertex
+        for (int i = 0; i < vertices_b.rows(); ++i) {
+            // Extract the point from the row and convert to CGAL point
+            CGAL::Point_3<K> query_point(vertices_b(i, 0), vertices_b(i, 1), vertices_b(i, 2));
+            
+            CGAL::Point_3<K> projected_point;
+            bool projection_successful = false;
+            
+            // If we have valid normals, try ray-based projection first
+            if (use_normals) {
+                // Create ray using vertex position and normal direction
+                CGAL::Vector_3<K> normal(normals_b(i, 0), normals_b(i, 1), normals_b(i, 2));
+                
+                // Only proceed if normal has non-zero length
+                if (normal.squared_length() > 1e-10) {
+                    // Normalize the normal vector
+                    normal = normal / std::sqrt(normal.squared_length());
+                    
+                    // Try rays in both normal directions - first try in negative normal direction
+                    Ray ray(query_point, normal);
+                    
+                    if (tree.do_intersect(ray)) {
+                        auto intersection = tree.any_intersection(ray);
+                        if (intersection) {
+                            // Handle the variant result properly
+                            auto& intersection_variant = intersection->first;
+                            
+                            // Check if this is a Point_3 intersection using std::get_if for std::variant
+                            if (const CGAL::Point_3<K>* p = std::get_if<CGAL::Point_3<K>>(&intersection_variant)) {
+                                projected_point = *p;
+                                projection_successful = true;
+                            }
+                            // Handle Segment_3 intersection case using std::get_if for std::variant
+                            else if (const CGAL::Segment_3<K>* s = std::get_if<CGAL::Segment_3<K>>(&intersection_variant)) {
+                                // For a segment intersection, take the endpoint closest to the query point
+                                double dist1 = CGAL::squared_distance(query_point, s->source());
+                                double dist2 = CGAL::squared_distance(query_point, s->target());
+                                projected_point = (dist1 < dist2) ? s->source() : s->target();
+                                projection_successful = true;
+                            }
+                        }
+                    }
+                    
+                    // If no intersection found in negative direction, try positive direction
+                    if (!projection_successful) {
+                        Ray ray(query_point, -normal);
+                        
+                        if (tree.do_intersect(ray)) {
+                            auto intersection = tree.any_intersection(ray);
+                            if (intersection) {
+                                // Handle the variant result properly
+                                auto& intersection_variant = intersection->first;
+                                
+                                // Check if this is a Point_3 intersection using std::get_if for std::variant
+                                if (const CGAL::Point_3<K>* p = std::get_if<CGAL::Point_3<K>>(&intersection_variant)) {
+                                    projected_point = *p;
+                                    projection_successful = true;
+                                }
+                                // Handle Segment_3 intersection case using std::get_if for std::variant
+                                else if (const CGAL::Segment_3<K>* s = std::get_if<CGAL::Segment_3<K>>(&intersection_variant)) {
+                                    // For a segment intersection, take the endpoint closest to the query point
+                                    double dist1 = CGAL::squared_distance(query_point, s->source());
+                                    double dist2 = CGAL::squared_distance(query_point, s->target());
+                                    projected_point = (dist1 < dist2) ? s->source() : s->target();
+                                    projection_successful = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // If ray projection didn't work or we don't have normals, use closest point method as fallback
+            if (!projection_successful) {
+                projected_point = tree.closest_point(query_point);
+            }
+            
+            // Update the vertex in the matrix
+            vertices_b(i, 0) = projected_point.x();
+            vertices_b(i, 1) = projected_point.y();
+            vertices_b(i, 2) = projected_point.z();
+        }
 }
 
 std::tuple<compas::RowMatrixXd, std::vector<std::vector<int>>>
@@ -529,6 +659,16 @@ NB_MODULE(_meshing, m) {
         "target_edge_length"_a,
         "number_of_iterations"_a = 10,
         "do_project"_a = true
+    );
+
+    m.def(
+        "project",
+        &pmp_project,
+        "Project a set of points to the closest point on a mesh",
+        "vertices_a"_a,
+        "faces_a"_a,
+        "vertices_b"_a,
+        "normals_b"_a
     );
     
     m.def(

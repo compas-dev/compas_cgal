@@ -65,6 +65,20 @@ pmp_remesh(
     unsigned int number_of_iterations = 10,
     bool do_project = true);
 
+/**
+ * @brief Project a set of points to the closest point on a mesh.
+ * 
+ * @param vertices_a Matrix of vertex positions as Nx3 matrix in row-major order (float64)
+ * @param faces_a Matrix of face indices as Mx3 matrix in row-major order (int32)
+ * @param vertices_b Matrix of vertex positions as Nx3 matrix in row-major order (float64)$
+ * @param normals_b OPTIONAL: Matrix of normals as Nx3 matrix in row-major order (float64)
+ */
+void pmp_project(
+    Eigen::Ref<compas::RowMatrixXd> vertices_a,
+    Eigen::Ref<compas::RowMatrixXi> faces_a,
+    Eigen::Ref<compas::RowMatrixXd> vertices_b,
+    Eigen::Ref<compas::RowMatrixXd> normals_b);
+
 
 /**
  * @brief Create a dual mesh from a triangular mesh.
