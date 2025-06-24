@@ -1,5 +1,6 @@
 import numpy as np
 from compas.plugins import plugin
+from compas.datastructures import Mesh
 
 from compas_cgal import _meshing
 from compas_cgal import _types_std  # noqa: F401
@@ -53,6 +54,58 @@ def mesh_remesh(
     V = np.asarray(V, dtype=np.float64, order="C")
     F = np.asarray(F, dtype=np.int32, order="C")
     return _meshing.remesh(V, F, target_edge_length, number_of_iterations, do_project)
+
+
+def mesh_project(
+    mesh_source: VerticesFaces,
+    mesh_target: VerticesFaces,
+    use_normals: bool = True,
+) -> VerticesFaces:
+    """Project mesh_target vertices onto mesh_source surface.
+
+    Parameters
+    ----------
+    mesh_source : :attr:`compas_cgal.types.VerticesFaces`
+        The mesh to project onto (target surface).
+    mesh_target : :attr:`compas_cgal.types.VerticesFaces`
+        The mesh whose vertices will be projected (source points).
+    use_normals : bool, optional
+        Whether to use normals for ray-based projection. If False, closest point projection is used.
+
+    Returns
+    -------
+    :attr:`compas_cgal.types.VerticesFaces`
+        The projected mesh (vertices on mesh_source surface, original faces).
+
+    """
+    V_source, F_source = mesh_source.to_vertices_and_faces()
+    V_target, F_target = mesh_target.to_vertices_and_faces(triangulated=True)
+
+    # Convert inputs to numpy arrays
+    numpy_V_source = np.asarray(V_source, dtype=np.float64, order="C")
+
+    numpy_V_target = np.asarray(V_target, dtype=np.float64, order="C")
+    numpy_F_target = np.asarray(F_target, dtype=np.int32, order="C")
+
+    # Handle normals calculation
+    if use_normals:
+        # Pre-allocate numpy array for normals with correct size
+        numpy_N_source = np.zeros((mesh_source.number_of_vertices(), 3), dtype=np.float64)
+
+        # Fill the array with vertex normals
+        for i, vertex_key in enumerate(mesh_source.vertices()):
+            normal = -mesh_source.vertex_normal(vertex_key)
+            numpy_N_source[i, 0] = normal.x
+            numpy_N_source[i, 1] = normal.y
+            numpy_N_source[i, 2] = normal.z
+    else:
+        # Don't use normals - create empty array
+        numpy_N_source = np.zeros((0, 0), dtype=np.float64)
+
+    # Call the C++ function
+    _meshing.project(numpy_V_target, numpy_F_target, numpy_V_source, numpy_N_source)
+
+    return Mesh.from_vertices_and_faces(numpy_V_source, F_source)
 
 
 def mesh_dual(
