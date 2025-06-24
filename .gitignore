@@ -49,10 +49,7 @@ scripts/.idea/**
 *.so
 *.dll
 *.exe
-# *.obj - Removed to allow 3D geometry files
-# Instead, ignore specific compiled object file locations
-build/**/*.obj
-CMakeFiles/**/*.obj
+*.obj
 *.pdb
 *.ilk
 *.exp

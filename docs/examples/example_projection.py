@@ -10,12 +10,12 @@ def main():
     """Project a mesh to another mesh."""
 
     # Mesh to project
-    input_file_0 = Path(__file__).parent.parent.parent / "data" / "rhinovault_mesh_0.obj"
-    mesh_0 = Mesh.from_obj(input_file_0)
+    input_file_0 = Path(__file__).parent.parent.parent / "data" / "rhinovault_mesh_0.ply"
+    mesh_0 = Mesh.from_ply(input_file_0)
 
     # Target Mesh to project onto
-    input_file_1 = Path(__file__).parent.parent.parent / "data" / "rhinovault_mesh_1.obj"
-    mesh_1 = Mesh.from_obj(input_file_1)
+    input_file_1 = Path(__file__).parent.parent.parent / "data" / "rhinovault_mesh_1.ply"
+    mesh_1 = Mesh.from_ply(input_file_1)
 
     mesh_result = mesh_project(mesh_0, mesh_1, use_normals=False)
     return mesh_0, mesh_1, mesh_result
