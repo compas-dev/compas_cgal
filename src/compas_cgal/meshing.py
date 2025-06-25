@@ -137,6 +137,7 @@ def remesh_dual(
     -------
     tuple
         A tuple containing:
+        
         - Remeshed mesh vertices as an Nx3 numpy array.
         - Remeshed mesh faces as an Mx3 numpy array.
         - Dual mesh vertices as an Nx3 numpy array.
