@@ -18,7 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Added `compas_cgal.meshing.mesh_remesh_dual`.
+* Added `compas_cgal.meshing.remesh_dual`.
+* Added `compas_cgal.meshing.mesh_project`.
 
 ### Changed
 

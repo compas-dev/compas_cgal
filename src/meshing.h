@@ -72,7 +72,6 @@ pmp_remesh(
  * @param vertices_a Matrix of vertex positions as Nx3 matrix in row-major order (float64)
  * @param faces_a Matrix of face indices as Mx3 matrix in row-major order (int32)
  * @param angle_radians Angle limit in radians for boundary vertices
- * @param circumcenter Whether to use the circumcenter of the triangle instead of the centroid.
  * @param scale_factor Scale factor for inner vertices.
  * @return std::tuple<RowMatrixXd, std::vector<std::vector<int>>> containing:
  *         - New vertices as Rx3 matrix (float64)
@@ -83,5 +82,31 @@ pmp_dual(
     Eigen::Ref<compas::RowMatrixXd> vertices_a,
     Eigen::Ref<compas::RowMatrixXi> faces_a,
     double angle_radians = 0.5,
-    bool circumcenter = true,
     double scale_factor = 1.0);
+
+/**
+ * @brief Project a set of points to the closest point on a mesh.
+ * 
+ * @param vertices_a Matrix of vertex positions as Nx3 matrix in row-major order (float64)
+ * @param faces_a Matrix of face indices as Mx3 matrix in row-major order (int32)
+ * @param fixed_vertices Vector of vertex indices to keep fixed during remeshing
+ * @param length_factor Length factor for remeshing
+ * @param number_of_iterations Number of remeshing iterations
+ * @param angle_radians Angle limit in radians for boundary vertices
+ * @param scale_factor Scale factor for inner vertices.
+ */
+
+std::tuple<
+compas::RowMatrixXd, 
+compas::RowMatrixXi,
+compas::RowMatrixXd, 
+std::vector<std::vector<int>>> 
+pmp_remesh_dual(
+    Eigen::Ref<compas::RowMatrixXd> vertices_a,
+    Eigen::Ref<compas::RowMatrixXi> faces_a,
+    const std::vector<int>& fixed_vertices,
+    double length_factor=1.0,
+    unsigned int number_of_iterations=10,
+    double angle_radians=0.9,
+    double scale_factor=1.0
+);
