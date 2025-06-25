@@ -1,3 +1,5 @@
+from typing import Optional
+
 import numpy as np
 from compas.datastructures import Mesh
 from compas.plugins import plugin
@@ -56,7 +58,7 @@ def mesh_remesh(
     return _meshing.remesh(V, F, target_edge_length, number_of_iterations, do_project)
 
 
-def mesh_project(
+def project_mesh_on_mesh(
     mesh_source: VerticesFaces,
     mesh_target: VerticesFaces,
     use_normals: bool = True,
@@ -108,6 +110,56 @@ def mesh_project(
     return Mesh.from_vertices_and_faces(numpy_V_source, F_source)
 
 
+def project_points_on_mesh(
+    points: list[list[float]],
+    mesh_target: VerticesFaces,
+    normals: Optional[list[list[float]]] = None,
+) -> list[list[float]]:
+    """Project points onto mesh_target surface.
+
+    Parameters
+    ----------
+    points : list[list[float]]
+        The points to project.
+    mesh_target : :attr:`compas_cgal.types.VerticesFaces`
+        The mesh whose vertices will be projected (source points).
+    normals : list[list[float]], optional
+        The normals of the points to project.
+
+    Returns
+    -------
+    list[list[float]]
+        The projected points (vertices on mesh_target surface).
+
+    """
+    V_target, F_target = mesh_target.to_vertices_and_faces(triangulated=True)
+
+    # Convert inputs to numpy arrays
+    numpy_V_source = np.asarray(points, dtype=np.float64, order="C")
+
+    numpy_V_target = np.asarray(V_target, dtype=np.float64, order="C")
+    numpy_F_target = np.asarray(F_target, dtype=np.int32, order="C")
+
+    # Handle normals calculation
+    if normals:
+        # Pre-allocate numpy array for normals with correct size
+        numpy_N_source = np.zeros((len(points), 3), dtype=np.float64)
+
+        # Fill the array with vertex normals
+        for i, normal in enumerate(normals):
+            numpy_N_source[i, 0] = normal[0]
+            numpy_N_source[i, 1] = normal[1]
+            numpy_N_source[i, 2] = normal[2]
+    else:
+        # Don't use normals - create empty array
+        numpy_N_source = np.zeros((0, 0), dtype=np.float64)
+
+    # Call the C++ function
+    _meshing.project(numpy_V_target, numpy_F_target, numpy_V_source, numpy_N_source)
+
+    return numpy_V_source
+
+
 def remesh_dual(
     mesh: VerticesFaces,
     length_factor: float = 1.0,
@@ -137,7 +189,7 @@ def remesh_dual(
     -------
     tuple
         A tuple containing:
-        
+
         - Remeshed mesh vertices as an Nx3 numpy array.
         - Remeshed mesh faces as an Mx3 numpy array.
         - Dual mesh vertices as an Nx3 numpy array.

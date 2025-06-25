@@ -10,4 +10,5 @@ compas_cgal.meshing
 
     mesh_remesh
     remesh_dual
-    mesh_project
+    project_mesh_on_mesh
+    project_points_on_mesh
