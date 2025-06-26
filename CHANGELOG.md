@@ -9,7 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Added `compas_cgal.meshing.trimesh_dual`.
+* Added `compas_cgal.meshing.project_mesh_on_mesh`.
+* Added `compas_cgal.meshing.project_points_on_mesh`.
+* Added `compas_cgal.meshing.pull_mesh_on_mesh`.
+
 ### Changed
+
+* Changed `compas_cgal.meshing.mesh_remesh` to `compas_cgal.meshing.trimesh_remesh`.
 
 ### Removed
 
@@ -17,9 +24,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.9.0] 2025-04-18
 
 ### Added
-
-* Added `compas_cgal.meshing.remesh_dual`.
-* Added `compas_cgal.meshing.mesh_project`.
 
 ### Changed
 

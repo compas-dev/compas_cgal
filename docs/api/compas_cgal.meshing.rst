@@ -8,7 +8,7 @@ compas_cgal.meshing
     :toctree: generated/
     :nosignatures:
 
-    mesh_remesh
-    remesh_dual
+    trimesh_remesh
+    trimesh_dual
     project_mesh_on_mesh
     project_points_on_mesh
