@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="../../_static/compas.ico" type="image/x-icon">
-    <title>refined_delaunay_mesh &#8212; COMPAS CGAL</title>
+    <title>trimesh_dual &#8212; COMPAS CGAL</title>
   
   
   
@@ -51,15 +51,15 @@
     <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/compas_cgal.triangulation.refined_delaunay_mesh';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/compas_cgal.meshing.trimesh_dual';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/compas-dev/compas_cgal/gh-pages/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
         </script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="compas_cgal.reconstruction" href="../compas_cgal.reconstruction.html" />
-    <link rel="prev" title="conforming_delaunay_triangulation" href="compas_cgal.triangulation.conforming_delaunay_triangulation.html" />
+    <link rel="next" title="project_mesh_on_mesh" href="compas_cgal.meshing.project_mesh_on_mesh.html" />
+    <link rel="prev" title="trimesh_remesh" href="compas_cgal.meshing.trimesh_remesh.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -503,11 +503,11 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../compas_cgal.booleans.html">compas_cgal.booleans</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../compas_cgal.intersections.html">compas_cgal.intersections</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../compas_cgal.measure.html">compas_cgal.measure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../compas_cgal.meshing.html">compas_cgal.meshing</a></li>
+<li class="toctree-l2 current active"><a class="reference internal" href="../compas_cgal.meshing.html">compas_cgal.meshing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../compas_cgal.skeletonization.html">compas_cgal.skeletonization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../compas_cgal.slicer.html">compas_cgal.slicer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../compas_cgal.subdivision.html">compas_cgal.subdivision</a></li>
-<li class="toctree-l2 current active"><a class="reference internal" href="../compas_cgal.triangulation.html">compas_cgal.triangulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../compas_cgal.triangulation.html">compas_cgal.triangulation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../compas_cgal.reconstruction.html">compas_cgal.reconstruction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../compas_cgal.straight_skeleton_2.html">compas_cgal.straight_skeleton_2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../compas_cgal.types.html">compas_cgal.types</a></li>
@@ -572,9 +572,9 @@ document.write(`
     <li class="breadcrumb-item"><a href="../../api.html" class="nav-link">API Reference</a></li>
     
     
-    <li class="breadcrumb-item"><a href="../compas_cgal.triangulation.html" class="nav-link">compas_cgal.triangulation</a></li>
+    <li class="breadcrumb-item"><a href="../compas_cgal.meshing.html" class="nav-link">compas_cgal.meshing</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">refined_delaunay_mesh</li>
+    <li class="breadcrumb-item active" aria-current="page">trimesh_dual</li>
   </ul>
 </nav>
 </div>
@@ -591,42 +591,47 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="refined-delaunay-mesh">
-<h1>refined_delaunay_mesh</h1>
+  <section id="trimesh-dual">
+<h1>trimesh_dual</h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="compas_cgal.triangulation.refined_delaunay_mesh">
-<span class="sig-prename descclassname"><span class="pre">compas_cgal.triangulation.</span></span><span class="sig-name descname"><span class="pre">refined_delaunay_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">boundary</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">holes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">curves</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxlength</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_optimized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/compas-dev/compas_cgal/blob/5866f21/src/compas_cgal/triangulation.py#L155"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Construct a refined Delaunay mesh.</p>
+<dt class="sig sig-object py" id="compas_cgal.meshing.trimesh_dual">
+<span class="sig-prename descclassname"><span class="pre">compas_cgal.meshing.</span></span><span class="sig-name descname"><span class="pre">trimesh_dual</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_iterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle_radians</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed_vertices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/compas-dev/compas_cgal/blob/5866f21/src/compas_cgal/meshing.py#L59"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Create a dual mesh from a triangular mesh with variable-length faces.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>boundary</strong><span class="classifier"><a class="reference external" href="https://compas.dev/compas/latest/api/generated/compas.geometry.Polygon.html" title="(in COMPAS vlatest)"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas.geometry.Polygon</span></code></a></span></dt><dd><p>The boundary of the triangulation.</p>
+<dt><strong>mesh</strong><span class="classifier"><a class="reference internal" href="compas_cgal.types.VerticesFaces.html#compas_cgal.types.VerticesFaces" title="compas_cgal.types.VerticesFaces"><code class="xref py py-attr docutils literal notranslate"><span class="pre">compas_cgal.types.VerticesFaces</span></code></a></span></dt><dd><p>The mesh to create a dual from.</p>
 </dd>
-<dt><strong>points</strong><span class="classifier">list[<a class="reference external" href="https://compas.dev/compas/latest/api/generated/compas.geometry.Point.html" title="(in COMPAS vlatest)"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas.geometry.Point</span></code></a>], optional</span></dt><dd><p>Additional internal points.</p>
+<dt><strong>angle_radians</strong><span class="classifier">double, optional</span></dt><dd><p>Angle limit in radians for boundary vertices to remove.</p>
 </dd>
-<dt><strong>holes</strong><span class="classifier">list[<a class="reference external" href="https://compas.dev/compas/latest/api/generated/compas.geometry.Polygon.html" title="(in COMPAS vlatest)"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas.geometry.Polygon</span></code></a>], optional</span></dt><dd><p>Internal boundary polygons.</p>
+<dt><strong>length_factor</strong><span class="classifier">double, optional</span></dt><dd><p>Length factor for remeshing.</p>
 </dd>
-<dt><strong>curves</strong><span class="classifier">list[<a class="reference external" href="https://compas.dev/compas/latest/api/generated/compas.geometry.Polyline.html" title="(in COMPAS vlatest)"><code class="xref py py-class docutils literal notranslate"><span class="pre">compas.geometry.Polyline</span></code></a>], optional</span></dt><dd><p>Internal constraint curves.</p>
+<dt><strong>number_of_iterations</strong><span class="classifier">int, optional</span></dt><dd><p>Number of remeshing iterations.</p>
 </dd>
-<dt><strong>maxlength</strong><span class="classifier">float, optional</span></dt><dd><p>The maximum length of the triangle edges.</p>
+<dt><strong>scale_factor</strong><span class="classifier">double, optional</span></dt><dd><p>Scale factor for inner vertices.</p>
 </dd>
-<dt><strong>is_optimized</strong><span class="classifier">bool, optional</span></dt><dd><p>Apply LLoyd’s optimisation <a class="reference internal" href="#r2038e22cfbcc-1" id="id1">[1]</a>.</p>
+<dt><strong>fixed_vertices</strong><span class="classifier">list[int], optional</span></dt><dd><p>List of vertex indices to keep fixed during remeshing.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt><a class="reference internal" href="compas_cgal.types.VerticesFacesNumpy.html#compas_cgal.types.VerticesFacesNumpy" title="compas_cgal.types.VerticesFacesNumpy"><code class="xref py py-attr docutils literal notranslate"><span class="pre">compas_cgal.types.VerticesFacesNumpy</span></code></a></dt><dd></dd>
+<dt>tuple</dt><dd><p>A tuple containing:</p>
+<ul class="simple">
+<li><p>Remeshed mesh vertices as an Nx3 numpy array.</p></li>
+<li><p>Remeshed mesh faces as an Mx3 numpy array.</p></li>
+<li><p>Dual mesh vertices as an Nx3 numpy array.</p></li>
+<li><p>Variable-length faces as a list of lists of vertex indices.</p></li>
+</ul>
+</dd>
 </dl>
 </dd>
 </dl>
-<p class="rubric">References</p>
-<div role="list" class="citation-list">
-<div class="citation" id="r2038e22cfbcc-1" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
-<p><a class="reference external" href="https://doc.cgal.org/latest/Mesh_2/index.html#secMesh_2_meshes">https://doc.cgal.org/latest/Mesh_2/index.html#secMesh_2_meshes</a></p>
-</div>
-</div>
+<p class="rubric">Notes</p>
+<p>This dual mesh implementation includes proper boundary handling by:
+1. Creating vertices at face centroids of the primal mesh
+2. Creating additional vertices at boundary edge midpoints
+3. Creating proper connections for boundary edges</p>
 </dd></dl>
 
 </section>
@@ -652,7 +657,7 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compas_cgal.triangulation.refined_delaunay_mesh"><code class="docutils literal notranslate"><span class="pre">refined_delaunay_mesh()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compas_cgal.meshing.trimesh_dual"><code class="docutils literal notranslate"><span class="pre">trimesh_dual()</span></code></a></li>
 </ul>
   </nav></div>
 
