@@ -9,3 +9,6 @@ compas_cgal.meshing
     :nosignatures:
 
     mesh_remesh
+    remesh_dual
+    project_mesh_on_mesh
+    project_points_on_mesh

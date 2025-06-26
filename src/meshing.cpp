@@ -4,6 +4,7 @@
 #include <CGAL/Surface_mesh.h>
 #include <CGAL/boost/graph/Dual.h>
 #include <CGAL/boost/graph/helpers.h>
+#include <CGAL/Polygon_mesh_processing/compute_normal.h>
  
 #include <iostream>
 #include <fstream>
@@ -37,14 +38,15 @@ typedef boost::graph_traits<Dual>::edge_descriptor     edge_descriptor;
 
 
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
-pmp_remesh(
+pmp_trimesh_remesh(
     Eigen::Ref<compas::RowMatrixXd> vertices_a,
     Eigen::Ref<compas::RowMatrixXi> faces_a,
     double target_edge_length,
     unsigned int number_of_iterations,
     bool do_project)
 {
-    // Convert input matrices to CGAL mesh
+    // Convert input matrices to CGAL mesh and keep a copy for projection
+    compas::Mesh original_mesh = compas::mesh_from_vertices_and_faces(vertices_a, faces_a);
     compas::Mesh mesh_a = compas::mesh_from_vertices_and_faces(vertices_a, faces_a);
 
     // Perform isotropic remeshing
@@ -58,24 +60,156 @@ pmp_remesh(
                        
     // Clean up the mesh
     mesh_a.collect_garbage();
+
     // Convert back to matrices - compiler will use RVO automatically
     return compas::mesh_to_vertices_and_faces(mesh_a);
 }
 
-std::tuple<compas::RowMatrixXd, std::vector<std::vector<int>>>
-pmp_dual(
+
+
+// Calculate face normals for a mesh using CGAL's Polygon Mesh Processing
+std::vector<CGAL::Vector_3<compas::Kernel>> get_face_normals(const compas::Mesh& mesh, bool normalize = false)
+{
+    std::vector<CGAL::Vector_3<compas::Kernel>> normals(mesh.number_of_faces());
+    
+    
+    for (std::size_t i = 0; i < mesh.number_of_faces(); ++i) {
+        auto face = compas::Mesh::Face_index(i);
+        
+        // Use PMP to compute face normal
+        CGAL::Vector_3<compas::Kernel> normal = CGAL::Polygon_mesh_processing::compute_face_normal(face, mesh);
+        
+        // Normalize if requested
+        if (normalize && normal != CGAL::NULL_VECTOR) {
+            normal = normal / std::sqrt(normal.squared_length());
+        }
+        
+        normals[i] = normal;
+    }
+    
+    return normals;
+}
+
+std::vector<double> get_face_areas_doubled(const std::vector<CGAL::Vector_3<compas::Kernel>>& faceNormals)
+{
+    std::vector<double> areas;
+    areas.reserve(faceNormals.size());
+    
+    // Calculate area by getting the length of each face normal vector
+    for (const auto& normal : faceNormals) {
+        // The length of the normal is twice the area of the face
+        areas.emplace_back(std::sqrt(normal.squared_length()));
+    }
+    
+    return areas;
+}
+
+std::vector<double> get_vertex_areas(compas::Mesh mesh, std::vector<double> faceAreas)
+{
+    // Create a vector to store areas for each vertex
+    std::vector<double> vertexAreas(mesh.number_of_vertices(), 0.0);
+    
+    // Process each vertex
+    
+    for (std::size_t i = 0; i < mesh.number_of_vertices(); ++i) {
+        auto vertex = compas::Mesh::Vertex_index(i);
+        double area_sum = 0.0;
+        
+        // Iterate through all faces connected to this vertex
+        for (auto face : faces_around_target(mesh.halfedge(vertex), mesh)) {
+            // Access face index and add its area to the sum
+            std::size_t face_idx = face.idx();
+            if (face_idx < faceAreas.size()) {
+                area_sum += faceAreas[face_idx];
+            }
+        }
+        
+        // Store the result
+            vertexAreas[i] = area_sum;
+    }
+    
+    return vertexAreas;
+}
+
+std::tuple<
+compas::RowMatrixXd, 
+compas::RowMatrixXi,
+compas::RowMatrixXd, 
+std::vector<std::vector<int>>>
+pmp_trimesh_remesh_dual(
     Eigen::Ref<compas::RowMatrixXd> vertices_a,
     Eigen::Ref<compas::RowMatrixXi> faces_a,
+    const std::vector<int>& fixed_vertices,
+    double length_factor,
+    unsigned int number_of_iterations,
     double angle_radians,
-    bool circumcenter,
-    double scale_factor)
+    double scale_factor
+)
 {
 
-    /////////////////////////////////////////////////////////////////////////////////
-    // Mesh Creation
-    /////////////////////////////////////////////////////////////////////////////////
+    // Convert input matrices to CGAL mesh and keep a copy for projection
+    compas::Mesh original_mesh = compas::mesh_from_vertices_and_faces(vertices_a, faces_a);
     compas::Mesh mesh_a = compas::mesh_from_vertices_and_faces(vertices_a, faces_a);
+    
+    // Calculate average edge length
+    double average_length = 0.0;
+    double total_length = 0.0;
+    int edge_count = 0;
+    
+    for (auto edge : edges(mesh_a)) {
+        total_length += CGAL::Polygon_mesh_processing::edge_length(edge, mesh_a);
+        edge_count++;
+    }
+    
+    double target_edge_length = length_factor * total_length / edge_count;
 
+    if (target_edge_length <= 0.0) {
+        target_edge_length = 1.0;
+    }
+
+
+    // Define a property map for constrained vertices using CGAL's dynamic property map
+    auto constrained = get(CGAL::dynamic_vertex_property_t<bool>(), mesh_a);
+
+
+    // Before remeshing, store coordinates of fixed vertices 
+    std::vector<compas::Kernel::Point_3> fixed_points;
+    fixed_points.reserve(fixed_vertices.size()); // Pre-allocate for performance
+    
+    for (const auto& idx : fixed_vertices) {
+        if (idx >= 0 && idx < vertices_a.rows()) {
+            // Get directly from the input Eigen matrix
+            fixed_points.emplace_back(
+                vertices_a(idx, 0), 
+                vertices_a(idx, 1), 
+                vertices_a(idx, 2)
+            );
+        }
+    }
+
+    // Mark specified vertices as constrained
+    if (!fixed_vertices.empty()) {
+        // Use vertices from the fixed_vertices list
+        for (const auto& vertex_idx : fixed_vertices) {
+            if (vertex_idx >= 0 && vertex_idx < static_cast<int>(num_vertices(mesh_a))) {
+                auto v = *(vertices(mesh_a).first + vertex_idx);
+                put(constrained, v, true);
+            }
+        }
+    }
+    
+    // Perform isotropic remeshing with constrained vertices
+    CGAL::Polygon_mesh_processing::isotropic_remeshing(
+        faces(mesh_a),
+        target_edge_length,
+        mesh_a,
+        CGAL::Polygon_mesh_processing::parameters::number_of_iterations(number_of_iterations)
+                        .vertex_is_constrained_map(constrained)
+                        .do_project(true));
+
+                        
+    // Clean up the mesh
+    mesh_a.collect_garbage();
 
     /////////////////////////////////////////////////////////////////////////////////
     // Scaled inner vertices
@@ -115,55 +249,10 @@ pmp_dual(
             }
         }
 
-        // After scaling, use proper AABB tree for projection
-        // Define triangle type
-        typedef CGAL::Kernel_traits<CGAL::Point_3<compas::Kernel>>::Kernel K;
-        typedef CGAL::Triangle_3<K> Triangle;
-        typedef std::vector<Triangle>::iterator Iterator;
-        
-        // Build a list of triangles from the original mesh
-        std::vector<Triangle> triangles;
-        for(auto face : faces(original_mesh)) {
-            auto halfedge = original_mesh.halfedge(face);
-            auto v0 = original_mesh.source(halfedge);
-            auto v1 = original_mesh.target(halfedge);
-            auto v2 = original_mesh.target(next(halfedge, original_mesh));
-            
-            // Add the triangle
-            triangles.push_back(Triangle(
-                original_mesh.point(v0),
-                original_mesh.point(v1),
-                original_mesh.point(v2)
-            ));
-        }
-        
-        // Create the AABB tree
-        typedef CGAL::AABB_triangle_primitive_3<K, Iterator> Primitive;
-        typedef CGAL::AABB_traits_3<K, Primitive> Traits;
-        typedef CGAL::AABB_tree<Traits> Tree;
-        
-        Tree tree(triangles.begin(), triangles.end());
-        tree.accelerate_distance_queries();
-        
-        // Project each inner vertex to closest point on original mesh
-        for(auto v : vertices(mesh_a)) {
-            bool is_boundary = false;
-            for(auto h : CGAL::halfedges_around_target(v, mesh_a)) {
-                if(is_border(h, mesh_a)) {
-                    is_boundary = true;
-                    break;
-                }
-            }
-            
-            if(!is_boundary) {
-                auto p = mesh_a.point(v);
-                auto closest = tree.closest_point(p);
-                mesh_a.point(v) = closest;
-            }
-        }
+    }
+    
     
 
-    }
 
     /////////////////////////////////////////////////////////////////////////////////
     // Dual Graph Creation
@@ -189,29 +278,93 @@ pmp_dual(
     // Dual Mesh Vertex Creation
     /////////////////////////////////////////////////////////////////////////////////
     // For each face in the primal mesh, create a corresponding vertex in the dual mesh.
-    // The position of each dual vertex is the centroid of the corresponding primal face.
+    // The position of each dual vertex is determined by weighted centroid approach.
+    
+    // Calculate face normals, face areas, and vertex areas
+    auto faceNormals = get_face_normals(mesh_a, false);
+    auto faceAreas = get_face_areas_doubled(faceNormals);
+    auto vertexAreas = get_vertex_areas(mesh_a, faceAreas);
     
     for(auto face : faces(mesh_a)) {
         auto h = CGAL::halfedge(face, mesh_a);
 
+        // Calculate weighted centroid based on vertex areas
         CGAL::Point_3<compas::Kernel> point;
-        if (circumcenter) {
-            point = CGAL::circumcenter(
-                mesh_a.point(target(h, mesh_a)),
-                mesh_a.point(target(next(h, mesh_a), mesh_a)),
-                mesh_a.point(target(next(next(h, mesh_a), mesh_a), mesh_a))
-            );
-        } else {
-            point = CGAL::centroid(
-                mesh_a.point(target(h, mesh_a)),
-                mesh_a.point(target(next(h, mesh_a), mesh_a)),
-                mesh_a.point(target(next(next(h, mesh_a), mesh_a), mesh_a))
-            );
-        }
+        CGAL::Vector_3<compas::Kernel> weightedSum(0, 0, 0);
+        double totalWeight = 0.0;
+        
+        // Get vertices of this face
+        auto v0 = target(h, mesh_a);
+        auto v1 = target(next(h, mesh_a), mesh_a);
+        auto v2 = target(next(next(h, mesh_a), mesh_a), mesh_a);
+        
+        // Apply weights based on vertex areas (sqrt of the area as weight)
+        double weight0 = std::sqrt(vertexAreas[v0]);
+        double weight1 = std::sqrt(vertexAreas[v1]);
+        double weight2 = std::sqrt(vertexAreas[v2]);
+        
+        totalWeight = weight0 + weight1 + weight2;
+        
+        weightedSum = (mesh_a.point(v0) - CGAL::ORIGIN) * weight0 + 
+                      (mesh_a.point(v1) - CGAL::ORIGIN) * weight1 + 
+                      (mesh_a.point(v2) - CGAL::ORIGIN) * weight2;
+        
+        // Convert back to a point by dividing by total weight
+        point = CGAL::ORIGIN + (weightedSum / totalWeight);
         
         auto v = dual_mesh.add_vertex(); // Add vertex to dual mesh
         dual_mesh.point(v) = point;
         face_to_vertex[face] = v;
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////
+    // Project to the original mesh
+    /////////////////////////////////////////////////////////////////////////////////
+
+    // Define triangle type
+    typedef CGAL::Kernel_traits<CGAL::Point_3<compas::Kernel>>::Kernel K;
+    typedef CGAL::Triangle_3<K> Triangle;
+    typedef std::vector<Triangle>::iterator Iterator;
+    
+    // Build a list of triangles from the mesh
+    std::vector<Triangle> triangles;
+    for(auto face : faces(original_mesh)) {
+        auto halfedge = original_mesh.halfedge(face);
+        auto v0 = original_mesh.source(halfedge);
+        auto v1 = original_mesh.target(halfedge);
+        auto v2 = original_mesh.target(next(halfedge, original_mesh));
+        
+        // Add the triangle
+        triangles.push_back(Triangle(
+            original_mesh.point(v0),
+            original_mesh.point(v1),
+            original_mesh.point(v2)
+        ));
+    }
+    
+    // Create the AABB tree
+    typedef CGAL::AABB_triangle_primitive_3<K, Iterator> Primitive;
+    typedef CGAL::AABB_traits_3<K, Primitive> Traits;
+    typedef CGAL::AABB_tree<Traits> Tree;
+    
+    Tree tree(triangles.begin(), triangles.end());
+    tree.accelerate_distance_queries();
+    
+    // Project each inner vertex to closest point on original mesh
+    for(auto v : vertices(dual_mesh)) {
+        bool is_boundary = false;
+        for(auto h : CGAL::halfedges_around_target(v, dual_mesh)) {
+            if(is_border(h, dual_mesh)) {
+                is_boundary = true;
+                break;
+            }
+        }
+        
+        if(!is_boundary) {
+            auto p = dual_mesh.point(v);
+            auto closest = tree.closest_point(p);
+            dual_mesh.point(v) = closest;
+        }
     }
     
     /////////////////////////////////////////////////////////////////////////////////
@@ -371,10 +524,10 @@ pmp_dual(
             }
 
             // Find the face containing the first boundary edge
-            int e1_face = -1;
+            int e2_face = -1;
             for(int i = 0; i < faces_edges.size(); i++) {
-                if(std::find(faces_edges[i].begin(), faces_edges[i].end(), e1) != faces_edges[i].end()) {
-                    e1_face = i;
+                if(std::find(faces_edges[i].begin(), faces_edges[i].end(), e2) != faces_edges[i].end()) {
+                    e2_face = i;
                     break;
                 }
             }
@@ -389,7 +542,7 @@ pmp_dual(
             std::vector<typename boost::graph_traits<compas::Mesh>::face_descriptor> ordered_faces;
             std::vector<bool> visited(vertex_faces.size(), false);
 
-            int current_face_idx = e1_face;
+            int current_face_idx = e2_face;
             ordered_faces.push_back(vertex_faces[current_face_idx]);
             visited[current_face_idx] = true;
 
@@ -418,11 +571,13 @@ pmp_dual(
                 if (!found_next) break; // Exit when no more adjacent faces are found
             }
 
+ 
+            bool keep_boundary_vertex = false;
+
             /////////////////////////////////////////////////////////////////////////////////
             // Check which points to keep by angle
             /////////////////////////////////////////////////////////////////////////////////
 
-            bool keep_boundary_vertex = true;
 
             if(angle_radians > 0) {
 
@@ -466,11 +621,20 @@ pmp_dual(
                 
                 // Check if angle meets the threshold criteria (angle % π > angle_radians)
                 constexpr double PI = 3.14159265358979323846;
-                keep_boundary_vertex = std::fmod(angle, PI) > angle_radians;
+                keep_boundary_vertex = std::fmod(angle, PI) < angle_radians;
 
             }
 
+            /////////////////////////////////////////////////////////////////////////////////
+            // Check which points by fixed vertices
+            /////////////////////////////////////////////////////////////////////////////////
 
+            for (const auto& fixed_point : fixed_points) {
+                if (CGAL::squared_distance(mesh_a.point(v), fixed_point) < 1e-6) {
+                    keep_boundary_vertex = true;
+                    break;
+                }
+            }
 
             /////////////////////////////////////////////////////////////////////////////////
             // Boundary Sequence Creation
@@ -489,7 +653,7 @@ pmp_dual(
                 boundary_sequence.push_back(vertex_to_dual_vertex[v]);
             }
            
-            boundary_sequence.push_back(midpoint1_v); // Add first edge midpoint
+            boundary_sequence.push_back(midpoint2_v); // Add first edge midpoint
             
             for(auto f : ordered_faces) {
                 if(face_to_vertex.find(f) != face_to_vertex.end()) {
@@ -497,7 +661,7 @@ pmp_dual(
                 }
             }
             
-            boundary_sequence.push_back(midpoint2_v); // Add second edge midpoint
+            boundary_sequence.push_back(midpoint1_v); // Add second edge midpoint
             
             if(boundary_sequence.size() >= 3) {
                 variable_faces.push_back(boundary_sequence); // Only add valid sequences
@@ -514,15 +678,211 @@ pmp_dual(
     // representation, consisting of vertex coordinates and variable-length faces.
 
 
-    auto [vertices, triangles] = compas::mesh_to_vertices_and_faces(dual_mesh);
-    return std::make_tuple(vertices, variable_faces);
+    
+    auto [tri_vertices, tri_faces] = compas::mesh_to_vertices_and_faces(mesh_a);
+    auto [dual_vertices, dual_faces] = compas::mesh_to_vertices_and_faces(dual_mesh);
 
+    //Reverse the order of the faces
+    for (auto& face : variable_faces) {
+        std::reverse(face.begin(), face.end());
+    }
+    // Return a 4-element tuple to match the function declaration
+    // Remeshed vertices, remeshed faces, dual vertices, dual mesh variable faces
+    return std::make_tuple(tri_vertices, tri_faces, dual_vertices, variable_faces);
+
+}
+
+void pmp_pull(
+    Eigen::Ref<compas::RowMatrixXd> vertices_a,
+    Eigen::Ref<compas::RowMatrixXi> faces_a,
+    Eigen::Ref<compas::RowMatrixXd> vertices_b,
+    Eigen::Ref<compas::RowMatrixXd> normals_b)
+{
+    /////////////////////////////////////////////////////////////////////////////////
+    // Mesh Creation
+    /////////////////////////////////////////////////////////////////////////////////
+    compas::Mesh mesh_a = compas::mesh_from_vertices_and_faces(vertices_a, faces_a);
+
+    // After scaling, use proper AABB tree for projection
+    // Define triangle type
+    typedef CGAL::Kernel_traits<CGAL::Point_3<compas::Kernel>>::Kernel K;
+    typedef CGAL::Triangle_3<K> Triangle;
+    typedef std::vector<Triangle>::iterator Iterator;
+    typedef CGAL::Ray_3<K> Ray;
+    
+    // Build a list of triangles from the mesh
+    std::vector<Triangle> triangles;
+    for(auto face : mesh_a.faces()) {
+        auto halfedge = mesh_a.halfedge(face);
+        auto v0 = mesh_a.source(halfedge);
+        auto v1 = mesh_a.target(halfedge);
+        auto v2 = mesh_a.target(mesh_a.next(halfedge));
+        
+        // Add the triangle
+        triangles.push_back(Triangle(
+            mesh_a.point(v0),
+            mesh_a.point(v1),
+            mesh_a.point(v2)
+        ));
+    }
+    
+    // Create the AABB tree
+    typedef CGAL::AABB_triangle_primitive_3<K, Iterator> Primitive;
+    typedef CGAL::AABB_traits_3<K, Primitive> Traits;
+    typedef CGAL::AABB_tree<Traits> Tree;
+    
+    Tree tree(triangles.begin(), triangles.end());
+    tree.accelerate_distance_queries();
+    
+    // Check if we have valid normals (non-empty matrix)
+    bool use_normals = normals_b.rows() == vertices_b.rows() && normals_b.cols() == 3;
+    
+    // Project each vertex
+    for (int i = 0; i < vertices_b.rows(); ++i) {
+        // Extract the point from the row and convert to CGAL point
+        CGAL::Point_3<K> query_point(vertices_b(i, 0), vertices_b(i, 1), vertices_b(i, 2));
+        
+        CGAL::Point_3<K> projected_point;
+        bool projection_successful = false;
+        
+        // If we have valid normals, try ray-based projection first
+        if (use_normals) {
+            // Create ray using vertex position and normal direction
+            CGAL::Vector_3<K> normal(normals_b(i, 0), normals_b(i, 1), normals_b(i, 2));
+            
+            // Only proceed if normal has non-zero length
+            if (normal.squared_length() > 1e-10) {
+                // Normalize the normal vector
+                normal = normal / std::sqrt(normal.squared_length());
+                
+                // Try rays in both normal directions - first try in negative normal direction
+                Ray ray(query_point, normal);
+                
+                if (tree.do_intersect(ray)) {
+                    auto intersection = tree.any_intersection(ray);
+                    if (intersection) {
+                        // Handle the variant result properly
+                        auto& intersection_variant = intersection->first;
+                        
+                        // Check if this is a Point_3 intersection using std::get_if for std::variant
+                        if (const CGAL::Point_3<K>* p = std::get_if<CGAL::Point_3<K>>(&intersection_variant)) {
+                            projected_point = *p;
+                            projection_successful = true;
+                        }
+                        // Handle Segment_3 intersection case using std::get_if for std::variant
+                        else if (const CGAL::Segment_3<K>* s = std::get_if<CGAL::Segment_3<K>>(&intersection_variant)) {
+                            // For a segment intersection, take the endpoint closest to the query point
+                            double dist1 = CGAL::squared_distance(query_point, s->source());
+                            double dist2 = CGAL::squared_distance(query_point, s->target());
+                            projected_point = (dist1 < dist2) ? s->source() : s->target();
+                            projection_successful = true;
+                        }
+                    }
+                }
+                
+                // If no intersection found in negative direction, try positive direction
+                if (!projection_successful) {
+                    Ray ray(query_point, -normal);
+                    
+                    if (tree.do_intersect(ray)) {
+                        auto intersection = tree.any_intersection(ray);
+                        if (intersection) {
+                            // Handle the variant result properly
+                            auto& intersection_variant = intersection->first;
+                            
+                            // Check if this is a Point_3 intersection using std::get_if for std::variant
+                            if (const CGAL::Point_3<K>* p = std::get_if<CGAL::Point_3<K>>(&intersection_variant)) {
+                                projected_point = *p;
+                                projection_successful = true;
+                            }
+                            // Handle Segment_3 intersection case using std::get_if for std::variant
+                            else if (const CGAL::Segment_3<K>* s = std::get_if<CGAL::Segment_3<K>>(&intersection_variant)) {
+                                // For a segment intersection, take the endpoint closest to the query point
+                                double dist1 = CGAL::squared_distance(query_point, s->source());
+                                double dist2 = CGAL::squared_distance(query_point, s->target());
+                                projected_point = (dist1 < dist2) ? s->source() : s->target();
+                                projection_successful = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        // If ray projection didn't work or we don't have normals, use closest point method as fallback
+        if (!projection_successful) {
+            projected_point = tree.closest_point(query_point);
+        }
+        
+        // Update the vertex in the matrix
+        vertices_b(i, 0) = projected_point.x();
+        vertices_b(i, 1) = projected_point.y();
+        vertices_b(i, 2) = projected_point.z();
+    }
+}
+
+
+void pmp_project(
+    Eigen::Ref<compas::RowMatrixXd> vertices_a,
+    Eigen::Ref<compas::RowMatrixXi> faces_a,
+    Eigen::Ref<compas::RowMatrixXd> vertices_b)
+{
+    /////////////////////////////////////////////////////////////////////////////////
+    // Mesh Creation
+    /////////////////////////////////////////////////////////////////////////////////
+    compas::Mesh mesh_a = compas::mesh_from_vertices_and_faces(vertices_a, faces_a);
+
+    // After scaling, use proper AABB tree for projection
+    // Define triangle type
+    typedef CGAL::Kernel_traits<CGAL::Point_3<compas::Kernel>>::Kernel K;
+    typedef CGAL::Triangle_3<K> Triangle;
+    typedef std::vector<Triangle>::iterator Iterator;
+    typedef CGAL::Ray_3<K> Ray;
+    
+    // Build a list of triangles from the mesh
+    std::vector<Triangle> triangles;
+    for(auto face : mesh_a.faces()) {
+        auto halfedge = mesh_a.halfedge(face);
+        auto v0 = mesh_a.source(halfedge);
+        auto v1 = mesh_a.target(halfedge);
+        auto v2 = mesh_a.target(mesh_a.next(halfedge));
+        
+        // Add the triangle
+        triangles.push_back(Triangle(
+            mesh_a.point(v0),
+            mesh_a.point(v1),
+            mesh_a.point(v2)
+        ));
+    }
+    
+    // Create the AABB tree
+    typedef CGAL::AABB_triangle_primitive_3<K, Iterator> Primitive;
+    typedef CGAL::AABB_traits_3<K, Primitive> Traits;
+    typedef CGAL::AABB_tree<Traits> Tree;
+    
+    Tree tree(triangles.begin(), triangles.end());
+    tree.accelerate_distance_queries();
+    
+    // Project each vertex
+    for (int i = 0; i < vertices_b.rows(); ++i) {
+        // Extract the point from the row and convert to CGAL point
+        CGAL::Point_3<K> query_point(vertices_b(i, 0), vertices_b(i, 1), vertices_b(i, 2));
+        
+        CGAL::Point_3<K> projected_point;
+
+        projected_point = tree.closest_point(query_point);
+        
+        // Update the vertex in the matrix
+        vertices_b(i, 0) = projected_point.x();
+        vertices_b(i, 1) = projected_point.y();
+        vertices_b(i, 2) = projected_point.z();
+    }
 }
 
 NB_MODULE(_meshing, m) {
     m.def(
-        "remesh",
-        &pmp_remesh,
+        "pmp_trimesh_remesh",
+        &pmp_trimesh_remesh,
         "Remesh a triangle mesh with target edge length",
         "vertices_a"_a,
         "faces_a"_a,
@@ -532,13 +892,34 @@ NB_MODULE(_meshing, m) {
     );
     
     m.def(
-        "dual",
-        &pmp_dual,
-        "Create a dual mesh from a triangular mesh",
+        "pmp_trimesh_remesh_dual",
+        &pmp_trimesh_remesh_dual,
+        "Remesh a triangle mesh with target edge length",
         "vertices_a"_a,
         "faces_a"_a,
-        "angle_radians"_a = 0.5,
-        "circumcenter"_a = true,
+        "fixed_vertices"_a,
+        "length_factor"_a=1,
+        "number_of_iterations"_a = 10,
+        "angle_radians"_a = 0.9,
         "scale_factor"_a = 1.0
+    );
+
+    m.def(
+        "pmp_pull",
+        &pmp_pull,
+        "Pull a set of points to a mesh using vectors by ray-mesh intersection",
+        "vertices_a"_a,
+        "faces_a"_a,
+        "vertices_b"_a,
+        "normals_b"_a
+    );
+
+    m.def(
+        "pmp_project",
+        &pmp_project,
+        "Project a set of points to the closest point on a mesh",
+        "vertices_a"_a,
+        "faces_a"_a,
+        "vertices_b"_a
     );
 }
