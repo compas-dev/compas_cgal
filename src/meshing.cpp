@@ -38,7 +38,7 @@ typedef boost::graph_traits<Dual>::edge_descriptor     edge_descriptor;
 
 
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
-pmp_remesh(
+pmp_trimesh_remesh(
     Eigen::Ref<compas::RowMatrixXd> vertices_a,
     Eigen::Ref<compas::RowMatrixXi> faces_a,
     double target_edge_length,
@@ -136,7 +136,7 @@ compas::RowMatrixXd,
 compas::RowMatrixXi,
 compas::RowMatrixXd, 
 std::vector<std::vector<int>>>
-pmp_remesh_dual(
+pmp_trimesh_remesh_dual(
     Eigen::Ref<compas::RowMatrixXd> vertices_a,
     Eigen::Ref<compas::RowMatrixXi> faces_a,
     const std::vector<int>& fixed_vertices,
@@ -692,7 +692,7 @@ pmp_remesh_dual(
 
 }
 
-void pmp_project(
+void pmp_pull(
     Eigen::Ref<compas::RowMatrixXd> vertices_a,
     Eigen::Ref<compas::RowMatrixXi> faces_a,
     Eigen::Ref<compas::RowMatrixXd> vertices_b,
@@ -821,10 +821,68 @@ void pmp_project(
     }
 }
 
+
+void pmp_project(
+    Eigen::Ref<compas::RowMatrixXd> vertices_a,
+    Eigen::Ref<compas::RowMatrixXi> faces_a,
+    Eigen::Ref<compas::RowMatrixXd> vertices_b)
+{
+    /////////////////////////////////////////////////////////////////////////////////
+    // Mesh Creation
+    /////////////////////////////////////////////////////////////////////////////////
+    compas::Mesh mesh_a = compas::mesh_from_vertices_and_faces(vertices_a, faces_a);
+
+    // After scaling, use proper AABB tree for projection
+    // Define triangle type
+    typedef CGAL::Kernel_traits<CGAL::Point_3<compas::Kernel>>::Kernel K;
+    typedef CGAL::Triangle_3<K> Triangle;
+    typedef std::vector<Triangle>::iterator Iterator;
+    typedef CGAL::Ray_3<K> Ray;
+    
+    // Build a list of triangles from the mesh
+    std::vector<Triangle> triangles;
+    for(auto face : mesh_a.faces()) {
+        auto halfedge = mesh_a.halfedge(face);
+        auto v0 = mesh_a.source(halfedge);
+        auto v1 = mesh_a.target(halfedge);
+        auto v2 = mesh_a.target(mesh_a.next(halfedge));
+        
+        // Add the triangle
+        triangles.push_back(Triangle(
+            mesh_a.point(v0),
+            mesh_a.point(v1),
+            mesh_a.point(v2)
+        ));
+    }
+    
+    // Create the AABB tree
+    typedef CGAL::AABB_triangle_primitive_3<K, Iterator> Primitive;
+    typedef CGAL::AABB_traits_3<K, Primitive> Traits;
+    typedef CGAL::AABB_tree<Traits> Tree;
+    
+    Tree tree(triangles.begin(), triangles.end());
+    tree.accelerate_distance_queries();
+    
+    // Project each vertex
+    for (int i = 0; i < vertices_b.rows(); ++i) {
+        // Extract the point from the row and convert to CGAL point
+        CGAL::Point_3<K> query_point(vertices_b(i, 0), vertices_b(i, 1), vertices_b(i, 2));
+        
+        CGAL::Point_3<K> projected_point;
+
+        projected_point = tree.closest_point(query_point);
+        
+        // Update the vertex in the matrix
+        vertices_b(i, 0) = projected_point.x();
+        vertices_b(i, 1) = projected_point.y();
+        vertices_b(i, 2) = projected_point.z();
+    }
+}
+
 NB_MODULE(_meshing, m) {
     m.def(
-        "remesh",
-        &pmp_remesh,
+        "pmp_trimesh_remesh",
+        &pmp_trimesh_remesh,
         "Remesh a triangle mesh with target edge length",
         "vertices_a"_a,
         "faces_a"_a,
@@ -834,8 +892,8 @@ NB_MODULE(_meshing, m) {
     );
     
     m.def(
-        "remesh_dual",
-        &pmp_remesh_dual,
+        "pmp_trimesh_remesh_dual",
+        &pmp_trimesh_remesh_dual,
         "Remesh a triangle mesh with target edge length",
         "vertices_a"_a,
         "faces_a"_a,
@@ -847,12 +905,21 @@ NB_MODULE(_meshing, m) {
     );
 
     m.def(
-        "project",
-        &pmp_project,
-        "Project a set of points to the closest point on a mesh",
+        "pmp_pull",
+        &pmp_pull,
+        "Pull a set of points to a mesh using vectors by ray-mesh intersection",
         "vertices_a"_a,
         "faces_a"_a,
         "vertices_b"_a,
         "normals_b"_a
+    );
+
+    m.def(
+        "pmp_project",
+        &pmp_project,
+        "Project a set of points to the closest point on a mesh",
+        "vertices_a"_a,
+        "faces_a"_a,
+        "vertices_b"_a
     );
 }

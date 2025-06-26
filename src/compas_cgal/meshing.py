@@ -1,5 +1,3 @@
-from typing import Optional
-
 import numpy as np
 from compas.datastructures import Mesh
 from compas.plugins import plugin
@@ -12,7 +10,7 @@ from .types import VerticesFacesNumpy
 
 
 @plugin(category="trimesh", pluggable_name="trimesh_remesh")
-def mesh_remesh(
+def trimesh_remesh(
     mesh: VerticesFaces,
     target_edge_length: float,
     number_of_iterations: int = 10,
@@ -55,112 +53,10 @@ def mesh_remesh(
     V, F = mesh
     V = np.asarray(V, dtype=np.float64, order="C")
     F = np.asarray(F, dtype=np.int32, order="C")
-    return _meshing.remesh(V, F, target_edge_length, number_of_iterations, do_project)
+    return _meshing.pmp_trimesh_remesh(V, F, target_edge_length, number_of_iterations, do_project)
 
 
-def project_mesh_on_mesh(
-    mesh_source: VerticesFaces,
-    mesh_target: VerticesFaces,
-    use_normals: bool = True,
-) -> VerticesFaces:
-    """Project mesh_target vertices onto mesh_source surface.
-
-    Parameters
-    ----------
-    mesh_source : :attr:`compas_cgal.types.VerticesFaces`
-        The mesh to project onto (target surface).
-    mesh_target : :attr:`compas_cgal.types.VerticesFaces`
-        The mesh whose vertices will be projected (source points).
-    use_normals : bool, optional
-        Whether to use normals for ray-based projection. If False, closest point projection is used.
-
-    Returns
-    -------
-    :attr:`compas_cgal.types.VerticesFaces`
-        The projected mesh (vertices on mesh_source surface, original faces).
-
-    """
-    V_source, F_source = mesh_source.to_vertices_and_faces()
-    V_target, F_target = mesh_target.to_vertices_and_faces(triangulated=True)
-
-    # Convert inputs to numpy arrays
-    numpy_V_source = np.asarray(V_source, dtype=np.float64, order="C")
-
-    numpy_V_target = np.asarray(V_target, dtype=np.float64, order="C")
-    numpy_F_target = np.asarray(F_target, dtype=np.int32, order="C")
-
-    # Handle normals calculation
-    if use_normals:
-        # Pre-allocate numpy array for normals with correct size
-        numpy_N_source = np.zeros((mesh_source.number_of_vertices(), 3), dtype=np.float64)
-
-        # Fill the array with vertex normals
-        for i, vertex_key in enumerate(mesh_source.vertices()):
-            normal = -mesh_source.vertex_normal(vertex_key)
-            numpy_N_source[i, 0] = normal.x
-            numpy_N_source[i, 1] = normal.y
-            numpy_N_source[i, 2] = normal.z
-    else:
-        # Don't use normals - create empty array
-        numpy_N_source = np.zeros((0, 0), dtype=np.float64)
-
-    # Call the C++ function
-    _meshing.project(numpy_V_target, numpy_F_target, numpy_V_source, numpy_N_source)
-
-    return Mesh.from_vertices_and_faces(numpy_V_source, F_source)
-
-
-def project_points_on_mesh(
-    points: list[list[float]],
-    mesh_target: VerticesFaces,
-    normals: Optional[list[list[float]]] = None,
-) -> list[list[float]]:
-    """Project points onto mesh_target surface.
-
-    Parameters
-    ----------
-    points : list[list[float]]
-        The points to project.
-    mesh_target : :attr:`compas_cgal.types.VerticesFaces`
-        The mesh whose vertices will be projected (source points).
-    normals : list[list[float]], optional
-        The normals of the points to project.
-
-    Returns
-    -------
-    list[list[float]]
-        The projected points (vertices on mesh_target surface).
-
-    """
-    V_target, F_target = mesh_target.to_vertices_and_faces(triangulated=True)
-
-    # Convert inputs to numpy arrays
-    numpy_V_source = np.asarray(points, dtype=np.float64, order="C")
-
-    numpy_V_target = np.asarray(V_target, dtype=np.float64, order="C")
-    numpy_F_target = np.asarray(F_target, dtype=np.int32, order="C")
-
-    # Handle normals calculation
-    if normals:
-        # Pre-allocate numpy array for normals with correct size
-        numpy_N_source = np.zeros((len(points), 3), dtype=np.float64)
-
-        # Fill the array with vertex normals
-        for i, normal in enumerate(normals):
-            numpy_N_source[i, 0] = normal[0]
-            numpy_N_source[i, 1] = normal[1]
-            numpy_N_source[i, 2] = normal[2]
-    else:
-        # Don't use normals - create empty array
-        numpy_N_source = np.zeros((0, 0), dtype=np.float64)
-
-    # Call the C++ function
-    _meshing.project(numpy_V_target, numpy_F_target, numpy_V_source, numpy_N_source)
-
-    return numpy_V_source
-
-
-def remesh_dual(
+def trimesh_dual(
     mesh: VerticesFaces,
     length_factor: float = 1.0,
     number_of_iterations: int = 10,
@@ -207,4 +103,112 @@ def remesh_dual(
     V = np.asarray(V, dtype=np.float64, order="C")
     F = np.asarray(F, dtype=np.int32, order="C")
     fixed_vertices = np.asarray(fixed_vertices, dtype=np.int32, order="C")
-    return _meshing.remesh_dual(V, F, fixed_vertices, length_factor, number_of_iterations, angle_radians, scale_factor)
+    return _meshing.pmp_trimesh_remesh_dual(V, F, fixed_vertices, length_factor, number_of_iterations, angle_radians, scale_factor)
+
+
+def project_mesh_on_mesh(
+    mesh_source: VerticesFaces,
+    mesh_target: VerticesFaces,
+) -> VerticesFaces:
+    """Project mesh_source vertices onto mesh_target surface.
+
+    Parameters
+    ----------
+    mesh_source : :attr:`compas_cgal.types.VerticesFaces`
+        Mesh that is projected onto the target mesh.
+    mesh_target : :attr:`compas_cgal.types.VerticesFaces`
+        Mesh that is projected onto.
+
+    Returns
+    -------
+    :attr:`compas_cgal.types.VerticesFaces`
+        The projected mesh (vertices on mesh_source surface, original faces).
+
+    """
+    V_source, F_source = mesh_source.to_vertices_and_faces()
+    V_source = project_points_on_mesh(V_source, mesh_target)
+    return Mesh.from_vertices_and_faces(V_source, F_source)
+
+
+def pull_mesh_on_mesh(
+    mesh_source: VerticesFaces,
+    mesh_target: VerticesFaces,
+) -> VerticesFaces:
+    """Pull mesh_source vertices onto mesh_target surface using mesh_source normals.
+
+    Parameters
+    ----------
+    mesh_source : :attr:`compas_cgal.types.VerticesFaces`
+        Mesh that is projected onto the target mesh.
+    mesh_target : :attr:`compas_cgal.types.VerticesFaces`
+        Mesh that is projected onto.
+
+    Returns
+    -------
+    :attr:`compas_cgal.types.VerticesFaces`
+        The projected mesh (vertices on mesh_source surface, original faces).
+
+    """
+    V_source, F_source = mesh_source.to_vertices_and_faces()
+    N_source = []
+    for v in mesh_source.vertices():
+        N_source.append(mesh_source.vertex_normal(v))
+
+    V_source = pull_points_on_mesh(V_source, N_source, mesh_target)
+    return Mesh.from_vertices_and_faces(V_source, F_source)
+
+
+def project_points_on_mesh(
+    points: list[list[float]],
+    mesh: VerticesFaces,
+) -> list[list[float]]:
+    """Project points onto a mesh by closest perpendicular distance.
+
+    Parameters
+    ----------
+    points : list[list[float]]
+        The points to project.
+    mesh : :attr:`compas_cgal.types.VerticesFaces`
+        Mesh that the points are projected onto.
+
+    Returns
+    -------
+    list[list[float]]
+        The projected points (vertices on the mesh surface).
+
+    """
+    V_target, F_target = mesh.to_vertices_and_faces(triangulated=True)
+    numpy_V_source = np.asarray(points, dtype=np.float64, order="C")
+    numpy_V_target = np.asarray(V_target, dtype=np.float64, order="C")
+    numpy_F_target = np.asarray(F_target, dtype=np.int32, order="C")
+    _meshing.pmp_project(numpy_V_target, numpy_F_target, numpy_V_source)
+
+    return numpy_V_source
+
+
+def pull_points_on_mesh(points: list[list[float]], normals: list[list[float]], mesh: VerticesFaces) -> list[list[float]]:
+    """Pull points onto a mesh surface using ray-mesh intersection along normal vectors.
+
+    Parameters
+    ----------
+    points : list[list[float]]
+        The points to pull.
+    normals : list[list[float]]
+        The normal vectors used for directing the projection.
+    mesh : :attr:`compas_cgal.types.VerticesFaces`
+        Mesh that the points are pulled onto.
+
+    Returns
+    -------
+    list[list[float]]
+        The pulled points (vertices on the mesh surface).
+
+    """
+
+    V_target, F_target = mesh.to_vertices_and_faces(triangulated=True)
+    numpy_V_source = np.asarray(points, dtype=np.float64, order="C")
+    numpy_N_source = np.asarray(normals, dtype=np.float64, order="C")
+    numpy_V_target = np.asarray(V_target, dtype=np.float64, order="C")
+    numpy_F_target = np.asarray(F_target, dtype=np.int32, order="C")
+    _meshing.pmp_pull(numpy_V_target, numpy_F_target, numpy_V_source, numpy_N_source)
+    return numpy_V_source

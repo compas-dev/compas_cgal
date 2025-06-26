@@ -2,7 +2,7 @@ from pathlib import Path
 from compas.datastructures import Mesh
 from compas_viewer import Viewer
 
-from compas_cgal.meshing import mesh_remesh
+from compas_cgal.meshing import trimesh_remesh
 
 
 input_file = Path(__file__).parent.parent.parent / "data" / "rhinovault_mesh_0.ply"
@@ -13,7 +13,7 @@ edge_length = 1
 iterations = 10
 
 # Remesh
-V1, F1 = mesh_remesh(mesh.to_vertices_and_faces(), edge_length, iterations)
+V1, F1 = trimesh_remesh(mesh.to_vertices_and_faces(), edge_length, iterations)
 remeshed = Mesh.from_vertices_and_faces(V1, F1)
 
 

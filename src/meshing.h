@@ -58,7 +58,7 @@ namespace compas {
  *         - New faces as Sx3 matrix (int32)
  */
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
-pmp_remesh(
+pmp_trimesh_remesh(
     Eigen::Ref<compas::RowMatrixXd> vertices_a,
     Eigen::Ref<compas::RowMatrixXi> faces_a,
     double target_edge_length,
@@ -67,25 +67,7 @@ pmp_remesh(
 
 
 /**
- * @brief Create a dual mesh from a triangular mesh.
- * 
- * @param vertices_a Matrix of vertex positions as Nx3 matrix in row-major order (float64)
- * @param faces_a Matrix of face indices as Mx3 matrix in row-major order (int32)
- * @param angle_radians Angle limit in radians for boundary vertices
- * @param scale_factor Scale factor for inner vertices.
- * @return std::tuple<RowMatrixXd, std::vector<std::vector<int>>> containing:
- *         - New vertices as Rx3 matrix (float64)
- *         - New faces as Sx3 matrix (int32)
- */
-std::tuple<compas::RowMatrixXd, std::vector<std::vector<int>>>
-pmp_dual(
-    Eigen::Ref<compas::RowMatrixXd> vertices_a,
-    Eigen::Ref<compas::RowMatrixXi> faces_a,
-    double angle_radians = 0.5,
-    double scale_factor = 1.0);
-
-/**
- * @brief Project a set of points to the closest point on a mesh.
+ * @brief Remesh a triangle mesh with target edge length. Then create dual. Both meshes are projected onto the input surface.
  * 
  * @param vertices_a Matrix of vertex positions as Nx3 matrix in row-major order (float64)
  * @param faces_a Matrix of face indices as Mx3 matrix in row-major order (int32)
@@ -101,7 +83,7 @@ compas::RowMatrixXd,
 compas::RowMatrixXi,
 compas::RowMatrixXd, 
 std::vector<std::vector<int>>> 
-pmp_remesh_dual(
+pmp_trimesh_remesh_dual(
     Eigen::Ref<compas::RowMatrixXd> vertices_a,
     Eigen::Ref<compas::RowMatrixXi> faces_a,
     const std::vector<int>& fixed_vertices,
@@ -110,3 +92,30 @@ pmp_remesh_dual(
     double angle_radians=0.9,
     double scale_factor=1.0
 );
+
+/**
+ * @brief Pull points to a mesh using vectors by ray-mesh intersection.
+ * 
+ * @param vertices_a Matrix of vertex positions as Nx3 matrix in row-major order (float64)
+ * @param faces_a Matrix of face indices as Mx3 matrix in row-major order (int32)
+ * @param vertices_b Matrix of vertex positions as Nx3 matrix in row-major order (float64)
+ * @param normals_b Matrix of normals as Nx3 matrix in row-major order (float64)
+ */
+
+void pmp_pull(
+    Eigen::Ref<compas::RowMatrixXd> vertices_a,
+    Eigen::Ref<compas::RowMatrixXi> faces_a,
+    Eigen::Ref<compas::RowMatrixXd> vertices_b,
+    Eigen::Ref<compas::RowMatrixXd> normals_b);
+
+/**
+ * @brief Project points to a mesh by closest perpendicular distance.
+ * 
+ * @param vertices_a Matrix of vertex positions as Nx3 matrix in row-major order (float64)
+ * @param faces_a Matrix of face indices as Mx3 matrix in row-major order (int32)
+ * @param vertices_b Matrix of vertex positions as Nx3 matrix in row-major order (float64)
+ */
+void pmp_project(
+    Eigen::Ref<compas::RowMatrixXd> vertices_a,
+    Eigen::Ref<compas::RowMatrixXi> faces_a,
+    Eigen::Ref<compas::RowMatrixXd> vertices_b);

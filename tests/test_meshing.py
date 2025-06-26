@@ -3,7 +3,7 @@
 import pytest
 import numpy as np
 from compas.datastructures import Mesh
-from compas_cgal.meshing import mesh_remesh
+from compas_cgal.meshing import trimesh_remesh, trimesh_dual
 
 
 @pytest.fixture
@@ -42,7 +42,7 @@ def test_remesh(sample_mesh):
     num_iterations = 10
 
     # Run remeshing
-    V_new, F_new = mesh_remesh((V, F), target_edge_length, num_iterations)
+    V_new, F_new = trimesh_remesh((V, F), target_edge_length, num_iterations)
 
     # Verify output types and shapes
     assert isinstance(V_new, np.ndarray)
@@ -57,3 +57,24 @@ def test_remesh(sample_mesh):
     # Verify mesh is valid
     remeshed_mesh = Mesh.from_vertices_and_faces(V_new, F_new)
     assert remeshed_mesh.is_valid()
+
+
+def test_dual(sample_mesh):
+    """Test the dual functionality."""
+    # Get mesh data
+    V, F = sample_mesh.to_vertices_and_faces()
+
+    # Test parameters
+    length_factor = 1
+    num_iterations = 10
+
+    # Run remeshing
+    V_new, F_new, V_dual, F_dual = trimesh_dual((V, F), length_factor, num_iterations)
+
+    # Verify mesh is valid
+    remeshed_mesh = Mesh.from_vertices_and_faces(V_new, F_new)
+    assert remeshed_mesh.is_valid()
+
+    # Verify dual mesh is valid
+    dual_mesh = Mesh.from_vertices_and_faces(V_dual, F_dual)
+    assert dual_mesh.is_valid()

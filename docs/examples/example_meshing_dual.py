@@ -3,7 +3,7 @@ from compas.geometry import Line
 from compas.datastructures import Mesh
 from compas_viewer import Viewer
 
-from compas_cgal.meshing import remesh_dual
+from compas_cgal.meshing import trimesh_dual
 
 
 input_file = Path(__file__).parent.parent.parent / "data" / "rhinovault_mesh_0.ply"
@@ -17,9 +17,8 @@ for v in mesh.vertices():
         fixed_vertices.append(v)
 
 # Remesh and Dual
-V2, F2, V3, F3 = remesh_dual(mesh.to_vertices_and_faces(), length_factor=1.0, number_of_iterations=100, angle_radians=0.9, fixed_vertices=[])
+V2, F2, V3, F3 = trimesh_dual(mesh.to_vertices_and_faces(), length_factor=1.0, number_of_iterations=100, angle_radians=0.9, fixed_vertices=[])
 remeshed, dual = Mesh.from_vertices_and_faces(V2, F2), Mesh.from_vertices_and_faces(V3, F3)
-
 
 # ==============================================================================
 # Visualize
