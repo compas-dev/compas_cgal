@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="../_static/compas.ico" type="image/x-icon">
-    <title>Straight Skeleton with Holes &#8212; COMPAS CGAL</title>
+    <title>Mesh Projection &#8212; COMPAS CGAL</title>
   
   
   
@@ -51,15 +51,15 @@
     <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/example_straight_skeleton_2_interior_straight_skeleton_with_holes';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/example_projection';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/compas-dev/compas_cgal/gh-pages/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Mesh Subdivision" href="example_subdivision.html" />
-    <link rel="prev" title="Weighted Polygon Offsetting" href="example_straight_skeleton_2_interior_straight_skeleton_weighted_offset_polygon.html" />
+    <link rel="next" title="Point Cloud Normal Estimation" href="example_reconstruction_pointset_normal_estimation.html" />
+    <link rel="prev" title="Mesh Dual Remeshing" href="example_meshing_dual.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -479,7 +479,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="example_intersections.html">Mesh Intersections</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_meshing.html">Mesh Remeshing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_meshing_dual.html">Mesh Dual Remeshing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_projection.html">Mesh Projection</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Mesh Projection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_reconstruction_pointset_normal_estimation.html">Point Cloud Normal Estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_reconstruction_pointset_outlier_removal.html">Point Cloud Outlier Removal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_reconstruction_pointset_reduction.html">Point Cloud Reduction</a></li>
@@ -490,7 +490,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="example_straight_skeleton_2_interior_straight_skeleton.html">Interior Straight Skeleton</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_straight_skeleton_2_interior_straight_skeleton_offset_polygon.html">Polygon Offsetting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_straight_skeleton_2_interior_straight_skeleton_weighted_offset_polygon.html">Weighted Polygon Offsetting</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Straight Skeleton with Holes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_straight_skeleton_2_interior_straight_skeleton_with_holes.html">Straight Skeleton with Holes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_subdivision.html">Mesh Subdivision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_triangulation.html">Mesh Triangulation</a></li>
 </ul>
@@ -567,7 +567,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../examples.html" class="nav-link">Examples</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">Straight Skeleton with Holes</li>
+    <li class="breadcrumb-item active" aria-current="page">Mesh Projection</li>
   </ul>
 </nav>
 </div>
@@ -584,72 +584,61 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="straight-skeleton-with-holes">
-<h1>Straight Skeleton with Holes</h1>
-<p>This example demonstrates how to compute the straight skeleton of a polygon with holes using COMPAS CGAL.</p>
-<p>Key Features:</p>
-<ul class="simple">
-<li><p>Computing straight skeleton for polygons with holes</p></li>
-<li><p>Handling multiple interior holes</p></li>
-<li><p>Color-coded visualization of different edge types</p></li>
-<li><p>Distinction between inner bisectors and regular edges</p></li>
-</ul>
+  <section id="mesh-projection">
+<h1>Mesh Projection</h1>
+<p>This example demonstrates how to project a mesh to another mesh using COMPAS CGAL. By default closest point projection is used. The method can also use normals for ray-based projection.</p>
 <figure class="figure align-default">
-<img alt="../_images/example_straight_skeleton_2_interior_straight_skeleton_with_holes.png" class="figure-img img-fluid" src="../_images/example_straight_skeleton_2_interior_straight_skeleton_with_holes.png" />
+<img alt="../_images/example_projection.png" class="figure-img img-fluid" src="../_images/example_projection.png" />
 </figure>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">compas.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">compas.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Point</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">compas.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mesh</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">compas_viewer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Viewer</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">compas_cgal.straight_skeleton_2</span><span class="w"> </span><span class="kn">import</span> <span class="n">interior_straight_skeleton_with_holes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">compas_cgal.meshing</span><span class="w"> </span><span class="kn">import</span> <span class="n">project_mesh_on_mesh</span><span class="p">,</span> <span class="n">project_points_on_mesh</span><span class="p">,</span> <span class="n">pull_mesh_on_mesh</span><span class="p">,</span> <span class="n">pull_points_on_mesh</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the interior straight skeleton of a polygon with holes.&quot;&quot;&quot;</span>
+<span class="c1"># Mesh to project</span>
+<span class="n">input_file_0</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span> <span class="o">/</span> <span class="s2">&quot;rhinovault_mesh_0.ply&quot;</span>
+<span class="n">mesh_0</span> <span class="o">=</span> <span class="n">Mesh</span><span class="o">.</span><span class="n">from_ply</span><span class="p">(</span><span class="n">input_file_0</span><span class="p">)</span>
 
-    <span class="c1"># Outer boundary</span>
-    <span class="n">points_boundary</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">(</span><span class="o">-</span><span class="mf">1.91</span><span class="p">,</span> <span class="mf">3.59</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-        <span class="p">(</span><span class="o">-</span><span class="mf">5.53</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.22</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-        <span class="p">(</span><span class="o">-</span><span class="mf">0.39</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.98</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-        <span class="p">(</span><span class="mf">2.98</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.51</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-        <span class="p">(</span><span class="mf">4.83</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.02</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-        <span class="p">(</span><span class="mf">9.70</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.63</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-        <span class="p">(</span><span class="mf">12.23</span><span class="p">,</span> <span class="mf">1.25</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-        <span class="p">(</span><span class="mf">3.42</span><span class="p">,</span> <span class="mf">0.66</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-        <span class="p">(</span><span class="mf">2.92</span><span class="p">,</span> <span class="mf">4.03</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-        <span class="p">(</span><span class="o">-</span><span class="mf">1.91</span><span class="p">,</span> <span class="mf">3.59</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-    <span class="p">]</span>
-    <span class="n">boundary</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">points_boundary</span><span class="p">)</span>
+<span class="c1"># Target Mesh to project onto</span>
+<span class="n">input_file_1</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span> <span class="o">/</span> <span class="s2">&quot;rhinovault_mesh_1.ply&quot;</span>
+<span class="n">mesh_1</span> <span class="o">=</span> <span class="n">Mesh</span><span class="o">.</span><span class="n">from_ply</span><span class="p">(</span><span class="n">input_file_1</span><span class="p">)</span>
 
-    <span class="c1"># Inner holes</span>
-    <span class="n">holes</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">[(</span><span class="mf">0.42</span><span class="p">,</span> <span class="mf">0.88</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">1.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.97</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.93</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.25</span><span class="p">,</span> <span class="mf">1.82</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)],</span>
-        <span class="p">[(</span><span class="mf">4.25</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.64</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">2.9</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.03</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">2.12</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.16</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">2.89</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.36</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)],</span>
-        <span class="p">[(</span><span class="mf">10.6</span><span class="p">,</span> <span class="mf">0.29</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">9.48</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.54</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">5.48</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.26</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">5.98</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)],</span>
-    <span class="p">]</span>
-    <span class="n">holes</span> <span class="o">=</span> <span class="p">[</span><span class="n">Polygon</span><span class="p">(</span><span class="n">hole</span><span class="p">)</span> <span class="k">for</span> <span class="n">hole</span> <span class="ow">in</span> <span class="n">holes</span><span class="p">]</span>
+<span class="n">mesh_result_project</span> <span class="o">=</span> <span class="n">project_mesh_on_mesh</span><span class="p">(</span><span class="n">mesh_0</span><span class="p">,</span> <span class="n">mesh_1</span><span class="p">)</span>
 
-    <span class="n">graph</span> <span class="o">=</span> <span class="n">interior_straight_skeleton_with_holes</span><span class="p">(</span><span class="n">boundary</span><span class="p">,</span> <span class="n">holes</span><span class="p">)</span>
+<span class="c1"># Points with normals to project</span>
+<span class="n">v</span><span class="p">,</span> <span class="n">f</span> <span class="o">=</span> <span class="n">mesh_0</span><span class="o">.</span><span class="n">to_vertices_and_faces</span><span class="p">()</span>
+<span class="n">normals</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)):</span>
+    <span class="n">normals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mesh_0</span><span class="o">.</span><span class="n">vertex_normal</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+<span class="n">points_result_project</span> <span class="o">=</span> <span class="n">project_points_on_mesh</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">mesh_1</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">graph</span>
-
-
-<span class="n">graph</span> <span class="o">=</span> <span class="n">main</span><span class="p">()</span>
+<span class="n">mesh_result_pull</span> <span class="o">=</span> <span class="n">pull_mesh_on_mesh</span><span class="p">(</span><span class="n">mesh_0</span><span class="p">,</span> <span class="n">mesh_1</span><span class="p">)</span>
+<span class="n">points_result_pull</span> <span class="o">=</span> <span class="n">pull_points_on_mesh</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">normals</span><span class="p">,</span> <span class="n">mesh_1</span><span class="p">)</span>
 
 <span class="c1"># ==============================================================================</span>
 <span class="c1"># Visualize</span>
 <span class="c1"># ==============================================================================</span>
 
 <span class="n">viewer</span> <span class="o">=</span> <span class="n">Viewer</span><span class="p">()</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">]</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">]</span>
 
-<span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
-    <span class="n">line</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">edge_line</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">graph</span><span class="o">.</span><span class="n">edge_attribute</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="s2">&quot;inner_bisector&quot;</span><span class="p">):</span>
-        <span class="n">viewer</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">linecolor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">graph</span><span class="o">.</span><span class="n">edge_attribute</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="s2">&quot;bisector&quot;</span><span class="p">):</span>
-        <span class="n">viewer</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">linecolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">viewer</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">linecolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mesh_0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;source mesh_0&quot;</span><span class="p">,</span> <span class="n">show_faces</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mesh_1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;target mesh_1&quot;</span><span class="p">,</span> <span class="n">show_faces</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mesh_result_project</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;projected mesh&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mesh_result_pull</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;pulled mesh&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+
+<span class="n">group_projected</span> <span class="o">=</span> <span class="n">viewer</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add_group</span><span class="p">(</span><span class="s2">&quot;projected points&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">point</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">points_result_project</span><span class="p">):</span>
+    <span class="n">group_projected</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="o">*</span><span class="n">point</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;point_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+
+<span class="n">group_pulled</span> <span class="o">=</span> <span class="n">viewer</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add_group</span><span class="p">(</span><span class="s2">&quot;pulled points&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">point</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">points_result_pull</span><span class="p">):</span>
+    <span class="n">group_pulled</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="o">*</span><span class="n">point</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;point_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
 
 <span class="n">viewer</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>

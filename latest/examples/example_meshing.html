@@ -58,7 +58,7 @@
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Point Cloud Normal Estimation" href="example_reconstruction_pointset_normal_estimation.html" />
+    <link rel="next" title="Mesh Dual Remeshing" href="example_meshing_dual.html" />
     <link rel="prev" title="Mesh Intersections" href="example_intersections.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -478,6 +478,8 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="example_booleans.html">Boolean Operations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_intersections.html">Mesh Intersections</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Mesh Remeshing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_meshing_dual.html">Mesh Dual Remeshing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_projection.html">Mesh Projection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_reconstruction_pointset_normal_estimation.html">Point Cloud Normal Estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_reconstruction_pointset_outlier_removal.html">Point Cloud Outlier Removal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_reconstruction_pointset_reduction.html">Point Cloud Reduction</a></li>
@@ -595,38 +597,23 @@ document.write(`
 <figure class="figure align-default">
 <img alt="../_images/example_meshing.png" class="figure-img img-fluid" src="../_images/example_meshing.png" />
 </figure>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">compas.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sphere</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">compas.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mesh</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">compas.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Translation</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">compas.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">transform_points_numpy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">compas_viewer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Viewer</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">compas_cgal.meshing</span><span class="w"> </span><span class="kn">import</span> <span class="n">mesh_remesh</span><span class="p">,</span> <span class="n">mesh_dual</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remesh a mesh.&quot;&quot;&quot;</span>
-
-    <span class="n">mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="o">.</span><span class="n">from_shape</span><span class="p">(</span><span class="n">Sphere</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-    <span class="n">mesh</span><span class="o">.</span><span class="n">quads_to_triangles</span><span class="p">()</span>
-
-    <span class="n">edge_length</span> <span class="o">=</span> <span class="mf">0.5</span>
-    <span class="n">iterations</span> <span class="o">=</span> <span class="mi">10</span>
-    <span class="n">x_translation</span> <span class="o">=</span> <span class="mi">2</span>
-
-    <span class="c1"># Remesh</span>
-    <span class="n">V1</span><span class="p">,</span> <span class="n">F1</span> <span class="o">=</span> <span class="n">mesh_remesh</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">to_vertices_and_faces</span><span class="p">(),</span> <span class="n">edge_length</span><span class="p">,</span> <span class="n">iterations</span><span class="p">)</span>
-    <span class="n">V1</span> <span class="o">=</span> <span class="n">transform_points_numpy</span><span class="p">(</span><span class="n">V1</span><span class="p">,</span> <span class="n">Translation</span><span class="o">.</span><span class="n">from_vector</span><span class="p">([</span><span class="n">x_translation</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))</span>
-    <span class="n">remeshed</span> <span class="o">=</span> <span class="n">Mesh</span><span class="o">.</span><span class="n">from_vertices_and_faces</span><span class="p">(</span><span class="n">V1</span><span class="p">,</span> <span class="n">F1</span><span class="p">)</span>
-    
-    <span class="c1"># Dual</span>
-    <span class="n">V2</span><span class="p">,</span> <span class="n">F2</span> <span class="o">=</span> <span class="n">mesh_dual</span><span class="p">((</span><span class="n">V1</span><span class="p">,</span> <span class="n">F1</span><span class="p">),</span> <span class="mf">2.14</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-    <span class="n">V2</span> <span class="o">=</span> <span class="n">transform_points_numpy</span><span class="p">(</span><span class="n">V2</span><span class="p">,</span> <span class="n">Translation</span><span class="o">.</span><span class="n">from_vector</span><span class="p">([</span><span class="n">x_translation</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))</span>
-    <span class="n">dual</span> <span class="o">=</span> <span class="n">Mesh</span><span class="o">.</span><span class="n">from_vertices_and_faces</span><span class="p">(</span><span class="n">V2</span><span class="p">,</span> <span class="n">F2</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">remeshed</span><span class="p">,</span> <span class="n">dual</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">compas_cgal.meshing</span><span class="w"> </span><span class="kn">import</span> <span class="n">trimesh_remesh</span>
 
 
-<span class="n">mesh</span><span class="p">,</span> <span class="n">remeshed</span><span class="p">,</span> <span class="n">dual</span> <span class="o">=</span> <span class="n">main</span><span class="p">()</span>
+<span class="n">input_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span> <span class="o">/</span> <span class="s2">&quot;rhinovault_mesh_0.ply&quot;</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="o">.</span><span class="n">from_ply</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span>
+<span class="n">mesh</span><span class="o">.</span><span class="n">quads_to_triangles</span><span class="p">()</span>
+
+<span class="n">edge_length</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">iterations</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="c1"># Remesh</span>
+<span class="n">V1</span><span class="p">,</span> <span class="n">F1</span> <span class="o">=</span> <span class="n">trimesh_remesh</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">to_vertices_and_faces</span><span class="p">(),</span> <span class="n">edge_length</span><span class="p">,</span> <span class="n">iterations</span><span class="p">)</span>
+<span class="n">remeshed</span> <span class="o">=</span> <span class="n">Mesh</span><span class="o">.</span><span class="n">from_vertices_and_faces</span><span class="p">(</span><span class="n">V1</span><span class="p">,</span> <span class="n">F1</span><span class="p">)</span>
 
 
 <span class="c1"># ==============================================================================</span>
@@ -638,9 +625,8 @@ document.write(`
 <span class="n">viewer</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
 <span class="n">viewer</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.10</span><span class="p">]</span>
 
-<span class="n">viewer</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">show_points</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">remeshed</span><span class="p">,</span> <span class="n">show_points</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">viewer</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">dual</span><span class="p">,</span> <span class="n">show_points</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">show_points</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">remeshed</span><span class="p">,</span> <span class="n">show_points</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="n">viewer</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
