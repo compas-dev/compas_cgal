@@ -42,6 +42,11 @@ PolylinesNumpy = List[FloatNx3]
 PolylinesNumpySkeleton = List[Tuple[List[float], List[float]]]
 """A list of polylines, where each polyline is represented by a tuple of start and end point coordinates."""
 
+SkeletonVertexMapping = List[Tuple[List[int], List[int]]]
+"""Vertex correspondence mapping for skeleton edges. Each tuple contains two lists:
+the first list has indices of original mesh vertices that contracted to the skeleton edge's start vertex,
+the second list has indices that contracted to the skeleton edge's end vertex."""
+
 Planes = Union[
     Sequence[compas.geometry.Plane],
     Sequence[Tuple[compas.geometry.Point, compas.geometry.Vector]],
