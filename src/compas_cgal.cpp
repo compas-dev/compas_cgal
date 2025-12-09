@@ -13,6 +13,7 @@ void init_skeletonization(pybind11::module &);
 void init_reconstruction(pybind11::module &);
 void init_polygonal_surface_reconstruction(pybind11::module &);
 void init_straight_skeleton_2(pybind11::module &);
+void init_polylines(pybind11::module &);
 
 // the first parameter here ("_cgal") will be the name of the "so" or "pyd" file that will be produced by PyBind11
 // which is the entry point from where all other modules will be accessible.
@@ -32,4 +33,5 @@ PYBIND11_MODULE(_cgal, m)
     init_reconstruction(m);
     init_polygonal_surface_reconstruction(m);
     init_straight_skeleton_2(m);
+    init_polylines(m);
 }

@@ -23,6 +23,7 @@ __all_plugins__ = [
     "compas_cgal.slicer",
     "compas_cgal.triangulation",
     "compas_cgal.straight_skeleton_2",
+    "compas_cgal.polylines",
 ]
 
 __all__ = ["HOME", "DATA", "DOCS", "TEMP"]
