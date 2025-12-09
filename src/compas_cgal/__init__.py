@@ -24,6 +24,7 @@ __all_plugins__ = [
     "compas_cgal.triangulation",
     "compas_cgal.slicer",
     "compas_cgal.subdivision",
+    "compas_cgal.polylines",
 ]
 
 __all__ = ["HOME", "DATA", "DOCS", "TEMP"]
