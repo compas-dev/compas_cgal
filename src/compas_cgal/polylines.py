@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from typing import List
+from typing import Union
 
 import numpy as np
 from numpy.typing import NDArray
@@ -12,7 +14,7 @@ from compas_cgal._polylines import closest_points_on_polyline as _closest_points
 from compas_cgal._polylines import simplify_polylines as _simplify
 
 if TYPE_CHECKING:
-    PointsList = list[list[float]] | NDArray
+    PointsList = Union[List[List[float]], NDArray]
 
 
 __all__ = ["simplify_polylines", "simplify_polyline", "closest_points_on_polyline"]
