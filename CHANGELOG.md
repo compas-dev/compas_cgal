@@ -8,7 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Added
-* Added  `compas_cgal.skeletonization.mesh_skeleton_with_mapping`.
+* Added  `compas_cgal.skeletonization.mesh_skeleton_with_mapping`
+- `HeatGeodesicSolver` class with precomputation for repeated queries
+- `heat_geodesic_distances` function for single-shot usage
+    - uses CGAL Heat_method_3 with intrinsic Delaunay triangulation
+    - ~30% faster than `libigl` heat in `compas_slicer` workflow
 
 ### Changed
 
