@@ -238,3 +238,4 @@ add_nanobind_module(_triangulation src/triangulation.cpp)
 add_nanobind_module(_subdivision src/subdivision.cpp)
 
 
+add_nanobind_module(_geodesics src/geodesics.cpp)
