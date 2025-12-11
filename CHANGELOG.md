@@ -15,6 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+  - `subdivision`: pass-by-value → Eigen::Ref<const> (3 functions)
+  - `straight_skeleton_2`: const& → Eigen::Ref<const> (8 functions)
+  - `triangulation`: added const to all Eigen::Ref params (3 functions)
+  - `meshing`: removed extra & and added const (7 functions)
+
 ### Removed
 
 
