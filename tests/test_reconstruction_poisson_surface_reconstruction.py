@@ -7,17 +7,35 @@ from compas.geometry import Rotation
 from compas.geometry import Scale
 from compas_cgal.reconstruction import poisson_surface_reconstruction
 
+# Test data file path
+TEST_DATA_FILE = Path(__file__).parent.parent / "data" / "oni.xyz"
 
-def test_reconstruction_poisson_surface_reconstruction():
-    FILE = Path(__file__).parent.parent / "data" / "oni.xyz"
 
+def load_test_data(file_path):
+    """Load point cloud data from file.
+
+    Parameters
+    ----------
+    file_path : Path
+        Path to the xyz file containing points and normals.
+
+    Returns
+    -------
+    tuple
+        (points, normals) where each is a list of 3D coordinates.
+    """
     points = []
     normals = []
-    with open(FILE, "r") as f:
+    with open(file_path, "r") as f:
         for line in f:
             x, y, z, nx, ny, nz = line.strip().split()
             points.append([float(x), float(y), float(z)])
             normals.append([float(nx), float(ny), float(nz)])
+    return points, normals
+
+
+def test_reconstruction_poisson_surface_reconstruction():
+    points, normals = load_test_data(TEST_DATA_FILE)
 
     V, F = poisson_surface_reconstruction(points, normals)
     mesh = Mesh.from_vertices_and_faces(V, F)
@@ -37,15 +55,7 @@ def test_reconstruction_poisson_surface_reconstruction():
 
 def test_reconstruction_poisson_surface_reconstruction_with_parameters():
     """Test Poisson surface reconstruction with custom parameters to reduce mesh complexity."""
-    FILE = Path(__file__).parent.parent / "data" / "oni.xyz"
-
-    points = []
-    normals = []
-    with open(FILE, "r") as f:
-        for line in f:
-            x, y, z, nx, ny, nz = line.strip().split()
-            points.append([float(x), float(y), float(z)])
-            normals.append([float(nx), float(ny), float(nz)])
+    points, normals = load_test_data(TEST_DATA_FILE)
 
     # Test with larger sm_radius and sm_distance to reduce mesh complexity
     V1, F1 = poisson_surface_reconstruction(points, normals, sm_radius=50.0, sm_distance=0.5)
@@ -67,15 +77,7 @@ def test_reconstruction_poisson_surface_reconstruction_with_parameters():
 
 def test_reconstruction_poisson_surface_reconstruction_angle_parameter():
     """Test Poisson surface reconstruction with custom angle parameter."""
-    FILE = Path(__file__).parent.parent / "data" / "oni.xyz"
-
-    points = []
-    normals = []
-    with open(FILE, "r") as f:
-        for line in f:
-            x, y, z, nx, ny, nz = line.strip().split()
-            points.append([float(x), float(y), float(z)])
-            normals.append([float(nx), float(ny), float(nz)])
+    points, normals = load_test_data(TEST_DATA_FILE)
 
     # Test with custom angle parameter
     V, F = poisson_surface_reconstruction(points, normals, sm_angle=25.0)
