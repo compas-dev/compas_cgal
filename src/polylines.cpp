@@ -78,7 +78,7 @@ static void rdp_simplify(
 
 std::vector<compas::RowMatrixXd>
 pmp_simplify_polylines(
-    std::vector<compas::RowMatrixXd> polylines,
+    const std::vector<compas::RowMatrixXd>& polylines,
     double threshold)
 {
     std::vector<compas::RowMatrixXd> results;
@@ -127,8 +127,8 @@ pmp_simplify_polylines(
 
 compas::RowMatrixXd
 pmp_closest_points_on_polyline(
-    compas::RowMatrixXd query_points,
-    compas::RowMatrixXd polyline)
+    const compas::RowMatrixXd& query_points,
+    const compas::RowMatrixXd& polyline)
 {
     int n_queries = query_points.rows();
     int q_cols = query_points.cols();

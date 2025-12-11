@@ -1,6 +1,5 @@
 """Polyline utilities using CGAL."""
 
-from typing import TYPE_CHECKING
 from typing import List
 from typing import Union
 
@@ -11,8 +10,7 @@ from compas_cgal import _types_std  # noqa: F401  # Load vector type bindings
 from compas_cgal._polylines import closest_points_on_polyline as _closest_points
 from compas_cgal._polylines import simplify_polylines as _simplify
 
-if TYPE_CHECKING:
-    PointsList = Union[List[List[float]], NDArray]
+PointsList = Union[List[List[float]], NDArray]
 
 
 __all__ = ["simplify_polylines", "simplify_polyline", "closest_points_on_polyline"]
