@@ -84,4 +84,3 @@ def test_reconstruction_poisson_surface_reconstruction_angle_parameter():
     assert mesh.is_manifold()
     assert mesh.number_of_vertices() > 0
     assert mesh.number_of_faces() > 0
-

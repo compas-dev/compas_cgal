@@ -22,11 +22,11 @@ def reconstruction_poisson_surface_reconstruction():
     # Using larger sm_radius and sm_distance values reduces mesh complexity
     # and helps filter out vertices that don't belong to the original point cloud
     V, F = poisson_surface_reconstruction(
-        points, 
+        points,
         normals,
-        sm_angle=20.0,      # Surface meshing angle bound (degrees)
-        sm_radius=30.0,     # Surface meshing radius bound (factor of avg spacing)
-        sm_distance=0.375   # Surface meshing distance bound (factor of avg spacing)
+        sm_angle=20.0,  # Surface meshing angle bound (degrees)
+        sm_radius=30.0,  # Surface meshing radius bound (factor of avg spacing)
+        sm_distance=0.375,  # Surface meshing distance bound (factor of avg spacing)
     )
     mesh = Mesh.from_vertices_and_faces(V, F)
 
