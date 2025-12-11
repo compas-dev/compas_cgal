@@ -24,7 +24,7 @@
  */
 compas::RowMatrixXi
 pmp_delaunay_triangulation(
-    Eigen::Ref<compas::RowMatrixXd> vertices);
+    Eigen::Ref<const compas::RowMatrixXd> vertices);
 
 
 /**
@@ -39,8 +39,8 @@ pmp_delaunay_triangulation(
  */
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 pmp_constrained_delaunay_triangulation(
-    Eigen::Ref<compas::RowMatrixXd> boundary_vertices,
-    Eigen::Ref<compas::RowMatrixXd> internal_vertices,
+    Eigen::Ref<const compas::RowMatrixXd> boundary_vertices,
+    Eigen::Ref<const compas::RowMatrixXd> internal_vertices,
     const std::vector<compas::RowMatrixXd> & holes,
     const std::vector<compas::RowMatrixXd> & curves,
     bool is_conforming = false
@@ -60,8 +60,8 @@ pmp_constrained_delaunay_triangulation(
  */
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 pmp_refined_delaunay_mesh(
-    Eigen::Ref<compas::RowMatrixXd> boundary_vertices,
-    Eigen::Ref<compas::RowMatrixXd> internal_vertices,
+    Eigen::Ref<const compas::RowMatrixXd> boundary_vertices,
+    Eigen::Ref<const compas::RowMatrixXd> internal_vertices,
     const std::vector<compas::RowMatrixXd> & holes,
     const std::vector<compas::RowMatrixXd> & curves,
     double min_angle = 0.0,

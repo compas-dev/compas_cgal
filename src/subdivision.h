@@ -18,8 +18,8 @@
  */
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 subd_catmullclark(
-    compas::RowMatrixXd vertices,
-    std::vector<std::vector<int>> faces,
+    Eigen::Ref<const compas::RowMatrixXd> vertices,
+    const std::vector<std::vector<int>>& faces,
     unsigned int num_iterations);
 
 /**
@@ -35,8 +35,8 @@ subd_catmullclark(
  */
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 subd_loop(
-    compas::RowMatrixXd vertices,
-    compas::RowMatrixXi faces,
+    Eigen::Ref<const compas::RowMatrixXd> vertices,
+    Eigen::Ref<const compas::RowMatrixXi> faces,
     unsigned int num_iterations);
 
 /**
@@ -52,6 +52,6 @@ subd_loop(
  */
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 subd_sqrt3(
-    compas::RowMatrixXd vertices,
-    compas::RowMatrixXi faces,
+    Eigen::Ref<const compas::RowMatrixXd> vertices,
+    Eigen::Ref<const compas::RowMatrixXi> faces,
     unsigned int num_iterations);

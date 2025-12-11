@@ -20,8 +20,8 @@ namespace compas {
      * @return Surface area of the mesh
      */
     double pmp_area(
-        Eigen::Ref<const RowMatrixXd>& vertices,
-        Eigen::Ref<const RowMatrixXi>& faces);
+        Eigen::Ref<const RowMatrixXd> vertices,
+        Eigen::Ref<const RowMatrixXi> faces);
 
     /**
      * @brief Calculate the volume enclosed by a mesh
@@ -30,8 +30,8 @@ namespace compas {
      * @return Volume enclosed by the mesh
      */
     double pmp_volume(
-        Eigen::Ref<const RowMatrixXd>& vertices,
-        Eigen::Ref<const RowMatrixXi>& faces);
+        Eigen::Ref<const RowMatrixXd> vertices,
+        Eigen::Ref<const RowMatrixXi> faces);
 
     /**
      * @brief Calculate the centroid of a mesh
@@ -40,8 +40,8 @@ namespace compas {
      * @return Coordinates of the mesh centroid
      */
     std::vector<double> pmp_centroid(
-        Eigen::Ref<const RowMatrixXd>& vertices,
-        Eigen::Ref<const RowMatrixXi>& faces);
+        Eigen::Ref<const RowMatrixXd> vertices,
+        Eigen::Ref<const RowMatrixXi> faces);
 
 } // namespace compas
 
@@ -59,8 +59,8 @@ namespace compas {
  */
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 pmp_trimesh_remesh(
-    Eigen::Ref<compas::RowMatrixXd> vertices_a,
-    Eigen::Ref<compas::RowMatrixXi> faces_a,
+    Eigen::Ref<const compas::RowMatrixXd> vertices_a,
+    Eigen::Ref<const compas::RowMatrixXi> faces_a,
     double target_edge_length,
     unsigned int number_of_iterations = 10,
     bool do_project = true);
@@ -79,13 +79,13 @@ pmp_trimesh_remesh(
  */
 
 std::tuple<
-compas::RowMatrixXd, 
+compas::RowMatrixXd,
 compas::RowMatrixXi,
-compas::RowMatrixXd, 
-std::vector<std::vector<int>>> 
+compas::RowMatrixXd,
+std::vector<std::vector<int>>>
 pmp_trimesh_remesh_dual(
-    Eigen::Ref<compas::RowMatrixXd> vertices_a,
-    Eigen::Ref<compas::RowMatrixXi> faces_a,
+    Eigen::Ref<const compas::RowMatrixXd> vertices_a,
+    Eigen::Ref<const compas::RowMatrixXi> faces_a,
     const std::vector<int>& fixed_vertices,
     double length_factor=1.0,
     unsigned int number_of_iterations=10,
@@ -103,8 +103,8 @@ pmp_trimesh_remesh_dual(
  */
 
 void pmp_pull(
-    Eigen::Ref<compas::RowMatrixXd> vertices_a,
-    Eigen::Ref<compas::RowMatrixXi> faces_a,
+    Eigen::Ref<const compas::RowMatrixXd> vertices_a,
+    Eigen::Ref<const compas::RowMatrixXi> faces_a,
     Eigen::Ref<compas::RowMatrixXd> vertices_b,
     Eigen::Ref<compas::RowMatrixXd> normals_b);
 
@@ -116,6 +116,6 @@ void pmp_pull(
  * @param vertices_b Matrix of vertex positions as Nx3 matrix in row-major order (float64)
  */
 void pmp_project(
-    Eigen::Ref<compas::RowMatrixXd> vertices_a,
-    Eigen::Ref<compas::RowMatrixXi> faces_a,
+    Eigen::Ref<const compas::RowMatrixXd> vertices_a,
+    Eigen::Ref<const compas::RowMatrixXi> faces_a,
     Eigen::Ref<compas::RowMatrixXd> vertices_b);

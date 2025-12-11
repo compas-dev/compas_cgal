@@ -39,8 +39,8 @@ typedef boost::graph_traits<Dual>::edge_descriptor     edge_descriptor;
 
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 pmp_trimesh_remesh(
-    Eigen::Ref<compas::RowMatrixXd> vertices_a,
-    Eigen::Ref<compas::RowMatrixXi> faces_a,
+    Eigen::Ref<const compas::RowMatrixXd> vertices_a,
+    Eigen::Ref<const compas::RowMatrixXi> faces_a,
     double target_edge_length,
     unsigned int number_of_iterations,
     bool do_project)
@@ -132,13 +132,13 @@ std::vector<double> get_vertex_areas(compas::Mesh mesh, std::vector<double> face
 }
 
 std::tuple<
-compas::RowMatrixXd, 
+compas::RowMatrixXd,
 compas::RowMatrixXi,
-compas::RowMatrixXd, 
+compas::RowMatrixXd,
 std::vector<std::vector<int>>>
 pmp_trimesh_remesh_dual(
-    Eigen::Ref<compas::RowMatrixXd> vertices_a,
-    Eigen::Ref<compas::RowMatrixXi> faces_a,
+    Eigen::Ref<const compas::RowMatrixXd> vertices_a,
+    Eigen::Ref<const compas::RowMatrixXi> faces_a,
     const std::vector<int>& fixed_vertices,
     double length_factor,
     unsigned int number_of_iterations,
@@ -693,8 +693,8 @@ pmp_trimesh_remesh_dual(
 }
 
 void pmp_pull(
-    Eigen::Ref<compas::RowMatrixXd> vertices_a,
-    Eigen::Ref<compas::RowMatrixXi> faces_a,
+    Eigen::Ref<const compas::RowMatrixXd> vertices_a,
+    Eigen::Ref<const compas::RowMatrixXi> faces_a,
     Eigen::Ref<compas::RowMatrixXd> vertices_b,
     Eigen::Ref<compas::RowMatrixXd> normals_b)
 {
@@ -823,8 +823,8 @@ void pmp_pull(
 
 
 void pmp_project(
-    Eigen::Ref<compas::RowMatrixXd> vertices_a,
-    Eigen::Ref<compas::RowMatrixXi> faces_a,
+    Eigen::Ref<const compas::RowMatrixXd> vertices_a,
+    Eigen::Ref<const compas::RowMatrixXi> faces_a,
     Eigen::Ref<compas::RowMatrixXd> vertices_b)
 {
     /////////////////////////////////////////////////////////////////////////////////
