@@ -9,8 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Douglas-Peucker simplification in C++
-- AABB tree batch closest point queries (CGAL)
+- Added `simplify_polyline` and `simplify_polylines` functions for polyline simplification using Douglas-Peucker algorithm
+- Added `closest_points_on_polyline` function for batch closest point queries on polylines
 
 
 ### Changed
