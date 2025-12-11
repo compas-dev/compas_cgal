@@ -1,8 +1,6 @@
 """Geodesic distance computation using CGAL heat method."""
 
-from __future__ import annotations
-
-from typing import TYPE_CHECKING
+from typing import List
 
 import numpy as np
 from numpy.typing import NDArray
@@ -10,14 +8,12 @@ from numpy.typing import NDArray
 from compas_cgal import _types_std  # noqa: F401  # Load vector type bindings
 from compas_cgal._geodesics import heat_geodesic_distances as _heat_geodesic_distances
 from compas_cgal._geodesics import HeatGeodesicSolver as _HeatGeodesicSolver
-
-if TYPE_CHECKING:
-    from compas.datastructures import Mesh
+from compas_cgal.types import VerticesFaces
 
 __all__ = ["heat_geodesic_distances", "HeatGeodesicSolver"]
 
 
-def heat_geodesic_distances(mesh: Mesh, sources: list[int]) -> NDArray:
+def heat_geodesic_distances(mesh: VerticesFaces, sources: List[int]) -> NDArray:
     """Compute geodesic distances from source vertices using CGAL heat method.
 
     Uses CGAL's Heat_method_3 with intrinsic Delaunay triangulation for
@@ -25,9 +21,9 @@ def heat_geodesic_distances(mesh: Mesh, sources: list[int]) -> NDArray:
 
     Parameters
     ----------
-    mesh : Mesh
-        A compas mesh (must be triangulated).
-    sources : list[int]
+    mesh : :attr:`compas_cgal.types.VerticesFaces`
+        A triangulated mesh as a tuple of vertices and faces.
+    sources : List[int]
         Source vertex indices.
 
     Returns
@@ -38,19 +34,18 @@ def heat_geodesic_distances(mesh: Mesh, sources: list[int]) -> NDArray:
 
     Examples
     --------
-    >>> from compas.datastructures import Mesh
+    >>> from compas.geometry import Box
     >>> from compas_cgal.geodesics import heat_geodesic_distances
-    >>> mesh = Mesh.from_obj('model.obj')
+    >>> box = Box(1)
+    >>> mesh = box.to_vertices_and_faces(triangulated=True)
     >>> distances = heat_geodesic_distances(mesh, [0])  # distances from vertex 0
 
     """
-    V, F = mesh.to_vertices_and_faces()
-    vertices = np.asarray(V, dtype=np.float64)
-    faces = np.asarray(F, dtype=np.int32)
+    V, F = mesh
+    V = np.asarray(V, dtype=np.float64, order="C")
+    F = np.asarray(F, dtype=np.int32, order="C")
 
-    result = _heat_geodesic_distances(vertices, faces, sources)
-
-    # Return as 1D array
+    result = _heat_geodesic_distances(V, F, sources)
     return result.flatten()
 
 
@@ -64,32 +59,33 @@ class HeatGeodesicSolver:
 
     Parameters
     ----------
-    mesh : Mesh
-        A compas mesh (must be triangulated).
+    mesh : :attr:`compas_cgal.types.VerticesFaces`
+        A triangulated mesh as a tuple of vertices and faces.
 
     Examples
     --------
-    >>> from compas.datastructures import Mesh
+    >>> from compas.geometry import Sphere
     >>> from compas_cgal.geodesics import HeatGeodesicSolver
-    >>> mesh = Mesh.from_obj('model.obj')
+    >>> sphere = Sphere(1.0)
+    >>> mesh = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
     >>> solver = HeatGeodesicSolver(mesh)  # precomputation happens here
     >>> d0 = solver.solve([0])  # distances from vertex 0
     >>> d1 = solver.solve([1])  # distances from vertex 1 (fast, reuses precomputation)
 
     """
 
-    def __init__(self, mesh: Mesh) -> None:
-        V, F = mesh.to_vertices_and_faces()
-        vertices = np.asarray(V, dtype=np.float64)
-        faces = np.asarray(F, dtype=np.int32)
-        self._solver = _HeatGeodesicSolver(vertices, faces)
+    def __init__(self, mesh: VerticesFaces) -> None:
+        V, F = mesh
+        V = np.asarray(V, dtype=np.float64, order="C")
+        F = np.asarray(F, dtype=np.int32, order="C")
+        self._solver = _HeatGeodesicSolver(V, F)
 
-    def solve(self, sources: list[int]) -> NDArray:
+    def solve(self, sources: List[int]) -> NDArray:
         """Compute geodesic distances from source vertices.
 
         Parameters
         ----------
-        sources : list[int]
+        sources : List[int]
             Source vertex indices.
 
         Returns
