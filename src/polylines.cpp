@@ -33,37 +33,46 @@ static double perpendicular_distance(
     return std::sqrt((px - proj_x) * (px - proj_x) + (py - proj_y) * (py - proj_y));
 }
 
-// Recursive Douglas-Peucker
+// Iterative Douglas-Peucker (avoids stack overflow on large polylines)
 static void rdp_simplify(
     const compas::RowMatrixXd& polyline,
     int start, int end,
     double threshold,
     std::vector<bool>& keep)
 {
-    if (end <= start + 1) return;
+    std::vector<std::pair<int, int>> stack;
+    stack.reserve(128);  // Reasonable default to avoid reallocs
+    stack.push_back({start, end});
 
-    double max_dist = 0.0;
-    int max_idx = start;
+    while (!stack.empty()) {
+        auto [seg_start, seg_end] = stack.back();
+        stack.pop_back();
 
-    double x1 = polyline(start, 0);
-    double y1 = polyline(start, 1);
-    double x2 = polyline(end, 0);
-    double y2 = polyline(end, 1);
+        if (seg_end <= seg_start + 1) continue;
 
-    for (int i = start + 1; i < end; ++i) {
-        double dist = perpendicular_distance(
-            polyline(i, 0), polyline(i, 1),
-            x1, y1, x2, y2);
-        if (dist > max_dist) {
-            max_dist = dist;
-            max_idx = i;
+        double max_dist = 0.0;
+        int max_idx = seg_start;
+
+        double x1 = polyline(seg_start, 0);
+        double y1 = polyline(seg_start, 1);
+        double x2 = polyline(seg_end, 0);
+        double y2 = polyline(seg_end, 1);
+
+        for (int i = seg_start + 1; i < seg_end; ++i) {
+            double dist = perpendicular_distance(
+                polyline(i, 0), polyline(i, 1),
+                x1, y1, x2, y2);
+            if (dist > max_dist) {
+                max_dist = dist;
+                max_idx = i;
+            }
         }
-    }
 
-    if (max_dist > threshold) {
-        keep[max_idx] = true;
-        rdp_simplify(polyline, start, max_idx, threshold, keep);
-        rdp_simplify(polyline, max_idx, end, threshold, keep);
+        if (max_dist > threshold) {
+            keep[max_idx] = true;
+            stack.push_back({seg_start, max_idx});
+            stack.push_back({max_idx, seg_end});
+        }
     }
 }
 

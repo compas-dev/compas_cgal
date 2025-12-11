@@ -1,7 +1,5 @@
 """Polyline utilities using CGAL."""
 
-from __future__ import annotations
-
 from typing import TYPE_CHECKING
 from typing import List
 from typing import Union
@@ -20,8 +18,11 @@ if TYPE_CHECKING:
 __all__ = ["simplify_polylines", "simplify_polyline", "closest_points_on_polyline"]
 
 
-def simplify_polylines(polylines: list[PointsList], threshold: float) -> list[NDArray]:
+def simplify_polylines(polylines: List[PointsList], threshold: float) -> List[NDArray]:
     """Simplify multiple polylines using Douglas-Peucker algorithm.
+
+    Simplification is performed in the XY plane only. For 3D polylines,
+    Z coordinates are preserved but not considered in distance calculations.
 
     Parameters
     ----------
@@ -45,12 +46,17 @@ def simplify_polylines(polylines: list[PointsList], threshold: float) -> list[ND
     3
 
     """
+    if threshold < 0:
+        raise ValueError("threshold must be non-negative")
     arrays = [np.asarray(p, dtype=np.float64) for p in polylines]
     return _simplify(arrays, threshold)
 
 
 def simplify_polyline(polyline: PointsList, threshold: float) -> NDArray:
     """Simplify a single polyline using Douglas-Peucker algorithm.
+
+    Simplification is performed in the XY plane only. For 3D polylines,
+    Z coordinates are preserved but not considered in distance calculations.
 
     Parameters
     ----------

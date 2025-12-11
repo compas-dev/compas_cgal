@@ -8,10 +8,13 @@
 #include <CGAL/AABB_segment_primitive.h>
 
 /**
- * @brief Simplify multiple 2D polylines using Douglas-Peucker algorithm.
+ * @brief Simplify polylines using Douglas-Peucker algorithm.
+ *
+ * Simplification is performed in the XY plane only. For 3D polylines,
+ * Z coordinates are preserved but not considered in distance calculations.
  *
  * @param polylines Vector of polylines, each as Nx2 or Nx3 matrix (float64)
- * @param threshold Squared distance threshold for simplification
+ * @param threshold Distance threshold for simplification
  * @return std::vector<compas::RowMatrixXd> Simplified polylines
  */
 std::vector<compas::RowMatrixXd>
