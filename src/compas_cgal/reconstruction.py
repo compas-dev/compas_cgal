@@ -14,6 +14,9 @@ from .types import IntNx3
 def poisson_surface_reconstruction(
     points: Union[list[Point], FloatNx3],
     normals: Union[list[Vector], FloatNx3],
+    sm_angle: float = 20.0,
+    sm_radius: float = 30.0,
+    sm_distance: float = 0.375,
 ) -> Tuple[FloatNx3, IntNx3]:
     """Reconstruct a surface from a point cloud using the Poisson surface reconstruction algorithm.
 
@@ -23,6 +26,20 @@ def poisson_surface_reconstruction(
         The points of the point cloud.
     normals : list of :class:`compas.geometry.Vector` or :class:`numpy.ndarray`
         The normals of the point cloud.
+    sm_angle : float, optional
+        Surface meshing angle bound in degrees.
+        Controls the minimum angle of triangles in the output mesh.
+        Default is 20.0.
+    sm_radius : float, optional
+        Surface meshing radius bound as a factor of average spacing.
+        Controls the size of triangles relative to the point cloud density.
+        Larger values result in coarser meshes with fewer vertices.
+        Default is 30.0.
+    sm_distance : float, optional
+        Surface meshing approximation error bound as a factor of average spacing.
+        Controls how closely the mesh approximates the implicit surface.
+        Larger values result in coarser meshes with fewer vertices that may deviate more from the original point cloud.
+        Default is 0.375.
 
     Returns
     -------
@@ -45,6 +62,19 @@ def poisson_surface_reconstruction(
     1. A sufficiently dense point cloud
     2. Well-oriented normals
     3. Points distributed across a meaningful surface
+
+    The surface meshing parameters (sm_angle, sm_radius, sm_distance) control the quality and
+    density of the output mesh. Increasing sm_radius and sm_distance will typically result in
+    fewer mesh vertices, which can help filter out vertices that don't belong to the original
+    point cloud, but may also reduce detail.
+
+    Examples
+    --------
+    >>> points = [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]]
+    >>> normals = [[0, 0, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1]]
+    >>> V, F = poisson_surface_reconstruction(points, normals)
+    >>> # Use larger sm_radius and sm_distance to reduce mesh complexity
+    >>> V, F = poisson_surface_reconstruction(points, normals, sm_radius=50.0, sm_distance=0.5)
     """
     # Convert input to numpy arrays with proper type and memory layout
     P = np.asarray(points, dtype=np.float64, order="C")
@@ -66,7 +96,7 @@ def poisson_surface_reconstruction(
         N = N / norms[:, np.newaxis]
 
     try:
-        return _reconstruction.poisson_surface_reconstruction(P, N)
+        return _reconstruction.poisson_surface_reconstruction(P, N, sm_angle, sm_radius, sm_distance)
     except RuntimeError as e:
         raise RuntimeError(f"Poisson surface reconstruction failed: {str(e)}")
 
