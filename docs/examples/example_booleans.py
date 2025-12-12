@@ -26,7 +26,6 @@ def boolean_difference():
     V, F = boolean_difference_mesh_mesh(A, B)
     shape = Polyhedron(V.tolist(), F.tolist())
     shape = shape.to_mesh()
-
     return shape
 
 
@@ -36,7 +35,6 @@ def boolean_intersection():
     V, F = boolean_intersection_mesh_mesh(A, B)
     shape = Polyhedron(V.tolist(), F.tolist())
     shape = shape.to_mesh()
-
     return shape
 
 
@@ -46,7 +44,6 @@ def boolean_union():
     V, F = boolean_union_mesh_mesh(A, B)
     shape = Polyhedron(V.tolist(), F.tolist())
     shape = shape.to_mesh()
-
     return shape
 
 
@@ -58,17 +55,25 @@ def split():
     return mesh.exploded()
 
 
-def main():
-    """Compute the boolean difference, intersection, union, and split of two triangle meshes."""
-    difference = boolean_difference()
-    intersection = boolean_intersection()
-    union = boolean_union()
-    splits = split()
-    return difference, intersection, union, splits
+# =============================================================================
+# Booleans
+# =============================================================================
 
+difference = boolean_difference()
+intersection = boolean_intersection()
+union = boolean_union()
+splits = split()
 
-difference, intersection, union, splits = main()
+# =============================================================================
+# Spread
+# =============================================================================
 
+difference.transform(Translation.from_vector([-6, 0, 0]))
+intersection.transform(Translation.from_vector([-2, 0, 0]))
+union.transform(Translation.from_vector([2, 0, 0]))
+
+for m in splits:
+    m.transform(Translation.from_vector([6, 0, 0]))
 
 # ==============================================================================
 # Visualize
@@ -76,15 +81,11 @@ difference, intersection, union, splits = main()
 
 viewer = Viewer()
 
-difference.transform(Translation.from_vector([-6, 0, 0]))
-intersection.transform(Translation.from_vector([-2, 0, 0]))
-union.transform(Translation.from_vector([2, 0, 0]))
-for m in splits:
-    m.transform(Translation.from_vector([6, 0, 0]))
-
 viewer.scene.add(difference, lineswidth=1, show_points=False)
 viewer.scene.add(intersection, lineswidth=1, show_points=False)
 viewer.scene.add(union, lineswidth=1, show_points=False)
-viewer.scene.add(splits, lineswidth=1, show_points=False)
+
+group = viewer.scene.add_group(name="Splits")
+group.add_from_list(splits, lineswidth=1, show_points=False)
 
 viewer.show()
