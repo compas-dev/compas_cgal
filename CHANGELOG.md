@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - uses CGAL Heat_method_3 with intrinsic Delaunay triangulation
     - ~30% faster than `libigl` heat in `compas_slicer` workflow
 
+- Added `simplify_polyline` and `simplify_polylines` functions for polyline simplification using Douglas-Peucker algorithm
+- Added `closest_points_on_polyline` function for batch closest point queries on polylines
+
+
 ### Changed
 
 ### Removed
