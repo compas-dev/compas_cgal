@@ -1,6 +1,6 @@
 from pathlib import Path
 from compas.datastructures import Mesh
-from compas_cgal.meshing import project_mesh_on_mesh, pull_mesh_on_mesh
+from compas_cgal.projection import project_mesh_on_mesh, pull_mesh_on_mesh
 
 
 def mesh_projection():

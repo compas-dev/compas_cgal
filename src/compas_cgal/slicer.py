@@ -2,8 +2,8 @@ import numpy as np
 from compas.geometry import Plane
 from compas.plugins import plugin
 
-from compas_cgal import _slicer
-from compas_cgal import _types_std  # noqa: F401
+from compas_cgal import _slicer  # type: ignore
+from compas_cgal import _types_std  # noqa: F401  # type: ignore
 
 from .types import PolylinesNumpy
 from .types import VerticesFaces
@@ -15,14 +15,14 @@ def slice_mesh_planes(mesh: VerticesFaces, planes: list[Plane]) -> PolylinesNump
 
     Parameters
     ----------
-    mesh : :attr:`compas_cgal.types.VerticesFaces`
+    mesh
         The mesh to slice.
-    planes : :attr:`compas_cgal.types.Planes`
+    planes
         The slicing planes.
 
     Returns
     -------
-    :attr:`compas_cgal.types.PolylinesNumpy`
+    PolylinesNumpy
         A list of slice polylines, with each polyline an array of points.
 
     Examples

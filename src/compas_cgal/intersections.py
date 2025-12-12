@@ -1,8 +1,8 @@
 import numpy as np
 from compas.plugins import plugin
 
-from compas_cgal import _intersections
-from compas_cgal import _types_std
+from compas_cgal import _intersections  # type: ignore
+from compas_cgal import _types_std  # type: ignore
 
 from .types import PolylinesNumpy
 from .types import VerticesFaces
@@ -17,14 +17,14 @@ def intersection_mesh_mesh(
 
     Parameters
     ----------
-    A : :attr:`compas_cgal.types.VerticesFaces`
+    A
         Mesh A.
-    B : :attr:`compas_cgal.types.VerticesFaces`
+    B
         Mesh B.
 
     Returns
     -------
-    :attr:`compas_cgal.types.PolylinesNumpy`
+    PolylinesNumpy
         A list of intersection polylines, with each polyline an array of points.
 
     Examples

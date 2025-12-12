@@ -7,8 +7,8 @@ from compas.geometry import Polygon
 from compas.geometry import normal_polygon
 from compas.tolerance import TOL
 
-from compas_cgal import _straight_skeleton_2
-from compas_cgal import _types_std  # noqa: F401
+from compas_cgal import _straight_skeleton_2  # type: ignore
+from compas_cgal import _types_std  # noqa: F401  # type: ignore
 
 from .types import IntNx1
 from .types import IntNx2
@@ -20,18 +20,18 @@ def graph_from_skeleton_data(points: VerticesNumpy, indices: IntNx1, edges: IntN
 
     Parameters
     ----------
-    points : :class:`numpy.ndarray`
+    points
         The vertices of the skeleton, each vertex defined by 3 spatial coordinates.
-    indices : :class:`numpy.ndarray`
+    indices
         The vertex indices of the skeleton, corresponding to the points.
-    edges : :class:`numpy.ndarray`
+    edges
         The edges of the skeleton, each edge defined by 2 vertex indices.
-    edge_types : :class:`numpy.ndarray`
+    edge_types
         The type per edge, `0` for inner bisector, `1` for bisector, and `2` for boundary.
 
     Returns
     -------
-    :class:`compas.datastructures.Graph`
+    Graph
         The skeleton as a graph.
     """
     graph = Graph()
@@ -54,14 +54,14 @@ def interior_straight_skeleton(points, as_graph=True) -> Union[Graph, Tuple[Vert
 
     Parameters
     ----------
-    points : list of point coordinates or :class:`compas.geometry.Polygon`
+    points
         The points of the polygon.
-    as_graph : bool, optional
+    as_graph
         Whether the skeleton should be returned as a graph, defaults to `True`.
 
     Returns
     -------
-    :attr:`compas.datastructures.Graph` or tuple of (vertices, indices, edges, edge_types)
+    Graph | tuple[VerticesNumpy, IntNx1, IntNx2, IntNx1]
         The skeleton of the polygon.
 
     Raises
@@ -85,16 +85,16 @@ def interior_straight_skeleton_with_holes(points, holes, as_graph=True) -> Union
 
     Parameters
     ----------
-    points : list of point coordinates or :class:`compas.geometry.Polygon`
+    points
         The points of the 2D polygon.
-    holes : list of list of point coordinates or list of :class:`compas.geometry.Polygon`
+    holes
         The holes of the polygon.
-    as_graph : bool, optional
+    as_graph
         Whether the skeleton should be returned as a graph, defaults to `True`.
 
     Returns
     -------
-    :attr:`compas.datastructures.Graph` or tuple of (vertices, indices, edges, edge_types)
+    Graph | tuple[VerticesNumpy, IntNx1, IntNx2, IntNx1]
         The skeleton of the polygon.
 
     Raises
@@ -128,14 +128,14 @@ def offset_polygon(points, offset) -> list[Polygon]:
 
     Parameters
     ----------
-    points : list of point coordinates or :class:`compas.geometry.Polygon`
+    points
         The points of the 2D polygon.
-    offset : float
+    offset
         The offset distance. If negative, the offset is outside the polygon, otherwise inside.
 
     Returns
     -------
-    list[:class:`Polygon`]
+    list[Polygon]
         The offset polygon(s).
 
     Raises
@@ -161,16 +161,16 @@ def offset_polygon_with_holes(points, holes, offset) -> list[Tuple[Polygon, list
 
     Parameters
     ----------
-    points : list of point coordinates or :class:`compas.geometry.Polygon`
+    points
         The points of the 2D polygon.
-    holes : list of list of point coordinates or list of :class:`compas.geometry.Polygon`
+    holes
         The holes of the polygon.
-    offset : float
+    offset
         The offset distance. If negative, the offset is outside the polygon, otherwise inside.
 
     Returns
     -------
-    list of tuple of (:class:`Polygon`, list[:class:`Polygon`])
+    list[tuple[Polygon, list[Polygon]]]
         The polygons with holes.
 
     Raises
@@ -225,16 +225,16 @@ def weighted_offset_polygon(points, offset, weights) -> list[Polygon]:
 
     Parameters
     ----------
-    points : list of point coordinates or :class:`compas.geometry.Polygon`
+    points
         The points of the 2D polygon.
-    offset : float
+    offset
         The offset distance. If negative, the offset is outside the polygon, otherwise inside.
-    weights : list of float
+    weights
         The weights for each edge, starting with the edge between the last and the first point.
 
     Returns
     -------
-    list[:class:`Polygon`]
+    list[Polygon]
         The offset polygon(s).
 
     Raises

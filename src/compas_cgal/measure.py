@@ -1,9 +1,8 @@
 import numpy as np
-from compas.geometry import Point
 from compas.plugins import plugin
 
-from compas_cgal import _measure
-from compas_cgal import _types_std
+from compas_cgal import _measure  # type: ignore
+from compas_cgal import _types_std  # type: ignore
 
 from .types import VerticesFaces
 
@@ -13,7 +12,7 @@ def mesh_area(mesh: VerticesFaces) -> float:
 
     Parameters
     ----------
-    mesh : :attr:`compas_cgal.types.VerticesFaces`
+    mesh
         The mesh.
 
     Returns
@@ -34,7 +33,7 @@ def mesh_volume(mesh: VerticesFaces) -> float:
 
     Parameters
     ----------
-    mesh : :attr:`compas_cgal.types.VerticesFaces`
+    mesh
         The mesh.
 
     Returns
@@ -65,12 +64,12 @@ def mesh_centroid(mesh: VerticesFaces) -> list[float]:
 
     Parameters
     ----------
-    mesh : :attr:`compas_cgal.types.VerticesFaces`
+    mesh
         The mesh.
 
     Returns
     -------
-    list
+    list[float]
         The centroid of the mesh.
 
     """
@@ -78,5 +77,4 @@ def mesh_centroid(mesh: VerticesFaces) -> list[float]:
     V = np.asarray(V, dtype=np.float64, order="C")
     F = np.asarray(F, dtype=np.int32, order="C")
     vector_of_double: _types_std.VectorDouble = _measure.centroid(V, F)
-    point = Point(*vector_of_double)
-    return point
+    return list(vector_of_double)

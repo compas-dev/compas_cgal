@@ -1,0 +1,16 @@
+# Point Cloud Outlier Removal
+
+![Point Cloud Outlier Removal](../assets/images/example_reconstruction_pointset_outlier_removal.png)
+
+This example demonstrates how to remove outliers from a point cloud using COMPAS CGAL.
+
+Key Features:
+
+* Loading point clouds from PLY files
+* Removing outliers based on neighborhood analysis
+* Visualization of inliers and outliers with different colors
+* Point cloud difference computation
+
+```python
+---8<--- "docs/examples/example_reconstruction_pointset_outlier_removal.py"
+```

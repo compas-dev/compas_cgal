@@ -1,7 +1,7 @@
 import numpy as np
 
-from compas_cgal import _subdivision
-from compas_cgal import _types_std  # noqa: F401
+from compas_cgal import _subdivision  # type: ignore
+from compas_cgal import _types_std  # noqa: F401 # type: ignore
 
 from .types import VerticesFaces
 from .types import VerticesFacesNumpy
@@ -12,14 +12,14 @@ def mesh_subdivide_catmull_clark(mesh: VerticesFaces, k=1) -> VerticesFacesNumpy
 
     Parameters
     ----------
-    mesh : :attr:`compas_cgal.types.VerticesFaces`
+    mesh
         The mesh to remesh.
-    k : int, optional
+    k
         The number of subdivision steps.
 
     Returns
     -------
-    :attr:`compas_cgal.types.VerticesFacesNumpy`
+    VerticesFacesNumpy
 
     Examples
     --------
@@ -44,14 +44,14 @@ def mesh_subdivide_loop(mesh: VerticesFaces, k=1) -> VerticesFacesNumpy:
 
     Parameters
     ----------
-    mesh : :attr:`compas_cgal.types.VerticesFaces`
+    mesh
         The mesh to remesh.
-    k : int, optional
+    k
         The number of subdivision steps.
 
     Returns
     -------
-    :attr:`compas_cgal.types.VerticesFacesNumpy`
+    VerticesFacesNumpy
 
     """
     V, F = mesh
@@ -65,14 +65,14 @@ def mesh_subdivide_sqrt3(mesh: VerticesFaces, k=1) -> VerticesFacesNumpy:
 
     Parameters
     ----------
-    mesh : :attr:`compas_cgal.types.VerticesFaces`
+    mesh
         The mesh to remesh.
-    k : int, optional
+    k
         The number of subdivision steps.
 
     Returns
     -------
-    :attr:`compas_cgal.types.VerticesFacesNumpy`
+    VerticesFacesNumpy
 
     """
     V, F = mesh

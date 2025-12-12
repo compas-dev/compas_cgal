@@ -10,33 +10,32 @@ from compas_viewer import Viewer
 
 from compas_cgal.skeletonization import mesh_skeleton
 
+# =============================================================================
+# Input
+# =============================================================================
 
-def main():
-    """Skeletonize a mesh."""
+input_file = Path(__file__).parent.parent.parent / "data" / "elephant.off"
 
-    input_file = Path(__file__).parent.parent.parent / "data" / "elephant.off"
+rotation_x = Rotation.from_axis_and_angle([1, 0, 0], math.radians(60))
+rotation_y = Rotation.from_axis_and_angle([0, 1, 0], math.radians(5))
+rotation = rotation_y * rotation_x
+scale = Scale.from_factors([5, 5, 5])
+translation = Translation.from_vector([0, 0, 2])
 
-    rotation_x = Rotation.from_axis_and_angle([1, 0, 0], math.radians(60))
-    rotation_y = Rotation.from_axis_and_angle([0, 1, 0], math.radians(5))
-    rotation = rotation_y * rotation_x
-    scale = Scale.from_factors([5, 5, 5])
-    translation = Translation.from_vector([0, 0, 2])
+mesh = Mesh.from_off(input_file).transformed(translation * rotation * scale)
 
-    mesh = Mesh.from_off(input_file).transformed(translation * rotation * scale)
-    # mesh = mesh.subdivided("loop")
-    v, f = mesh.to_vertices_and_faces(triangulated=True)
+v, f = mesh.to_vertices_and_faces(triangulated=True)
 
-    skeleton_edges = mesh_skeleton((v, f))
+# =============================================================================
+# Skeleton
+# =============================================================================
 
-    polylines = []
-    for start_point, end_point in skeleton_edges:
-        polyline = Polyline([start_point, end_point])
-        polylines.append(polyline)
+skeleton_edges = mesh_skeleton((v, f))
 
-    return mesh, polylines
-
-
-mesh, polylines = main()
+polylines = []
+for start_point, end_point in skeleton_edges:
+    polyline = Polyline([start_point, end_point])
+    polylines.append(polyline)
 
 # ==============================================================================
 # Visualize

@@ -6,41 +6,32 @@ from compas_viewer import Viewer
 from compas_cgal.triangulation import conforming_delaunay_triangulation
 from compas_cgal.triangulation import refined_delaunay_mesh
 
+boundary = Polygon.from_sides_and_radius_xy(64, 4)
 
-def main():
-    """Triangulate a mesh with holes."""
+hole = Polygon.from_sides_and_radius_xy(128, 1)
 
-    boundary = Polygon.from_sides_and_radius_xy(64, 4)
+hole1 = hole.transformed(Translation.from_vector([2, 0, 0]))
+hole2 = hole.transformed(Translation.from_vector([-2, 0, 0]))
+hole3 = hole.transformed(Translation.from_vector([0, 2, 0]))
+hole4 = hole.transformed(Translation.from_vector([0, -2, 0]))
 
-    hole = Polygon.from_sides_and_radius_xy(128, 1)
+holes = [hole1, hole2, hole3, hole4]
 
-    hole1 = hole.transformed(Translation.from_vector([2, 0, 0]))
-    hole2 = hole.transformed(Translation.from_vector([-2, 0, 0]))
-    hole3 = hole.transformed(Translation.from_vector([0, 2, 0]))
-    hole4 = hole.transformed(Translation.from_vector([0, -2, 0]))
+V, F = conforming_delaunay_triangulation(
+    boundary,
+    holes=holes,
+)
 
-    holes = [hole1, hole2, hole3, hole4]
+cdt = Mesh.from_vertices_and_faces(V, F)
 
-    V, F = conforming_delaunay_triangulation(
-        boundary,
-        holes=holes,
-    )
+V, F = refined_delaunay_mesh(
+    boundary,
+    holes=holes,
+    maxlength=0.5,
+    is_optimized=True,
+)
 
-    cdt = Mesh.from_vertices_and_faces(V, F)
-
-    V, F = refined_delaunay_mesh(
-        boundary,
-        holes=holes,
-        maxlength=0.5,
-        is_optimized=True,
-    )
-
-    rdm = Mesh.from_vertices_and_faces(V, F)
-
-    return cdt, rdm
-
-
-cdt, rdm = main()
+rdm = Mesh.from_vertices_and_faces(V, F)
 
 # ==============================================================================
 # Visualize
