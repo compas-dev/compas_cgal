@@ -31,5 +31,5 @@ pmp_simplify_polylines(
  */
 compas::RowMatrixXd
 pmp_closest_points_on_polyline(
-    const compas::RowMatrixXd& query_points,
-    const compas::RowMatrixXd& polyline);
+    Eigen::Ref<const compas::RowMatrixXd> query_points,
+    Eigen::Ref<const compas::RowMatrixXd> polyline);
