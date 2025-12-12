@@ -6,11 +6,15 @@ import numpy as np
 from numpy.typing import NDArray
 
 from compas_cgal import _types_std  # noqa: F401  # Load vector type bindings
+from compas_cgal._geodesics import geodesic_isolines as _geodesic_isolines
+from compas_cgal._geodesics import geodesic_isolines_split as _geodesic_isolines_split
 from compas_cgal._geodesics import heat_geodesic_distances as _heat_geodesic_distances
 from compas_cgal._geodesics import HeatGeodesicSolver as _HeatGeodesicSolver
+from compas_cgal.types import PolylinesNumpy
 from compas_cgal.types import VerticesFaces
+from compas_cgal.types import VerticesFacesNumpy
 
-__all__ = ["heat_geodesic_distances", "HeatGeodesicSolver"]
+__all__ = ["heat_geodesic_distances", "HeatGeodesicSolver", "geodesic_isolines_split", "geodesic_isolines"]
 
 
 def heat_geodesic_distances(mesh: VerticesFaces, sources: List[int]) -> NDArray:
@@ -102,3 +106,78 @@ class HeatGeodesicSolver:
     def num_vertices(self) -> int:
         """Number of vertices in the mesh."""
         return self._solver.num_vertices
+
+
+def geodesic_isolines_split(
+    mesh: VerticesFaces,
+    sources: List[int],
+    isovalues: List[float],
+) -> List[VerticesFacesNumpy]:
+    """Split mesh into components along geodesic isolines.
+
+    Computes geodesic distances from sources, refines the mesh along
+    specified isovalue thresholds, and splits into connected components.
+
+    Parameters
+    ----------
+    mesh : :attr:`compas_cgal.types.VerticesFaces`
+        A triangulated mesh as a tuple of vertices and faces.
+    sources : List[int]
+        Source vertex indices for geodesic distance computation.
+    isovalues : List[float]
+        Isovalue thresholds for splitting. The mesh will be refined
+        along curves where the geodesic distance equals each isovalue,
+        then split into connected components.
+
+    Returns
+    -------
+    List[:attr:`compas_cgal.types.VerticesFacesNumpy`]
+        List of mesh components as (vertices, faces) tuples.
+
+    Examples
+    --------
+    >>> from compas.geometry import Sphere
+    >>> from compas_cgal.geodesics import geodesic_isolines_split
+    >>> sphere = Sphere(1.0)
+    >>> mesh = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
+    >>> components = geodesic_isolines_split(mesh, [0], [0.5, 1.0, 1.5])
+    >>> len(components)  # Number of mesh strips
+
+    """
+    V, F = mesh
+    V = np.asarray(V, dtype=np.float64, order="C")
+    F = np.asarray(F, dtype=np.int32, order="C")
+
+    vertices_list, faces_list = _geodesic_isolines_split(V, F, sources, isovalues)
+    return list(zip(vertices_list, faces_list))
+
+
+def geodesic_isolines(
+    mesh: VerticesFaces,
+    sources: List[int],
+    isovalues: List[float],
+) -> PolylinesNumpy:
+    """Extract isoline polylines from geodesic distance field.
+
+    Computes geodesic distances and extracts polylines along specified isovalues.
+
+    Parameters
+    ----------
+    mesh : :attr:`compas_cgal.types.VerticesFaces`
+        A triangulated mesh as a tuple of vertices and faces.
+    sources : List[int]
+        Source vertex indices for geodesic distance computation.
+    isovalues : List[float]
+        Isovalue thresholds for isoline extraction.
+
+    Returns
+    -------
+    :attr:`compas_cgal.types.PolylinesNumpy`
+        List of polyline segments as Nx3 arrays of points.
+
+    """
+    V, F = mesh
+    V = np.asarray(V, dtype=np.float64, order="C")
+    F = np.asarray(F, dtype=np.int32, order="C")
+
+    return list(_geodesic_isolines(V, F, sources, isovalues))

@@ -5,6 +5,8 @@ import numpy as np
 
 from compas.geometry import Sphere
 from compas.datastructures import Mesh
+from compas_cgal.geodesics import geodesic_isolines
+from compas_cgal.geodesics import geodesic_isolines_split
 from compas_cgal.geodesics import heat_geodesic_distances
 from compas_cgal.geodesics import HeatGeodesicSolver
 
@@ -120,3 +122,58 @@ def test_geodesic_distances_mesh_conversion(sphere_mesh):
     assert isinstance(distances, np.ndarray)
     assert distances.shape[0] == len(V2)
     assert distances[0] == pytest.approx(0.0)
+
+
+def test_geodesic_isolines_split(sphere_mesh):
+    """Test splitting mesh along geodesic isolines."""
+    V, F = sphere_mesh
+
+    components = geodesic_isolines_split((V, F), [0], [1.0, 2.0])
+
+    # Should return list of (vertices, faces) tuples
+    assert isinstance(components, list)
+    assert len(components) > 1  # Should have multiple components
+
+    # Each component should be valid mesh data
+    total_faces = 0
+    for v, f in components:
+        assert isinstance(v, np.ndarray)
+        assert isinstance(f, np.ndarray)
+        assert v.shape[1] == 3  # 3D vertices
+        assert f.shape[1] == 3  # Triangle faces
+        assert f.min() >= 0
+        assert f.max() < len(v)
+        total_faces += len(f)
+
+    # Total faces should be >= original (refinement adds faces)
+    assert total_faces >= len(F)
+
+
+def test_geodesic_isolines(sphere_mesh):
+    """Test extracting isoline polylines."""
+    V, F = sphere_mesh
+
+    isolines = geodesic_isolines((V, F), [0], [1.0, 2.0])
+
+    # Should return list of connected polylines
+    assert isinstance(isolines, list)
+    assert len(isolines) > 0  # Should have some isolines
+
+    # Each polyline should have multiple points
+    for pts in isolines:
+        assert isinstance(pts, np.ndarray)
+        assert pts.ndim == 2
+        assert pts.shape[1] == 3  # 3D points
+        assert pts.shape[0] >= 2  # At least 2 points
+
+
+def test_geodesic_isolines_empty(sphere_mesh):
+    """Test isolines with no crossings."""
+    V, F = sphere_mesh
+
+    # Use isovalue outside the distance range
+    isolines = geodesic_isolines((V, F), [0], [100.0])
+
+    # Should return empty list
+    assert isinstance(isolines, list)
+    assert len(isolines) == 0
