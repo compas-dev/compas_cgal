@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ### Changed
+* Added optional surface meshing parameters (`sm_angle`, `sm_radius`, `sm_distance`) to `compas_cgal.reconstruction.poisson_surface_reconstruction` for controlling mesh quality and density.
 
 ### Removed
 

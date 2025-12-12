@@ -19,6 +19,9 @@
  *
  * @param points Matrix of point positions as Nx3 matrix in row-major order (float64)
  * @param normals Matrix of point normals as Nx3 matrix in row-major order (float64)
+ * @param sm_angle Surface meshing angle bound in degrees (default: 20.0)
+ * @param sm_radius Surface meshing radius bound as a factor of average spacing (default: 30.0)
+ * @param sm_distance Surface meshing approximation error bound as a factor of average spacing (default: 0.375)
  * @return std::tuple<RowMatrixXd, RowMatrixXi> containing:
  *         - vertices as Rx3 matrix (float64)
  *         - faces as Sx3 matrix (int32)
@@ -26,7 +29,10 @@
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 poisson_surface_reconstruction(
     Eigen::Ref<const compas::RowMatrixXd> points,
-    Eigen::Ref<const compas::RowMatrixXd> normals);
+    Eigen::Ref<const compas::RowMatrixXd> normals,
+    double sm_angle = 20.0,
+    double sm_radius = 30.0,
+    double sm_distance = 0.375);
 
 /**
  * @brief Remove outliers from a pointcloud.

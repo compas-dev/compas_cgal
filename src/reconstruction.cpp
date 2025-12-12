@@ -7,7 +7,10 @@ typedef CGAL::Parallel_if_available_tag ConcurrencyTag;
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 poisson_surface_reconstruction(
     Eigen::Ref<const compas::RowMatrixXd> points,
-    Eigen::Ref<const compas::RowMatrixXd> normals)
+    Eigen::Ref<const compas::RowMatrixXd> normals,
+    double sm_angle,
+    double sm_radius,
+    double sm_distance)
 {
     compas::Polyhedron mesh;
     std::vector<PointVectorPair> points_with_normals;
@@ -30,7 +33,10 @@ poisson_surface_reconstruction(
         CGAL::First_of_pair_property_map<PointVectorPair>(),
         CGAL::Second_of_pair_property_map<PointVectorPair>(),
         mesh,
-        average_spacing);
+        average_spacing,
+        sm_angle,
+        sm_radius,
+        sm_distance);
 
     return compas::polyhedron_to_vertices_and_faces(mesh);
 }
@@ -238,7 +244,10 @@ NB_MODULE(_reconstruction, m) {
         &poisson_surface_reconstruction,
         "Perform Poisson surface reconstruction on an oriented pointcloud with normals",
         "points"_a,
-        "normals"_a
+        "normals"_a,
+        "sm_angle"_a = 20.0,
+        "sm_radius"_a = 30.0,
+        "sm_distance"_a = 0.375
     );
 
     m.def(
