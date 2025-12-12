@@ -6,6 +6,7 @@ NB_MODULE(_types_std, m) {
     nb::bind_vector<std::vector<int>>(m, "VectorInt");
     nb::bind_vector<std::vector<std::vector<int>>>(m, "VectorVectorInt");
     nb::bind_vector<std::vector<compas::RowMatrixXd>>(m, "VectorRowMatrixXd");
+    nb::bind_vector<std::vector<compas::RowMatrixXi>>(m, "VectorRowMatrixXi");
     nb::bind_vector<std::vector<std::vector<compas::RowMatrixXd>>>(m, "VectorVectorRowMatrixXd");
 
 }
