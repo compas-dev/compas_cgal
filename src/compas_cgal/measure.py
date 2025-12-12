@@ -77,4 +77,4 @@ def mesh_centroid(mesh: VerticesFaces) -> list[float]:
     V = np.asarray(V, dtype=np.float64, order="C")
     F = np.asarray(F, dtype=np.int32, order="C")
     vector_of_double: _types_std.VectorDouble = _measure.centroid(V, F)
-    return vector_of_double.tolist()  # type: ignore
+    return list(vector_of_double)
