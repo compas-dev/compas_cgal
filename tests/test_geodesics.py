@@ -1,5 +1,3 @@
-"""Tests for COMPAS CGAL geodesics functionality."""
-
 import pytest
 import numpy as np
 
