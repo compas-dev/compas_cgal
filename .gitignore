@@ -88,13 +88,12 @@ coverage.xml
 .ruff_cache/
 .mypy_cache/
 
+# ==============================================================================
+# COMPAS
+# ==============================================================================
+
 # Documentation
-docs/_build/
 /site
-generated/
-docs/api/**
-!docs/api/*.rst
-!docs/api/*.py
 
 # COMPAS CGAL specific
 *.3dmbak
