@@ -5,8 +5,10 @@ from compas_viewer.config import Config
 
 from compas_cgal.polylines import simplify_polyline
 
-
+# =============================================================================
 # Create a complex polyline: spiral with noise
+# =============================================================================
+
 n_points = 200
 t = np.linspace(0, 6 * np.pi, n_points)
 radius = 1 + t / 10
@@ -18,10 +20,16 @@ z = t / 5
 
 original_points = np.column_stack([x, y, z])
 
-# Simplify with different thresholds
+# =============================================================================
+# Simplify
+# =============================================================================
+
 simplified_high = simplify_polyline(original_points, threshold=0.5)
 
+# =============================================================================
 # Create polylines offset in X for visualization
+# =============================================================================
+
 offset = 6.0
 original_polyline = Polyline(original_points.tolist())
 simplified_high_polyline = Polyline((simplified_high + [offset, 0, 0]).tolist())

@@ -7,6 +7,8 @@ dependencies:
   - pip
   - cmake
   - compas
+  - compas_viewer
   - pip:
       - -r requirements-dev.txt
+      - -r requirements-docs.txt
       - .

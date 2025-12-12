@@ -2,8 +2,8 @@ import numpy as np
 from compas.geometry import Point
 from compas.plugins import plugin
 
-from compas_cgal import _triangulation
-from compas_cgal import _types_std
+from compas_cgal import _triangulation  # type: ignore
+from compas_cgal import _types_std  # type: ignore
 from compas_cgal.types import FacesNumpy
 from compas_cgal.types import VerticesFacesNumpy
 
@@ -14,12 +14,12 @@ def delaunay_triangulation(points: list[Point]) -> FacesNumpy:
 
     Parameters
     ----------
-    points : list[:class:`compas.geometry.Point`]
+    points
         Points of the triangulation.
 
     Returns
     -------
-    :attr:`compas_cgal.types.FacesNumpy`
+    FacesNumpy
         The faces of the triangulation.
 
     Examples
@@ -40,7 +40,7 @@ def delaunay_triangulation(points: list[Point]) -> FacesNumpy:
 
 @plugin(category="triangulation", requires=["compas_cgal"])
 def constrained_delaunay_triangulation(
-    boundary,
+    boundary: list[Point],
     points=None,
     holes=None,
     curves=None,
@@ -49,21 +49,21 @@ def constrained_delaunay_triangulation(
 
     Parameters
     ----------
-    boundary : :class:`compas.geometry.Polygon`
+    boundary
         The boundary of the triangulation.
-    points : list[:class:`compas.geometry.Point`], optional
+    points
         Additional internal points.
-    holes : list[:class:`compas.geometry.Polygon`], optional
+    holes
         Internal boundary polygons.
-    curves : list[:class:`compas.geometry.Polyline`], optional
+    curves
         Internal constraint curves.
 
     Returns
     -------
-    :attr:`compas_cgal.types.VerticesFacesNumpy`
+    VerticesFacesNumpy
 
     """
-    boundary = np.asarray(boundary, dtype=np.float64)
+    boundary = np.asarray(boundary, dtype=np.float64)  # type: ignore
 
     points = points or []
     points = np.asarray(points, dtype=np.float64, order="C")

@@ -1,15 +1,11 @@
-attrs >=17.4
-black ==24.3.0
 bump-my-version
+cibuildwheel
 compas_invocations2
-compas_viewer
 invoke >=0.14
+nanobind >=1.3.2
 pytest >=7.0.0
 pytest-cov >=4.0.0
-nanobind >=1.3.2
 ruff
 scikit-build-core[pyproject] >=0.10
-sphinx_compas2_theme
 twine
 wheel
-cibuildwheel

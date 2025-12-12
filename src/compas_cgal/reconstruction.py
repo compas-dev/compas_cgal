@@ -5,7 +5,7 @@ import numpy as np
 from compas.geometry import Point
 from compas.geometry import Vector
 
-from compas_cgal import _reconstruction
+from compas_cgal import _reconstruction  # type: ignore
 
 from .types import FloatNx3
 from .types import IntNx3
@@ -19,14 +19,14 @@ def poisson_surface_reconstruction(
 
     Parameters
     ----------
-    points : list of :class:`compas.geometry.Point` or :class:`numpy.ndarray`
+    points
         The points of the point cloud.
-    normals : list of :class:`compas.geometry.Vector` or :class:`numpy.ndarray`
+    normals
         The normals of the point cloud.
 
     Returns
     -------
-    tuple of :class:`numpy.ndarray`
+    tuple[numpy.ndarray]
         The vertices and faces of the reconstructed surface.
 
     Raises
@@ -45,6 +45,7 @@ def poisson_surface_reconstruction(
     1. A sufficiently dense point cloud
     2. Well-oriented normals
     3. Points distributed across a meaningful surface
+
     """
     # Convert input to numpy arrays with proper type and memory layout
     P = np.asarray(points, dtype=np.float64, order="C")
@@ -80,16 +81,16 @@ def pointset_outlier_removal(
 
     Parameters
     ----------
-    points : list of :class:`compas.geometry.Point` or :class:`numpy.ndarray`
+    points
         The points of the point cloud.
-    nnnbrs : int, optional
+    nnnbrs
         The number of nearest neighbors to consider for each point.
-    radius : float, optional
+    radius
         The radius of the sphere to consider for each point as a multiplication factor of the average point spacing.
 
     Returns
     -------
-    :class:`numpy.ndarray`
+    numpy.ndarray
         The points of the point cloud without outliers.
 
     """
@@ -105,14 +106,14 @@ def pointset_reduction(
 
     Parameters
     ----------
-    points : list of :class:`compas.geometry.Point` or :class:`numpy.ndarray`
+    points
         The points of the point cloud.
-    spacing : int, optional
+    spacing
         The cell size.
 
     Returns
     -------
-    :class:`numpy.ndarray`
+    numpy.ndarray
         The vectors of the point cloud.
 
     """
@@ -129,14 +130,14 @@ def pointset_smoothing(
 
     Parameters
     ----------
-    points : list of :class:`compas.geometry.Point` or :class:`numpy.ndarray`
+    points
         The points of the point cloud.
-    neighbors : int, optional
+    neighbors
         The number of nearest neighbors to consider for each point.
 
     Returns
     -------
-    :class:`numpy.ndarray`
+    numpy.ndarray
         The vectors of the point cloud.
 
     """
@@ -153,16 +154,16 @@ def pointset_normal_estimation(
 
     Parameters
     ----------
-    points : list of :class:`compas.geometry.Point` or :class:`numpy.ndarray`
+    points
         The points of the point cloud.
-    neighbors : int, optional
+    neighbors
         The number of nearest neighbors to consider for each point.
-    erase : bool, optional
+    erase
         Erase points that are not oriented properly.
 
     Returns
     -------
-    :class:`numpy.ndarray`
+    numpy.ndarray
         The vectors of the point cloud.
 
     """

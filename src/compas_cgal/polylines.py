@@ -6,14 +6,11 @@ from typing import Union
 import numpy as np
 from numpy.typing import NDArray
 
-from compas_cgal import _types_std  # noqa: F401  # Load vector type bindings
-from compas_cgal._polylines import closest_points_on_polyline as _closest_points
-from compas_cgal._polylines import simplify_polylines as _simplify
+from compas_cgal import _types_std  # noqa: F401  # type: ignore
+from compas_cgal._polylines import closest_points_on_polyline as _closest_points  # type: ignore
+from compas_cgal._polylines import simplify_polylines as _simplify  # type: ignore
 
 PointsList = Union[List[List[float]], NDArray]
-
-
-__all__ = ["simplify_polylines", "simplify_polyline", "closest_points_on_polyline"]
 
 
 def simplify_polylines(polylines: List[PointsList], threshold: float) -> List[NDArray]:
@@ -24,9 +21,9 @@ def simplify_polylines(polylines: List[PointsList], threshold: float) -> List[ND
 
     Parameters
     ----------
-    polylines : list of array-like
+    polylines
         List of polylines. Each polyline is a sequence of 2D or 3D points.
-    threshold : float
+    threshold
         Distance threshold for simplification. Higher values remove more points.
 
     Returns
@@ -58,9 +55,9 @@ def simplify_polyline(polyline: PointsList, threshold: float) -> NDArray:
 
     Parameters
     ----------
-    polyline : array-like
+    polyline
         Sequence of 2D or 3D points.
-    threshold : float
+    threshold
         Distance threshold for simplification.
 
     Returns
@@ -80,9 +77,9 @@ def closest_points_on_polyline(query_points: PointsList, polyline: PointsList) -
 
     Parameters
     ----------
-    query_points : array-like
+    query_points
         Query points as Mx2 or Mx3 array.
-    polyline : array-like
+    polyline
         Polyline as Nx2 or Nx3 array.
 
     Returns

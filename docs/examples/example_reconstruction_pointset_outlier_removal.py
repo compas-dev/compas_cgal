@@ -6,43 +6,32 @@ from compas_viewer.config import Config
 
 from compas_cgal.reconstruction import pointset_outlier_removal
 
+# ==============================================================================
+# Input geometry
+# ==============================================================================
 
-def reconstruction_pointset_outlier_removal():
-    """Remove outliers from a point set."""
+FILE = Path(__file__).parent.parent.parent / "data" / "forked_branch_1.ply"
+c1 = Pointcloud.from_ply(FILE)
 
-    # ==============================================================================
-    # Input geometry
-    # ==============================================================================
+# ==============================================================================
+# Compute
+# ==============================================================================
 
-    FILE = Path(__file__).parent.parent.parent / "data" / "forked_branch_1.ply"
-    c1 = Pointcloud.from_ply(FILE)
+points = pointset_outlier_removal(c1, 30, 2.0)
 
-    # ==============================================================================
-    # Compute
-    # ==============================================================================
-
-    points = pointset_outlier_removal(c1, 30, 2.0)
-    c2 = Pointcloud(points)
-    c3 = c1.difference(c2)
-
-    return c2, c3
-
-
-c_outlier_removal_0, c_outlier_removal_1 = reconstruction_pointset_outlier_removal()
+c2 = Pointcloud(points)
+c3 = c1.difference(c2)
 
 # ==============================================================================
 # Visualize
 # ==============================================================================
 
 config = Config()
-config.camera.target = [600, 500, 200]
-config.camera.position = [600, -1000, 1500]
-config.camera.scale = 100
-config.renderer.gridsize = (20000, 20, 20000, 20)
+config.unit = "mm"
 
 viewer = Viewer(config=config)
 
-viewer.scene.add(c_outlier_removal_0, pointcolor=(0.0, 0.0, 0.0))
-viewer.scene.add(c_outlier_removal_1, pointcolor=(1.0, 0.0, 0.0))
+viewer.scene.add(c2, pointcolor=(0.0, 0.0, 0.0))
+viewer.scene.add(c3, pointcolor=(1.0, 0.0, 0.0))
 
 viewer.show()

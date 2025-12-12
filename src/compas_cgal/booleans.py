@@ -3,7 +3,7 @@ from typing import Literal
 import numpy as np
 from compas.plugins import plugin
 
-from compas_cgal import _booleans
+from compas_cgal import _booleans  # type: ignore
 
 from .types import VerticesFaces
 from .types import VerticesFacesNumpy
@@ -18,11 +18,11 @@ def _boolean(
 
     Parameters
     ----------
-    A : VerticesFaces
+    A
         Mesh A.
-    B : VerticesFaces
+    B
         Mesh B.
-    operation : Literal['union', 'difference', 'intersection']
+    operation
         The type of boolean operation.
 
     Returns
@@ -65,14 +65,14 @@ def boolean_union_mesh_mesh(
 
     Parameters
     ----------
-    A : :attr:`compas_cgal.types.VerticesFaces`
+    A
         Mesh A.
-    B : :attr:`compas_cgal.types.VerticesFaces`
+    B
         Mesh B.
 
     Returns
     -------
-    :attr:`compas_cgal.types.VerticesFacesNumpy`
+    VerticesFacesNumpy
 
     Examples
     --------
@@ -101,14 +101,14 @@ def boolean_difference_mesh_mesh(
 
     Parameters
     ----------
-    A : :attr:`compas_cgal.types.VerticesFaces`
+    A
         Mesh A.
-    B : :attr:`compas_cgal.types.VerticesFaces`
+    B
         Mesh B.
 
     Returns
     -------
-    :attr:`compas_cgal.types.VerticesFacesNumpy`
+    VerticesFacesNumpy
 
     Examples
     --------
@@ -137,14 +137,14 @@ def boolean_intersection_mesh_mesh(
 
     Parameters
     ----------
-    A : :attr:`compas_cgal.types.VerticesFaces`
+    A
         Mesh A.
-    B : :attr:`compas_cgal.types.VerticesFaces`
+    B
         Mesh B.
 
     Returns
     -------
-    :attr:`compas_cgal.types.VerticesFacesNumpy`
+    VerticesFacesNumpy
 
     Examples
     --------
@@ -173,14 +173,14 @@ def split_mesh_mesh(
 
     Parameters
     ----------
-    A : :attr:`compas_cgal.types.VerticesFaces`
+    A
         Mesh A.
-    B : :attr:`compas_cgal.types.VerticesFaces`
+    B
         Mesh B.
 
     Returns
     -------
-    :attr:`compas_cgal.types.VerticesFacesNumpy`
+    VerticesFacesNumpy
 
     Examples
     --------
@@ -197,7 +197,7 @@ def split_mesh_mesh(
     >>> shape = Polyhedron(V.tolist(), F.tolist())
 
     """
-    return _boolean(A, B, "split")
+    return _boolean(A, B, "split")  # type: ignore
 
 
 split = split_mesh_mesh

@@ -1,8 +1,8 @@
 import numpy as np
 from compas.plugins import plugin
 
-from compas_cgal import _skeletonization
-from compas_cgal import _types_std  # noqa: F401
+from compas_cgal import _skeletonization  # type: ignore
+from compas_cgal import _types_std  # noqa: F401  # type: ignore
 
 from .types import PolylinesNumpySkeleton
 from .types import SkeletonVertexMapping
@@ -15,7 +15,7 @@ def mesh_skeleton(mesh: VerticesFaces) -> PolylinesNumpySkeleton:
 
     Parameters
     ----------
-    mesh : VerticesFaces
+    mesh
         A tuple containing:
         * vertices: Nx3 array of vertex coordinates
         * faces: Mx3 array of vertex indices
@@ -66,7 +66,7 @@ def mesh_skeleton_with_mapping(mesh: VerticesFaces) -> tuple[PolylinesNumpySkele
 
     Parameters
     ----------
-    mesh : VerticesFaces
+    mesh
         A tuple containing:
         * vertices: Nx3 array of vertex coordinates
         * faces: Mx3 array of vertex indices
@@ -102,6 +102,7 @@ def mesh_skeleton_with_mapping(mesh: VerticesFaces) -> tuple[PolylinesNumpySkele
     that were contracted to that point during the skeletonization process.
     (The set might be empty for some skeleton vertices that don't correspond
     to any original vertex.)
+
     """
     V, F = mesh
     V_numpy = np.asarray(V, dtype=np.float64, order="C")  # Ensure C-contiguous
