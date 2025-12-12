@@ -1,5 +1,7 @@
 # Mesh Slicing
 
+![Mesh Slicing](../assets/images/example_slicer.png)
+
 This example demonstrates how to slice a mesh with multiple planes using COMPAS CGAL.
 
 Key Features:
@@ -9,8 +11,6 @@ Key Features:
 * Slicing mesh with multiple planes
 * Converting slice results to polylines
 * Visualization with semi-transparent mesh and slice curves
-
-![Mesh Slicing](../assets/images/example_slicer.png)
 
 ```python
 ---8<--- "docs/examples/example_slicer.py"

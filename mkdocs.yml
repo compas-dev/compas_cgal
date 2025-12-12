@@ -141,6 +141,7 @@ nav:
       - Changelog: changelog.md
   - Examples:
       - Booleans: examples/example_booleans.md
+      - Geodesics: examples/example_geodesics.md
       - Intersections: examples/example_intersections.md
       - Measure: examples/example_measure.md
       - Meshing: examples/example_meshing.md

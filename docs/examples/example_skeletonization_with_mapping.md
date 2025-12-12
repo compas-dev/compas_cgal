@@ -1,5 +1,7 @@
 # Mesh Skeletonization with Vertex Mapping
 
+![Mesh Skeletonization with Vertex Mapping](../assets/images/example_skeletonization_with_mapping.png)
+
 This example demonstrates how to compute the geometric skeleton of a triangle mesh with vertex correspondence mapping using COMPAS CGAL.
 
 Key Features:
@@ -8,8 +10,6 @@ Key Features:
 * Understanding which original mesh vertices map to each skeleton vertex
 * Colored visualization showing vertex mapping
 * Printing mapping statistics to understand the correspondence
-
-![Mesh Skeletonization with Vertex Mapping](../assets/images/example_skeletonization_with_mapping.png)
 
 ```python
 ---8<--- "docs/examples/example_skeletonization_with_mapping.py"

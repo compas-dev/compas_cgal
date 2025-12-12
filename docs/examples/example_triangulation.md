@@ -1,5 +1,7 @@
 # Mesh Triangulation
 
+![Mesh Triangulation](../assets/images/example_triangulation.png)
+
 This example demonstrates how to perform constrained and refined Delaunay triangulation using COMPAS CGAL.
 
 Key Features:
@@ -8,8 +10,6 @@ Key Features:
 * Conforming Delaunay triangulation
 * Refined Delaunay meshing with size constraints
 * Side-by-side visualization of different triangulation methods
-
-![Mesh Triangulation](../assets/images/example_triangulation.png)
 
 ```python
 ---8<--- "docs/examples/example_triangulation.py"

@@ -1,5 +1,6 @@
-Geodesic Distances and Isolines
-===============================
+# Geodesic Distances and Isolines
+
+![Geodesics](../assets/images/example_geodesics.png)
 
 This example demonstrates geodesic distance computation, isoline extraction, and mesh splitting using COMPAS CGAL.
 
@@ -21,9 +22,6 @@ Key Features:
 * Isoline extraction as polylines via ``geodesic_isolines``
 * Mesh splitting along isolines via ``geodesic_isolines_split``
 
-.. figure:: /_images/example_geodesics.png
-    :figclass: figure
-    :class: figure-img img-fluid
-
-.. literalinclude:: example_geodesics.py
-   :language: python
+```python
+---8<--- "docs/examples/example_geodesics.py"
+```
