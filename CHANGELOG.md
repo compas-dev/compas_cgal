@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 * Added  `compas_cgal.skeletonization.mesh_skeleton_with_mapping`.
 
+- Added `simplify_polyline` and `simplify_polylines` functions for polyline simplification using Douglas-Peucker algorithm
+- Added `closest_points_on_polyline` function for batch closest point queries on polylines
+
+
 ### Changed
 
 ### Removed
