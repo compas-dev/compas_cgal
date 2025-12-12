@@ -42,7 +42,6 @@ theme:
     - content.footnote.tooltips
     - navigation.expand
     - navigation.footer
-    - navigation.indexes
     - navigation.sections
     - navigation.top
     - navigation.tabs
@@ -134,7 +133,7 @@ plugins:
 
 nav:
   - Getting Started:
-      - Introduction: introduction.md
+      - Introduction: index.md
       - Installation: installation.md
       - License: license.md
       - Acknowledgements: acknowledgements.md
