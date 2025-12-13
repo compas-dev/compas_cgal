@@ -1,0 +1,79 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/26.0.16 Chrome/132.0.6834.196 Electron/34.2.0 Safari/537.36" version="26.0.16">
+  <diagram name="Page-1" id="iRB1K9btID6bY3hy-l1M">
+    <mxGraphModel dx="1294" dy="952" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="NV2lPkb23l8zP6e_C7M_-57" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;dashed=1;" edge="1" parent="1" source="NV2lPkb23l8zP6e_C7M_-24" target="NV2lPkb23l8zP6e_C7M_-55">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="NV2lPkb23l8zP6e_C7M_-24" value="compas_cgal" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry y="120" width="310" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="NV2lPkb23l8zP6e_C7M_-81" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="NV2lPkb23l8zP6e_C7M_-24" source="NV2lPkb23l8zP6e_C7M_-9" target="NV2lPkb23l8zP6e_C7M_-72">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="NV2lPkb23l8zP6e_C7M_-82" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="NV2lPkb23l8zP6e_C7M_-24" source="NV2lPkb23l8zP6e_C7M_-9" target="NV2lPkb23l8zP6e_C7M_-62">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="NV2lPkb23l8zP6e_C7M_-83" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="NV2lPkb23l8zP6e_C7M_-24" source="NV2lPkb23l8zP6e_C7M_-9" target="NV2lPkb23l8zP6e_C7M_-7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="NV2lPkb23l8zP6e_C7M_-86" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="NV2lPkb23l8zP6e_C7M_-24" source="NV2lPkb23l8zP6e_C7M_-9" target="NV2lPkb23l8zP6e_C7M_-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="NV2lPkb23l8zP6e_C7M_-9" value="Python COMPAS" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="NV2lPkb23l8zP6e_C7M_-24">
+          <mxGeometry x="10" y="40" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="NV2lPkb23l8zP6e_C7M_-14" value="" style="group" vertex="1" connectable="0" parent="NV2lPkb23l8zP6e_C7M_-24">
+          <mxGeometry x="180" y="50" width="120" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="NV2lPkb23l8zP6e_C7M_-7" value="Profiled examples" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="NV2lPkb23l8zP6e_C7M_-14">
+          <mxGeometry y="148" width="120" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="NV2lPkb23l8zP6e_C7M_-62" value="PyTest tests" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="NV2lPkb23l8zP6e_C7M_-14">
+          <mxGeometry y="118" width="120" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="NV2lPkb23l8zP6e_C7M_-72" value="Sphinx docs" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="NV2lPkb23l8zP6e_C7M_-14">
+          <mxGeometry y="90" width="120" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="NV2lPkb23l8zP6e_C7M_-4" value="GitHub actions for building and testing&amp;nbsp;&lt;div&gt;in various OS, e.g.&lt;br&gt;windows,&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;mac, linux&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="NV2lPkb23l8zP6e_C7M_-14">
+          <mxGeometry y="-10" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="NV2lPkb23l8zP6e_C7M_-75" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="NV2lPkb23l8zP6e_C7M_-24" source="NV2lPkb23l8zP6e_C7M_-1" target="NV2lPkb23l8zP6e_C7M_-9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="NV2lPkb23l8zP6e_C7M_-1" value="Nanobind" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="NV2lPkb23l8zP6e_C7M_-24">
+          <mxGeometry x="10" y="110" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="NV2lPkb23l8zP6e_C7M_-74" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="NV2lPkb23l8zP6e_C7M_-24" source="NV2lPkb23l8zP6e_C7M_-8" target="NV2lPkb23l8zP6e_C7M_-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="NV2lPkb23l8zP6e_C7M_-8" value="C++ CMake CGAL" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="NV2lPkb23l8zP6e_C7M_-24">
+          <mxGeometry x="10" y="180" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="NV2lPkb23l8zP6e_C7M_-32" value="user environment" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="630" y="120" width="220" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="NV2lPkb23l8zP6e_C7M_-38" value="3rd Party Software&amp;nbsp;&lt;div&gt;e.g.&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Rhino, Blender, ...&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="NV2lPkb23l8zP6e_C7M_-32">
+          <mxGeometry x="10" y="40" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="NV2lPkb23l8zP6e_C7M_-39" value="Your own package in your favorite code editor e.g. VSCode" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="NV2lPkb23l8zP6e_C7M_-32">
+          <mxGeometry x="10" y="100" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="NV2lPkb23l8zP6e_C7M_-58" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;dashed=1;" edge="1" parent="1" source="NV2lPkb23l8zP6e_C7M_-55" target="NV2lPkb23l8zP6e_C7M_-32">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="NV2lPkb23l8zP6e_C7M_-55" value="distribution" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="120" width="220" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="NV2lPkb23l8zP6e_C7M_-2" value="PyPi&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;package&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="NV2lPkb23l8zP6e_C7M_-55">
+          <mxGeometry x="10" y="40" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="NV2lPkb23l8zP6e_C7M_-3" value="Conda&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;package&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="NV2lPkb23l8zP6e_C7M_-55">
+          <mxGeometry x="10" y="100" width="200" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
