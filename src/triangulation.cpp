@@ -30,7 +30,7 @@ using cdt3 = CGAL::Constrained_Delaunay_triangulation_2<compas::Kernel, tds3, it
 using criteria = CGAL::Delaunay_mesh_size_criteria_2<cdt3>;
 
 compas::RowMatrixXi
-pmp_delaunay_triangulation(Eigen::Ref<compas::RowMatrixXd> vertices)
+pmp_delaunay_triangulation(Eigen::Ref<const compas::RowMatrixXd> vertices)
 {
     dt triangulation;
     std::vector<std::pair<dt::Point, unsigned>> points(vertices.rows());
@@ -130,8 +130,8 @@ void mark_domains(cdt2 &triangulation)
 
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 pmp_constrained_delaunay_triangulation(
-    Eigen::Ref<compas::RowMatrixXd> boundary_vertices,
-    Eigen::Ref<compas::RowMatrixXd> internal_vertices,
+    Eigen::Ref<const compas::RowMatrixXd> boundary_vertices,
+    Eigen::Ref<const compas::RowMatrixXd> internal_vertices,
     const std::vector<compas::RowMatrixXd> & holes,
     const std::vector<compas::RowMatrixXd> & curves,
     bool is_conforming
@@ -249,8 +249,8 @@ pmp_constrained_delaunay_triangulation(
 
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 pmp_refined_delaunay_mesh(
-    Eigen::Ref<compas::RowMatrixXd> boundary_vertices,
-    Eigen::Ref<compas::RowMatrixXd> internal_vertices,
+    Eigen::Ref<const compas::RowMatrixXd> boundary_vertices,
+    Eigen::Ref<const compas::RowMatrixXd> internal_vertices,
     const std::vector<compas::RowMatrixXd> & holes,
     const std::vector<compas::RowMatrixXd> & curves,
     double min_angle,

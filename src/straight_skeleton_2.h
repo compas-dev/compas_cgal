@@ -22,9 +22,9 @@
  *         - Matrix of skeleton edges as vertex pairs (Kx2, int32)
  *         - Vector of source edge indices from input polygon for each skeleton edge
  */
-std::tuple<compas::RowMatrixXd, std::vector<int>, compas::RowMatrixXi, std::vector<int>> 
+std::tuple<compas::RowMatrixXd, std::vector<int>, compas::RowMatrixXi, std::vector<int>>
 pmp_create_interior_straight_skeleton(
-    const compas::RowMatrixXd& vertices
+    Eigen::Ref<const compas::RowMatrixXd> vertices
 );
 
 /**
@@ -38,9 +38,9 @@ pmp_create_interior_straight_skeleton(
  *         - Matrix of skeleton edges as vertex pairs (Qx2, int32)
  *         - Vector of source edge indices from input polygon for each skeleton edge
  */
-std::tuple<compas::RowMatrixXd, std::vector<int>, compas::RowMatrixXi, std::vector<int>> 
+std::tuple<compas::RowMatrixXd, std::vector<int>, compas::RowMatrixXi, std::vector<int>>
 pmp_create_interior_straight_skeleton_with_holes(
-    const compas::RowMatrixXd& boundary_vertices,
+    Eigen::Ref<const compas::RowMatrixXd> boundary_vertices,
     const std::vector<compas::RowMatrixXd>& hole_vertices
 );
 
@@ -53,7 +53,7 @@ pmp_create_interior_straight_skeleton_with_holes(
  */
 std::vector<compas::RowMatrixXd>
 pmp_create_offset_polygons_2_inner(
-    const compas::RowMatrixXd& vertices,
+    Eigen::Ref<const compas::RowMatrixXd> vertices,
     double& offset_distance
 );
 
@@ -68,7 +68,7 @@ pmp_create_offset_polygons_2_inner(
  */
 std::vector<std::vector<compas::RowMatrixXd>>
 pmp_create_offset_polygons_2_inner_with_holes(
-    const compas::RowMatrixXd& boundary_vertices,
+    Eigen::Ref<const compas::RowMatrixXd> boundary_vertices,
     const std::vector<compas::RowMatrixXd>& hole_vertices,
     double& offset_distance
 );
@@ -88,7 +88,7 @@ pmp_create_offset_polygons_2_inner_with_holes(
  */
 std::vector<compas::RowMatrixXd>
 pmp_create_offset_polygons_2_outer(
-    const compas::RowMatrixXd& vertices,
+    Eigen::Ref<const compas::RowMatrixXd> vertices,
     double& offset_distance
 );
 
@@ -103,7 +103,7 @@ pmp_create_offset_polygons_2_outer(
  */
 std::vector<std::vector<compas::RowMatrixXd>>
 pmp_create_offset_polygons_2_outer_with_holes(
-    const compas::RowMatrixXd& boundary_vertices,
+    Eigen::Ref<const compas::RowMatrixXd> boundary_vertices,
     const std::vector<compas::RowMatrixXd>& hole_vertices,
     double& offset_distance
 );
@@ -120,9 +120,9 @@ pmp_create_offset_polygons_2_outer_with_holes(
  */
 std::vector<compas::RowMatrixXd>
 pmp_create_weighted_offset_polygons_2_inner(
-    const compas::RowMatrixXd& vertices,
+    Eigen::Ref<const compas::RowMatrixXd> vertices,
     double offset_distance,
-    const compas::RowMatrixXd& edge_weights
+    Eigen::Ref<const compas::RowMatrixXd> edge_weights
 );
 
 /**
@@ -137,9 +137,9 @@ pmp_create_weighted_offset_polygons_2_inner(
  */
 std::vector<compas::RowMatrixXd>
 pmp_create_weighted_offset_polygons_2_outer(
-    const compas::RowMatrixXd& vertices,
+    Eigen::Ref<const compas::RowMatrixXd> vertices,
     double offset_distance,
-    const compas::RowMatrixXd& edge_weights
+    Eigen::Ref<const compas::RowMatrixXd> edge_weights
 );
 
 void init_straight_skeleton_2(nb::module_& m);

@@ -2,8 +2,8 @@
 
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 subd_catmullclark(
-    compas::RowMatrixXd vertices,
-    std::vector<std::vector<int>> faces,
+    Eigen::Ref<const compas::RowMatrixXd> vertices,
+    const std::vector<std::vector<int>>& faces,
     unsigned int num_iterations)
 {
     compas::Mesh mesh = compas::ngon_from_vertices_and_faces(vertices, faces);
@@ -14,8 +14,8 @@ subd_catmullclark(
 
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 subd_loop(
-    compas::RowMatrixXd vertices,
-    compas::RowMatrixXi faces,
+    Eigen::Ref<const compas::RowMatrixXd> vertices,
+    Eigen::Ref<const compas::RowMatrixXi> faces,
     unsigned int num_iterations)
 {
     compas::Mesh mesh = compas::mesh_from_vertices_and_faces(vertices, faces);
@@ -26,8 +26,8 @@ subd_loop(
 
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 subd_sqrt3(
-    compas::RowMatrixXd vertices,
-    compas::RowMatrixXi faces,
+    Eigen::Ref<const compas::RowMatrixXd> vertices,
+    Eigen::Ref<const compas::RowMatrixXi> faces,
     unsigned int num_iterations)
 {
     compas::Mesh mesh = compas::mesh_from_vertices_and_faces(vertices, faces);
