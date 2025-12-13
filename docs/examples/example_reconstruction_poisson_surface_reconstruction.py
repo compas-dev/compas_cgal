@@ -23,17 +23,26 @@ with open(FILE, "r") as f:
 # Reconstruction
 # =============================================================================
 
-# Reconstruct surface with custom parameters
-# Using larger sm_radius and sm_distance values reduces mesh complexity
-# and helps filter out vertices that don't belong to the original point cloud
-V, F = poisson_surface_reconstruction(
-    points,
-    normals,
-    sm_angle=20.0,  # Surface meshing angle bound (degrees)
-    sm_radius=30.0,  # Surface meshing radius bound (factor of avg spacing)
-    sm_distance=0.375,  # Surface meshing distance bound (factor of avg spacing)
-)
-mesh = Mesh.from_vertices_and_faces(V, F)
+params = [
+    (20.0, 30.0, 0.375),      # base
+    (10.0, 15.0, 0.1875),     # / 2
+    (5.0, 7.5, 0.09375),      # / 4
+]
+
+meshes = []
+offset = 0.0
+for sm_angle, sm_radius, sm_distance in params:
+    V, F = poisson_surface_reconstruction(
+        points,
+        normals,
+        sm_angle=sm_angle,
+        sm_radius=sm_radius,
+        sm_distance=sm_distance,
+    )
+    mesh = Mesh.from_vertices_and_faces(V, F)
+    mesh.translate([offset, 0, 0])
+    meshes.append(mesh)
+    offset += 1
 
 # ==============================================================================
 # Visualize
@@ -41,10 +50,10 @@ mesh = Mesh.from_vertices_and_faces(V, F)
 
 viewer = Viewer()
 
-viewer.renderer.camera.target = [0, 0, 0]
-viewer.renderer.camera.position = [0, -0.2, 2.0]
+viewer.renderer.camera.target = [0.5, 0, 0]
+viewer.renderer.camera.position = [0.5, -0.2, 2.0]
 
-viewer.scene.add(points, pointsize=10, pointcolor=(255, 0, 0))
-viewer.scene.add(mesh, show_points=False)
+for mesh in meshes:
+    viewer.scene.add(mesh, show_points=False)
 
 viewer.show()
