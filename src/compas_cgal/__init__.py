@@ -18,6 +18,7 @@ TEMP = os.path.abspath(os.path.join(HOME, "temp"))
 __all_plugins__ = [
     "compas_cgal.booleans",
     "compas_cgal.intersections",
+    "compas_cgal.isolines",
     "compas_cgal.meshing",
     "compas_cgal.measure",
     "compas_cgal.reconstruction",
