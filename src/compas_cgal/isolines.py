@@ -148,9 +148,9 @@ def isolines(
     scalar_values = np.asarray(mesh.vertices_attribute(scalars), dtype=np.float64, order="C").reshape(-1, 1)
 
     if isovalues is None and n is None:
-        raise ValueError("provide isovalues or n")
+        raise ValueError("Either 'isovalues' or 'n' must be provided.")
     if isovalues is not None and n is not None:
-        raise ValueError("provide isovalues or n, not both")
+        raise ValueError("Provide exactly one of 'isovalues' or 'n' (not both).")
 
     if n is not None:
         smin, smax = float(scalar_values.min()), float(scalar_values.max())
