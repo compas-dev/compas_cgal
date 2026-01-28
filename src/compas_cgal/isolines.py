@@ -1,6 +1,6 @@
 """Isoline extraction from vertex scalar fields using CGAL."""
 
-from typing import List
+from typing import List, Optional, Union
 
 import numpy as np
 from numpy.typing import NDArray
@@ -88,9 +88,9 @@ def _resample_polyline(pts: NDArray, factor: int) -> NDArray:
 def isolines(
     mesh: Mesh,
     scalars: str,
-    isovalues: List[float] | None = None,
-    n: int | None = None,
-    resample: int | bool = True,
+    isovalues: Optional[List[float]] = None,
+    n: Optional[int] = None,
+    resample: Union[int, bool] = True,
     smoothing: int = 0,
 ) -> PolylinesNumpy:
     """Extract isoline polylines from vertex scalar field.
