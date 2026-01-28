@@ -19,7 +19,7 @@ def _smooth_polyline(pts: NDArray, iterations: int = 1) -> NDArray:
     smoothed = pts.copy()
     for _ in range(iterations):
         new_pts = smoothed.copy()
-        for i in range(1, len(pts) - 1):
+        for i in range(1, len(smoothed) - 1):
             new_pts[i] = (smoothed[i - 1] + smoothed[i + 1]) / 2
         smoothed = new_pts
     return smoothed
