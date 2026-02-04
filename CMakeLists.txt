@@ -239,3 +239,4 @@ add_nanobind_module(_subdivision src/subdivision.cpp)
 add_nanobind_module(_polylines src/polylines.cpp)
 
 add_nanobind_module(_geodesics src/geodesics.cpp)
+add_nanobind_module(_isolines src/isolines.cpp)

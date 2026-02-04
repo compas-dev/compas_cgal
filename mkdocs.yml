@@ -142,6 +142,7 @@ nav:
       - Booleans: examples/example_booleans.md
       - Geodesics: examples/example_geodesics.md
       - Intersections: examples/example_intersections.md
+      - Isolines: examples/example_isolines.md
       - Meshing: examples/example_meshing.md
       - Meshing Dual: examples/example_meshing_dual.md
       - Projection: examples/example_projection.md
@@ -162,9 +163,12 @@ nav:
       - Triangulation: examples/example_triangulation.md
   - API Reference:
       - compas_cgal.booleans: api/compas_cgal.booleans.md
+      - compas_cgal.geodesics: api/compas_cgal.geodesics.md
       - compas_cgal.intersections: api/compas_cgal.intersections.md
+      - compas_cgal.isolines: api/compas_cgal.isolines.md
       - compas_cgal.measure: api/compas_cgal.measure.md
       - compas_cgal.meshing: api/compas_cgal.meshing.md
+      - compas_cgal.polylines: api/compas_cgal.polylines.md
       - compas_cgal.projection: api/compas_cgal.projection.md
       - compas_cgal.reconstruction: api/compas_cgal.reconstruction.md
       - compas_cgal.skeletonization: api/compas_cgal.skeletonization.md

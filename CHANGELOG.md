@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Added
+* Added `compas_cgal.isolines.isolines` for extracting isoline polylines from vertex scalar fields.
 * Added  `compas_cgal.skeletonization.mesh_skeleton_with_mapping`
 - `HeatGeodesicSolver` class with precomputation for repeated queries
 - `heat_geodesic_distances` function for single-shot usage
@@ -20,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 * Added optional surface meshing parameters (`sm_angle`, `sm_radius`, `sm_distance`) to `compas_cgal.reconstruction.poisson_surface_reconstruction` for controlling mesh quality and density.
+* Upgraded cibuildwheel manylinux image from `manylinux2014` to `manylinux_2_28` for scipy wheel compatibility.
 
   - `subdivision`: pass-by-value → Eigen::Ref<const> (3 functions)
   - `straight_skeleton_2`: const& → Eigen::Ref<const> (8 functions)
