@@ -26,6 +26,7 @@ __all_plugins__ = [
     "compas_cgal.slicer",
     "compas_cgal.subdivision",
     "compas_cgal.polylines",
+    "compas_cgal.toolpath",
 ]
 
 __all__ = ["HOME", "DATA", "DOCS", "TEMP"]

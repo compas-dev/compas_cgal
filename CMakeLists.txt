@@ -237,6 +237,7 @@ add_nanobind_module(_straight_skeleton_2 src/straight_skeleton_2.cpp)
 add_nanobind_module(_triangulation src/triangulation.cpp)
 add_nanobind_module(_subdivision src/subdivision.cpp)
 add_nanobind_module(_polylines src/polylines.cpp)
+add_nanobind_module(_toolpath src/toolpath.cpp)
 
 add_nanobind_module(_geodesics src/geodesics.cpp)
 add_nanobind_module(_isolines src/isolines.cpp)
