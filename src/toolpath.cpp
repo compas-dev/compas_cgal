@@ -243,7 +243,7 @@ trochoid_chain(
             const double ri = std::sqrt(std::max(0.0, CGAL::to_double(circles[i].squared_radius())));
             if (CGAL::to_double(CGAL::squared_distance(prev_tangent_end, tangent.source())) > 1e-18) {
                 chain.push_back(TrochoidArc::make_arc(
-                    ci, ri, prev_tangent_end, tangent.source(), !winding_ccw));
+                    ci, ri, prev_tangent_end, tangent.source(), winding_ccw));
             }
         }
 
@@ -800,29 +800,6 @@ pmp_trochoidal_mat_toolpath_circular_raw(
     (void)stepover;
     (void)samples_per_cycle;
 
-    struct PrimitiveRecord {
-        int path_index;
-        int type;  // 0 line, 1 arc
-        bool clockwise;
-        Point_2 start;
-        Point_2 end;
-        Point_2 center;
-        double radius;
-    };
-
-    struct TransitionDecision {
-        bool valid;
-        bool clockwise;
-        double sweep;
-        double quality;
-        bool degenerate;
-    };
-
-    struct TangentPair {
-        Point_2 start;
-        Point_2 end;
-    };
-
     Polygon_2 boundary = data_to_polygon(vertices);
     SsPtr skeleton = CGAL::create_interior_straight_skeleton_2(boundary.vertices_begin(), boundary.vertices_end());
     if (!skeleton) {
@@ -844,148 +821,10 @@ pmp_trochoidal_mat_toolpath_circular_raw(
         return radius;
     };
 
-    auto normalize_xy = [](double x, double y, double& nx, double& ny) {
-        const double norm = std::sqrt(x * x + y * y);
-        if (norm <= 1e-12) {
-            return false;
-        }
-        nx = x / norm;
-        ny = y / norm;
-        return true;
-    };
-
-    auto signed_span = [](const Point_2& center, const Point_2& start, const Point_2& end, bool clockwise) {
-        const double ux = start.x() - center.x();
-        const double uy = start.y() - center.y();
-        const double vx = end.x() - center.x();
-        const double vy = end.y() - center.y();
-
-        double a0 = std::atan2(uy, ux);
-        double a1 = std::atan2(vy, vx);
-        if (clockwise && a1 > a0) {
-            a1 -= 2.0 * PI;
-        }
-        if (!clockwise && a1 < a0) {
-            a1 += 2.0 * PI;
-        }
-        return a1 - a0;
-    };
-
-    auto choose_arc_transition = [&](const Point_2& center, const Point_2& start, const Point_2& end, double incoming_x, double incoming_y, double outgoing_x, double outgoing_y) {
-        constexpr double eps_quality = 1e-9;
-        constexpr double eps_sweep = 1e-7;
-
-        struct Candidate {
-            bool clockwise;
-            double sweep;
-            double quality;
-        };
-        std::vector<Candidate> candidates;
-        candidates.reserve(2);
-
-        const double rsx = start.x() - center.x();
-        const double rsy = start.y() - center.y();
-        const double rex = end.x() - center.x();
-        const double rey = end.y() - center.y();
-
-        double rsnx = 0.0, rsny = 0.0, renx = 0.0, reny = 0.0;
-        if (!normalize_xy(rsx, rsy, rsnx, rsny) || !normalize_xy(rex, rey, renx, reny)) {
-            return TransitionDecision{false, true, 0.0, 0.0, true};
-        }
-
-        for (int i = 0; i < 2; ++i) {
-            const bool clockwise = i == 0;
-            const double tsx = clockwise ? rsny : -rsny;
-            const double tsy = clockwise ? -rsnx : rsnx;
-            const double tex = clockwise ? reny : -reny;
-            const double tey = clockwise ? -renx : renx;
-            // For trochoidal motion, entry tangent reversal is expected (dot ≈ -1).
-            // Exit tangent alignment determines correct arc direction.
-            const double quality = tex * outgoing_x + tey * outgoing_y;
-            const double sweep = std::abs(signed_span(center, start, end, clockwise));
-            candidates.push_back(Candidate{clockwise, sweep, quality});
-        }
-
-        std::vector<Candidate> nondegenerate;
-        nondegenerate.reserve(2);
-        for (const auto& candidate : candidates) {
-            if (candidate.sweep > eps_sweep) {
-                nondegenerate.push_back(candidate);
-            }
-        }
-
-        if (!nondegenerate.empty()) {
-            // Among tangent-aligned candidates (quality > 0), prefer larger sweep
-            // (full trochoidal loop, not the shortcut arc). If neither is tangent-aligned,
-            // fall back to best quality.
-            std::sort(nondegenerate.begin(), nondegenerate.end(), [](const Candidate& a, const Candidate& b) {
-                const bool a_tangent = a.quality > 0.0;
-                const bool b_tangent = b.quality > 0.0;
-                if (a_tangent && b_tangent) {
-                    return a.sweep > b.sweep;
-                }
-                if (a_tangent != b_tangent) {
-                    return a_tangent;
-                }
-                return a.quality > b.quality;
-            });
-            const auto& best = nondegenerate.front();
-            return TransitionDecision{true, best.clockwise, best.sweep, best.quality, false};
-        }
-
-        std::vector<Candidate> tangent_only;
-        tangent_only.reserve(2);
-        for (const auto& candidate : candidates) {
-            if (candidate.quality > eps_quality) {
-                tangent_only.push_back(candidate);
-            }
-        }
-        if (!tangent_only.empty()) {
-            std::sort(tangent_only.begin(), tangent_only.end(), [](const Candidate& a, const Candidate& b) {
-                return a.quality > b.quality;
-            });
-            const auto& best = tangent_only.front();
-            return TransitionDecision{true, best.clockwise, best.sweep, best.quality, true};
-        }
-
-        return TransitionDecision{false, true, 0.0, 0.0, true};
-    };
-
-    auto external_tangent_candidates = [&](const Point_2& c0, double r0, const Point_2& c1, double r1, std::array<TangentPair, 2>& out) {
-        const double dx = c1.x() - c0.x();
-        const double dy = c1.y() - c0.y();
-        const double length = std::sqrt(dx * dx + dy * dy);
-        if (length <= 1e-12) {
-            return false;
-        }
-
-        double delta = r1 - r0;
-        if (std::abs(delta) >= length) {
-            delta = (delta >= 0.0 ? 1.0 : -1.0) * (length - 1e-9);
-        }
-
-        const double ux = dx / length;
-        const double uy = dy / length;
-        const double vx = -uy;
-        const double vy = ux;
-        const double m = -delta / length;
-        const double h2 = std::max(0.0, 1.0 - m * m);
-        const double h = std::sqrt(h2);
-
-        const double n1x = m * ux + h * vx;
-        const double n1y = m * uy + h * vy;
-        const double n2x = m * ux - h * vx;
-        const double n2y = m * uy - h * vy;
-
-        out[0] = TangentPair{Point_2(c0.x() + r0 * n1x, c0.y() + r0 * n1y), Point_2(c1.x() + r1 * n1x, c1.y() + r1 * n1y)};
-        out[1] = TangentPair{Point_2(c0.x() + r0 * n2x, c0.y() + r0 * n2y), Point_2(c1.x() + r1 * n2x, c1.y() + r1 * n2y)};
-        return true;
-    };
-
-    std::vector<PrimitiveRecord> primitives;
-    primitives.reserve(static_cast<std::size_t>(max_passes) * 32);
-
+    std::vector<TrochoidArc> all_primitives;
+    std::vector<int> primitive_path_indices;
     int emitted_paths = 0;
+
     for (auto edge_iter = skeleton->halfedges_begin(); edge_iter != skeleton->halfedges_end(); ++edge_iter) {
         const auto halfedge = edge_iter;
         if (!(halfedge->is_bisector() || halfedge->is_inner_bisector())) {
@@ -1024,178 +863,31 @@ pmp_trochoidal_mat_toolpath_circular_raw(
 
         d0 = distance_to_boundary_xy(p0, boundary);
         d1 = distance_to_boundary_xy(p1, boundary);
+
+        // Canonicalize edge direction: narrower end first, tie-break by x then y.
+        // This ensures deterministic results regardless of which halfedge is selected.
+        if (d0 > d1 + 1e-12 ||
+            (std::abs(d0 - d1) <= 1e-12 && (p0.x() > p1.x() + 1e-12 ||
+             (std::abs(p0.x() - p1.x()) <= 1e-12 && p0.y() > p1.y() + 1e-12)))) {
+            std::swap(p0, p1);
+            std::swap(d0, d1);
+        }
+
         const double radius0 = compute_radius(d0);
         const double radius1 = compute_radius(d1);
 
-        const double dx = p1.x() - p0.x();
-        const double dy = p1.y() - p0.y();
-        const double length = std::sqrt(dx * dx + dy * dy);
-        if (length <= 1e-12) {
+        const Vector_2 edge_dir(p1.x() - p0.x(), p1.y() - p0.y());
+        auto circles = trochoid_circles(p0, p1, radius0, radius1, pitch);
+        if (circles.size() < 2) {
             continue;
         }
 
-        const double tx = dx / length;
-        const double ty = dy / length;
-        const double snx = -ty;
-        const double sny = tx;
+        auto chain = trochoid_chain(circles, edge_dir, true);
 
-        const int cycles = std::max(2, static_cast<int>(std::ceil(length / std::max(pitch, 1e-12))));
-        std::vector<Point_2> centers;
-        std::vector<double> radii;
-        centers.reserve(cycles + 1);
-        radii.reserve(cycles + 1);
-        for (int i = 0; i <= cycles; ++i) {
-            const double t = static_cast<double>(i) / static_cast<double>(cycles);
-            centers.emplace_back(p0.x() + t * (p1.x() - p0.x()), p0.y() + t * (p1.y() - p0.y()));
-            const double radius = radius0 + t * (radius1 - radius0);
-            radii.push_back(std::max(radius, 0.0));
-        }
-        if (centers.size() < 2) {
-            continue;
-        }
-
-        std::vector<std::array<TangentPair, 2>> tangent_candidates(centers.size() - 1);
-        bool has_tangents = true;
-        for (std::size_t i = 0; i + 1 < centers.size(); ++i) {
-            if (!external_tangent_candidates(centers[i], radii[i], centers[i + 1], radii[i + 1], tangent_candidates[i])) {
-                has_tangents = false;
-                break;
-            }
-        }
-        if (!has_tangents || tangent_candidates.empty()) {
-            continue;
-        }
-
-        const int pair_count = static_cast<int>(tangent_candidates.size());
-        std::vector<int> pair_choices(pair_count, 0);
-        std::vector<bool> arc_clockwise(pair_count, true);
-
-        if (pair_count > 1) {
-            struct Cost {
-                int degenerate_count;
-                double sweep_sum;
-                bool valid;
-            };
-            std::vector<std::array<Cost, 2>> dp(pair_count);
-            std::vector<std::array<int, 2>> parent(pair_count, std::array<int, 2>{-1, -1});
-            std::vector<std::array<bool, 2>> arc_choice(pair_count, std::array<bool, 2>{true, true});
-            for (int i = 0; i < pair_count; ++i) {
-                dp[i][0] = Cost{0, 0.0, false};
-                dp[i][1] = Cost{0, 0.0, false};
-            }
-            dp[0][0] = Cost{0, 0.0, true};
-            dp[0][1] = Cost{0, 0.0, true};
-
-            auto better = [](const Cost& lhs, const Cost& rhs) {
-                if (!rhs.valid) {
-                    return true;
-                }
-                if (lhs.degenerate_count != rhs.degenerate_count) {
-                    return lhs.degenerate_count < rhs.degenerate_count;
-                }
-                return lhs.sweep_sum < rhs.sweep_sum;
-            };
-
-            for (int i = 1; i < pair_count; ++i) {
-                for (int curr = 0; curr < 2; ++curr) {
-                    for (int prev = 0; prev < 2; ++prev) {
-                        const Cost& prev_cost = dp[i - 1][prev];
-                        if (!prev_cost.valid) {
-                            continue;
-                        }
-
-                        const Point_2 arc_center = centers[i];
-                        const Point_2 arc_start = tangent_candidates[i - 1][prev].end;
-                        const Point_2 arc_end = tangent_candidates[i][curr].start;
-
-                        const double in_dx = tangent_candidates[i - 1][prev].end.x() - tangent_candidates[i - 1][prev].start.x();
-                        const double in_dy = tangent_candidates[i - 1][prev].end.y() - tangent_candidates[i - 1][prev].start.y();
-                        const double out_dx = tangent_candidates[i][curr].end.x() - tangent_candidates[i][curr].start.x();
-                        const double out_dy = tangent_candidates[i][curr].end.y() - tangent_candidates[i][curr].start.y();
-                        double in_x = 0.0, in_y = 0.0, out_x = 0.0, out_y = 0.0;
-                        if (!normalize_xy(in_dx, in_dy, in_x, in_y) || !normalize_xy(out_dx, out_dy, out_x, out_y)) {
-                            continue;
-                        }
-
-                        const TransitionDecision decision = choose_arc_transition(arc_center, arc_start, arc_end, in_x, in_y, out_x, out_y);
-                        if (!decision.valid) {
-                            continue;
-                        }
-
-                        Cost value{
-                            prev_cost.degenerate_count + (decision.degenerate ? 1 : 0),
-                            prev_cost.sweep_sum + decision.sweep,
-                            true,
-                        };
-                        if (better(value, dp[i][curr])) {
-                            dp[i][curr] = value;
-                            parent[i][curr] = prev;
-                            arc_choice[i][curr] = decision.clockwise;
-                        }
-                    }
-                }
-            }
-
-            if (!dp[pair_count - 1][0].valid && !dp[pair_count - 1][1].valid) {
-                continue;
-            }
-
-            int end_state = 0;
-            if (!dp[pair_count - 1][0].valid) {
-                end_state = 1;
-            } else if (dp[pair_count - 1][1].valid && !((dp[pair_count - 1][0].degenerate_count < dp[pair_count - 1][1].degenerate_count) ||
-                                                         (dp[pair_count - 1][0].degenerate_count == dp[pair_count - 1][1].degenerate_count &&
-                                                          dp[pair_count - 1][0].sweep_sum < dp[pair_count - 1][1].sweep_sum))) {
-                end_state = 1;
-            }
-
-            pair_choices[pair_count - 1] = end_state;
-            for (int i = pair_count - 1; i > 0; --i) {
-                arc_clockwise[i] = arc_choice[i][pair_choices[i]];
-                pair_choices[i - 1] = parent[i][pair_choices[i]];
-            }
-            if (pair_choices[0] < 0) {
-                continue;
-            }
-        } else {
-            const double d_left = (tangent_candidates[0][0].start.x() - centers[0].x()) * snx + (tangent_candidates[0][0].start.y() - centers[0].y()) * sny;
-            const double d_right = (tangent_candidates[0][1].start.x() - centers[0].x()) * snx + (tangent_candidates[0][1].start.y() - centers[0].y()) * sny;
-            pair_choices[0] = d_left >= d_right ? 0 : 1;
-        }
-
-        std::vector<TangentPair> tangent_pairs;
-        tangent_pairs.reserve(pair_count);
-        for (int i = 0; i < pair_count; ++i) {
-            tangent_pairs.push_back(tangent_candidates[i][pair_choices[i]]);
-        }
-
-        std::vector<PrimitiveRecord> path_primitives;
-        path_primitives.reserve(pair_count * 2);
-
-        for (int i = 0; i < pair_count; ++i) {
-            const Point_2 line_start = tangent_pairs[i].start;
-            const Point_2 line_end = tangent_pairs[i].end;
-
-            if (i > 0) {
-                const Point_2 arc_center = centers[i];
-                const double arc_radius = radii[i];
-                const Point_2 arc_start = tangent_pairs[i - 1].end;
-                const Point_2 arc_end = line_start;
-                const bool clockwise = arc_clockwise[i];
-                const double sweep = std::abs(signed_span(arc_center, arc_start, arc_end, clockwise));
-                if (sweep > 1e-7) {
-                    path_primitives.push_back(PrimitiveRecord{emitted_paths, 1, clockwise, arc_start, arc_end, arc_center, arc_radius});
-                }
-            }
-
-            if (CGAL::to_double(CGAL::squared_distance(line_start, line_end)) > 1e-18) {
-                path_primitives.push_back(PrimitiveRecord{emitted_paths, 0, false, line_start, line_end, Point_2(0.0, 0.0), 0.0});
-            }
-        }
-
+        // Must have at least one arc (not all lines)
         bool has_arc = false;
-        for (const auto& primitive : path_primitives) {
-            if (primitive.type == 1) {
+        for (const auto& arc : chain) {
+            if (!arc.is_line()) {
                 has_arc = true;
                 break;
             }
@@ -1204,35 +896,39 @@ pmp_trochoidal_mat_toolpath_circular_raw(
             continue;
         }
 
-        primitives.insert(primitives.end(), path_primitives.begin(), path_primitives.end());
+        for (const auto& arc : chain) {
+            all_primitives.push_back(arc);
+            primitive_path_indices.push_back(emitted_paths);
+        }
         emitted_paths++;
         if (emitted_paths >= max_passes) {
             break;
         }
     }
 
-    const int n = static_cast<int>(primitives.size());
+    const int n = static_cast<int>(all_primitives.size());
     compas::RowMatrixXd meta(n, 3);
     compas::RowMatrixXd starts(n, 3);
     compas::RowMatrixXd ends(n, 3);
     compas::RowMatrixXd centers(n, 3);
     compas::RowMatrixXd radii(n, 1);
-    for (int i = 0; i < n; ++i) {
-        const auto& primitive = primitives[i];
-        meta(i, 0) = static_cast<double>(primitive.path_index);
-        meta(i, 1) = static_cast<double>(primitive.type);
-        meta(i, 2) = static_cast<double>(primitive.clockwise ? 1 : 0);
 
-        starts(i, 0) = primitive.start.x();
-        starts(i, 1) = primitive.start.y();
+    for (int i = 0; i < n; ++i) {
+        const auto& arc = all_primitives[i];
+        meta(i, 0) = static_cast<double>(primitive_path_indices[i]);
+        meta(i, 1) = arc.is_line() ? 0.0 : 1.0;
+        meta(i, 2) = arc.clockwise ? 1.0 : 0.0;
+
+        starts(i, 0) = CGAL::to_double(arc.start.x());
+        starts(i, 1) = CGAL::to_double(arc.start.y());
         starts(i, 2) = 0.0;
-        ends(i, 0) = primitive.end.x();
-        ends(i, 1) = primitive.end.y();
+        ends(i, 0) = CGAL::to_double(arc.end.x());
+        ends(i, 1) = CGAL::to_double(arc.end.y());
         ends(i, 2) = 0.0;
-        centers(i, 0) = primitive.center.x();
-        centers(i, 1) = primitive.center.y();
+        centers(i, 0) = CGAL::to_double(arc.circle.center().x());
+        centers(i, 1) = CGAL::to_double(arc.circle.center().y());
         centers(i, 2) = 0.0;
-        radii(i, 0) = primitive.radius;
+        radii(i, 0) = arc.radius();
     }
 
     return std::make_tuple(meta, starts, ends, centers, radii);
