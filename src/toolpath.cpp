@@ -259,6 +259,45 @@ trochoid_chain(
     return chain;
 }
 
+std::vector<Point_2>
+tessellate_chain(const std::vector<TrochoidArc>& chain, int samples_per_arc)
+{
+    std::vector<Point_2> points;
+    points.reserve(chain.size() * samples_per_arc);
+
+    for (const auto& arc : chain) {
+        if (arc.is_line()) {
+            points.push_back(arc.start);
+        } else {
+            const double r = arc.radius();
+            const Point_2& c = arc.circle.center();
+            const double cx = CGAL::to_double(c.x());
+            const double cy = CGAL::to_double(c.y());
+
+            const double sx = CGAL::to_double(arc.start.x()) - cx;
+            const double sy = CGAL::to_double(arc.start.y()) - cy;
+            const double start_angle = std::atan2(sy, sx);
+
+            const double sw = arc.sweep();
+            const double signed_sweep = arc.clockwise ? -sw : sw;
+
+            const int n = std::max(2, samples_per_arc);
+            for (int i = 0; i < n; ++i) {
+                const double t = static_cast<double>(i) / static_cast<double>(n - 1);
+                const double theta = start_angle + signed_sweep * t;
+                points.emplace_back(cx + r * std::cos(theta), cy + r * std::sin(theta));
+            }
+        }
+    }
+
+    // Ensure we end at the last arc's endpoint
+    if (!chain.empty()) {
+        points.push_back(chain.back().end);
+    }
+
+    return points;
+}
+
 Polygon_2
 data_to_polygon(Eigen::Ref<const compas::RowMatrixXd> vertices)
 {
@@ -695,18 +734,18 @@ pmp_trochoidal_mat_toolpath(
         const double radius0 = compute_radius(d0);
         const double radius1 = compute_radius(d1);
 
-        std::vector<Point_2> path_points = trochoid_segment(
-            p0,
-            p1,
-            radius0,
-            radius1,
-            pitch,
-            samples_per_cycle);
-
-        if (path_points.empty()) {
+        const Vector_2 edge_dir(p1.x() - p0.x(), p1.y() - p0.y());
+        auto circles = trochoid_circles(p0, p1, radius0, radius1, pitch);
+        if (circles.size() < 2) {
             continue;
         }
 
+        auto chain = trochoid_chain(circles, edge_dir, true);
+        if (chain.empty()) {
+            continue;
+        }
+
+        auto path_points = tessellate_chain(chain, samples_per_cycle);
         deduplicate_consecutive_points(path_points, 1e-9);
         if (path_points.size() < 2) {
             continue;
