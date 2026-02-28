@@ -129,6 +129,136 @@ struct TrochoidArc {
     }
 };
 
+std::vector<Circle_2>
+trochoid_circles(
+    const Point_2& p0,
+    const Point_2& p1,
+    double r0,
+    double r1,
+    double pitch)
+{
+    const double length = std::sqrt(std::max(0.0, CGAL::to_double(CGAL::squared_distance(p0, p1))));
+    if (length <= 1e-12) {
+        return {};
+    }
+
+    const int cycles = std::max(2, static_cast<int>(std::ceil(length / std::max(pitch, 1e-12))));
+
+    std::vector<Circle_2> circles;
+    circles.reserve(cycles + 1);
+    for (int i = 0; i <= cycles; ++i) {
+        const double t = static_cast<double>(i) / static_cast<double>(cycles);
+        const Point_2 center(
+            CGAL::to_double(p0.x()) + t * (CGAL::to_double(p1.x()) - CGAL::to_double(p0.x())),
+            CGAL::to_double(p0.y()) + t * (CGAL::to_double(p1.y()) - CGAL::to_double(p0.y())));
+        const double radius = std::max(0.0, r0 + t * (r1 - r0));
+        circles.emplace_back(center, radius * radius);
+    }
+    return circles;
+}
+
+bool
+external_tangents(
+    const Circle_2& c0,
+    const Circle_2& c1,
+    Segment_2& tangent_a,
+    Segment_2& tangent_b)
+{
+    const Vector_2 d = c1.center() - c0.center();
+    const double length_sq = CGAL::to_double(d.squared_length());
+    if (length_sq <= 1e-24) {
+        return false;
+    }
+
+    const double length = std::sqrt(length_sq);
+    const double r0 = std::sqrt(std::max(0.0, CGAL::to_double(c0.squared_radius())));
+    const double r1 = std::sqrt(std::max(0.0, CGAL::to_double(c1.squared_radius())));
+
+    double delta = r1 - r0;
+    if (std::abs(delta) >= length) {
+        delta = (delta >= 0.0 ? 1.0 : -1.0) * (length - 1e-9);
+    }
+
+    const double ux = CGAL::to_double(d.x()) / length;
+    const double uy = CGAL::to_double(d.y()) / length;
+    const double vx = -uy;
+    const double vy = ux;
+    const double m = -delta / length;
+    const double h = std::sqrt(std::max(0.0, 1.0 - m * m));
+
+    const double n1x = m * ux + h * vx;
+    const double n1y = m * uy + h * vy;
+    const double n2x = m * ux - h * vx;
+    const double n2y = m * uy - h * vy;
+
+    const double c0x = CGAL::to_double(c0.center().x());
+    const double c0y = CGAL::to_double(c0.center().y());
+    const double c1x = CGAL::to_double(c1.center().x());
+    const double c1y = CGAL::to_double(c1.center().y());
+
+    tangent_a = Segment_2(
+        Point_2(c0x + r0 * n1x, c0y + r0 * n1y),
+        Point_2(c1x + r1 * n1x, c1y + r1 * n1y));
+    tangent_b = Segment_2(
+        Point_2(c0x + r0 * n2x, c0y + r0 * n2y),
+        Point_2(c1x + r1 * n2x, c1y + r1 * n2y));
+    return true;
+}
+
+std::vector<TrochoidArc>
+trochoid_chain(
+    const std::vector<Circle_2>& circles,
+    const Vector_2& edge_direction,
+    bool winding_ccw)
+{
+    if (circles.size() < 2) {
+        return {};
+    }
+
+    std::vector<TrochoidArc> chain;
+    chain.reserve(circles.size() * 2);
+
+    Point_2 prev_tangent_end;
+    bool has_prev = false;
+
+    for (std::size_t i = 0; i + 1 < circles.size(); ++i) {
+        Segment_2 ta, tb;
+        if (!external_tangents(circles[i], circles[i + 1], ta, tb)) {
+            continue;
+        }
+
+        // Pick the tangent consistent with winding direction.
+        // Check which side of the center-to-center line the tangent start lies on.
+        const Point_2& ci = circles[i].center();
+        const auto orient_a = CGAL::orientation(ci, ci + edge_direction, ta.source());
+
+        // CCW winding -> tangent point on LEFT of travel direction
+        // CW winding -> tangent point on RIGHT of travel direction
+        const Segment_2& tangent = winding_ccw
+            ? (orient_a == CGAL::LEFT_TURN ? ta : tb)
+            : (orient_a == CGAL::RIGHT_TURN ? ta : tb);
+
+        // Arc from previous tangent endpoint to current tangent startpoint
+        if (has_prev) {
+            const double ri = std::sqrt(std::max(0.0, CGAL::to_double(circles[i].squared_radius())));
+            if (CGAL::to_double(CGAL::squared_distance(prev_tangent_end, tangent.source())) > 1e-18) {
+                chain.push_back(TrochoidArc::make_arc(
+                    ci, ri, prev_tangent_end, tangent.source(), !winding_ccw));
+            }
+        }
+
+        // Tangent line segment
+        if (CGAL::to_double(tangent.squared_length()) > 1e-18) {
+            chain.push_back(TrochoidArc::make_line(tangent.source(), tangent.target()));
+        }
+
+        prev_tangent_end = tangent.target();
+        has_prev = true;
+    }
+
+    return chain;
+}
+
 Polygon_2
 data_to_polygon(Eigen::Ref<const compas::RowMatrixXd> vertices)
 {
