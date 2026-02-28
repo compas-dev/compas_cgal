@@ -160,6 +160,7 @@ nav:
       - Straight Skeleton Weighted Offset: examples/example_straight_skeleton_2_interior_straight_skeleton_weighted_offset_polygon.md
       - Straight Skeleton With Holes: examples/example_straight_skeleton_2_interior_straight_skeleton_with_holes.md
       - Subdivision: examples/example_subdivision.md
+      - Toolpath Trochoidal MAT: examples/example_toolpath_trochoidal_mat.md
       - Triangulation: examples/example_triangulation.md
   - API Reference:
       - compas_cgal.booleans: api/compas_cgal.booleans.md
@@ -175,5 +176,6 @@ nav:
       - compas_cgal.slicer: api/compas_cgal.slicer.md
       - compas_cgal.straight_skeleton_2: api/compas_cgal.straight_skeleton_2.md
       - compas_cgal.subdivision: api/compas_cgal.subdivision.md
+      - compas_cgal.toolpath: api/compas_cgal.toolpath.md
       - compas_cgal.triangulation: api/compas_cgal.triangulation.md
       - compas_cgal.types: api/compas_cgal.types.md

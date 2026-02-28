@@ -6,10 +6,10 @@ import numpy as np
 from numpy.typing import NDArray
 
 from compas_cgal import _types_std  # noqa: F401  # Load vector type bindings
+from compas_cgal._geodesics import HeatGeodesicSolver as _HeatGeodesicSolver
 from compas_cgal._geodesics import geodesic_isolines as _geodesic_isolines
 from compas_cgal._geodesics import geodesic_isolines_split as _geodesic_isolines_split
 from compas_cgal._geodesics import heat_geodesic_distances as _heat_geodesic_distances
-from compas_cgal._geodesics import HeatGeodesicSolver as _HeatGeodesicSolver
 from compas_cgal.types import PolylinesNumpy
 from compas_cgal.types import VerticesFaces
 from compas_cgal.types import VerticesFacesNumpy

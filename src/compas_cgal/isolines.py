@@ -3,9 +3,9 @@
 from typing import List
 
 import numpy as np
+from compas.datastructures import Mesh
 from numpy.typing import NDArray
 
-from compas.datastructures import Mesh
 from compas_cgal._isolines import isolines as _isolines
 from compas_cgal.types import PolylinesNumpy
 
