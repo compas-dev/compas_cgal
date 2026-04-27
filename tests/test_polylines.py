@@ -88,17 +88,17 @@ class TestClosestPointsOnPolyline:
         """Batch query multiple points."""
         polyline = [[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]]
         queries = [
-            [5, -5],   # Closest to bottom edge
-            [15, 5],   # Closest to right edge
-            [5, 15],   # Closest to top edge
-            [-5, 5],   # Closest to left edge
+            [5, -5],  # Closest to bottom edge
+            [15, 5],  # Closest to right edge
+            [5, 15],  # Closest to top edge
+            [-5, 5],  # Closest to left edge
         ]
         result = closest_points_on_polyline(queries, polyline)
         assert len(result) == 4
-        assert np.allclose(result[0], [5, 0], atol=1e-6)   # Bottom
+        assert np.allclose(result[0], [5, 0], atol=1e-6)  # Bottom
         assert np.allclose(result[1], [10, 5], atol=1e-6)  # Right
         assert np.allclose(result[2], [5, 10], atol=1e-6)  # Top
-        assert np.allclose(result[3], [0, 5], atol=1e-6)   # Left
+        assert np.allclose(result[3], [0, 5], atol=1e-6)  # Left
 
     def test_closest_point_single_point_polyline(self):
         """Degenerate case: polyline is a single point."""
