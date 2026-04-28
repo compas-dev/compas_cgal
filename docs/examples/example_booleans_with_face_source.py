@@ -7,6 +7,7 @@ from compas.geometry import Sphere
 from compas_viewer import Viewer
 
 from compas_cgal.booleans import boolean_chain_with_face_source
+from compas_cgal.booleans import split_by_source
 
 
 # =============================================================================
@@ -52,8 +53,6 @@ V, F, S = boolean_chain_with_face_source(
     exact=False,
 )
 
-mesh = Mesh.from_vertices_and_faces(V, F)
-
 # =============================================================================
 # Color the output by source mesh:
 #   mesh_id == 0  -> cube     (red)
@@ -61,6 +60,9 @@ mesh = Mesh.from_vertices_and_faces(V, F)
 #   mesh_id == 2  -> cyl_x    (green)       — X-axis through-hole walls
 #   mesh_id == 3  -> cyl_y    (yellow)      — Y-axis through-hole walls
 #   mesh_id == 4  -> cyl_z    (magenta)     — Z-axis through-hole walls
+#
+# Two equivalent visualization paths are shown below. Pick whichever fits
+# your downstream code; the C++ output is identical in both cases.
 # =============================================================================
 
 palette = {
@@ -71,12 +73,36 @@ palette = {
     4: Color(0.80, 0.40, 0.85),
 }
 
+# Option A — single connected mesh + per-face color dict (keeps shared
+# vertices intact at source boundaries; best for further processing).
+mesh = Mesh.from_vertices_and_faces(V, F)
 facecolor = {fkey: palette[mesh_id] for fkey, (mesh_id, _) in zip(mesh.faces(), S.tolist())}
 
+# Option B — split into one mesh per source via split_by_source. Each
+# submesh is independent (boundary vertices are duplicated across submeshes)
+# and gets its own scene object with a single color. Convenient for viewers
+# that prefer one material/layer per object.
+submeshes = {
+    mesh_id: Mesh.from_vertices_and_faces(Vs, Fs)
+    for mesh_id, (Vs, Fs) in split_by_source(V, F, S).items()
+}
+
 # =============================================================================
-# Visualize
+# Visualize — toggle USE_SPLIT to compare the two paths.
 # =============================================================================
 
+USE_SPLIT = True
+
 viewer = Viewer()
-viewer.scene.add(mesh, facecolor=facecolor, lineswidth=1, show_points=False, show_lines=True)
+if USE_SPLIT:
+    for mesh_id, submesh in submeshes.items():
+        viewer.scene.add(
+            submesh,
+            facecolor=palette[mesh_id],
+            lineswidth=1,
+            show_points=False,
+            show_lines=True,
+        )
+else:
+    viewer.scene.add(mesh, facecolor=facecolor, lineswidth=1, show_points=False, show_lines=True)
 viewer.show()
