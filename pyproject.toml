@@ -82,8 +82,8 @@ CMAKE_POLICY_DEFAULT_CMP0135 = "NEW"
 [tool.cibuildwheel]
 # build = ["cp38-*", "cp39-*", "cp31?-*"] # Build for specific Python versions.
 build-verbosity = 3
-test-requires = ["numpy>=2.4", "compas>=2.15,<3", "pytest", "build"]
-test-command = "pip install 'numpy>=2.4' 'compas>=2.15,<3' && pip list && pytest {project}/tests"
+test-requires = ["numpy>=1.24", "compas>=2.15,<3", "pytest", "build"]
+test-command = "pip install 'numpy>=1.24' 'compas>=2.15,<3' && pip list && pytest {project}/tests"
 build-frontend = "pip"
 manylinux-x86_64-image = "manylinux_2_28"
 skip = ["*_i686", "*-musllinux_*", "*-win32", "pp*"]

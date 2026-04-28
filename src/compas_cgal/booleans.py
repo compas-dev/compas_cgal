@@ -440,6 +440,40 @@ def boolean_chain_with_face_source(
     return _booleans.boolean_chain_with_face_source(V_flat, F_flat, v_counts, f_counts, op_codes)
 
 
+def split_by_source(
+    V: np.ndarray,
+    F: np.ndarray,
+    S: np.ndarray,
+) -> dict[int, tuple[np.ndarray, np.ndarray]]:
+    """Split a face-source-tagged boolean result into one mesh per source.
+
+    Given ``(V, F, S)`` from :func:`boolean_chain_with_face_source`, returns a
+    dict mapping each ``mesh_id`` present in ``S[:, 0]`` to its own
+    ``(V_sub, F_sub)`` pair. ``V_sub`` contains only the vertices referenced
+    by that submesh's faces and ``F_sub`` is reindexed accordingly.
+
+    Note: vertices on the boundary between two source regions are duplicated
+    across the resulting submeshes (each submesh gets its own copy), so the
+    submeshes are no longer connected at cut boundaries. The original ``(V,
+    F, S)`` remains the canonical output — use this helper only when a
+    per-source mesh layout is convenient (e.g. assigning a single colour or
+    material to a viewer scene object).
+    """
+    V = np.asarray(V)
+    F = np.asarray(F)
+    S = np.asarray(S)
+
+    out: dict[int, tuple[np.ndarray, np.ndarray]] = {}
+    for mesh_id in np.unique(S[:, 0]):
+        face_mask = S[:, 0] == mesh_id
+        F_sub = F[face_mask]
+        used = np.unique(F_sub.reshape(-1))
+        remap = np.full(V.shape[0], -1, dtype=np.int64)
+        remap[used] = np.arange(used.shape[0])
+        out[int(mesh_id)] = (V[used], remap[F_sub].astype(F.dtype))
+    return out
+
+
 def boolean_difference_mesh_meshes(A: VerticesFaces, Bs: Iterable[VerticesFaces]) -> VerticesFacesNumpy:
     """Subtract many meshes from A in a single corefinement.
 
