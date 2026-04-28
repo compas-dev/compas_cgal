@@ -309,17 +309,14 @@ _OP_CODES = {"union": 0, "difference": 1, "intersection": 2, "xor": 3}
 def boolean_chain(
     meshes: Iterable[VerticesFaces],
     operations: Iterable[Literal["union", "difference", "intersection", "xor"]],
-    exact: bool = True,
+    hybrid: bool = False,
 ) -> VerticesFacesNumpy:
     """Run a chain of boolean operations entirely in C++ without round-tripping intermediates.
 
     Computes ``result = meshes[0]; result = result OP_i meshes[i+1]`` for each
     operation in order. The full collection of input meshes is sent to C++ in a
     single call; intermediate meshes never leave C++; only the final ``(V, F)``
-    is returned to Python. Between successive corefinements the intermediate
-    mesh is passed through ``autorefine_and_remove_self_intersections`` so that
-    near-degenerate geometry introduced by EPICK's approximate constructions
-    does not break the next operation.
+    is returned to Python.
 
     Parameters
     ----------
@@ -328,28 +325,24 @@ def boolean_chain(
     operations : iterable of {"union", "difference", "intersection", "xor"}
         Per-step operation. ``"difference"`` is ``result - meshes[i+1]``.
         ``"xor"`` is the symmetric difference.
+    hybrid : bool, default False
+        If ``False``, runs the chain in CGAL's
+        ``Exact_predicates_exact_constructions_kernel`` (EPECK). Constructions
+        are lazy-exact, so the chain handles geometrically degenerate input —
+        e.g., three cylinders meeting at the origin — without any shifts.
+
+        If ``True``, runs on an EPICK ``Surface_mesh`` augmented with an EPECK
+        vertex property map passed to corefinement via
+        ``parameters::vertex_point_map()`` — the pattern from CGAL's
+        "consecutive boolean operations with exact point maps" example.
+        Storage stays at native double precision while every intersection
+        vertex is constructed exactly: same robustness as full EPECK without
+        lazy-exact storage cost.
 
     Returns
     -------
     (V, F) : VerticesFacesNumpy
         The final mesh.
-
-    Notes
-    -----
-    With ``exact=True`` (default) the chain runs in CGAL's
-    ``Exact_predicates_exact_constructions_kernel`` (EPECK). Constructions
-    are lazy-exact: there are no rounding artifacts on cut boundaries, so
-    no snap rounding is needed and the chain handles geometrically
-    degenerate input — e.g., three cylinders meeting at the origin —
-    without any shifts. ``xor`` is implemented as ``(A−B) ∪ (B−A)`` and is
-    fully reliable on overlapping inputs because EPECK keeps the shared
-    boundary curve exact.
-
-    With ``exact=False`` the chain uses
-    ``Exact_predicates_inexact_constructions_kernel`` (EPICK) and applies
-    CGAL 6.1's autorefine + iterative snap rounding between steps. This is
-    faster but ``xor`` on partially-overlapping inputs may return an empty
-    mesh because snap rounding collapses the shared boundary.
     """
     Vs: list[np.ndarray] = []
     Fs: list[np.ndarray] = []
@@ -378,15 +371,15 @@ def boolean_chain(
     V_flat = np.vstack(Vs) if Vs else np.zeros((0, 3), dtype=np.float64)
     F_flat = np.vstack(Fs) if Fs else np.zeros((0, 3), dtype=np.int32)
 
-    if exact:
-        return _booleans.boolean_chain_exact(V_flat, F_flat, v_counts, f_counts, op_codes)
+    if hybrid:
+        return _booleans.boolean_chain_hybrid(V_flat, F_flat, v_counts, f_counts, op_codes)
     return _booleans.boolean_chain(V_flat, F_flat, v_counts, f_counts, op_codes)
 
 
 def boolean_chain_with_face_source(
     meshes: Iterable[VerticesFaces],
     operations: Iterable[Literal["union", "difference", "intersection"]],
-    exact: bool = True,
+    hybrid: bool = False,
 ) -> VerticesFacesSourceNumpy:
     """Boolean chain that also tracks, for every output face, which input mesh
     and which input face produced it. Returns ``(V, F, S)`` where ``S[i] =
@@ -397,15 +390,7 @@ def boolean_chain_with_face_source(
     tags through subface creations and face copies — the technique used in
     the Cockroach project for CGAL face-color tracking through booleans.
 
-    With ``exact=True`` (default) the chain runs on EPECK Surface_meshes,
-    so the visitor works directly on geometrically degenerate input — no
-    cylinder offsets needed.
-
-    With ``exact=False`` the chain uses EPICK without snap rounding (because
-    the visitor's property maps cannot survive the soup conversion that
-    snap rounding requires). The chain may then trip CGAL's "Non-handled
-    triple intersection" precondition on inputs that share an axis or
-    vertex; geometrically perturb the inputs to break the degeneracy.
+    See :func:`boolean_chain` for the meaning of the ``hybrid`` flag.
 
     ``"xor"`` is not supported here.
     """
@@ -435,8 +420,8 @@ def boolean_chain_with_face_source(
     V_flat = np.vstack(Vs) if Vs else np.zeros((0, 3), dtype=np.float64)
     F_flat = np.vstack(Fs) if Fs else np.zeros((0, 3), dtype=np.int32)
 
-    if exact:
-        return _booleans.boolean_chain_with_face_source_exact(V_flat, F_flat, v_counts, f_counts, op_codes)
+    if hybrid:
+        return _booleans.boolean_chain_with_face_source_hybrid(V_flat, F_flat, v_counts, f_counts, op_codes)
     return _booleans.boolean_chain_with_face_source(V_flat, F_flat, v_counts, f_counts, op_codes)
 
 

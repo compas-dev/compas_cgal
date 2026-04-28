@@ -20,12 +20,12 @@ from compas_cgal.booleans import split_by_source
 # call. A CGAL corefinement visitor propagates a per-face tag through every
 # step so every output triangle carries [mesh_id, face_id] of its origin.
 #
-# The default kernel is EPECK (exact=True). Constructions are computed in
-# CGAL's Exact_predicates_exact_constructions_kernel, which handles the
-# degenerate triple intersection where the three axis-aligned cylinders meet
-# at the origin without any geometric workarounds. Set exact=False to use
-# EPICK, in which case the cylinders should be shifted by a sub-millimetre
-# amount to avoid the "Non-handled triple intersection" precondition.
+# The chain runs in CGAL's exact-constructions kernel (EPECK), which
+# handles the degenerate triple intersection where the three axis-aligned
+# cylinders meet at the origin without any geometric workarounds. Pass
+# `hybrid=True` to switch to the EPICK mesh + EPECK vertex_point_map
+# scheme from CGAL's "consecutive boolean operations with exact point
+# maps" example.
 # =============================================================================
 
 cube = Box(2).to_vertices_and_faces(triangulated=True)
@@ -50,7 +50,6 @@ cyl_z = cylinder_along("z")
 V, F, S = boolean_chain_with_face_source(
     [cube, sphere, cyl_x, cyl_y, cyl_z],
     ["intersection", "difference", "difference", "difference"],
-    exact=False,
 )
 
 # =============================================================================

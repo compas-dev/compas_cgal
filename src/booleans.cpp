@@ -9,10 +9,8 @@
 #include <nanobind/stl/vector.h>
 
 #include <CGAL/boost/graph/properties.h>
+#include <CGAL/Cartesian_converter.h>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
-#include <CGAL/Polygon_mesh_processing/autorefinement.h>
-#include <CGAL/Polygon_mesh_processing/polygon_mesh_to_polygon_soup.h>
-#include <CGAL/Polygon_mesh_processing/polygon_soup_to_polygon_mesh.h>
 
 namespace PMP = CGAL::Polygon_mesh_processing;
 
@@ -307,255 +305,8 @@ pmp_boolean_intersection_with_face_source(
         });
 }
 
-namespace {
-
-// Build a Surface_mesh from a slice of pre-flattened V and F. Face indices
-// are local to the slice (each mesh's faces refer to its own V slice).
-compas::Mesh slice_to_mesh(
-    const compas::RowMatrixXd& V_all,
-    const compas::RowMatrixXi& F_all,
-    int v_offset, int v_count,
-    int f_offset, int f_count)
-{
-    compas::Mesh mesh;
-    std::vector<compas::Mesh::Vertex_index> idx;
-    idx.reserve(v_count);
-    for (int i = 0; i < v_count; ++i)
-    {
-        idx.push_back(mesh.add_vertex(compas::Kernel::Point_3(
-            V_all(v_offset + i, 0), V_all(v_offset + i, 1), V_all(v_offset + i, 2))));
-    }
-    for (int i = 0; i < f_count; ++i)
-    {
-        mesh.add_face(idx[F_all(f_offset + i, 0)],
-                      idx[F_all(f_offset + i, 1)],
-                      idx[F_all(f_offset + i, 2)]);
-    }
-    return mesh;
-}
-
-// Snap-round and rebuild a Surface_mesh in place. Used between chain steps
-// and inside xor's internal sub-operations to keep them robust per
-// https://www.cgal.org/2025/06/13/autorefine-and-snap/
-void snap_round_in_place(compas::Mesh& m)
-{
-    std::vector<compas::Kernel::Point_3> soup_points;
-    std::vector<std::array<std::size_t, 3>> soup_triangles;
-    PMP::polygon_mesh_to_polygon_soup(m, soup_points, soup_triangles);
-    PMP::autorefine_triangle_soup(
-        soup_points, soup_triangles,
-        PMP::parameters::apply_iterative_snap_rounding(true));
-    compas::Mesh refreshed;
-    PMP::polygon_soup_to_polygon_mesh(soup_points, soup_triangles, refreshed);
-    m = std::move(refreshed);
-}
-
-} // namespace
-
-std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
-pmp_boolean_chain(
-    Eigen::Ref<const compas::RowMatrixXd> vertices,
-    Eigen::Ref<const compas::RowMatrixXi> faces,
-    const std::vector<int>& mesh_v_counts,
-    const std::vector<int>& mesh_f_counts,
-    const std::vector<int>& operations)
-{
-    if (mesh_v_counts.size() != mesh_f_counts.size())
-    {
-        throw std::invalid_argument("mesh_v_counts and mesh_f_counts must have the same length");
-    }
-    if (mesh_v_counts.empty())
-    {
-        throw std::invalid_argument("at least one mesh is required");
-    }
-    if (operations.size() + 1 != mesh_v_counts.size())
-    {
-        throw std::invalid_argument(
-            "operations must have length number_of_meshes - 1");
-    }
-
-    // Sanity check: the per-mesh counts must sum to the totals.
-    long long total_v = 0, total_f = 0;
-    for (int c : mesh_v_counts) total_v += c;
-    for (int c : mesh_f_counts) total_f += c;
-    if (total_v != vertices.rows() || total_f != faces.rows())
-    {
-        throw std::invalid_argument("per-mesh counts do not sum to vertices/faces row counts");
-    }
-
-    // Materialize V/F into owning matrices once for slice access.
-    compas::RowMatrixXd V_all = vertices;
-    compas::RowMatrixXi F_all = faces;
-
-    // Build first mesh.
-    int v_off = 0, f_off = 0;
-    compas::Mesh m = slice_to_mesh(V_all, F_all, v_off, mesh_v_counts[0], f_off, mesh_f_counts[0]);
-    v_off += mesh_v_counts[0];
-    f_off += mesh_f_counts[0];
-
-    for (std::size_t i = 0; i < operations.size(); ++i)
-    {
-        compas::Mesh B = slice_to_mesh(V_all, F_all,
-                                       v_off, mesh_v_counts[i + 1],
-                                       f_off, mesh_f_counts[i + 1]);
-        v_off += mesh_v_counts[i + 1];
-        f_off += mesh_f_counts[i + 1];
-
-        compas::Mesh tmp;
-
-        switch (operations[i])
-        {
-        case 0: // union
-            PMP::corefine_and_compute_union(m, B, tmp);
-            break;
-        case 1: // difference (m - B)
-            PMP::corefine_and_compute_difference(m, B, tmp);
-            break;
-        case 2: // intersection
-            PMP::corefine_and_compute_intersection(m, B, tmp);
-            break;
-        case 3: // xor / symmetric difference, computed as (A union B) - (A intersect B)
-        {
-            // The alternative formula (A - B) union (B - A) is mathematically
-            // equivalent but unions two halves that share the A intersect B
-            // boundary curve — under EPICK that shared curve gets snap-rounded
-            // to near-coincidence in both halves and the union collapses. The
-            // (A∪B)−(A∩B) formula avoids that: each step's operands intersect
-            // along a single closed surface, not a curve.
-            compas::Mesh a_union_b;
-            compas::Mesh a_intersect_b;
-            compas::Mesh m_copy = m;
-            compas::Mesh B_copy = B;
-            PMP::corefine_and_compute_union(m, B, a_union_b);
-            PMP::corefine_and_compute_intersection(m_copy, B_copy, a_intersect_b);
-            snap_round_in_place(a_union_b);
-            snap_round_in_place(a_intersect_b);
-            PMP::corefine_and_compute_difference(a_union_b, a_intersect_b, tmp);
-            break;
-        }
-        default:
-            throw std::invalid_argument(
-                "operation must be 0 (union), 1 (difference), 2 (intersection), or 3 (xor)");
-        }
-
-        // CGAL 6.1's recommended pipeline for chained corefinements with the
-        // inexact-constructions kernel — clean rounding-induced
-        // self-intersections at the cut boundary so the next corefinement
-        // doesn't trip CGAL's preconditions. Stays in C++.
-        // See: https://www.cgal.org/2025/06/13/autorefine-and-snap/
-        snap_round_in_place(tmp);
-        m = std::move(tmp);
-    }
-
-    return compas::mesh_to_vertices_and_faces(m);
-}
-
-std::tuple<compas::RowMatrixXd, compas::RowMatrixXi, compas::RowMatrixXi>
-pmp_boolean_chain_with_face_source(
-    Eigen::Ref<const compas::RowMatrixXd> vertices,
-    Eigen::Ref<const compas::RowMatrixXi> faces,
-    const std::vector<int>& mesh_v_counts,
-    const std::vector<int>& mesh_f_counts,
-    const std::vector<int>& operations)
-{
-    // ---- validation (mirrors pmp_boolean_chain) ----
-    if (mesh_v_counts.size() != mesh_f_counts.size())
-        throw std::invalid_argument("mesh_v_counts and mesh_f_counts must have the same length");
-    if (mesh_v_counts.empty())
-        throw std::invalid_argument("at least one mesh is required");
-    if (operations.size() + 1 != mesh_v_counts.size())
-        throw std::invalid_argument("operations must have length number_of_meshes - 1");
-
-    long long total_v = 0, total_f = 0;
-    for (int c : mesh_v_counts) total_v += c;
-    for (int c : mesh_f_counts) total_f += c;
-    if (total_v != vertices.rows() || total_f != faces.rows())
-        throw std::invalid_argument("per-mesh counts do not sum to vertices/faces row counts");
-
-    compas::RowMatrixXd V_all = vertices;
-    compas::RowMatrixXi F_all = faces;
-
-    // ---- build mesh 0 with FaceTag(0, j) on every original face ----
-    int v_off = 0, f_off = 0;
-    compas::Mesh m = slice_to_mesh(V_all, F_all, v_off, mesh_v_counts[0], f_off, mesh_f_counts[0]);
-    v_off += mesh_v_counts[0];
-    f_off += mesh_f_counts[0];
-
-    auto m_tag = m.add_property_map<compas::Mesh::Face_index, FaceTag>("f:src", FaceTag{}).first;
-    {
-        int j = 0;
-        for (auto f : m.faces()) m_tag[f] = FaceTag{0, j++};
-    }
-
-    // ---- chain ----
-    for (std::size_t i = 0; i < operations.size(); ++i)
-    {
-        // Build mesh i+1 with FaceTag(i+1, j).
-        compas::Mesh B = slice_to_mesh(V_all, F_all,
-                                       v_off, mesh_v_counts[i + 1],
-                                       f_off, mesh_f_counts[i + 1]);
-        v_off += mesh_v_counts[i + 1];
-        f_off += mesh_f_counts[i + 1];
-
-        auto b_tag = B.add_property_map<compas::Mesh::Face_index, FaceTag>("f:src", FaceTag{}).first;
-        {
-            int j = 0;
-            const int mesh_id = static_cast<int>(i + 1);
-            for (auto f : B.faces()) b_tag[f] = FaceTag{mesh_id, j++};
-        }
-
-        // tmp will receive the boolean result; pre-attach an empty tag map so
-        // the visitor has somewhere to write copies/subfaces into.
-        compas::Mesh tmp;
-        auto tmp_tag = tmp.add_property_map<compas::Mesh::Face_index, FaceTag>("f:src", FaceTag{}).first;
-
-        FaceSourceVisitor visitor;
-        visitor.tags[&m] = m_tag;
-        visitor.tags[&B] = b_tag;
-        visitor.tags[&tmp] = tmp_tag;
-
-        switch (operations[i])
-        {
-        case 0:
-            PMP::corefine_and_compute_union(m, B, tmp, PMP::parameters::visitor(visitor));
-            break;
-        case 1:
-            PMP::corefine_and_compute_difference(m, B, tmp, PMP::parameters::visitor(visitor));
-            break;
-        case 2:
-            PMP::corefine_and_compute_intersection(m, B, tmp, PMP::parameters::visitor(visitor));
-            break;
-        case 3:
-            throw std::invalid_argument("xor (op code 3) is not supported by boolean_chain_with_face_source");
-        default:
-            throw std::invalid_argument("operation must be 0 (union), 1 (difference), or 2 (intersection)");
-        }
-
-        // Move the result into m. The property map travels with the mesh,
-        // but the previously-fetched handles become stale, so re-fetch.
-        // CGAL 6.1's property_map<>(name) returns std::optional<...>.
-        m = std::move(tmp);
-        m_tag = *m.property_map<compas::Mesh::Face_index, FaceTag>("f:src");
-    }
-
-    // ---- extract V, F, S ----
-    auto [V_out, F_out] = compas::mesh_to_vertices_and_faces(m);
-
-    compas::RowMatrixXi S(static_cast<Eigen::Index>(m.number_of_faces()), 2);
-    for (auto fd : m.faces())
-    {
-        const FaceTag& t = m_tag[fd];
-        const Eigen::Index row = static_cast<Eigen::Index>(fd.idx());
-        S(row, 0) = t.mesh_id;
-        S(row, 1) = t.face_id;
-    }
-
-    return {std::move(V_out), std::move(F_out), std::move(S)};
-}
-
 // =============================================================================
-// EPECK chain: same shape as the EPICK chain above, but using exact
-// constructions. No snap rounding needed because constructions are exact.
+// EPECK chain: exact-constructions kernel from start to finish.
 // =============================================================================
 
 namespace exact_chain {
@@ -657,8 +408,347 @@ struct EFaceSourceVisitor
 
 } // namespace exact_chain
 
+// =============================================================================
+// Hybrid kernel chain: EPICK Surface_mesh + EPECK vertex_point_map.
+// Pattern from CGAL's "consecutive boolean operations with exact point maps"
+// example. Storage and traversal stay in EPICK doubles; intersection vertex
+// constructions are computed in EPECK and converted back to EPICK on the fly
+// via a small read/write property-map adapter.
+// =============================================================================
+namespace hybrid_chain {
+
+using HKernel = CGAL::Exact_predicates_inexact_constructions_kernel;
+using EKernel = CGAL::Exact_predicates_exact_constructions_kernel;
+using HPoint = HKernel::Point_3;
+using EPoint = EKernel::Point_3;
+using HMesh = CGAL::Surface_mesh<HPoint>;
+using EPointMap = HMesh::Property_map<HMesh::Vertex_index, EPoint>;
+
+using ToExact = CGAL::Cartesian_converter<HKernel, EKernel>;
+using ToInexact = CGAL::Cartesian_converter<EKernel, HKernel>;
+
+struct Exact_vertex_point_map
+{
+    using key_type = HMesh::Vertex_index;
+    using value_type = EPoint;
+    using reference = EPoint;
+    using category = boost::read_write_property_map_tag;
+
+    EPointMap epm;
+    HMesh* mesh = nullptr;
+
+    friend value_type get(const Exact_vertex_point_map& m, key_type k)
+    {
+        return m.epm[k];
+    }
+    friend void put(const Exact_vertex_point_map& m, key_type k, const value_type& v)
+    {
+        m.epm[k] = v;
+        ToInexact to_inexact;
+        m.mesh->point(k) = to_inexact(v);
+    }
+};
+
+inline EPointMap get_or_add_epm(HMesh& mesh)
+{
+    auto opt = mesh.property_map<HMesh::Vertex_index, EPoint>("v:exact");
+    if (opt) return *opt;
+    return mesh.add_property_map<HMesh::Vertex_index, EPoint>("v:exact", EPoint(0, 0, 0)).first;
+}
+
+HMesh slice_to_mesh(
+    const compas::RowMatrixXd& V_all,
+    const compas::RowMatrixXi& F_all,
+    int v_offset, int v_count,
+    int f_offset, int f_count)
+{
+    HMesh mesh;
+    auto epm = get_or_add_epm(mesh);
+    ToExact to_exact;
+    std::vector<HMesh::Vertex_index> idx;
+    idx.reserve(v_count);
+    for (int i = 0; i < v_count; ++i)
+    {
+        HPoint hp(V_all(v_offset + i, 0), V_all(v_offset + i, 1), V_all(v_offset + i, 2));
+        auto v = mesh.add_vertex(hp);
+        epm[v] = to_exact(hp);
+        idx.push_back(v);
+    }
+    for (int i = 0; i < f_count; ++i)
+    {
+        mesh.add_face(idx[F_all(f_offset + i, 0)],
+                      idx[F_all(f_offset + i, 1)],
+                      idx[F_all(f_offset + i, 2)]);
+    }
+    return mesh;
+}
+
+std::tuple<compas::RowMatrixXd, compas::RowMatrixXi> mesh_to_VF(const HMesh& m)
+{
+    const std::size_t v = m.number_of_vertices();
+    const std::size_t f = m.number_of_faces();
+    compas::RowMatrixXd V(v, 3);
+    compas::RowMatrixXi F(f, 3);
+    auto location = m.points();
+    for (auto vd : m.vertices())
+    {
+        const std::size_t r = vd.idx();
+        V(r, 0) = location[vd][0];
+        V(r, 1) = location[vd][1];
+        V(r, 2) = location[vd][2];
+    }
+    for (auto fd : m.faces())
+    {
+        const std::size_t r = fd.idx();
+        int i = 0;
+        for (auto vd : vertices_around_face(m.halfedge(fd), m))
+        {
+            F(r, i++) = static_cast<int>(vd.idx());
+        }
+    }
+    return {std::move(V), std::move(F)};
+}
+
+void check_inputs(
+    const compas::RowMatrixXd& V_all, const compas::RowMatrixXi& F_all,
+    const std::vector<int>& vc, const std::vector<int>& fc,
+    const std::vector<int>& ops)
+{
+    if (vc.size() != fc.size())
+        throw std::invalid_argument("mesh_v_counts and mesh_f_counts must have the same length");
+    if (vc.empty())
+        throw std::invalid_argument("at least one mesh is required");
+    if (ops.size() + 1 != vc.size())
+        throw std::invalid_argument("operations must have length number_of_meshes - 1");
+    long long tv = 0, tf = 0;
+    for (int c : vc) tv += c;
+    for (int c : fc) tf += c;
+    if (tv != V_all.rows() || tf != F_all.rows())
+        throw std::invalid_argument("per-mesh counts do not sum to vertices/faces row counts");
+}
+
+struct HFaceTag
+{
+    int mesh_id = -1;
+    int face_id = -1;
+};
+
+struct HFaceSourceVisitor
+    : public PMP::Corefinement::Default_visitor<HMesh>
+{
+    using face_descriptor = HMesh::Face_index;
+    using TagMap = HMesh::Property_map<face_descriptor, HFaceTag>;
+
+    std::map<const HMesh*, TagMap> tags;
+    HFaceTag pending;
+
+    void before_subface_creations(face_descriptor f, HMesh& tm) { pending = tags[&tm][f]; }
+    void after_subface_created(face_descriptor f_new, HMesh& tm) { tags[&tm][f_new] = pending; }
+    void after_face_copy(face_descriptor f_src, HMesh& tm_src,
+                         face_descriptor f_tgt, HMesh& tm_tgt)
+    {
+        tags[&tm_tgt][f_tgt] = tags[&tm_src][f_src];
+    }
+};
+
+} // namespace hybrid_chain
+
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
-pmp_boolean_chain_exact(
+pmp_boolean_chain_hybrid(
+    Eigen::Ref<const compas::RowMatrixXd> vertices,
+    Eigen::Ref<const compas::RowMatrixXi> faces,
+    const std::vector<int>& mesh_v_counts,
+    const std::vector<int>& mesh_f_counts,
+    const std::vector<int>& operations)
+{
+    using HMesh = hybrid_chain::HMesh;
+    using Exact_vertex_point_map = hybrid_chain::Exact_vertex_point_map;
+
+    compas::RowMatrixXd V_all = vertices;
+    compas::RowMatrixXi F_all = faces;
+    hybrid_chain::check_inputs(V_all, F_all, mesh_v_counts, mesh_f_counts, operations);
+
+    int v_off = 0, f_off = 0;
+    HMesh m = hybrid_chain::slice_to_mesh(V_all, F_all, v_off, mesh_v_counts[0], f_off, mesh_f_counts[0]);
+    v_off += mesh_v_counts[0];
+    f_off += mesh_f_counts[0];
+
+    for (std::size_t i = 0; i < operations.size(); ++i)
+    {
+        HMesh B = hybrid_chain::slice_to_mesh(V_all, F_all,
+                                v_off, mesh_v_counts[i + 1],
+                                f_off, mesh_f_counts[i + 1]);
+        v_off += mesh_v_counts[i + 1];
+        f_off += mesh_f_counts[i + 1];
+
+        HMesh tmp;
+        hybrid_chain::get_or_add_epm(tmp);
+
+        Exact_vertex_point_map vpm_m{hybrid_chain::get_or_add_epm(m), &m};
+        Exact_vertex_point_map vpm_B{hybrid_chain::get_or_add_epm(B), &B};
+        Exact_vertex_point_map vpm_tmp{hybrid_chain::get_or_add_epm(tmp), &tmp};
+
+        switch (operations[i])
+        {
+        case 0:
+            PMP::corefine_and_compute_union(m, B, tmp,
+                PMP::parameters::vertex_point_map(vpm_m),
+                PMP::parameters::vertex_point_map(vpm_B),
+                PMP::parameters::vertex_point_map(vpm_tmp));
+            break;
+        case 1:
+            PMP::corefine_and_compute_difference(m, B, tmp,
+                PMP::parameters::vertex_point_map(vpm_m),
+                PMP::parameters::vertex_point_map(vpm_B),
+                PMP::parameters::vertex_point_map(vpm_tmp));
+            break;
+        case 2:
+            PMP::corefine_and_compute_intersection(m, B, tmp,
+                PMP::parameters::vertex_point_map(vpm_m),
+                PMP::parameters::vertex_point_map(vpm_B),
+                PMP::parameters::vertex_point_map(vpm_tmp));
+            break;
+        case 3: // xor: (A - B) union (B - A)
+        {
+            HMesh m_copy = m, B_copy = B;
+            HMesh a_minus_b, b_minus_a;
+            hybrid_chain::get_or_add_epm(a_minus_b);
+            hybrid_chain::get_or_add_epm(b_minus_a);
+
+            Exact_vertex_point_map vpm_mc{hybrid_chain::get_or_add_epm(m_copy), &m_copy};
+            Exact_vertex_point_map vpm_Bc{hybrid_chain::get_or_add_epm(B_copy), &B_copy};
+            Exact_vertex_point_map vpm_amb{hybrid_chain::get_or_add_epm(a_minus_b), &a_minus_b};
+            Exact_vertex_point_map vpm_bma{hybrid_chain::get_or_add_epm(b_minus_a), &b_minus_a};
+
+            PMP::corefine_and_compute_difference(m, B, a_minus_b,
+                PMP::parameters::vertex_point_map(vpm_m),
+                PMP::parameters::vertex_point_map(vpm_B),
+                PMP::parameters::vertex_point_map(vpm_amb));
+            PMP::corefine_and_compute_difference(B_copy, m_copy, b_minus_a,
+                PMP::parameters::vertex_point_map(vpm_Bc),
+                PMP::parameters::vertex_point_map(vpm_mc),
+                PMP::parameters::vertex_point_map(vpm_bma));
+
+            Exact_vertex_point_map vpm_amb2{hybrid_chain::get_or_add_epm(a_minus_b), &a_minus_b};
+            Exact_vertex_point_map vpm_bma2{hybrid_chain::get_or_add_epm(b_minus_a), &b_minus_a};
+            PMP::corefine_and_compute_union(a_minus_b, b_minus_a, tmp,
+                PMP::parameters::vertex_point_map(vpm_amb2),
+                PMP::parameters::vertex_point_map(vpm_bma2),
+                PMP::parameters::vertex_point_map(vpm_tmp));
+            break;
+        }
+        default:
+            throw std::invalid_argument(
+                "operation must be 0 (union), 1 (difference), 2 (intersection), or 3 (xor)");
+        }
+        m = std::move(tmp);
+    }
+
+    return hybrid_chain::mesh_to_VF(m);
+}
+
+std::tuple<compas::RowMatrixXd, compas::RowMatrixXi, compas::RowMatrixXi>
+pmp_boolean_chain_with_face_source_hybrid(
+    Eigen::Ref<const compas::RowMatrixXd> vertices,
+    Eigen::Ref<const compas::RowMatrixXi> faces,
+    const std::vector<int>& mesh_v_counts,
+    const std::vector<int>& mesh_f_counts,
+    const std::vector<int>& operations)
+{
+    using HMesh = hybrid_chain::HMesh;
+    using HFaceTag = hybrid_chain::HFaceTag;
+    using HFaceSourceVisitor = hybrid_chain::HFaceSourceVisitor;
+    using Exact_vertex_point_map = hybrid_chain::Exact_vertex_point_map;
+
+    compas::RowMatrixXd V_all = vertices;
+    compas::RowMatrixXi F_all = faces;
+    hybrid_chain::check_inputs(V_all, F_all, mesh_v_counts, mesh_f_counts, operations);
+
+    int v_off = 0, f_off = 0;
+    HMesh m = hybrid_chain::slice_to_mesh(V_all, F_all, v_off, mesh_v_counts[0], f_off, mesh_f_counts[0]);
+    v_off += mesh_v_counts[0];
+    f_off += mesh_f_counts[0];
+
+    auto m_tag = m.add_property_map<HMesh::Face_index, HFaceTag>("f:src", HFaceTag{}).first;
+    {
+        int j = 0;
+        for (auto f : m.faces()) m_tag[f] = HFaceTag{0, j++};
+    }
+
+    for (std::size_t i = 0; i < operations.size(); ++i)
+    {
+        HMesh B = hybrid_chain::slice_to_mesh(V_all, F_all,
+                                v_off, mesh_v_counts[i + 1],
+                                f_off, mesh_f_counts[i + 1]);
+        v_off += mesh_v_counts[i + 1];
+        f_off += mesh_f_counts[i + 1];
+
+        auto b_tag = B.add_property_map<HMesh::Face_index, HFaceTag>("f:src", HFaceTag{}).first;
+        {
+            int j = 0;
+            const int mesh_id = static_cast<int>(i + 1);
+            for (auto f : B.faces()) b_tag[f] = HFaceTag{mesh_id, j++};
+        }
+
+        HMesh tmp;
+        hybrid_chain::get_or_add_epm(tmp);
+        auto tmp_tag = tmp.add_property_map<HMesh::Face_index, HFaceTag>("f:src", HFaceTag{}).first;
+
+        HFaceSourceVisitor visitor;
+        visitor.tags[&m] = m_tag;
+        visitor.tags[&B] = b_tag;
+        visitor.tags[&tmp] = tmp_tag;
+
+        Exact_vertex_point_map vpm_m{hybrid_chain::get_or_add_epm(m), &m};
+        Exact_vertex_point_map vpm_B{hybrid_chain::get_or_add_epm(B), &B};
+        Exact_vertex_point_map vpm_tmp{hybrid_chain::get_or_add_epm(tmp), &tmp};
+
+        switch (operations[i])
+        {
+        case 0:
+            PMP::corefine_and_compute_union(m, B, tmp,
+                PMP::parameters::vertex_point_map(vpm_m).visitor(visitor),
+                PMP::parameters::vertex_point_map(vpm_B),
+                PMP::parameters::vertex_point_map(vpm_tmp));
+            break;
+        case 1:
+            PMP::corefine_and_compute_difference(m, B, tmp,
+                PMP::parameters::vertex_point_map(vpm_m).visitor(visitor),
+                PMP::parameters::vertex_point_map(vpm_B),
+                PMP::parameters::vertex_point_map(vpm_tmp));
+            break;
+        case 2:
+            PMP::corefine_and_compute_intersection(m, B, tmp,
+                PMP::parameters::vertex_point_map(vpm_m).visitor(visitor),
+                PMP::parameters::vertex_point_map(vpm_B),
+                PMP::parameters::vertex_point_map(vpm_tmp));
+            break;
+        case 3:
+            throw std::invalid_argument("xor (op code 3) is not supported by boolean_chain_with_face_source");
+        default:
+            throw std::invalid_argument("operation must be 0 (union), 1 (difference), or 2 (intersection)");
+        }
+
+        m = std::move(tmp);
+        m_tag = *m.property_map<HMesh::Face_index, HFaceTag>("f:src");
+    }
+
+    auto [V_out, F_out] = hybrid_chain::mesh_to_VF(m);
+
+    compas::RowMatrixXi S(static_cast<Eigen::Index>(m.number_of_faces()), 2);
+    for (auto fd : m.faces())
+    {
+        const HFaceTag& t = m_tag[fd];
+        const Eigen::Index row = static_cast<Eigen::Index>(fd.idx());
+        S(row, 0) = t.mesh_id;
+        S(row, 1) = t.face_id;
+    }
+
+    return {std::move(V_out), std::move(F_out), std::move(S)};
+}
+
+std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
+pmp_boolean_chain(
     Eigen::Ref<const compas::RowMatrixXd> vertices,
     Eigen::Ref<const compas::RowMatrixXi> faces,
     const std::vector<int>& mesh_v_counts,
@@ -708,7 +798,7 @@ pmp_boolean_chain_exact(
 }
 
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi, compas::RowMatrixXi>
-pmp_boolean_chain_with_face_source_exact(
+pmp_boolean_chain_with_face_source(
     Eigen::Ref<const compas::RowMatrixXd> vertices,
     Eigen::Ref<const compas::RowMatrixXi> faces,
     const std::vector<int>& mesh_v_counts,
@@ -883,11 +973,11 @@ NB_MODULE(_booleans, m) {
     m.def(
         "boolean_chain",
         &pmp_boolean_chain,
-        "Run a chain of boolean operations entirely in C++. The full collection of input "
-        "meshes is sent in a single call as flat (V, F) arrays plus per-mesh row counts. "
-        "operations is a list of int codes (0=union, 1=difference, 2=intersection, 3=xor) "
-        "of length number_of_meshes - 1. Self-intersections are repaired between steps so "
-        "long chains are robust.",
+        "Run a chain of boolean operations entirely in C++ using EPECK (exact "
+        "constructions). The full collection of input meshes is sent in a single "
+        "call as flat (V, F) arrays plus per-mesh row counts. operations is a list "
+        "of int codes (0=union, 1=difference, 2=intersection, 3=xor) of length "
+        "number_of_meshes - 1.",
         "vertices"_a,
         "faces"_a,
         "mesh_v_counts"_a,
@@ -898,9 +988,8 @@ NB_MODULE(_booleans, m) {
         "boolean_chain_with_face_source",
         &pmp_boolean_chain_with_face_source,
         "Like boolean_chain but additionally returns S (Mx2 int): for each output face, "
-        "[mesh_id, face_id] of the input face that produced it. Tracks via a corefinement "
-        "visitor and therefore skips snap rounding (the visitor's property maps cannot "
-        "survive the soup conversion). xor (op 3) is not supported here.",
+        "[mesh_id, face_id] of the input face that produced it. Tracking is via a "
+        "corefinement visitor; xor (op 3) is not supported here.",
         "vertices"_a,
         "faces"_a,
         "mesh_v_counts"_a,
@@ -908,10 +997,12 @@ NB_MODULE(_booleans, m) {
         "operations"_a);
 
     m.def(
-        "boolean_chain_exact",
-        &pmp_boolean_chain_exact,
-        "Same as boolean_chain but using EPECK (exact constructions). No snap rounding "
-        "needed; handles geometrically degenerate input (e.g., shared axes) without shifts.",
+        "boolean_chain_hybrid",
+        &pmp_boolean_chain_hybrid,
+        "Same as boolean_chain but uses an EPICK Surface_mesh with an EPECK vertex "
+        "property map passed via parameters::vertex_point_map(). Storage stays in "
+        "double precision while intersection points are constructed exactly, giving "
+        "EPECK-level robustness without lazy-exact storage cost.",
         "vertices"_a,
         "faces"_a,
         "mesh_v_counts"_a,
@@ -919,10 +1010,10 @@ NB_MODULE(_booleans, m) {
         "operations"_a);
 
     m.def(
-        "boolean_chain_with_face_source_exact",
-        &pmp_boolean_chain_with_face_source_exact,
-        "Same as boolean_chain_with_face_source but using EPECK. The corefinement visitor "
-        "works directly because there are no rounding artifacts to repair.",
+        "boolean_chain_with_face_source_hybrid",
+        &pmp_boolean_chain_with_face_source_hybrid,
+        "Hybrid-kernel face-source variant: EPICK mesh + EPECK vertex_point_map and "
+        "the corefinement face-tracking visitor combined in one corefinement call.",
         "vertices"_a,
         "faces"_a,
         "mesh_v_counts"_a,

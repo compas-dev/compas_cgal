@@ -154,7 +154,8 @@ pmp_boolean_intersection_with_face_source(
     Eigen::Ref<const compas::RowMatrixXi> faces_b);
 
 /**
- * Run a left-folded chain of boolean operations entirely in C++:
+ * Run a left-folded chain of boolean operations entirely in C++ using
+ * `Exact_predicates_exact_constructions_kernel` (EPECK):
  *     result = mesh_0
  *     for i in range(len(operations)):
  *         result = result  ops[i]  mesh_{i+1}
@@ -173,10 +174,10 @@ pmp_boolean_intersection_with_face_source(
  *     2 = intersection
  *     3 = xor (symmetric difference, computed as (A - B) union (B - A))
  *
- * Self-intersections introduced by EPICK's approximate constructions on
- * cut boundaries are repaired between steps via
- * autorefine_and_remove_self_intersections, which is what makes long
- * chains robust.
+ * EPECK constructions are lazy-exact: there are no rounding artifacts on
+ * cut boundaries, so the chain handles geometrically degenerate input
+ * (e.g., three cylinders meeting at the origin) without any geometric
+ * workarounds.
  */
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
 pmp_boolean_chain(
@@ -187,24 +188,11 @@ pmp_boolean_chain(
     const std::vector<int>& operations);
 
 /**
- * Like `pmp_boolean_chain`, but additionally tracks which input mesh and
+ * Like `pmp_boolean_chain` but additionally tracks which input mesh and
  * which input face each output triangle descended from. Returns
- * `(V, F, S)`, where `S` is an Mx2 int array: `S[i] = [mesh_id, face_id]`.
- *
- * Tracking is done via a CGAL corefinement visitor that propagates per-face
- * tags through subface creation and face copies. The chain runs entirely on
- * Surface_mesh objects (no Python round-trip and no triangle-soup
- * conversion) because the face-tag property maps cannot survive the soup
- * round-trip used by `autorefine_triangle_soup` / snap rounding.
- *
- * Consequence: this chain does NOT apply iterative snap rounding between
- * steps. It is the right entry point when face-source tracking is the
- * priority and the geometry is well-conditioned. For degenerate geometry
- * (e.g., cylinders sharing a common axis point) prefer `pmp_boolean_chain`
- * which gives up source tracking in exchange for snap-rounding robustness.
- *
- * `xor` (operation code 3) is not supported here — use one of the three
- * primary ops.
+ * `(V, F, S)` where `S[i] = [mesh_id, face_id]`. Tracking is done via a
+ * CGAL corefinement visitor that propagates per-face tags through subface
+ * creation and face copies. `xor` (op code 3) is not supported here.
  */
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi, compas::RowMatrixXi>
 pmp_boolean_chain_with_face_source(
@@ -215,16 +203,17 @@ pmp_boolean_chain_with_face_source(
     const std::vector<int>& operations);
 
 /**
- * Same input contract as pmp_boolean_chain, but uses
- * `Exact_predicates_exact_constructions_kernel` (EPECK) instead of EPICK.
- * Constructions are lazy-exact: there are no rounding artifacts on cut
- * boundaries, so no snap rounding is needed and the chain handles
- * geometrically degenerate input (e.g., three cylinders meeting at the
- * origin) without any shifts. Slower than the EPICK chain by some factor
- * that depends on the geometry.
+ * Hybrid kernel chain: Surface_mesh<Point_3> stored in EPICK, but every
+ * vertex carries an EPECK::Point_3 in a vertex property map that is passed
+ * to corefinement via parameters::vertex_point_map(). All new intersection
+ * vertices are constructed in EPECK and then converted back to EPICK for
+ * storage, which gives the robustness of EPECK on cut boundaries while
+ * keeping mesh storage and traversal at native double speed. This is the
+ * pattern from CGAL's "consecutive boolean operations with exact point
+ * maps" example.
  */
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi>
-pmp_boolean_chain_exact(
+pmp_boolean_chain_hybrid(
     Eigen::Ref<const compas::RowMatrixXd> vertices,
     Eigen::Ref<const compas::RowMatrixXi> faces,
     const std::vector<int>& mesh_v_counts,
@@ -232,13 +221,14 @@ pmp_boolean_chain_exact(
     const std::vector<int>& operations);
 
 /**
- * Like pmp_boolean_chain_with_face_source but using EPECK. Because EPECK has
- * no rounding artifacts, the corefinement visitor that propagates per-face
- * tags works directly without any snap-rounding workaround — face tracking
- * is exact even on degenerate geometry.
+ * Hybrid-kernel variant of pmp_boolean_chain_with_face_source. Same exact
+ * point-map machinery as pmp_boolean_chain_hybrid; the corefinement visitor
+ * tracks per-face source through every step, just like the EPICK and EPECK
+ * variants, because the visitor and the vertex_point_map are independent
+ * named parameters.
  */
 std::tuple<compas::RowMatrixXd, compas::RowMatrixXi, compas::RowMatrixXi>
-pmp_boolean_chain_with_face_source_exact(
+pmp_boolean_chain_with_face_source_hybrid(
     Eigen::Ref<const compas::RowMatrixXd> vertices,
     Eigen::Ref<const compas::RowMatrixXi> faces,
     const std::vector<int>& mesh_v_counts,

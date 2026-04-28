@@ -15,11 +15,12 @@ from compas_cgal.booleans import boolean_chain
 #
 # All five meshes are sent to C++ in a single boolean_chain() call. Each
 # step's intermediate Surface_mesh stays in C++ — there is no Python ↔ C++
-# round-tripping between operations. The default kernel is EPECK
-# (exact=True), which handles the degenerate triple intersection at the
-# origin where the three axis-aligned cylinders meet — no shifts, no snap
-# rounding. Set exact=False to use EPICK with autorefine_triangle_soup snap
-# rounding instead (faster but less robust on degenerate input).
+# round-tripping between operations. The chain runs in CGAL's exact-
+# constructions kernel (EPECK), which handles the degenerate triple
+# intersection at the origin where the three axis-aligned cylinders meet —
+# no shifts needed. Pass `hybrid=True` to switch to the hybrid kernel
+# scheme (EPICK mesh + EPECK vertex_point_map) from CGAL's "consecutive
+# boolean operations with exact point maps" example.
 # =============================================================================
 
 cube = Box(2).to_vertices_and_faces(triangulated=True)
@@ -44,7 +45,6 @@ def cylinder_along(axis, radius=0.8):
 V, F = boolean_chain(
     [cube, sphere, cylinder_along("x"), cylinder_along("y"), cylinder_along("z")],
     ["intersection", "difference", "difference", "difference"],
-    exact=True,
 )
 shape = Polyhedron(V.tolist(), F.tolist()).to_mesh()
 
