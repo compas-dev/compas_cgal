@@ -245,7 +245,9 @@ pmp_create_weighted_offset_polygons_2_inner(
     }
 
     try {
-        SsPtr skeleton = CGAL::create_interior_weighted_straight_skeleton_2(polygon, weight_values);
+        // CGAL 6.1: Weights is a 2D container (outer contour + per-hole), indexed weights[0].
+        std::vector<std::vector<double>> weights = {weight_values};
+        SsPtr skeleton = CGAL::create_interior_weighted_straight_skeleton_2(polygon, weights);
         if (!skeleton) {
             throw std::runtime_error("Failed to create weighted straight skeleton");
         }
@@ -283,7 +285,9 @@ pmp_create_weighted_offset_polygons_2_outer(
     }
 
     try {
-        SsPtr skeleton = CGAL::create_exterior_weighted_straight_skeleton_2(offset_distance, weight_values, polygon);
+        // CGAL 6.1: argument order is (max_offset, polygon, weights) and weights is a 2D container.
+        std::vector<std::vector<double>> weights = {weight_values};
+        SsPtr skeleton = CGAL::create_exterior_weighted_straight_skeleton_2(offset_distance, polygon, weights);
         if (!skeleton) {
             throw std::runtime_error("Failed to create weighted straight skeleton");
         }

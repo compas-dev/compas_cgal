@@ -140,9 +140,13 @@ nav:
       - Changelog: changelog.md
   - Examples:
       - Booleans: examples/example_booleans.md
+      - Booleans With Edges: examples/example_booleans_with_edges.md
+      - Booleans With Face Source: examples/example_booleans_with_face_source.md
+      - CSG Drilled Rounded Cube: examples/example_boolean_difference_mesh_meshes.md
       - Geodesics: examples/example_geodesics.md
       - Intersections: examples/example_intersections.md
       - Isolines: examples/example_isolines.md
+      - Measure: examples/example_measure.md
       - Meshing: examples/example_meshing.md
       - Meshing Dual: examples/example_meshing_dual.md
       - Projection: examples/example_projection.md

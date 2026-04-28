@@ -1,5 +1,7 @@
 # Isolines from Scalar Fields
 
+![Isolines from Scalar Fields](../assets/images/example_isolines.png)
+
 This example demonstrates isoline extraction from arbitrary vertex scalar fields using COMPAS CGAL.
 
 The visualization shows an elephant mesh with isolines extracted from geodesic distances computed from five source points: the four feet and the snout.
