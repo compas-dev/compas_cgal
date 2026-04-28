@@ -9,7 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Declared runtime dependencies in `pyproject.toml`: `numpy>=1.24` and `compas>=2.15,<3` (previously undeclared, leaving installs to fail at import time on clean environments).
+* Added `docs/examples/example_measure.md` documenting `mesh_area`, `mesh_volume`, and `mesh_centroid` so the measure example renders alongside the others.
+* Added image reference in `docs/examples/example_isolines.md` and added `Measure: examples/example_measure.md` to the Examples nav in `mkdocs.yml`.
+* Added `docs/examples/example_booleans_with_edges.md` and `example_booleans_with_face_source.md` (with their images) covering the corefinement intersection-edge and face-source-tracking variants of the boolean operations; both wired into the Examples nav.
+* Added `docs/examples/example_boolean_difference_mesh_meshes.md` (CSG drilled rounded cube) and its Examples nav entry.
+
 ### Changed
+
+* Bumped `nanobind` build-system requirement from `>=1.3.2` to `>=2.12` to fix `refined_delaunay_mesh` (and other `Eigen::Ref` overloads) raising `TypeError: incompatible function arguments` when called with `numpy>=2.4.0`.
+* Extended `[tool.cibuildwheel] test-requires` to `numpy>=2.4` and `compas>=2.15,<3` so the wheel test job exercises the post-2.4 ndarray ABI on every build.
 
 ### Removed
 

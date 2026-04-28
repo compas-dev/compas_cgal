@@ -36,6 +36,15 @@ with the vertices represented a Nx3 array of spatial coordinates,
 and the faces as a Fx3 array of vertex indices.
 """
 
+VerticesFacesEdgesNumpy = Tuple[FloatNx3, IntNx3, IntNx2]
+"""Representation of a boolean result as a tuple of vertices, faces, and
+intersection-curve edges, where edges are pairs of vertex indices into V."""
+
+VerticesFacesSourceNumpy = Tuple[FloatNx3, IntNx3, IntNx2]
+"""Representation of a boolean result with per-face source tracking. The third
+array is Mx2: column 0 is the source mesh id (0 = A, 1 = B), column 1 is the
+face index in that source mesh."""
+
 PolylinesNumpy = List[FloatNx3]
 """A list of polylines, with each polyline represented as a Nx3 array of spatial coordinates."""
 

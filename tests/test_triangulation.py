@@ -54,7 +54,11 @@ def test_conforming_delaunay_triangulation(boundary_polygon, hole_polygons):
 
 
 def test_refined_delaunay_mesh(boundary_polygon, hole_polygons):
-    """Test refined Delaunay mesh with quality constraints."""
+    """Test refined Delaunay mesh with quality constraints.
+
+    Regression: on numpy>=2.4 with nanobind<2, this raised
+    ``TypeError: incompatible function arguments`` despite correct dtypes.
+    """
     maxlength = 0.5
     V, F = refined_delaunay_mesh(
         boundary_polygon,

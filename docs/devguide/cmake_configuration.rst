@@ -45,7 +45,7 @@ Example: CGAL Setup
         message(STATUS "Downloading CGAL...")
         ExternalProject_Add(
             cgal_download
-            URL https://github.com/CGAL/cgal/releases/download/v6.0.1/CGAL-6.0.1.zip
+            URL https://github.com/CGAL/cgal/releases/download/v6.1.1/CGAL-6.1.1.zip
             SOURCE_DIR       "${CGAL_SOURCE_DIR}"
             CONFIGURE_COMMAND ""
             BUILD_COMMAND     ""
