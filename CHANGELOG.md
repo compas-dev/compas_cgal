@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Bumped `nanobind` build-system requirement from `>=1.3.2` to `>=2.12` to fix `refined_delaunay_mesh` (and other `Eigen::Ref` overloads) raising `TypeError: incompatible function arguments` when called with `numpy>=2.4.0`.
 * Extended `[tool.cibuildwheel] test-requires` to `numpy>=2.4` and `compas>=2.15,<3` so the wheel test job exercises the post-2.4 ndarray ABI on every build.
+* Applied `ruff format` to `docs/examples/example_booleans_with_face_source.py`, `docs/examples/example_isolines.py`, `tasks.py`, and `tests/test_booleans.py` so the working tree is clean for the next `invoke release` run.
 
 ### Removed
 
