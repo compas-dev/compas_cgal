@@ -4,10 +4,10 @@ from compas.datastructures import Mesh
 from compas.geometry import Point
 from compas_viewer import Viewer
 
-from compas_cgal.meshing import project_mesh_on_mesh
-from compas_cgal.meshing import project_points_on_mesh
-from compas_cgal.meshing import pull_mesh_on_mesh
-from compas_cgal.meshing import pull_points_on_mesh
+from compas_cgal.projection import project_mesh_on_mesh
+from compas_cgal.projection import project_points_on_mesh
+from compas_cgal.projection import pull_mesh_on_mesh
+from compas_cgal.projection import pull_points_on_mesh
 
 # =============================================================================
 # Source

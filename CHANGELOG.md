@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added `docs/examples/example_booleans_with_edges.md` and `example_booleans_with_face_source.md` (with their images) covering the corefinement intersection-edge and face-source-tracking variants of the boolean operations; both wired into the Examples nav.
 * Added `docs/examples/example_boolean_difference_mesh_meshes.md` (CSG drilled rounded cube) and its Examples nav entry.
 
+### Fixed
+
+* Fixed `docs/examples/example_projection.py` imports: `project_mesh_on_mesh`, `project_points_on_mesh`, `pull_mesh_on_mesh`, and `pull_points_on_mesh` were incorrectly imported from `compas_cgal.meshing` instead of `compas_cgal.projection`, causing `ImportError` for anyone running the example.
+
 ### Changed
 
 * Bumped `nanobind` build-system requirement from `>=1.3.2` to `>=2.12` to fix `refined_delaunay_mesh` (and other `Eigen::Ref` overloads) raising `TypeError: incompatible function arguments` when called with `numpy>=2.4.0`.
