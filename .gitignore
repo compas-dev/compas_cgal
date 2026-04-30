@@ -101,6 +101,7 @@ coverage.xml
 *.rhl
 *.rui_bak
 temp/
+data/omg.*
 recipe/**
 !recipe/sha256.py
 
