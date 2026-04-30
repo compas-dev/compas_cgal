@@ -2,8 +2,7 @@
 
 ![build](https://github.com/compas-dev/compas_cgal/workflows/build/badge.svg)
 [![GitHub - License](https://img.shields.io/github/license/compas-dev/compas_cgal.svg)](https://github.com/compas-dev/compas_cgal)
-[![Conda - Latest Release](https://anaconda.org/conda-forge/compas_cgal/badges/version.svg)](https://anaconda.org/conda-forge/compas_cgal)
-[![Conda - Platform](https://img.shields.io/conda/pn/conda-forge/compas_cgal)](https://anaconda.org/conda-forge/compas_cgal)
+[![PyPI - Latest Release](https://img.shields.io/pypi/v/compas-cgal)](https://pypi.org/project/compas-cgal/)
 
 This package provides Python bindings for specific algorithms of CGAL.
 The bindings are generated with Nanobind and data is exchanged using NumPy arrays.
