@@ -81,10 +81,7 @@ facecolor = {fkey: palette[mesh_id] for fkey, (mesh_id, _) in zip(mesh.faces(), 
 # submesh is independent (boundary vertices are duplicated across submeshes)
 # and gets its own scene object with a single color. Convenient for viewers
 # that prefer one material/layer per object.
-submeshes = {
-    mesh_id: Mesh.from_vertices_and_faces(Vs, Fs)
-    for mesh_id, (Vs, Fs) in split_by_source(V, F, S).items()
-}
+submeshes = {mesh_id: Mesh.from_vertices_and_faces(Vs, Fs) for mesh_id, (Vs, Fs) in split_by_source(V, F, S).items()}
 
 # =============================================================================
 # Visualize — toggle USE_SPLIT to compare the two paths.

@@ -18,7 +18,7 @@ FILE = Path(__file__).parent.parent.parent / "data" / "elephant.off"
 mesh = Mesh.from_off(FILE)
 mesh.quads_to_triangles()
 
-V, F = mesh_subdivide_loop(mesh.to_vertices_and_faces(), k=2) # k=4 for proper smoothness
+V, F = mesh_subdivide_loop(mesh.to_vertices_and_faces(), k=2)  # k=4 for proper smoothness
 mesh = Mesh.from_vertices_and_faces(V.tolist(), F.tolist())
 
 # =============================================================================

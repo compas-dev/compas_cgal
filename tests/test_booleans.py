@@ -211,9 +211,7 @@ def test_boolean_chain_with_face_source():
 
     cube = Box(2).to_vertices_and_faces(triangulated=True)
     sphere = Sphere(0.8, point=[1, 1, 1]).to_vertices_and_faces(u=32, v=32, triangulated=True)
-    cyl = Cylinder(
-        0.4, 4.0, Frame([0, 0, 0], [1, 0, 0], [0, 1, 0])
-    ).to_vertices_and_faces(u=32, triangulated=True)
+    cyl = Cylinder(0.4, 4.0, Frame([0, 0, 0], [1, 0, 0], [0, 1, 0])).to_vertices_and_faces(u=32, triangulated=True)
 
     V, F, S = boolean_chain_with_face_source(
         [cube, sphere, cyl],
