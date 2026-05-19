@@ -63,7 +63,9 @@ pmp_trimesh_remesh(
     Eigen::Ref<const compas::RowMatrixXi> faces_a,
     double target_edge_length,
     unsigned int number_of_iterations = 10,
-    bool do_project = true);
+    bool do_project = true,
+    bool protect_boundary = false,
+    double protect_sharp_edges_angle_deg = 0.0);
 
 
 /**

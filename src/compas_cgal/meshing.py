@@ -14,6 +14,8 @@ def trimesh_remesh(
     target_edge_length: float,
     number_of_iterations: int = 10,
     do_project: bool = True,
+    protect_boundary: bool = False,
+    protect_sharp_edges_angle_deg: float = 0.0,
 ) -> VerticesFacesNumpy:
     """Remeshing of a triangle mesh.
 
@@ -27,6 +29,16 @@ def trimesh_remesh(
         Number of remeshing iterations.
     do_project : bool, optional
         If True, reproject vertices onto the input surface when they are created or displaced.
+    protect_boundary : bool, optional
+        If True, constrain all boundary edges so they are NOT split, collapsed,
+        or flipped during remeshing. Use this to preserve the input mesh's
+        boundary curve verbatim — including sharp corners that the default
+        smoothing pass would otherwise round.
+    protect_sharp_edges_angle_deg : float, optional
+        Dihedral threshold in degrees for interior feature detection. Edges
+        whose adjacent faces form a dihedral angle ≥ this value are marked
+        constrained and preserved. ``0.0`` disables interior-feature
+        detection (default).
 
     Returns
     -------
@@ -34,8 +46,9 @@ def trimesh_remesh(
 
     Notes
     -----
-    This remeshing function only constrains the edges on the boundary of the mesh.
-    Protecting specific features or edges is not implemented yet.
+    Without ``protect_boundary`` or ``protect_sharp_edges_angle_deg`` set,
+    boundary edges follow CGAL's default remeshing behaviour: re-sampled
+    to ``target_edge_length`` (visible corner rounding is the cost).
 
     Examples
     --------
@@ -52,7 +65,15 @@ def trimesh_remesh(
     V, F = mesh
     V = np.asarray(V, dtype=np.float64, order="C")
     F = np.asarray(F, dtype=np.int32, order="C")
-    return _meshing.pmp_trimesh_remesh(V, F, target_edge_length, number_of_iterations, do_project)
+    return _meshing.pmp_trimesh_remesh(
+        V,
+        F,
+        target_edge_length,
+        number_of_iterations,
+        do_project,
+        protect_boundary,
+        protect_sharp_edges_angle_deg,
+    )
 
 
 def trimesh_dual(

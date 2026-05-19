@@ -5,6 +5,7 @@
 #include <CGAL/boost/graph/Dual.h>
 #include <CGAL/boost/graph/helpers.h>
 #include <CGAL/Polygon_mesh_processing/compute_normal.h>
+#include <CGAL/Polygon_mesh_processing/detect_features.h>
  
 #include <iostream>
 #include <fstream>
@@ -43,11 +44,39 @@ pmp_trimesh_remesh(
     Eigen::Ref<const compas::RowMatrixXi> faces_a,
     double target_edge_length,
     unsigned int number_of_iterations,
-    bool do_project)
+    bool do_project,
+    bool protect_boundary,
+    double protect_sharp_edges_angle_deg)
 {
     // Convert input matrices to CGAL mesh and keep a copy for projection
     compas::Mesh original_mesh = compas::mesh_from_vertices_and_faces(vertices_a, faces_a);
     compas::Mesh mesh_a = compas::mesh_from_vertices_and_faces(vertices_a, faces_a);
+
+    // Build an edge-is-constrained property map. Edges marked True are
+    // not split / collapsed / flipped during isotropic_remeshing — this
+    // is how features are preserved.
+    auto ecm = mesh_a.add_property_map<
+        boost::graph_traits<compas::Mesh>::edge_descriptor, bool>(
+        "e:is_constrained", false).first;
+
+    // Constrain all boundary edges when requested. CGAL's
+    // isotropic_remeshing otherwise re-samples boundary edges per
+    // target_edge_length, which rounds visible corners.
+    if (protect_boundary) {
+        for (auto e : edges(mesh_a)) {
+            auto h = halfedge(e, mesh_a);
+            if (is_border(h, mesh_a) || is_border(opposite(h, mesh_a), mesh_a)) {
+                put(ecm, e, true);
+            }
+        }
+    }
+
+    // Detect sharp interior edges (dihedral > threshold) and constrain
+    // them too. 0.0 disables (default).
+    if (protect_sharp_edges_angle_deg > 0.0) {
+        CGAL::Polygon_mesh_processing::detect_sharp_edges(
+            mesh_a, protect_sharp_edges_angle_deg, ecm);
+    }
 
     // Perform isotropic remeshing
     CGAL::Polygon_mesh_processing::isotropic_remeshing(
@@ -55,9 +84,12 @@ pmp_trimesh_remesh(
         target_edge_length,
         mesh_a,
         CGAL::Polygon_mesh_processing::parameters::number_of_iterations(number_of_iterations)
-                       .do_project(do_project));
+                       .do_project(do_project)
+                       .edge_is_constrained_map(ecm)
+                       .protect_constraints(protect_boundary
+                                            || protect_sharp_edges_angle_deg > 0.0));
 
-                       
+
     // Clean up the mesh
     mesh_a.collect_garbage();
 
@@ -888,7 +920,9 @@ NB_MODULE(_meshing, m) {
         "faces_a"_a,
         "target_edge_length"_a,
         "number_of_iterations"_a = 10,
-        "do_project"_a = true
+        "do_project"_a = true,
+        "protect_boundary"_a = false,
+        "protect_sharp_edges_angle_deg"_a = 0.0
     );
     
     m.def(
