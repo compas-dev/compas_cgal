@@ -2,13 +2,16 @@
 
 #include "compas.h"
 
-// CGAL Heat Method for geodesic distances
-#include <CGAL/Heat_method_3/Surface_mesh_geodesic_distances_3.h>
 #include <CGAL/Polygon_mesh_processing/refine_mesh_at_isolevel.h>
 #include <CGAL/Polygon_mesh_processing/connected_components.h>
 
 /**
- * @brief Compute geodesic distances from source vertices using CGAL heat method.
+ * @brief Compute geodesic distances from source vertices with the heat method.
+ *
+ * Heat method (Crane et al. 2017) with a Dirichlet-constrained Poisson step:
+ * distances are exactly 0 on the source set and correct for multi-vertex
+ * source sets (see the note in geodesics.cpp on why CGAL::Heat_method_3 is
+ * not used here).
  *
  * @param vertices Matrix of vertex positions as Nx3 matrix (float64)
  * @param faces Matrix of face indices as Mx3 matrix (int32)

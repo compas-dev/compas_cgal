@@ -1,4 +1,4 @@
-"""Geodesic distance computation using CGAL heat method."""
+"""Geodesic distance computation using the heat method."""
 
 from typing import List
 
@@ -18,23 +18,31 @@ __all__ = ["heat_geodesic_distances", "HeatGeodesicSolver", "geodesic_isolines_s
 
 
 def heat_geodesic_distances(mesh: VerticesFaces, sources: List[int]) -> NDArray:
-    """Compute geodesic distances from source vertices using CGAL heat method.
+    """Compute geodesic distances from source vertices using the heat method.
 
-    Uses CGAL's Heat_method_3 with intrinsic Delaunay triangulation for
-    accurate geodesic distance computation.
+    Heat method (Crane et al. 2017) with a Dirichlet-constrained Poisson step:
+    the distance is exactly 0 at every source vertex and remains accurate for
+    multi-vertex source sets (e.g. all boundary vertices of an open mesh).
 
     Parameters
     ----------
     mesh : :attr:`compas_cgal.types.VerticesFaces`
         A triangulated mesh as a tuple of vertices and faces.
     sources : List[int]
-        Source vertex indices.
+        Source vertex indices (at least one; out-of-range indices are ignored).
 
     Returns
     -------
     NDArray
         Geodesic distances from the nearest source to each vertex.
         Shape is (n_vertices,).
+
+    Raises
+    ------
+    ValueError
+        If no valid source vertex index is given.
+    RuntimeError
+        If a connected component of the mesh contains no source vertex.
 
     Examples
     --------

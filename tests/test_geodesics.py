@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 import numpy as np
 
@@ -175,3 +177,52 @@ def test_geodesic_isolines_empty(sphere_mesh):
     # Should return empty list
     assert isinstance(isolines, list)
     assert len(isolines) == 0
+
+
+def test_heat_geodesic_multisource_boundary_sources():
+    """Multi-source accuracy regression: all boundary vertices as the source set.
+
+    The fixture is a FLAT star-shaped disk (z = 0) with irregular, variable-density
+    boundary sampling. Because the mesh is flat, the exact geodesic distance to the
+    source set in the near-boundary band EQUALS the euclidean distance to the
+    nearest source (verified against exact polyhedral geodesics, agreement ~1e-15,
+    when the fixture was generated) — the test needs no external oracle, and the
+    euclidean distance is a hard LOWER bound everywhere.
+
+    CGAL's ``Heat_method_3`` (backend up to compas_cgal 0.9.4) collapses here: its
+    source-set normalization ``min_s |phi(i) - phi(s)|`` folds every vertex whose
+    Poisson potential lands inside the source-value spread. Measured on this
+    fixture (band = 2h..6h of euclidean distance to the source set):
+
+    - CGAL fold: band mean ratio 0.54, with 83% of band vertices BELOW the
+      euclidean lower bound (impossible for a distance).
+    - Dirichlet-pinned heat method (this backend): ratio ~0.98, ~1% marginal
+      violations, exactly 0 at every source.
+    """
+    fixture = Path(__file__).parent.parent / "data" / "flat_star_disk_irregular_rim.off"
+    mesh = Mesh.from_off(fixture)
+    V, F = mesh.to_vertices_and_faces()
+    V = np.asarray(V, dtype=np.float64)
+    F = np.asarray(F, dtype=np.int64)
+    sources = sorted({int(v) for v in mesh.vertices_on_boundary()})  # set: compas repeats the loop start
+    assert len(sources) == 508  # fixture integrity
+
+    d = heat_geodesic_distances((V, F), sources)
+
+    assert np.all(np.isfinite(d))
+    assert np.all(d >= 0)
+    assert np.allclose(d[sources], 0.0, atol=1e-12)
+
+    # euclidean distance to the nearest source (exact truth in the near band)
+    eu = np.sqrt(((V[:, None, :2] - V[sources, :2][None, :, :]) ** 2).sum(-1)).min(axis=1)
+
+    E = np.unique(np.sort(np.concatenate([F[:, [0, 1]], F[:, [1, 2]], F[:, [2, 0]]]), axis=1), axis=0)
+    h = float(np.linalg.norm(V[E[:, 0]] - V[E[:, 1]], axis=1).mean())
+    band = (eu > 2 * h) & (eu < 6 * h)
+    assert band.sum() > 1000
+
+    ratio = float(np.mean(d[band] / eu[band]))
+    assert 0.85 < ratio < 1.3, f"near-band mean ratio {ratio:.3f} (the CGAL fold reads ~0.54)"
+
+    lb_violations = float(np.mean(d[band] < 0.75 * eu[band]))
+    assert lb_violations < 0.10, f"{lb_violations:.0%} of band vertices below the euclidean lower bound (the CGAL fold reads ~83%)"

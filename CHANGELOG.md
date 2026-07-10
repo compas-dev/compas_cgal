@@ -14,10 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added image reference in `docs/examples/example_isolines.md` and added `Measure: examples/example_measure.md` to the Examples nav in `mkdocs.yml`.
 * Added `docs/examples/example_booleans_with_edges.md` and `example_booleans_with_face_source.md` (with their images) covering the corefinement intersection-edge and face-source-tracking variants of the boolean operations; both wired into the Examples nav.
 * Added `docs/examples/example_boolean_difference_mesh_meshes.md` (CSG drilled rounded cube) and its Examples nav entry.
+* Added `data/flat_star_disk_irregular_rim.off` — a flat synthetic fixture whose irregular boundary sampling exposes multi-source heat-method normalization errors against a dependency-free euclidean truth (on a flat mesh the euclidean distance to the nearest source is exact in the near band and a hard lower bound everywhere), plus the regression test `tests/test_geodesics.py::test_heat_geodesic_multisource_boundary_sources` that fails on the previous backend.
 
 ### Fixed
 
 * Fixed `docs/examples/example_projection.py` imports: `project_mesh_on_mesh`, `project_points_on_mesh`, `pull_mesh_on_mesh`, and `pull_points_on_mesh` were incorrectly imported from `compas_cgal.meshing` instead of `compas_cgal.projection`, causing `ImportError` for anyone running the example.
+* Fixed multi-source geodesic distances collapsing near the source set: `heat_geodesic_distances`, `HeatGeodesicSolver`, `geodesic_isolines`, and `geodesic_isolines_split` now use an own Eigen implementation of the heat method (Crane et al. 2017) with a Dirichlet-constrained Poisson step instead of CGAL's `Heat_method_3`, whose `value_at_source_set` normalizes the Poisson potential through `min_s |phi(i) - phi(s)|` — a distance between *values* that folds every vertex whose potential lands inside the source-value spread (seeding all 508 boundary vertices of the new fixture read 0.54x the true distance in the near band, with 83% of band vertices below the euclidean lower bound). Distances are now exactly 0 at sources, non-negative, and accurate for arbitrary source sets; single-source results are unchanged within discretization error. Empty source sets now raise `ValueError` and meshes with a connected component containing no source raise `RuntimeError` (both previously returned meaningless values). The docstring claim that the intrinsic-Delaunay variant was used has been dropped (the binding instantiated the class default, `Direct`).
 
 ### Changed
 
