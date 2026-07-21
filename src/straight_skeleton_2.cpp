@@ -303,6 +303,101 @@ pmp_create_weighted_offset_polygons_2_outer(
         throw std::runtime_error("CGAL precondition failed: Invalid input for weighted offset");
     }
 }
+std::tuple<compas::RowMatrixXd, std::vector<std::vector<int>>>
+pmp_extrude_straight_skeleton(
+    Eigen::Ref<const compas::RowMatrixXd> boundary_vertices,
+    const std::vector<compas::RowMatrixXd>& hole_vertices,
+    const std::vector<std::vector<double>>& speeds,
+    bool use_angles,
+    double maximum_height)
+{
+    Polygon_with_holes polygon = data_to_polygon_with_holes(boundary_vertices, hole_vertices);
+
+    // Convert the propagation speeds (weights or angles) to the kernel number type,
+    // keeping the per-contour structure expected by CGAL::extrude_skeleton.
+    std::vector<std::vector<K::FT>> cgal_speeds;
+    cgal_speeds.reserve(speeds.size());
+    for (const auto& contour_speeds : speeds) {
+        std::vector<K::FT> values;
+        values.reserve(contour_speeds.size());
+        for (double value : contour_speeds) {
+            values.push_back(K::FT(value));
+        }
+        cgal_speeds.push_back(std::move(values));
+    }
+
+    compas::Mesh mesh;
+    bool success = false;
+    const bool bounded = maximum_height > 0.0;
+
+    try {
+        if (use_angles) {
+            if (bounded) {
+                success = CGAL::extrude_skeleton(polygon, mesh, CGAL::parameters::angles(cgal_speeds).maximum_height(maximum_height));
+            } else {
+                success = CGAL::extrude_skeleton(polygon, mesh, CGAL::parameters::angles(cgal_speeds));
+            }
+        } else {
+            if (bounded) {
+                success = CGAL::extrude_skeleton(polygon, mesh, CGAL::parameters::weights(cgal_speeds).maximum_height(maximum_height));
+            } else {
+                success = CGAL::extrude_skeleton(polygon, mesh, CGAL::parameters::weights(cgal_speeds));
+            }
+        }
+    } catch (const std::exception& e) {
+        throw std::runtime_error(std::string("Failed to extrude straight skeleton: ") + e.what());
+    }
+
+    if (!success) {
+        throw std::runtime_error(
+            "Failed to extrude straight skeleton. "
+            "Check that the polygon is simple, correctly oriented, and that a maximum height "
+            "is provided for outward or vertical slopes.");
+    }
+
+    // The extrusion produces a triangle soup. Triangulate defensively so the input to
+    // planar-patch remeshing is always a valid triangle mesh.
+    CGAL::Polygon_mesh_processing::triangulate_faces(mesh);
+
+    // Merge coplanar, connected triangles into single polygon faces. Planar patches with
+    // more than one boundary component (for example a base with courtyards from holes)
+    // are kept triangulated, since a single face cannot represent a polygon with holes.
+    // A cosine tolerance just below 1 (about 1 degree) merges triangles that are only
+    // near-coplanar due to inexact-kernel round-off; roof planes meet at ridges well above
+    // this angle, so genuine roof faces are never merged across a ridge.
+    compas::Mesh polygon_mesh;
+    CGAL::Polygon_mesh_processing::remesh_planar_patches(
+        mesh,
+        polygon_mesh,
+        CGAL::parameters::cosine_of_maximum_angle(0.9998),
+        CGAL::parameters::do_not_triangulate_faces(true));
+
+    // Fall back to the triangulated mesh if remeshing produced nothing (degenerate input).
+    const compas::Mesh& out_mesh = (polygon_mesh.number_of_faces() > 0) ? polygon_mesh : mesh;
+
+    std::size_t num_vertices = out_mesh.number_of_vertices();
+    compas::RowMatrixXd vertices(num_vertices, 3);
+    compas::Mesh::Property_map<compas::Mesh::Vertex_index, compas::Kernel::Point_3> location = out_mesh.points();
+    for (compas::Mesh::Vertex_index vertex : out_mesh.vertices()) {
+        std::size_t index = vertex.idx();
+        vertices(index, 0) = CGAL::to_double(location[vertex][0]);
+        vertices(index, 1) = CGAL::to_double(location[vertex][1]);
+        vertices(index, 2) = CGAL::to_double(location[vertex][2]);
+    }
+
+    std::vector<std::vector<int>> faces;
+    faces.reserve(out_mesh.number_of_faces());
+    for (compas::Mesh::Face_index face : out_mesh.faces()) {
+        std::vector<int> face_indices;
+        for (compas::Mesh::Vertex_index vertex : vertices_around_face(out_mesh.halfedge(face), out_mesh)) {
+            face_indices.push_back(static_cast<int>(vertex.idx()));
+        }
+        faces.push_back(std::move(face_indices));
+    }
+
+    return std::make_tuple(std::move(vertices), std::move(faces));
+}
+
 NB_MODULE(_straight_skeleton_2, m) {
 
     m.def(
@@ -463,4 +558,32 @@ NB_MODULE(_straight_skeleton_2, m) {
         "vertices"_a,
         "offset_distance"_a,
         "edge_weights"_a);
+
+    m.def(
+        "extrude_straight_skeleton",
+        &pmp_extrude_straight_skeleton,
+        "Extrude a polygon into a closed 3D surface mesh using the straight skeleton.\n\n"
+        "Parameters\n"
+        "----------\n"
+        "boundary_vertices : array-like\n"
+        "    Matrix of outer boundary vertex positions (Nx2 or Nx3, float64), counter-clockwise\n"
+        "hole_vertices : list\n"
+        "    List of hole vertex matrices (each Mx2 or Mx3, float64), clockwise\n"
+        "speeds : list\n"
+        "    Propagation speed per contour edge, one list per contour (boundary first, then holes)\n"
+        "use_angles : bool\n"
+        "    If True, `speeds` are taper angles in degrees, otherwise straight skeleton weights\n"
+        "maximum_height : float\n"
+        "    Maximum extrusion height. Values <= 0 mean unbounded (extrude to the apex)\n"
+        "\n"
+        "Returns\n"
+        "-------\n"
+        "tuple\n"
+        "    - Matrix of mesh vertices (Vx3, float64)\n"
+        "    - List of faces, each a list of vertex indices (coplanar faces merged into polygons)",
+        "boundary_vertices"_a,
+        "hole_vertices"_a,
+        "speeds"_a,
+        "use_angles"_a,
+        "maximum_height"_a);
 }
