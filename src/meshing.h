@@ -53,6 +53,11 @@ namespace compas {
  * @param target_edge_length Desired length for mesh edges
  * @param number_of_iterations Number of remeshing iterations
  * @param do_project Whether to project vertices onto the input surface
+ * @param protect_boundary Constrain all boundary edges so they are preserved
+ * @param protect_sharp_edges_angle_deg Dihedral threshold for interior feature edges (0 disables)
+ * @param keep_points Nx3 matrix of points; the mesh vertex coincident with each
+ *                    (within tolerance) is pinned and survives remeshing verbatim.
+ *                    Empty (0x3) disables (default).
  * @return std::tuple<RowMatrixXd, RowMatrixXi> containing:
  *         - New vertices as Rx3 matrix (float64)
  *         - New faces as Sx3 matrix (int32)
@@ -63,7 +68,10 @@ pmp_trimesh_remesh(
     Eigen::Ref<const compas::RowMatrixXi> faces_a,
     double target_edge_length,
     unsigned int number_of_iterations = 10,
-    bool do_project = true);
+    bool do_project = true,
+    bool protect_boundary = false,
+    double protect_sharp_edges_angle_deg = 0.0,
+    const compas::RowMatrixXd& keep_points = compas::RowMatrixXd(0, 3));
 
 
 /**
