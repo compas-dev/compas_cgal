@@ -16,6 +16,7 @@ def trimesh_remesh(
     do_project: bool = True,
     protect_boundary: bool = False,
     protect_sharp_edges_angle_deg: float = 0.0,
+    keep_points=None,
 ) -> VerticesFacesNumpy:
     """Remeshing of a triangle mesh.
 
@@ -39,6 +40,13 @@ def trimesh_remesh(
         whose adjacent faces form a dihedral angle ≥ this value are marked
         constrained and preserved. ``0.0`` disables interior-feature
         detection (default).
+    keep_points : array-like, optional
+        An Nx3 array of points. The mesh vertex coincident with each point
+        (matched by coordinate, within tolerance) is pinned: it is neither
+        moved nor removed during remeshing, while the edges between such
+        points are still re-sampled. Use this to keep only specific vertices
+        — e.g. the four corners of an open patch — rather than the whole
+        boundary. ``None`` disables (default).
 
     Returns
     -------
@@ -65,6 +73,9 @@ def trimesh_remesh(
     V, F = mesh
     V = np.asarray(V, dtype=np.float64, order="C")
     F = np.asarray(F, dtype=np.int32, order="C")
+    if keep_points is None:
+        keep_points = np.empty((0, 3), dtype=np.float64)
+    keep_points = np.asarray(keep_points, dtype=np.float64, order="C").reshape(-1, 3)
     return _meshing.pmp_trimesh_remesh(
         V,
         F,
@@ -73,6 +84,7 @@ def trimesh_remesh(
         do_project,
         protect_boundary,
         protect_sharp_edges_angle_deg,
+        keep_points,
     )
 
 

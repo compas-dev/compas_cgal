@@ -46,7 +46,8 @@ pmp_trimesh_remesh(
     unsigned int number_of_iterations,
     bool do_project,
     bool protect_boundary,
-    double protect_sharp_edges_angle_deg)
+    double protect_sharp_edges_angle_deg,
+    const compas::RowMatrixXd& keep_points)
 {
     // Convert input matrices to CGAL mesh and keep a copy for projection
     compas::Mesh original_mesh = compas::mesh_from_vertices_and_faces(vertices_a, faces_a);
@@ -78,16 +79,53 @@ pmp_trimesh_remesh(
             mesh_a, protect_sharp_edges_angle_deg, ecm);
     }
 
-    // Perform isotropic remeshing
-    CGAL::Polygon_mesh_processing::isotropic_remeshing(
-        faces(mesh_a),
-        target_edge_length,
-        mesh_a,
-        CGAL::Polygon_mesh_processing::parameters::number_of_iterations(number_of_iterations)
-                       .do_project(do_project)
-                       .edge_is_constrained_map(ecm)
-                       .protect_constraints(protect_boundary
-                                            || protect_sharp_edges_angle_deg > 0.0));
+    // Build a vertex-is-constrained property map from user-supplied points.
+    // A mesh vertex whose coordinates match a provided point (within
+    // tolerance) is pinned: isotropic_remeshing will neither move nor remove
+    // it, while the edges between such points are still re-sampled. This is
+    // the coordinate-snap behaviour used by pmp_trimesh_remesh_dual.
+    auto vcm = mesh_a.add_property_map<
+        boost::graph_traits<compas::Mesh>::vertex_descriptor, bool>(
+        "v:is_constrained", false).first;
+
+    bool has_kept_vertices = false;
+    if (keep_points.rows() > 0) {
+        for (Eigen::Index i = 0; i < keep_points.rows(); ++i) {
+            compas::Kernel::Point_3 target(keep_points(i, 0), keep_points(i, 1), keep_points(i, 2));
+            for (auto v : vertices(mesh_a)) {
+                if (CGAL::squared_distance(mesh_a.point(v), target) < 1e-6) {
+                    put(vcm, v, true);
+                    has_kept_vertices = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    // Perform isotropic remeshing. The vertex-is-constrained map is only
+    // attached when points were supplied — otherwise CGAL's default corner
+    // handling (derived from the constrained edges) must be left untouched.
+    const bool protect = protect_boundary || protect_sharp_edges_angle_deg > 0.0;
+    if (has_kept_vertices) {
+        CGAL::Polygon_mesh_processing::isotropic_remeshing(
+            faces(mesh_a),
+            target_edge_length,
+            mesh_a,
+            CGAL::Polygon_mesh_processing::parameters::number_of_iterations(number_of_iterations)
+                           .do_project(do_project)
+                           .edge_is_constrained_map(ecm)
+                           .vertex_is_constrained_map(vcm)
+                           .protect_constraints(protect));
+    } else {
+        CGAL::Polygon_mesh_processing::isotropic_remeshing(
+            faces(mesh_a),
+            target_edge_length,
+            mesh_a,
+            CGAL::Polygon_mesh_processing::parameters::number_of_iterations(number_of_iterations)
+                           .do_project(do_project)
+                           .edge_is_constrained_map(ecm)
+                           .protect_constraints(protect));
+    }
 
 
     // Clean up the mesh
@@ -922,7 +960,8 @@ NB_MODULE(_meshing, m) {
         "number_of_iterations"_a = 10,
         "do_project"_a = true,
         "protect_boundary"_a = false,
-        "protect_sharp_edges_angle_deg"_a = 0.0
+        "protect_sharp_edges_angle_deg"_a = 0.0,
+        "keep_points"_a = compas::RowMatrixXd(0, 3)
     );
     
     m.def(
