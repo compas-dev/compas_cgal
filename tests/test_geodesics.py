@@ -10,6 +10,8 @@ from compas_cgal.geodesics import geodesic_isolines_split
 from compas_cgal.geodesics import heat_geodesic_distances
 from compas_cgal.geodesics import HeatGeodesicSolver
 
+IFILE = Path(__file__).parent.parent / "data" / "flat_star_disk_irregular_rim.off"
+
 
 @pytest.fixture
 def sphere_mesh():
@@ -199,15 +201,14 @@ def test_heat_geodesic_multisource_boundary_sources():
     - Dirichlet-pinned heat method (this backend): ratio ~0.98, ~1% marginal
       violations, exactly 0 at every source.
     """
-    fixture = Path(__file__).parent.parent / "data" / "flat_star_disk_irregular_rim.off"
-    mesh = Mesh.from_off(fixture)
+    mesh = Mesh.from_off(IFILE)
     V, F = mesh.to_vertices_and_faces()
     V = np.asarray(V, dtype=np.float64)
     F = np.asarray(F, dtype=np.int64)
     sources = sorted({int(v) for v in mesh.vertices_on_boundary()})  # set: compas repeats the loop start
     assert len(sources) == 508  # fixture integrity
 
-    d = heat_geodesic_distances((V, F), sources)
+    d = heat_geodesic_distances(mesh, sources)  # compas Mesh input (see overload)
 
     assert np.all(np.isfinite(d))
     assert np.all(d >= 0)
@@ -226,3 +227,29 @@ def test_heat_geodesic_multisource_boundary_sources():
 
     lb_violations = float(np.mean(d[band] < 0.75 * eu[band]))
     assert lb_violations < 0.10, f"{lb_violations:.0%} of band vertices below the euclidean lower bound (the CGAL fold reads ~83%)"
+
+
+def test_mesh_input_matches_tuple_input(sphere_mesh):
+    """Contract: the compas ``Mesh`` overload agrees with the ``(V, F)`` tuple form.
+
+    Every geodesics entry point accepts either shape; both must coerce through
+    ``_as_vertices_faces`` to the same arrays and return identical results.
+    """
+    V, F = sphere_mesh
+    mesh = Mesh.from_vertices_and_faces(V, F)  # key order 0..n-1 preserves source indices
+    sources = [0, 10]
+    isovalues = [1.0, 2.0]
+
+    assert np.allclose(
+        heat_geodesic_distances(mesh, sources),
+        heat_geodesic_distances((V, F), sources),
+    )
+
+    assert np.allclose(
+        HeatGeodesicSolver(mesh).solve(sources),
+        HeatGeodesicSolver((V, F)).solve(sources),
+    )
+
+    assert len(geodesic_isolines_split(mesh, sources, isovalues)) == len(geodesic_isolines_split((V, F), sources, isovalues))
+
+    assert len(geodesic_isolines(mesh, sources, isovalues)) == len(geodesic_isolines((V, F), sources, isovalues))
