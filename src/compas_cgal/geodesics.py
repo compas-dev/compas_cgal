@@ -1,40 +1,77 @@
-"""Geodesic distance computation using CGAL heat method."""
+"""Geodesic distance computation using the heat method."""
 
 from typing import List
+from typing import Tuple
+from typing import Union
+from typing import overload
 
 import numpy as np
+from compas.datastructures import Mesh
 from numpy.typing import NDArray
 
 from compas_cgal import _types_std  # noqa: F401  # Load vector type bindings
+from compas_cgal._geodesics import HeatGeodesicSolver as _HeatGeodesicSolver
 from compas_cgal._geodesics import geodesic_isolines as _geodesic_isolines
 from compas_cgal._geodesics import geodesic_isolines_split as _geodesic_isolines_split
 from compas_cgal._geodesics import heat_geodesic_distances as _heat_geodesic_distances
-from compas_cgal._geodesics import HeatGeodesicSolver as _HeatGeodesicSolver
 from compas_cgal.types import PolylinesNumpy
 from compas_cgal.types import VerticesFaces
 from compas_cgal.types import VerticesFacesNumpy
 
 __all__ = ["heat_geodesic_distances", "HeatGeodesicSolver", "geodesic_isolines_split", "geodesic_isolines"]
 
+MeshInput = Union[Mesh, VerticesFaces]
+"""A triangulated mesh, accepted either as a :class:`compas.datastructures.Mesh`
+or as a :attr:`compas_cgal.types.VerticesFaces` tuple of vertices and faces."""
 
-def heat_geodesic_distances(mesh: VerticesFaces, sources: List[int]) -> NDArray:
-    """Compute geodesic distances from source vertices using CGAL heat method.
 
-    Uses CGAL's Heat_method_3 with intrinsic Delaunay triangulation for
-    accurate geodesic distance computation.
+def _as_vertices_faces(mesh: MeshInput) -> Tuple[NDArray, NDArray]:
+    """Coerce a mesh (compas ``Mesh`` or ``(V, F)`` tuple) to CGAL-ready arrays.
+
+    Single marshalling seam for every geodesics entry point: vertices as a
+    C-contiguous ``float64`` Nx3 array, faces as a C-contiguous ``int32`` Fx3
+    array. The mesh must be triangulated.
+    """
+    if isinstance(mesh, Mesh):
+        V, F = mesh.to_vertices_and_faces()
+    else:
+        V, F = mesh
+    V = np.asarray(V, dtype=np.float64, order="C")
+    F = np.asarray(F, dtype=np.int32, order="C")
+    return V, F
+
+
+@overload
+def heat_geodesic_distances(mesh: Mesh, sources: List[int]) -> NDArray: ...
+@overload
+def heat_geodesic_distances(mesh: VerticesFaces, sources: List[int]) -> NDArray: ...
+def heat_geodesic_distances(mesh: MeshInput, sources: List[int]) -> NDArray:
+    """Compute geodesic distances from source vertices using the heat method.
+
+    Heat method (Crane et al. 2017) with a Dirichlet-constrained Poisson step:
+    the distance is exactly 0 at every source vertex and remains accurate for
+    multi-vertex source sets (e.g. all boundary vertices of an open mesh).
 
     Parameters
     ----------
-    mesh : :attr:`compas_cgal.types.VerticesFaces`
-        A triangulated mesh as a tuple of vertices and faces.
+    mesh : :attr:`compas_cgal.geodesics.MeshInput`
+        A triangulated mesh, either a :class:`compas.datastructures.Mesh`
+        or a :attr:`compas_cgal.types.VerticesFaces` tuple of vertices and faces.
     sources : List[int]
-        Source vertex indices.
+        Source vertex indices (at least one; out-of-range indices are ignored).
 
     Returns
     -------
     NDArray
         Geodesic distances from the nearest source to each vertex.
         Shape is (n_vertices,).
+
+    Raises
+    ------
+    ValueError
+        If no valid source vertex index is given.
+    RuntimeError
+        If a connected component of the mesh contains no source vertex.
 
     Examples
     --------
@@ -45,10 +82,7 @@ def heat_geodesic_distances(mesh: VerticesFaces, sources: List[int]) -> NDArray:
     >>> distances = heat_geodesic_distances(mesh, [0])  # distances from vertex 0
 
     """
-    V, F = mesh
-    V = np.asarray(V, dtype=np.float64, order="C")
-    F = np.asarray(F, dtype=np.int32, order="C")
-
+    V, F = _as_vertices_faces(mesh)
     result = _heat_geodesic_distances(V, F, sources)
     return result.flatten()
 
@@ -63,8 +97,9 @@ class HeatGeodesicSolver:
 
     Parameters
     ----------
-    mesh : :attr:`compas_cgal.types.VerticesFaces`
-        A triangulated mesh as a tuple of vertices and faces.
+    mesh : :attr:`compas_cgal.geodesics.MeshInput`
+        A triangulated mesh, either a :class:`compas.datastructures.Mesh`
+        or a :attr:`compas_cgal.types.VerticesFaces` tuple of vertices and faces.
 
     Examples
     --------
@@ -78,10 +113,12 @@ class HeatGeodesicSolver:
 
     """
 
-    def __init__(self, mesh: VerticesFaces) -> None:
-        V, F = mesh
-        V = np.asarray(V, dtype=np.float64, order="C")
-        F = np.asarray(F, dtype=np.int32, order="C")
+    @overload
+    def __init__(self, mesh: Mesh) -> None: ...
+    @overload
+    def __init__(self, mesh: VerticesFaces) -> None: ...
+    def __init__(self, mesh: MeshInput) -> None:
+        V, F = _as_vertices_faces(mesh)
         self._solver = _HeatGeodesicSolver(V, F)
 
     def solve(self, sources: List[int]) -> NDArray:
@@ -108,11 +145,11 @@ class HeatGeodesicSolver:
         return self._solver.num_vertices
 
 
-def geodesic_isolines_split(
-    mesh: VerticesFaces,
-    sources: List[int],
-    isovalues: List[float],
-) -> List[VerticesFacesNumpy]:
+@overload
+def geodesic_isolines_split(mesh: Mesh, sources: List[int], isovalues: List[float]) -> List[VerticesFacesNumpy]: ...
+@overload
+def geodesic_isolines_split(mesh: VerticesFaces, sources: List[int], isovalues: List[float]) -> List[VerticesFacesNumpy]: ...
+def geodesic_isolines_split(mesh: MeshInput, sources: List[int], isovalues: List[float]) -> List[VerticesFacesNumpy]:
     """Split mesh into components along geodesic isolines.
 
     Computes geodesic distances from sources, refines the mesh along
@@ -120,8 +157,9 @@ def geodesic_isolines_split(
 
     Parameters
     ----------
-    mesh : :attr:`compas_cgal.types.VerticesFaces`
-        A triangulated mesh as a tuple of vertices and faces.
+    mesh : :attr:`compas_cgal.geodesics.MeshInput`
+        A triangulated mesh, either a :class:`compas.datastructures.Mesh`
+        or a :attr:`compas_cgal.types.VerticesFaces` tuple of vertices and faces.
     sources : List[int]
         Source vertex indices for geodesic distance computation.
     isovalues : List[float]
@@ -144,27 +182,25 @@ def geodesic_isolines_split(
     >>> len(components)  # Number of mesh strips
 
     """
-    V, F = mesh
-    V = np.asarray(V, dtype=np.float64, order="C")
-    F = np.asarray(F, dtype=np.int32, order="C")
-
+    V, F = _as_vertices_faces(mesh)
     vertices_list, faces_list = _geodesic_isolines_split(V, F, sources, isovalues)
     return list(zip(vertices_list, faces_list))
 
 
-def geodesic_isolines(
-    mesh: VerticesFaces,
-    sources: List[int],
-    isovalues: List[float],
-) -> PolylinesNumpy:
+@overload
+def geodesic_isolines(mesh: Mesh, sources: List[int], isovalues: List[float]) -> PolylinesNumpy: ...
+@overload
+def geodesic_isolines(mesh: VerticesFaces, sources: List[int], isovalues: List[float]) -> PolylinesNumpy: ...
+def geodesic_isolines(mesh: MeshInput, sources: List[int], isovalues: List[float]) -> PolylinesNumpy:
     """Extract isoline polylines from geodesic distance field.
 
     Computes geodesic distances and extracts polylines along specified isovalues.
 
     Parameters
     ----------
-    mesh : :attr:`compas_cgal.types.VerticesFaces`
-        A triangulated mesh as a tuple of vertices and faces.
+    mesh : :attr:`compas_cgal.geodesics.MeshInput`
+        A triangulated mesh, either a :class:`compas.datastructures.Mesh`
+        or a :attr:`compas_cgal.types.VerticesFaces` tuple of vertices and faces.
     sources : List[int]
         Source vertex indices for geodesic distance computation.
     isovalues : List[float]
@@ -176,8 +212,5 @@ def geodesic_isolines(
         List of polyline segments as Nx3 arrays of points.
 
     """
-    V, F = mesh
-    V = np.asarray(V, dtype=np.float64, order="C")
-    F = np.asarray(F, dtype=np.int32, order="C")
-
+    V, F = _as_vertices_faces(mesh)
     return list(_geodesic_isolines(V, F, sources, isovalues))
