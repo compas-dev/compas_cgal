@@ -163,6 +163,7 @@ nav:
       - Straight Skeleton Offset Polygon: examples/example_straight_skeleton_2_interior_straight_skeleton_offset_polygon.md
       - Straight Skeleton Weighted Offset: examples/example_straight_skeleton_2_interior_straight_skeleton_weighted_offset_polygon.md
       - Straight Skeleton With Holes: examples/example_straight_skeleton_2_interior_straight_skeleton_with_holes.md
+      - Straight Skeleton Extrusion: examples/example_straight_skeleton_2_extrude.md
       - Subdivision: examples/example_subdivision.md
       - Triangulation: examples/example_triangulation.md
   - API Reference:

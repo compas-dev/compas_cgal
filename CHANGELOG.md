@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Added `compas_cgal.straight_skeleton_2.extrude` wrapping CGAL's `extrude_skeleton`, turning a 2D polygon (optionally with holes) into a closed 3D roof mesh, with control over roof pitch via taper `angles` or straight skeleton `weights` and an optional `maximum_height`. Internally coplanar extrusion faces are merged into polygons (via `remesh_planar_patches`) to recover the true roof planes, and `extrude` returns a `(mesh, lines)` tuple: a triangulated, ready-to-display mesh (so non-convex roof faces render correctly) and the roof outline (eaves, hips and ridges) as a list of `compas.geometry.Line`.
+* Added the `extrude_straight_skeleton` binding in `src/straight_skeleton_2.cpp` / `.h`.
+* Added `docs/examples/example_straight_skeleton_2_extrude.py` and `.md` (with image `docs/assets/images/example_straight_skeleton_2_extrude.png`) demonstrating roof generation for a few corner cases — a footprint without holes, one with a single hole, and one with multiple holes — and wired the example into the Examples nav in `mkdocs.yml`.
+* Added `tests/test_straight_skeleton_2_extrude.py` covering the default roof (mesh + outline), angle-driven height, height truncation, single and multiple holes, and the weights/angles exclusivity check.
 * Declared runtime dependencies in `pyproject.toml`: `numpy>=1.24` and `compas>=2.15,<3` (previously undeclared, leaving installs to fail at import time on clean environments).
 * Added `docs/examples/example_measure.md` documenting `mesh_area`, `mesh_volume`, and `mesh_centroid` so the measure example renders alongside the others.
 * Added image reference in `docs/examples/example_isolines.md` and added `Measure: examples/example_measure.md` to the Examples nav in `mkdocs.yml`.

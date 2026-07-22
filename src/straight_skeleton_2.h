@@ -2,6 +2,8 @@
 
 #include "compas.h"
 
+#include <nanobind/stl/vector.h>
+
 // CGAL straight skeleton 2
 #include <CGAL/Polygon_2.h>
 #include <CGAL/create_straight_skeleton_2.h>
@@ -10,6 +12,11 @@
 #include <CGAL/create_weighted_offset_polygons_from_polygon_with_holes_2.h>
 #include <CGAL/create_weighted_straight_skeleton_2.h>
 #include <CGAL/create_offset_polygons_from_polygon_with_holes_2.h>
+
+// CGAL straight skeleton extrusion (roofs)
+#include <CGAL/extrude_skeleton.h>
+#include <CGAL/Polygon_mesh_processing/triangulate_faces.h>
+#include <CGAL/Polygon_mesh_processing/remesh_planar_patches.h>
 
 
 /**
@@ -140,6 +147,39 @@ pmp_create_weighted_offset_polygons_2_outer(
     Eigen::Ref<const compas::RowMatrixXd> vertices,
     double offset_distance,
     Eigen::Ref<const compas::RowMatrixXd> edge_weights
+);
+
+/**
+ * @brief Extrude a 2D polygon (with optional holes) into a closed 3D surface mesh
+ *        using the straight skeleton. This produces roof-like geometry from a
+ *        building footprint.
+ *
+ * The propagation speed of each contour edge is controlled either by weights or by
+ * taper angles (in degrees). Weight 1 (or angle 45) yields a standard 45 degree slope.
+ *
+ * @param boundary_vertices Matrix of the outer boundary vertices as Nx2 or Nx3 matrix
+ *        in row-major order (float64). The boundary must be counter-clockwise oriented.
+ * @param hole_vertices Vector of hole polygons, each as Mx2 or Mx3 matrix in row-major
+ *        order (float64). Holes must be clockwise oriented.
+ * @param speeds Propagation speed per contour edge. One inner vector per contour
+ *        (outer boundary first, then each hole), each holding one value per edge.
+ * @param use_angles If true, the speeds are interpreted as taper angles in degrees,
+ *        otherwise as straight skeleton edge weights.
+ * @param maximum_height Maximum extrusion height. Values <= 0 mean unbounded, in which
+ *        case an inward slope is extruded up to the apex of the skeleton.
+ * @return std::tuple<compas::RowMatrixXd, std::vector<std::vector<int>>> containing:
+ *         - Matrix of mesh vertices (Vx3, float64)
+ *         - Vector of faces, each a vector of vertex indices. Coplanar faces are merged
+ *           into a single polygon; only planar patches with holes remain triangulated.
+ * @throws std::runtime_error if CGAL fails to extrude the skeleton.
+ */
+std::tuple<compas::RowMatrixXd, std::vector<std::vector<int>>>
+pmp_extrude_straight_skeleton(
+    Eigen::Ref<const compas::RowMatrixXd> boundary_vertices,
+    const std::vector<compas::RowMatrixXd>& hole_vertices,
+    const std::vector<std::vector<double>>& speeds,
+    bool use_angles,
+    double maximum_height
 );
 
 void init_straight_skeleton_2(nb::module_& m);
