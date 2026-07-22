@@ -8,6 +8,7 @@ from compas.geometry import Rotation
 from compas.geometry import Scale
 from compas.geometry import Translation
 from compas_viewer import Viewer
+from compas_viewer.config import Config
 
 from compas_cgal.skeletonization import mesh_skeleton_with_mapping
 
@@ -49,12 +50,21 @@ print(f"Edge {edge_idx}: {len(start_indices)} vertices → start, {len(end_indic
 # Viz
 # =============================================================================
 
-viewer = Viewer()
+config = Config()
+config.renderer.show_grid = False
+config.camera.target = [0.2, 0.0, 1.5]
+config.camera.position = [-4.8, -4.8, 2.0]
 
-viewer.renderer.camera.target = [0, 0, 1.5]
-viewer.renderer.camera.position = [-5, -5, 1.5]
+viewer = Viewer(config=config)
 
-viewer.scene.add(mesh, opacity=0.2, show_points=False, facecolor=[0.9, 0.9, 0.9])
+viewer.scene.add(
+    mesh,
+    opacity=0.6,
+    show_points=False,
+    show_lines=True,
+    facecolor=[0.85, 0.85, 0.85],
+    linecolor=[0.4, 0.4, 0.4],
+)
 
 for idx in start_indices:
     viewer.scene.add(Point(*v[idx]), pointcolor=[1.0, 0.0, 0.0], pointsize=15)  # red = start
