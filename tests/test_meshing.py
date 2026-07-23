@@ -72,10 +72,14 @@ def square_with_hole():
     # corners. 8 triangles total.
     F = np.asarray(
         [
-            [0, 1, 5], [0, 5, 4],
-            [1, 2, 6], [1, 6, 5],
-            [2, 3, 7], [2, 7, 6],
-            [3, 0, 4], [3, 4, 7],
+            [0, 1, 5],
+            [0, 5, 4],
+            [1, 2, 6],
+            [1, 6, 5],
+            [2, 3, 7],
+            [2, 7, 6],
+            [3, 0, 4],
+            [3, 4, 7],
         ],
         dtype=np.int32,
     )
@@ -91,9 +95,7 @@ def test_remesh_default_subdivides_boundary(square_with_hole):
     V, F = square_with_hole
     V_new, F_new = trimesh_remesh((V, F), target_edge_length=0.5, number_of_iterations=5)
     # Boundary subdivision adds vertices on outer + inner loops.
-    assert V_new.shape[0] > V.shape[0], (
-        f"default mode should add boundary verts; got {V_new.shape[0]} <= {V.shape[0]}"
-    )
+    assert V_new.shape[0] > V.shape[0], f"default mode should add boundary verts; got {V_new.shape[0]} <= {V.shape[0]}"
 
 
 def test_remesh_protect_boundary_keeps_corners(square_with_hole):
@@ -133,15 +135,13 @@ def test_remesh_protect_boundary_keeps_boundary_vertex_count(square_with_hole):
             i, j = int(face[k]), int(face[(k + 1) % 3])
             he_set.add((i, j))
     boundary_verts = set()
-    for (i, j) in he_set:
+    for i, j in he_set:
         if (j, i) not in he_set:
             boundary_verts.add(i)
             boundary_verts.add(j)
     # Original boundary had 8 verts (4 outer + 4 inner); protect_boundary
     # forbids splitting boundary edges so count must stay exactly 8.
-    assert len(boundary_verts) == 8, (
-        f"protect_boundary=True must keep 8 boundary verts; got {len(boundary_verts)}"
-    )
+    assert len(boundary_verts) == 8, f"protect_boundary=True must keep 8 boundary verts; got {len(boundary_verts)}"
 
 
 def test_remesh_protect_sharp_edges_default_disabled():
@@ -150,9 +150,7 @@ def test_remesh_protect_sharp_edges_default_disabled():
     V = np.asarray([[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]], dtype=np.float64)
     F = np.asarray([[0, 1, 2], [0, 2, 3]], dtype=np.int32)
     V_a, F_a = trimesh_remesh((V, F), 0.3, number_of_iterations=5)
-    V_b, F_b = trimesh_remesh(
-        (V, F), 0.3, number_of_iterations=5, protect_sharp_edges_angle_deg=0.0
-    )
+    V_b, F_b = trimesh_remesh((V, F), 0.3, number_of_iterations=5, protect_sharp_edges_angle_deg=0.0)
     np.testing.assert_array_equal(V_a.shape, V_b.shape)
     np.testing.assert_array_equal(F_a.shape, F_b.shape)
 
