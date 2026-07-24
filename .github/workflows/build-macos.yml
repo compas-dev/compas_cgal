@@ -1,4 +1,4 @@
-name: build
+name: build-macos
 
 on:
   push:
@@ -7,13 +7,13 @@ on:
     tags:
       - "[0-9]*.[0-9]*.[0-9]*"
     paths-ignore:
-      - ".github/workflows/build-macos.yml"
+      - ".github/workflows/build.yml"
       - ".github/workflows/build-windows.yml"
   pull_request:
     branches:
       - main
     paths-ignore:
-      - ".github/workflows/build-macos.yml"
+      - ".github/workflows/build.yml"
       - ".github/workflows/build-windows.yml"
   workflow_dispatch:
 
@@ -24,7 +24,7 @@ concurrency:
 jobs:
   build-wheel:
     if: ${{ github.event_name != 'pull_request' || !contains(github.event.pull_request.labels.*.name, 'docs-only') }}
-    runs-on: ubuntu-22.04
+    runs-on: macos-13
     permissions:
       contents: read
     env:
@@ -44,17 +44,23 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: python-cp312-linux-x86_64
+          name: python-cp312-macos
           path: wheelhouse/*.whl
 
   test-wheel:
     if: ${{ github.event_name != 'pull_request' || !contains(github.event.pull_request.labels.*.name, 'docs-only') }}
     needs: build-wheel
-    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.12", "3.13"]
+        include:
+          - runner: macos-13
+            python-version: "3.12"
+            wheel-glob: "*x86_64.whl"
+          - runner: macos-14
+            python-version: "3.13"
+            wheel-glob: "*arm64.whl"
+    runs-on: ${{ matrix.runner }}
     permissions:
       contents: read
     steps:
@@ -66,15 +72,17 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: python-cp312-linux-x86_64
+          name: python-cp312-macos
           path: dist
 
       - name: Install wheel in a clean virtual environment
         run: |
+          WHEEL=$(find dist -name "${{ matrix.wheel-glob }}" -print -quit)
+          [ -n "$WHEEL" ] || { echo "::error::No wheel found matching ${{ matrix.wheel-glob }}"; exit 1; }
           python -m venv .venv
           . .venv/bin/activate
           python -m pip install --upgrade pip
-          python -m pip install pytest dist/*.whl
+          python -m pip install pytest "$WHEEL"
           python -c "import compas_cgal; print(compas_cgal.__version__)"
           python -m pytest tests
 
@@ -84,14 +92,14 @@ jobs:
       - test-wheel
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
-    environment: linux
+    environment: macos
     permissions:
       contents: read
       id-token: write
     steps:
       - uses: actions/download-artifact@v4
         with:
-          pattern: "python-*-linux-*"
+          pattern: "python-*-macos*"
           merge-multiple: true
           path: dist
 

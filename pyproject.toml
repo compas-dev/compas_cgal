@@ -1,5 +1,5 @@
 [build-system]
-requires = ["scikit-build-core >=0.10", "nanobind >=2.12"]
+requires = ["scikit-build-core >=0.10", "nanobind >=2.12", "setuptools-scm >=8"]
 build-backend = "scikit_build_core.build"
 
 [project]
@@ -69,8 +69,10 @@ cmake.version = ">=3.15"
 cmake.build-type = "Release"
 
 [tool.scikit-build.metadata.version]
-provider = "scikit_build_core.metadata.regex"
-input = "src/compas_cgal/__init__.py"
+provider = "scikit_build_core.metadata.setuptools_scm"
+
+[tool.setuptools_scm]
+local_scheme = "no-local-version"
 
 [tool.scikit-build.cmake.define]
 CMAKE_POLICY_DEFAULT_CMP0135 = "NEW"
@@ -80,10 +82,10 @@ CMAKE_POLICY_DEFAULT_CMP0135 = "NEW"
 # ============================================================================
 
 [tool.cibuildwheel]
-# build = ["cp38-*", "cp39-*", "cp31?-*"] # Build for specific Python versions.
+build = ["cp312-*"]
 build-verbosity = 3
-test-requires = ["numpy>=1.24", "compas>=2.15", "pytest", "build"]
-test-command = "pip list && pytest {project}/tests"
+test-requires = ["numpy>=2.4", "compas>=2.15,<3", "pytest"]
+test-command = "python -m pip install --force-reinstall --no-deps {wheel} && python -c \"import compas_cgal; print(compas_cgal.__version__)\" && python -m pytest {project}/tests"
 build-frontend = "pip"
 manylinux-x86_64-image = "manylinux_2_28"
 skip = ["*_i686", "*-musllinux_*", "*-win32", "pp*"]
@@ -101,9 +103,9 @@ commit = true
 tag = true
 
 [[tool.bumpversion.files]]
-filename = "src/compas_cgal/__init__.py"
-search = "{current_version}"
-replace = "{new_version}"
+filename = "pyproject.toml"
+search = 'current_version = "{current_version}"'
+replace = 'current_version = "{new_version}"'
 
 [[tool.bumpversion.files]]
 filename = "CHANGELOG.md"
