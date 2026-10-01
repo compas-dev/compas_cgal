@@ -1,11 +1,16 @@
 import os
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version
 
 
 __author__ = ["tom van mele", "petras vestartas"]
 __copyright__ = "Block Research Group - ETH Zurich"
 __license__ = "MIT License"
 __email__ = ["van.mele@arch.ethz.ch", "vestartas@arch.ethz.ch"]
-__version__ = "0.9.5"
+try:
+    __version__ = version("compas_cgal")
+except PackageNotFoundError:
+    __version__ = "0.0.0"
 
 HERE = os.path.dirname(__file__)
 
