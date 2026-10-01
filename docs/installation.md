@@ -16,9 +16,31 @@ conda activate cgal
 conda install compas_viewer
 ```
 
-## Using uv
+## From source
 
-[uv](https://docs.astral.sh/uv/) can be used to set up an isolated environment and build `compas_cgal` from source.
+Building from source compiles the native CGAL extensions with CMake, `scikit-build-core` and `nanobind`.
+The first build can take several minutes. A C++ compiler is required, see the
+[compiler requirements](devguide/compiler.md). Clone the repository first:
+
+```bash
+git clone https://github.com/compas-dev/compas_cgal.git
+cd compas_cgal
+```
+
+Then use any one of the following package managers.
+
+### Using conda
+
+```bash
+conda env create -f environment.yml
+conda activate cgal-dev
+```
+
+The environment installs CMake, COMPAS, the development and documentation requirements, and builds `compas_cgal` itself.
+
+### Using uv
+
+[uv](https://docs.astral.sh/uv/) sets up an isolated environment in `.venv`.
 
 ```bash
 uv venv --python 3.12
@@ -28,11 +50,22 @@ uv pip install -e . --no-build-isolation
 
 Activate the environment with `.venv\Scripts\activate` on Windows or `source .venv/bin/activate` on macOS/Linux.
 
-The editable install triggers a native CMake/CGAL build via `scikit-build-core` and `nanobind`, which can take several minutes on the first run.
+### Using pixi
+
+[pixi](https://pixi.sh/) resolves the conda and PyPI dependencies from the `[tool.pixi]` tables in `pyproject.toml`,
+locked in `pixi.lock`, and builds the package in editable mode.
+
+```bash
+pixi install
+pixi run test
+```
+
+Other tasks are `pixi run lint` and `pixi run format-check`, and `pixi shell` opens an activated shell.
+The manifest is solved for `linux-64` and `osx-arm64` only, on Windows use conda or uv.
 
 ## Dev Install
 
-See [the developer guide](devguide.md).
+To contribute, see [the developer guide](devguide.md).
 
 ## Building the documentation
 

@@ -6,7 +6,7 @@ There are two ways to set up the development environment:
 
 ``` bash
 conda env create -f environment.yml
-conda activate compas_cgal
+conda activate cgal-dev
 ```
 
 ## Manual setup
