@@ -135,6 +135,14 @@ nav:
   - Getting Started:
       - Introduction: index.md
       - Installation: installation.md
+      - Developer Guide:
+          - Overview: devguide.md
+          - Conda Environment: devguide/conda_environment.md
+          - Compiler Requirements: devguide/compiler.md
+          - CMake Configuration: devguide/cmake_configuration.md
+          - Contributing: devguide/contribute.md
+          - Style: devguide/style.md
+          - Types: devguide/types.md
       - License: license.md
       - Acknowledgements: acknowledgements.md
       - Changelog: changelog.md
@@ -144,6 +152,7 @@ nav:
       - Booleans With Face Source: examples/example_booleans_with_face_source.md
       - CSG Drilled Rounded Cube: examples/example_boolean_difference_mesh_meshes.md
       - Geodesics: examples/example_geodesics.md
+      - Geodesics Exact: examples/example_geodesics_exact.md
       - Intersections: examples/example_intersections.md
       - Isolines: examples/example_isolines.md
       - Measure: examples/example_measure.md

@@ -75,6 +75,19 @@ input = "src/compas_cgal/__init__.py"
 [tool.scikit-build.cmake.define]
 CMAKE_POLICY_DEFAULT_CMP0135 = "NEW"
 
+# pixi injects a `pixi-conda-environment` fingerprint into --config-settings on every PyPI
+# source build, and scikit-build-core aborts on unrecognized keys (exit 7). Scoped to pixi
+# via an override rather than set globally: `strict-config = false` is NOT limited to
+# --config-settings — it also stops validation of this project's own [tool.scikit-build]
+# table and allows extra keys in [project] metadata, so globally a typo in `wheel.py-api`
+# or `cmake.build-type` would yield a silently wrong wheel for pip and cibuildwheel too.
+# Gated here, those frontends keep strict validation and only pixi's build relaxes it.
+# The value is a regex matched against the variable; `.+` matches presence, which is what is
+# meant. Overrides apply before validation exits.
+[[tool.scikit-build.overrides]]
+if.env.PIXI_PROJECT_NAME = ".+"
+strict-config = false
+
 # ============================================================================
 # cibuildwheel
 # ============================================================================
@@ -139,3 +152,59 @@ max-doc-length = 179
 [tool.ruff.format]
 docstring-code-format = true
 docstring-code-line-length = "dynamic"
+
+# ============================================================================
+# pixi — an additive alternative to environment.yml + tasks.py.
+# conda and pip workflows are unaffected; nothing above this line changes.
+# ============================================================================
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+# Only the platforms this manifest has actually been solved and built on.
+platforms = ["osx-arm64", "linux-64"]
+
+# The build backend MUST be a conda dependency, not a PyPI one. compas_cgal has a
+# dynamic version, so uv runs prepare_metadata_for_build_wheel at SOLVE time; with
+# no-build-isolation there is no ephemeral build env, and the PyPI set is not
+# installed yet at that point. pixi installs conda packages first, so only this
+# table is populated in time. Moving these two to pypi-dependencies reintroduces
+# `No module named 'scikit_build_core'`.
+[tool.pixi.dependencies]
+python = "3.12.*"
+cmake = ">=3.15"
+ninja = "*"
+nanobind = ">=1.3.2"
+scikit-build-core = ">=0.10"
+compas = "*"
+numpy = "*"
+scipy = "*"
+
+[tool.pixi.pypi-dependencies]
+compas-cgal = { path = ".", editable = true }
+pytest = ">=7"
+pytest-cov = ">=4"
+ruff = "*"
+
+[tool.pixi.pypi-options]
+no-build-isolation = ["compas-cgal"]
+
+# Wheel-tag ceiling, not a preference. conda-forge's CPython reports
+# sysconfig.get_platform() == macosx-11.0-arm64, so uv accepts wheels tagged at most
+# macosx_11_0_arm64. CMakeLists sets no CMAKE_OSX_DEPLOYMENT_TARGET, so an unpinned
+# build inherits the host macOS and produces a tag the interpreter then rejects.
+# 11.0 matches what [tool.cibuildwheel] already targets.
+[tool.pixi.target.osx-arm64.activation.env]
+MACOSX_DEPLOYMENT_TARGET = "11.0"
+
+[tool.pixi.tasks]
+# The import alone does NOT rebuild, despite the obvious reading: scikit-build-core's
+# editable finder only rebuilds on import when installed with `editable.rebuild` on,
+# which this project does not set. `__loader__.rebuild()` is its supported manual
+# entry point and runs one CMake pass covering every extension, so naming any built
+# module suffices — these are named so a module rename fails loudly here instead of
+# silently skipping the rebuild.
+_editable-rebuild = '''python -c "from compas_cgal import _geodesics, _isolines; _isolines.__loader__.rebuild()"'''
+# SKBUILD_EDITABLE_SKIP stops each pytest process (xdist workers included) from
+# starting a competing CMake run. The rebuild above already happened, once.
+test = { cmd = "pytest", env = { SKBUILD_EDITABLE_SKIP = "1" }, depends-on = ["_editable-rebuild"] }
+lint = "ruff check src/compas_cgal tests"
+format-check = "ruff format --check src/compas_cgal tests"

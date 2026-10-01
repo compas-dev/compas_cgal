@@ -9,7 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Added the exact geodesics example (`docs/examples/example_geodesics_exact.py`) with screenshot.
+* Restored the developer guide as Markdown pages (`docs/devguide.md`, `docs/devguide/`) and added it to the nav.
+* Documented source installation with conda, uv and pixi in `docs/installation.md`.
+
 ### Changed
+
+* `exact_geodesic_distances_from_points` and `ExactGeodesicSolver.solve_from_points` accept a list of points (e.g. `compas.geometry.Point`), not only an array.
+* `isolines` accepts the scalar values directly, in addition to a vertex attribute name.
 
 ### Removed
 

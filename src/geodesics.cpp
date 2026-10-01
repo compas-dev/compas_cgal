@@ -1,4 +1,5 @@
 #include "geodesics.h"
+#include "geodesics_exact.h"
 
 #include <CGAL/Simple_cartesian.h>
 #include <CGAL/Surface_mesh.h>
@@ -534,6 +535,10 @@ pmp_geodesic_isolines(
 
 
 NB_MODULE(_geodesics, m) {
+    // Exact polyhedral geodesics live in geodesics_exact.cpp; same module,
+    // separate translation unit, so the two backends do not recompile each other.
+    bind_exact_geodesics(m);
+
     m.def(
         "heat_geodesic_distances",
         &pmp_heat_geodesic_distances,
