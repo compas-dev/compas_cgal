@@ -135,6 +135,14 @@ nav:
   - Getting Started:
       - Introduction: index.md
       - Installation: installation.md
+      - Developer Guide:
+          - Overview: devguide.md
+          - Conda Environment: devguide/conda_environment.md
+          - Compiler Requirements: devguide/compiler.md
+          - CMake Configuration: devguide/cmake_configuration.md
+          - Contributing: devguide/contribute.md
+          - Style: devguide/style.md
+          - Types: devguide/types.md
       - License: license.md
       - Acknowledgements: acknowledgements.md
       - Changelog: changelog.md

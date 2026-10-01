@@ -2,6 +2,7 @@
 
 from typing import List
 from typing import Literal
+from typing import Sequence
 from typing import Tuple
 from typing import Union
 from typing import overload
@@ -35,6 +36,10 @@ __all__ = [
 MeshInput = Union[Mesh, VerticesFaces]
 """A triangulated mesh, accepted either as a :class:`compas.datastructures.Mesh`
 or as a :attr:`compas_cgal.types.VerticesFaces` tuple of vertices and faces."""
+
+PointsLike = Union[NDArray, Sequence[Sequence[float]]]
+"""Source points, as an (S, 3) array or a sequence of XYZ triples such as a list of
+:class:`compas.geometry.Point`."""
 
 
 def _as_vertices_faces(mesh: MeshInput) -> Tuple[NDArray, NDArray]:
@@ -228,7 +233,7 @@ def geodesic_isolines(mesh: MeshInput, sources: List[int], isovalues: List[float
     return list(_geodesic_isolines(V, F, sources, isovalues))
 
 
-def _as_source_points(points: NDArray) -> NDArray:
+def _as_source_points(points: PointsLike) -> NDArray:
     """Coerce and validate source points to a C-contiguous float64 (S, 3) array.
 
     Single seam for every point-source entry point. An empty array is rejected here
@@ -308,10 +313,10 @@ def exact_geodesic_distances(mesh: MeshInput, sources: List[int], *, return_sour
 
 
 @overload
-def exact_geodesic_distances_from_points(mesh: MeshInput, points: NDArray, *, return_sources: Literal[False] = False) -> NDArray: ...
+def exact_geodesic_distances_from_points(mesh: MeshInput, points: PointsLike, *, return_sources: Literal[False] = False) -> NDArray: ...
 @overload
-def exact_geodesic_distances_from_points(mesh: MeshInput, points: NDArray, *, return_sources: Literal[True]) -> Tuple[NDArray, NDArray]: ...
-def exact_geodesic_distances_from_points(mesh: MeshInput, points: NDArray, *, return_sources: bool = False) -> Union[NDArray, Tuple[NDArray, NDArray]]:
+def exact_geodesic_distances_from_points(mesh: MeshInput, points: PointsLike, *, return_sources: Literal[True]) -> Tuple[NDArray, NDArray]: ...
+def exact_geodesic_distances_from_points(mesh: MeshInput, points: PointsLike, *, return_sources: bool = False) -> Union[NDArray, Tuple[NDArray, NDArray]]:
     """Exact geodesic distances from source points located on the surface.
 
     Unlike vertex sources, a source point may sit anywhere on a face. This is the
@@ -327,8 +332,8 @@ def exact_geodesic_distances_from_points(mesh: MeshInput, points: NDArray, *, re
     mesh : :attr:`compas_cgal.geodesics.MeshInput`
         A triangulated mesh, either a :class:`compas.datastructures.Mesh`
         or a :attr:`compas_cgal.types.VerticesFaces` tuple of vertices and faces.
-    points : NDArray
-        Source points as an (S, 3) array. Each is located on the surface, being
+    points : :attr:`compas_cgal.geodesics.PointsLike`
+        Source points, e.g. a list of :class:`compas.geometry.Point`. Each is located on the surface, being
         projected to the closest point on the closest face. Callers that must bound
         that projection should compose with
         :func:`compas_cgal.projection.project_points_on_mesh`, which owns
@@ -427,16 +432,16 @@ class ExactGeodesicSolver:
         return distances.flatten()
 
     @overload
-    def solve_from_points(self, points: NDArray, *, return_sources: Literal[False] = False) -> NDArray: ...
+    def solve_from_points(self, points: PointsLike, *, return_sources: Literal[False] = False) -> NDArray: ...
     @overload
-    def solve_from_points(self, points: NDArray, *, return_sources: Literal[True]) -> Tuple[NDArray, NDArray]: ...
-    def solve_from_points(self, points: NDArray, *, return_sources: bool = False) -> Union[NDArray, Tuple[NDArray, NDArray]]:
+    def solve_from_points(self, points: PointsLike, *, return_sources: Literal[True]) -> Tuple[NDArray, NDArray]: ...
+    def solve_from_points(self, points: PointsLike, *, return_sources: bool = False) -> Union[NDArray, Tuple[NDArray, NDArray]]:
         """Exact geodesic distances from source points located on the surface.
 
         Parameters
         ----------
-        points : NDArray
-            Source points as an (S, 3) array, located on the surface. Duplicates are
+        points : :attr:`compas_cgal.geodesics.PointsLike`
+            Source points, e.g. a list of :class:`compas.geometry.Point`. Duplicates are
             not collapsed; see :func:`exact_geodesic_distances_from_points`.
         return_sources : bool, optional
             If True, also return the ordinal into ``points`` of the nearest source

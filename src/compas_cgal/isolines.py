@@ -1,6 +1,9 @@
 """Isoline extraction from vertex scalar fields using CGAL."""
 
-from typing import List, Optional, Union
+from typing import List
+from typing import Optional
+from typing import Sequence
+from typing import Union
 
 import numpy as np
 from numpy.typing import NDArray
@@ -87,7 +90,7 @@ def _resample_polyline(pts: NDArray, factor: int) -> NDArray:
 
 def isolines(
     mesh: Mesh,
-    scalars: str,
+    scalars: Union[str, Sequence[float]],
     isovalues: Optional[List[float]] = None,
     n: Optional[int] = None,
     resample: Union[int, bool] = True,
@@ -102,8 +105,9 @@ def isolines(
     ----------
     mesh : :class:`compas.datastructures.Mesh`
         A triangulated mesh.
-    scalars : str
-        Name of the vertex attribute containing scalar values.
+    scalars : str or Sequence[float]
+        Name of the vertex attribute containing scalar values, or the values themselves
+        in vertex order.
     isovalues : List[float], optional
         Explicit isovalue thresholds for isoline extraction.
     n : int, optional
@@ -145,7 +149,8 @@ def isolines(
     """
     V = np.asarray(mesh.vertices_attributes("xyz"), dtype=np.float64, order="C")
     F = np.asarray([mesh.face_vertices(f) for f in mesh.faces()], dtype=np.int32, order="C")
-    scalar_values = np.asarray(mesh.vertices_attribute(scalars), dtype=np.float64, order="C").reshape(-1, 1)
+    values = mesh.vertices_attribute(scalars) if isinstance(scalars, str) else scalars
+    scalar_values = np.asarray(values, dtype=np.float64, order="C").reshape(-1, 1)
 
     if isovalues is None and n is None:
         raise ValueError("Either 'isovalues' or 'n' must be provided.")
