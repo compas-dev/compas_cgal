@@ -1,0 +1,9 @@
+import numpy as np
+from numpy.typing import NDArray
+
+FloatArray = NDArray[np.float64]
+IntArray = NDArray[np.int32]
+
+def subd_catmullclark(vertices: FloatArray, faces: IntArray, num_iterations: int) -> tuple[FloatArray, IntArray]: ...
+def subd_loop(vertices: FloatArray, faces: IntArray, num_iterations: int) -> tuple[FloatArray, IntArray]: ...
+def subd_sqrt3(vertices: FloatArray, faces: IntArray, num_iterations: int) -> tuple[FloatArray, IntArray]: ...
