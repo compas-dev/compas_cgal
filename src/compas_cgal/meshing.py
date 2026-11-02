@@ -1,5 +1,4 @@
 import numpy as np
-from compas.plugins import plugin
 
 from compas_cgal import _meshing  # type: ignore
 from compas_cgal import _types_std  # noqa: F401  # type: ignore
@@ -8,7 +7,6 @@ from .types import VerticesFaces
 from .types import VerticesFacesNumpy
 
 
-@plugin(category="trimesh", pluggable_name="trimesh_remesh")
 def trimesh_remesh(
     mesh: VerticesFaces,
     target_edge_length: float,
@@ -95,7 +93,7 @@ def trimesh_dual(
     angle_radians: float = 0.9,
     scale_factor: float = 1.0,
     fixed_vertices: list[int] = [],
-) -> tuple[np.ndarray, list[list[int]]]:
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, list[list[int]]]:
     """Create a dual mesh from a triangular mesh with variable-length faces.
 
     Parameters

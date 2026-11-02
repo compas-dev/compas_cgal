@@ -1,19 +1,21 @@
+from typing import TYPE_CHECKING
 from typing import Annotated
-from typing import List
 from typing import Literal
 from typing import Sequence
-from typing import Tuple
-from typing import Union
 
-import compas.geometry
 from numpy import float64
-from numpy import int64
+from numpy import int32
 from numpy.typing import NDArray
 
-FloatNx3 = Annotated[NDArray[float64], Literal["N", 3]]
-IntNx3 = Annotated[NDArray[int64], Literal["N", 3]]
-IntNx2 = Annotated[NDArray[int64], Literal["N", 2]]
-IntNx1 = Annotated[NDArray[int64], Literal["N", 1]]
+if TYPE_CHECKING:
+    from compas.geometry import Plane
+    from compas.geometry import Point
+    from compas.geometry import Vector
+
+type FloatNx3 = Annotated[NDArray[float64], Literal["N", 3]]
+type IntNx3 = Annotated[NDArray[int32], Literal["N", 3]]
+type IntNx2 = Annotated[NDArray[int32], Literal["N", 2]]
+type IntNx1 = Annotated[NDArray[int32], Literal["N", 1]]
 
 VerticesNumpy = FloatNx3
 """An array of vertices, with each vertex defined by 3 spatial coordinates."""
@@ -21,46 +23,42 @@ VerticesNumpy = FloatNx3
 FacesNumpy = IntNx3
 """An array of faces, with each face defined by 3 vertex indices."""
 
-Vertices = Union[Sequence[Annotated[List[float], 3]], FloatNx3]
+type Vertices = Sequence[Sequence[float]] | FloatNx3
 """The vertices of a mesh, defined as an array-like sequence of vertices, with each vertex represented by 3 spatial coordinates."""
 
-Faces = Union[Sequence[Annotated[List[int], 3]], IntNx3]
+type Faces = Sequence[Sequence[int]] | IntNx3
 """The faces of a mesh, defined as an array-like sequence of faces, with each face represented by 3 vertex indices."""
 
-VerticesFaces = Tuple[Vertices, Faces]
+type VerticesFaces = tuple[Vertices, Faces]
 """Representation of a mesh as a tuple of vertices and faces."""
 
-VerticesFacesNumpy = Tuple[FloatNx3, IntNx3]
+type VerticesFacesNumpy = tuple[FloatNx3, IntNx3]
 """Representation of a mesh as a tuple of vertices and faces,
 with the vertices represented a Nx3 array of spatial coordinates,
 and the faces as a Fx3 array of vertex indices.
 """
 
-VerticesFacesEdgesNumpy = Tuple[FloatNx3, IntNx3, IntNx2]
+type VerticesFacesEdgesNumpy = tuple[FloatNx3, IntNx3, IntNx2]
 """Representation of a boolean result as a tuple of vertices, faces, and
 intersection-curve edges, where edges are pairs of vertex indices into V."""
 
-VerticesFacesSourceNumpy = Tuple[FloatNx3, IntNx3, IntNx2]
+type VerticesFacesSourceNumpy = tuple[FloatNx3, IntNx3, IntNx2]
 """Representation of a boolean result with per-face source tracking. The third
 array is Mx2: column 0 is the source mesh id (0 = A, 1 = B), column 1 is the
 face index in that source mesh."""
 
-PolylinesNumpy = List[FloatNx3]
+type PolylinesNumpy = list[FloatNx3]
 """A list of polylines, with each polyline represented as a Nx3 array of spatial coordinates."""
 
-PolylinesNumpySkeleton = List[Tuple[List[float], List[float]]]
+type PolylinesNumpySkeleton = list[tuple[list[float], list[float]]]
 """A list of polylines, where each polyline is represented by a tuple of start and end point coordinates."""
 
-SkeletonVertexMapping = List[Tuple[List[int], List[int]]]
+type SkeletonVertexMapping = list[tuple[list[int], list[int]]]
 """Vertex correspondence mapping for skeleton edges. Each tuple contains two lists:
 the first list has indices of original mesh vertices that contracted to the skeleton edge's start vertex,
 the second list has indices that contracted to the skeleton edge's end vertex."""
 
-Planes = Union[
-    Sequence[compas.geometry.Plane],
-    Sequence[Tuple[compas.geometry.Point, compas.geometry.Vector]],
-    Sequence[Tuple[Annotated[List[float], 3], Annotated[List[float], 3]]],
-]
+type Planes = Sequence[Plane] | Sequence[tuple[Point, Vector]] | Sequence[tuple[Sequence[float], Sequence[float]]]
 """A sequence of planes, with each plane defined as an actual Plane object,
 or as a tuple of a point and normal vector, with each point represented by a Point object or an equivalent list of coordinates,
 and each vector represented by a Vector object or an equivalent list of components.

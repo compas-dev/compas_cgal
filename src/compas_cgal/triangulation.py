@@ -1,6 +1,5 @@
 import numpy as np
 from compas.geometry import Point
-from compas.plugins import plugin
 
 from compas_cgal import _triangulation  # type: ignore
 from compas_cgal import _types_std  # type: ignore
@@ -8,7 +7,6 @@ from compas_cgal.types import FacesNumpy
 from compas_cgal.types import VerticesFacesNumpy
 
 
-@plugin(category="triangulation", requires=["compas_cgal"])
 def delaunay_triangulation(points: list[Point]) -> FacesNumpy:
     """Construct a Delaunay triangulation from a set of points.
 
@@ -38,7 +36,6 @@ def delaunay_triangulation(points: list[Point]) -> FacesNumpy:
     return _triangulation.delaunay_triangulation(vertices)
 
 
-@plugin(category="triangulation", requires=["compas_cgal"])
 def constrained_delaunay_triangulation(
     boundary: list[Point],
     points=None,
@@ -63,7 +60,7 @@ def constrained_delaunay_triangulation(
     VerticesFacesNumpy
 
     """
-    boundary = np.asarray(boundary, dtype=np.float64)  # type: ignore
+    boundary_array = np.asarray(boundary, dtype=np.float64)
 
     points = points or []
     points = np.asarray(points, dtype=np.float64, order="C")
@@ -81,7 +78,7 @@ def constrained_delaunay_triangulation(
             curves_vector.append(curve_array)
 
     return _triangulation.constrained_delaunay_triangulation(
-        boundary,  # numpy array
+        boundary_array,  # numpy array
         points,  # numpy array
         holes_vector,  # VectorRowMatrixXd
         curves_vector,  # VectorRowMatrixXd
@@ -89,7 +86,6 @@ def constrained_delaunay_triangulation(
     )
 
 
-@plugin(category="triangulation", requires=["compas_cgal"])
 def conforming_delaunay_triangulation(
     boundary,
     points=None,

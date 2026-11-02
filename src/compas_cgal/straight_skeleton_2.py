@@ -185,12 +185,12 @@ def offset_polygon_with_holes(points, holes, offset) -> list[Tuple[Polygon, list
         If the normal of the polygon is not directed vertically upwards like [0, 0, 1].
         If the normal of a hole is not directed vertically downwards like [0, 0, -1].
     """
-    points = list(points)
+    points = list(points.points) if isinstance(points, Polygon) else list(points)
     normal = normal_polygon(points, True)
 
     if TOL.is_allclose(normal, [0, 0, -1]):
         points.reverse()
-        normal *= -1
+        normal = [0.0, 0.0, 1.0]
 
     if not TOL.is_allclose(normal, [0, 0, 1]):
         raise ValueError("The normal of the polygon should be [0, 0, 1]. The normal of the provided polygon is {}".format(normal))
@@ -198,18 +198,17 @@ def offset_polygon_with_holes(points, holes, offset) -> list[Tuple[Polygon, list
 
     H = []
     for i, hole in enumerate(holes):
-        points = hole
-        normal_hole = normal_polygon(points, True)
+        hole_points = list(hole.points) if isinstance(hole, Polygon) else list(hole)
+        normal_hole = normal_polygon(hole_points, True)
 
         if TOL.is_allclose(normal_hole, [0, 0, 1]):
-            points.points.reverse()
-            normal_hole *= -1
+            hole_points.reverse()
+            normal_hole = [0.0, 0.0, -1.0]
 
         if not TOL.is_allclose(normal_hole, [0, 0, -1]):
             raise ValueError("The normal of the hole should be [0, 0, -1]. The normal of the provided {}-th hole is {}".format(i, normal_hole))
 
-        hole = np.asarray(points, dtype=np.float64, order="C")
-        H.append(hole)
+        H.append(np.asarray(hole_points, dtype=np.float64, order="C"))
 
     if offset < 0:  # outside
         offset_polygons = _straight_skeleton_2.create_offset_polygons_2_outer_with_holes(V, H, abs(offset))

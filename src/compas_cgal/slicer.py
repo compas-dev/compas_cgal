@@ -1,6 +1,5 @@
 import numpy as np
 from compas.geometry import Plane
-from compas.plugins import plugin
 
 from compas_cgal import _slicer  # type: ignore
 from compas_cgal import _types_std  # noqa: F401  # type: ignore
@@ -9,7 +8,6 @@ from .types import PolylinesNumpy
 from .types import VerticesFaces
 
 
-@plugin(category="trimesh", pluggable_name="trimesh_slice")
 def slice_mesh_planes(mesh: VerticesFaces, planes: list[Plane]) -> PolylinesNumpy:
     """Slice a mesh by a list of planes.
 

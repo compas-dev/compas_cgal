@@ -15,17 +15,4 @@ DOCS = os.path.abspath(os.path.join(HOME, "docs"))
 TEMP = os.path.abspath(os.path.join(HOME, "temp"))
 
 
-__all_plugins__ = [
-    "compas_cgal.booleans",
-    "compas_cgal.intersections",
-    "compas_cgal.isolines",
-    "compas_cgal.meshing",
-    "compas_cgal.measure",
-    "compas_cgal.reconstruction",
-    "compas_cgal.triangulation",
-    "compas_cgal.slicer",
-    "compas_cgal.subdivision",
-    "compas_cgal.polylines",
-]
-
 __all__ = ["HOME", "DATA", "DOCS", "TEMP"]

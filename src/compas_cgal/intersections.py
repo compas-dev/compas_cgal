@@ -1,5 +1,4 @@
 import numpy as np
-from compas.plugins import plugin
 
 from compas_cgal import _intersections  # type: ignore
 from compas_cgal import _types_std  # type: ignore
@@ -8,7 +7,6 @@ from .types import PolylinesNumpy
 from .types import VerticesFaces
 
 
-@plugin(category="intersections")
 def intersection_mesh_mesh(
     A: VerticesFaces,
     B: VerticesFaces,

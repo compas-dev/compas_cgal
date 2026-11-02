@@ -6,9 +6,9 @@ from typing import Sequence
 from typing import Union
 
 import numpy as np
+from compas.datastructures import Mesh
 from numpy.typing import NDArray
 
-from compas.datastructures import Mesh
 from compas_cgal._isolines import isolines as _isolines
 from compas_cgal.types import PolylinesNumpy
 
@@ -161,6 +161,7 @@ def isolines(
         smin, smax = float(scalar_values.min()), float(scalar_values.max())
         isovalues = np.linspace(smin, smax, n + 2)[1:-1].tolist()
 
+    assert isovalues is not None
     polylines = list(_isolines(V, F, scalar_values, isovalues, 0))
 
     if resample is True:

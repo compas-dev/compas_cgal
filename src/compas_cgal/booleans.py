@@ -2,9 +2,8 @@ from typing import Iterable
 from typing import Literal
 
 import numpy as np
-from compas.plugins import plugin
 
-from compas_cgal import _booleans  # type: ignore
+from compas_cgal import _booleans
 
 from .types import VerticesFaces
 from .types import VerticesFacesEdgesNumpy
@@ -59,7 +58,6 @@ def _boolean(
     return result
 
 
-@plugin(category="booleans", pluggable_name="boolean_union_mesh_mesh")
 def boolean_union_mesh_mesh(
     A: VerticesFaces,
     B: VerticesFaces,
@@ -95,7 +93,6 @@ def boolean_union_mesh_mesh(
     return _boolean(A, B, "union")
 
 
-@plugin(category="booleans", pluggable_name="boolean_difference_mesh_mesh")
 def boolean_difference_mesh_mesh(
     A: VerticesFaces,
     B: VerticesFaces,
@@ -131,7 +128,6 @@ def boolean_difference_mesh_mesh(
     return _boolean(A, B, "difference")
 
 
-@plugin(category="booleans", pluggable_name="boolean_intersection_mesh_mesh")
 def boolean_intersection_mesh_mesh(
     A: VerticesFaces,
     B: VerticesFaces,
@@ -167,7 +163,6 @@ def boolean_intersection_mesh_mesh(
     return _boolean(A, B, "intersection")
 
 
-@plugin(category="booleans", pluggable_name="split_mesh_mesh")
 def split_mesh_mesh(
     A: VerticesFaces,
     B: VerticesFaces,

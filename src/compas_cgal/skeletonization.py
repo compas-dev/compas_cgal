@@ -1,5 +1,4 @@
 import numpy as np
-from compas.plugins import plugin
 
 from compas_cgal import _skeletonization  # type: ignore
 from compas_cgal import _types_std  # noqa: F401  # type: ignore
@@ -9,7 +8,6 @@ from .types import SkeletonVertexMapping
 from .types import VerticesFaces
 
 
-@plugin(category="mesh")
 def mesh_skeleton(mesh: VerticesFaces) -> PolylinesNumpySkeleton:
     """Compute the geometric skeleton of a triangle mesh using mean curvature flow.
 
@@ -60,7 +58,6 @@ def mesh_skeleton(mesh: VerticesFaces) -> PolylinesNumpySkeleton:
     return edges
 
 
-@plugin(category="mesh")
 def mesh_skeleton_with_mapping(mesh: VerticesFaces) -> tuple[PolylinesNumpySkeleton, SkeletonVertexMapping]:
     """Compute the geometric skeleton of a triangle mesh with vertex correspondence mapping.
 
