@@ -1,12 +1,11 @@
 from compas.geometry import Box
 from compas.geometry import Cylinder
 from compas.geometry import Frame
-from compas.geometry import Polyhedron
+from compas.geometry import PolygonalSurface
 from compas.geometry import Sphere
 from compas_viewer import Viewer
 
 from compas_cgal.booleans import boolean_chain
-
 
 # =============================================================================
 # Classic CSG: rounded cube drilled along three axes.
@@ -23,8 +22,13 @@ from compas_cgal.booleans import boolean_chain
 # boolean operations with exact point maps" example.
 # =============================================================================
 
-cube = Box(2).to_vertices_and_faces(triangulated=True)
-sphere = Sphere(1.3, point=[0, 0, 0]).to_vertices_and_faces(u=64, v=64, triangulated=True)
+cube = Box(2).tessellation.to_vertices_and_triangles()
+
+sphere = Sphere(radius=1.3)
+
+sphere.resolution_u = 64
+sphere.resolution_v = 64
+sphere = sphere.tessellation.to_vertices_and_triangles()
 
 
 def cylinder_along(axis, radius=0.8):
@@ -39,14 +43,17 @@ def cylinder_along(axis, radius=0.8):
         frame = Frame([0, 0, 0], [0, 0, 1], [1, 0, 0])
     else:  # "z"
         frame = Frame([0, 0, 0], [1, 0, 0], [0, 1, 0])
-    return Cylinder(radius, 4.0, frame).to_vertices_and_faces(u=48, triangulated=True)
+    cylinder = Cylinder(radius, 4.0, frame)
+    cylinder.resolution_u = 48
+    return cylinder.tessellation.to_vertices_and_triangles()
 
 
 V, F = boolean_chain(
     [cube, sphere, cylinder_along("x"), cylinder_along("y"), cylinder_along("z")],
     ["intersection", "difference", "difference", "difference"],
 )
-shape = Polyhedron(V.tolist(), F.tolist()).to_mesh()
+
+shape = PolygonalSurface(V.tolist(), F.tolist())
 
 # =============================================================================
 # Visualize
