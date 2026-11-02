@@ -6,7 +6,7 @@ build-backend = "scikit_build_core.build"
 name = "compas_cgal"
 description = "CGAL wrapper for COMPAS."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.12"
 authors = [
     { name = "tom van mele", email = "tom.v.mele@gmail.com" },
     { name = "Petras Vestartas", email = "petrasvestartas@gmail.com" },
@@ -22,6 +22,13 @@ dynamic = ["version"]
 
 [project.urls]
 Homepage = "https://github.com/compas-dev/compas_cgal"
+
+[project.entry-points."compas.plugins"]
+compas_cgal_booleans = "compas_cgal.plugins.booleans"
+compas_cgal_intersections = "compas_cgal.plugins.intersections"
+compas_cgal_mesh = "compas_cgal.plugins.mesh"
+compas_cgal_trimesh = "compas_cgal.plugins.trimesh"
+compas_cgal_triangulation = "compas_cgal.plugins.triangulation"
 
 # ============================================================================
 # replace pytest.ini
@@ -64,7 +71,7 @@ doctest_optionflags = [
 [tool.scikit-build]
 minimum-version = "build-system.requires"
 build-dir = "build/{wheel_tag}"
-wheel.py-api = "cp312"                    # Build all Python currently supported versions.
+wheel.py-api = "cp312"                    # Python 3.12 stable ABI baseline.
 cmake.version = ">=3.15"
 cmake.build-type = "Release"
 
@@ -130,7 +137,7 @@ replace = "[{new_version}] {now:%Y-%m-%d}"
 [tool.ruff]
 line-length = 179
 indent-width = 4
-target-version = "py39"
+target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]
@@ -152,6 +159,11 @@ max-doc-length = 179
 [tool.ruff.format]
 docstring-code-format = true
 docstring-code-line-length = "dynamic"
+
+[tool.pyright]
+include = ["src/compas_cgal"]
+pythonVersion = "3.12"
+reportMissingModuleSource = false
 
 # ============================================================================
 # pixi — an additive alternative to environment.yml + tasks.py.
@@ -182,6 +194,7 @@ scipy = "*"
 compas-cgal = { path = ".", editable = true }
 pytest = ">=7"
 pytest-cov = ">=4"
+pyright = "*"
 ruff = "*"
 
 [tool.pixi.pypi-options]
@@ -208,3 +221,4 @@ _editable-rebuild = '''python -c "from compas_cgal import _geodesics, _isolines;
 test = { cmd = "pytest", env = { SKBUILD_EDITABLE_SKIP = "1" }, depends-on = ["_editable-rebuild"] }
 lint = "ruff check src/compas_cgal tests"
 format-check = "ruff format --check src/compas_cgal tests"
+type-check = "pyright src/compas_cgal"
