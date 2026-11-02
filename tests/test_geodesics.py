@@ -16,8 +16,8 @@ IFILE = Path(__file__).parent.parent / "data" / "flat_star_disk_irregular_rim.of
 @pytest.fixture
 def sphere_mesh():
     """Create a test sphere mesh."""
-    sphere = Sphere(1.0, point=[0, 0, 0])
-    V, F = sphere.to_vertices_and_faces(u=16, v=16, triangulated=True)
+    sphere = Sphere(1.0)
+    V, F = sphere.compute_tessellation(u=16, v=16).to_vertices_and_triangles()
     return V, F
 
 

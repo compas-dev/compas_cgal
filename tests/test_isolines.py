@@ -10,8 +10,8 @@ from compas_cgal.isolines import isolines
 @pytest.fixture
 def sphere_mesh_with_distances():
     """Create a test sphere mesh with geodesic distances as vertex attribute."""
-    sphere = Sphere(1.0, point=[0, 0, 0])
-    V, F = sphere.to_vertices_and_faces(u=16, v=16, triangulated=True)
+    sphere = Sphere(1.0)
+    V, F = sphere.compute_tessellation(u=16, v=16).to_vertices_and_triangles()
     mesh = Mesh.from_vertices_and_faces(V, F)
 
     # Compute geodesic distances from vertex 0

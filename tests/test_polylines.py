@@ -1,5 +1,4 @@
 import numpy as np
-import pytest
 
 from compas_cgal.polylines import closest_points_on_polyline
 from compas_cgal.polylines import simplify_polyline

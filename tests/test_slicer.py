@@ -6,7 +6,7 @@ def test_mesh_slice():
     """Test mesh slicing with a simple box."""
     # Create test box mesh
     box = Box.from_width_height_depth(2.0, 2.0, 2.0)
-    mesh = box.to_vertices_and_faces(triangulated=True)
+    mesh = box.compute_tessellation().to_vertices_and_triangles()
 
     # Create one horizontal slicing plane
     point = Point(0, 0, 0)
