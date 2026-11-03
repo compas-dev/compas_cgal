@@ -92,10 +92,10 @@ def heat_geodesic_distances(mesh: MeshInput, sources: List[int]) -> NDArray:
 
     Examples
     --------
-    >>> from compas.geometry import Box
+    >>> from compas.geometry import Box, Native
     >>> from compas_cgal.geodesics import heat_geodesic_distances
     >>> box = Box(1)
-    >>> mesh = box.to_vertices_and_faces(triangulated=True)
+    >>> mesh = box.tessellate(Native()).to_vertices_and_triangles()
     >>> distances = heat_geodesic_distances(mesh, [0])  # distances from vertex 0
 
     """
@@ -120,10 +120,10 @@ class HeatGeodesicSolver:
 
     Examples
     --------
-    >>> from compas.geometry import Sphere
+    >>> from compas.geometry import Sphere, UVGrid
     >>> from compas_cgal.geodesics import HeatGeodesicSolver
     >>> sphere = Sphere(1.0)
-    >>> mesh = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
+    >>> mesh = sphere.tessellate(UVGrid(32, 32)).to_vertices_and_triangles()
     >>> solver = HeatGeodesicSolver(mesh)  # precomputation happens here
     >>> d0 = solver.solve([0])  # distances from vertex 0
     >>> d1 = solver.solve([1])  # distances from vertex 1 (fast, reuses precomputation)
@@ -191,10 +191,10 @@ def geodesic_isolines_split(mesh: MeshInput, sources: List[int], isovalues: List
 
     Examples
     --------
-    >>> from compas.geometry import Sphere
+    >>> from compas.geometry import Sphere, UVGrid
     >>> from compas_cgal.geodesics import geodesic_isolines_split
     >>> sphere = Sphere(1.0)
-    >>> mesh = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
+    >>> mesh = sphere.tessellate(UVGrid(32, 32)).to_vertices_and_triangles()
     >>> components = geodesic_isolines_split(mesh, [0], [0.5, 1.0, 1.5])
     >>> len(components)  # Number of mesh strips
 
@@ -298,10 +298,10 @@ def exact_geodesic_distances(mesh: MeshInput, sources: List[int], *, return_sour
 
     Examples
     --------
-    >>> from compas.geometry import Box
+    >>> from compas.geometry import Box, Native
     >>> from compas_cgal.geodesics import exact_geodesic_distances
     >>> box = Box(1)
-    >>> mesh = box.to_vertices_and_faces(triangulated=True)
+    >>> mesh = box.tessellate(Native()).to_vertices_and_triangles()
     >>> distances = exact_geodesic_distances(mesh, [0])
 
     """
@@ -387,10 +387,10 @@ class ExactGeodesicSolver:
 
     Examples
     --------
-    >>> from compas.geometry import Sphere
+    >>> from compas.geometry import Sphere, UVGrid
     >>> from compas_cgal.geodesics import ExactGeodesicSolver
     >>> sphere = Sphere(1.0)
-    >>> mesh = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
+    >>> mesh = sphere.tessellate(UVGrid(32, 32)).to_vertices_and_triangles()
     >>> solver = ExactGeodesicSolver(mesh)
     >>> d0 = solver.solve([0])
     >>> d1 = solver.solve([1])

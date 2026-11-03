@@ -41,11 +41,11 @@ def mesh_volume(mesh: VerticesFaces) -> float:
 
     Examples
     --------
-    >>> from compas.geometry import Box
+    >>> from compas.geometry import Box, Native
     >>> from compas_cgal.measure import mesh_volume
 
     >>> box = Box(1)
-    >>> mesh = box.to_vertices_and_faces(triangulated=True)
+    >>> mesh = box.tessellate(Native()).to_vertices_and_triangles()
 
     >>> mesh_volume(mesh)
     1.0
@@ -58,7 +58,7 @@ def mesh_volume(mesh: VerticesFaces) -> float:
 
 
 def mesh_centroid(mesh: VerticesFaces) -> list[float]:
-    """Compute the centroid of a the volume of a closed triangle mesh.
+    """Compute the centroid of the volume of a closed triangle mesh.
 
     Parameters
     ----------

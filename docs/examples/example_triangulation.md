@@ -2,13 +2,13 @@
 
 ![Mesh Triangulation](../assets/images/example_triangulation.png)
 
-This example demonstrates how to perform constrained and refined Delaunay triangulation using COMPAS CGAL.
+This example demonstrates how to perform constrained and refined Delaunay triangulation through the core COMPAS API with the CGAL plugin.
 
 Key Features:
 
 * Creating polygonal boundary and holes
 * Conforming Delaunay triangulation
-* Refined Delaunay meshing with size constraints
+* Conforming Delaunay meshing with an explicit edge-length target
 * Side-by-side visualization of different triangulation methods
 
 ```python

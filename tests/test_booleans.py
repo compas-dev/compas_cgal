@@ -1,7 +1,10 @@
 import pytest
 import numpy as np
 
-from compas.geometry import Box, Frame, Sphere
+from compas.geometry import Box, Frame, Native, Sphere, Tessellation, UGrid, UVGrid
+from compas.geometry import boolean_difference_mesh_mesh as core_boolean_difference
+from compas.geometry import boolean_intersection_mesh_mesh as core_boolean_intersection
+from compas.geometry import boolean_union_mesh_mesh as core_boolean_union
 from compas.datastructures import Mesh
 
 from compas_cgal.booleans import (
@@ -11,10 +14,8 @@ from compas_cgal.booleans import (
     boolean_difference_mesh_mesh_with_edges,
     boolean_difference_mesh_mesh_with_face_source,
     boolean_difference_mesh_meshes,
-    boolean_intersection_mesh_mesh,
     boolean_intersection_mesh_mesh_with_edges,
     boolean_intersection_mesh_mesh_with_face_source,
-    boolean_union_mesh_mesh,
     boolean_union_mesh_mesh_with_edges,
     boolean_union_mesh_mesh_with_face_source,
     split_mesh_mesh,
@@ -27,8 +28,8 @@ def box_sphere_meshes():
     box = Box.from_width_height_depth(2.0, 2.0, 2.0)
     sphere = Sphere(1.0, frame=Frame([1, 1, 1], [1, 0, 0], [0, 1, 0]))
 
-    box_mesh = box.compute_tessellation().to_vertices_and_triangles()
-    sphere_mesh = sphere.compute_tessellation(u=32, v=32).to_vertices_and_triangles()
+    box_mesh = box.tessellate(Native()).to_vertices_and_triangles()
+    sphere_mesh = sphere.tessellate(UVGrid(32, 32)).to_vertices_and_triangles()
 
     return box_mesh, sphere_mesh
 
@@ -36,8 +37,10 @@ def box_sphere_meshes():
 def test_boolean_union(box_sphere_meshes):
     """Test boolean union operation."""
     mesh_a, mesh_b = box_sphere_meshes
-    vertices, faces = boolean_union_mesh_mesh(mesh_a, mesh_b)
+    result = core_boolean_union(Tessellation(*mesh_a), Tessellation(*mesh_b))
+    vertices, faces = result.to_vertices_and_triangles()
 
+    assert isinstance(result, Tessellation)
     assert isinstance(vertices, np.ndarray)
     assert isinstance(faces, np.ndarray)
     assert vertices.shape[1] == 3  # 3D points
@@ -54,8 +57,10 @@ def test_boolean_union(box_sphere_meshes):
 def test_boolean_difference(box_sphere_meshes):
     """Test boolean difference operation."""
     mesh_a, mesh_b = box_sphere_meshes
-    vertices, faces = boolean_difference_mesh_mesh(mesh_a, mesh_b)
+    result = core_boolean_difference(Tessellation(*mesh_a), Tessellation(*mesh_b))
+    vertices, faces = result.to_vertices_and_triangles()
 
+    assert isinstance(result, Tessellation)
     assert isinstance(vertices, np.ndarray)
     assert isinstance(faces, np.ndarray)
     assert vertices.shape[1] == 3
@@ -72,8 +77,10 @@ def test_boolean_difference(box_sphere_meshes):
 def test_boolean_intersection(box_sphere_meshes):
     """Test boolean intersection operation."""
     mesh_a, mesh_b = box_sphere_meshes
-    vertices, faces = boolean_intersection_mesh_mesh(mesh_a, mesh_b)
+    result = core_boolean_intersection(Tessellation(*mesh_a), Tessellation(*mesh_b))
+    vertices, faces = result.to_vertices_and_triangles()
 
+    assert isinstance(result, Tessellation)
     assert isinstance(vertices, np.ndarray)
     assert isinstance(faces, np.ndarray)
     assert vertices.shape[1] == 3
@@ -85,6 +92,32 @@ def test_boolean_intersection(box_sphere_meshes):
     mesh = Mesh.from_vertices_and_faces(vertices, faces)
     assert mesh.is_valid()
     assert mesh.euler() == 2  # Valid closed manifold
+
+
+def _tetrahedron() -> Tessellation:
+    return Tessellation(
+        [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]],
+        [[0, 2, 1], [0, 1, 3], [1, 2, 3], [2, 0, 3]],
+    )
+
+
+@pytest.mark.parametrize(
+    ("triangles", "message"),
+    [
+        ([[0, 1, 2]], "closed"),
+        ([[0, 1, 2], [1, 0, 3], [0, 1, 3]], "manifold"),
+        ([[0, 1, 2], [0, 1, 3], [1, 2, 3], [2, 0, 3]], "consistently oriented"),
+    ],
+)
+def test_boolean_rejects_invalid_topology_before_native(monkeypatch, triangles, message):
+    invalid = Tessellation([[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]], triangles)
+
+    def fail_if_called(*args):
+        raise AssertionError("native boolean should not be called")
+
+    monkeypatch.setattr("compas_cgal.booleans._booleans.boolean_union", fail_if_called)
+    with pytest.raises(ValueError, match=message):
+        core_boolean_union(invalid, _tetrahedron())
 
 
 def test_split(box_sphere_meshes):
@@ -133,7 +166,8 @@ def test_boolean_difference_mesh_meshes(box_sphere_meshes):
     """Consolidate-then-subtract returns the same shape as a single difference."""
     box, sphere = box_sphere_meshes
 
-    V_single, F_single = boolean_difference_mesh_mesh(box, sphere)
+    single = boolean_difference_mesh_mesh(Tessellation(*box), Tessellation(*sphere))
+    V_single, F_single = single.to_vertices_and_triangles()
     V_multi, F_multi = boolean_difference_mesh_meshes(box, [sphere])
 
     # Single-cutter case must match the single-mesh API.
@@ -209,9 +243,9 @@ def test_boolean_chain_with_face_source():
     tagged with one of {0, 1, 2}."""
     from compas.geometry import Box, Cylinder, Frame, Sphere
 
-    cube = Box(2).compute_tessellation().to_vertices_and_triangles()
-    sphere = Sphere(0.8, frame=Frame([1, 1, 1], [1, 0, 0], [0, 1, 0])).compute_tessellation(u=32, v=32).to_vertices_and_triangles()
-    cyl = Cylinder(0.4, 4.0, Frame([0, 0, 0], [1, 0, 0], [0, 1, 0])).compute_tessellation(u=32).to_vertices_and_triangles()
+    cube = Box(2).tessellate(Native()).to_vertices_and_triangles()
+    sphere = Sphere(0.8, frame=Frame([1, 1, 1], [1, 0, 0], [0, 1, 0])).tessellate(UVGrid(32, 32)).to_vertices_and_triangles()
+    cyl = Cylinder(0.4, 4.0, Frame([0, 0, 0], [1, 0, 0], [0, 1, 0])).tessellate(UGrid(32)).to_vertices_and_triangles()
 
     V, F, S = boolean_chain_with_face_source(
         [cube, sphere, cyl],
@@ -238,8 +272,8 @@ def test_boolean_chain_drilled_rounded_cube():
     runs end-to-end thanks to autorefine_triangle_soup + snap rounding."""
     from compas.geometry import Box, Cylinder, Frame, Sphere
 
-    cube = Box(2).compute_tessellation().to_vertices_and_triangles()
-    sphere = Sphere(1.3).compute_tessellation(u=64, v=64).to_vertices_and_triangles()
+    cube = Box(2).tessellate(Native()).to_vertices_and_triangles()
+    sphere = Sphere(1.3).tessellate(UVGrid(64, 64)).to_vertices_and_triangles()
 
     def cyl(axis, r=0.6):
         if axis == "x":
@@ -248,7 +282,7 @@ def test_boolean_chain_drilled_rounded_cube():
             frame = Frame([0, 0, 0], [0, 0, 1], [1, 0, 0])
         else:
             frame = Frame([0, 0, 0], [1, 0, 0], [0, 1, 0])
-        return Cylinder(r, 4.0, frame).compute_tessellation(u=48).to_vertices_and_triangles()
+        return Cylinder(r, 4.0, frame).tessellate(UGrid(48)).to_vertices_and_triangles()
 
     V, F = boolean_chain(
         [cube, sphere, cyl("x"), cyl("y"), cyl("z")],

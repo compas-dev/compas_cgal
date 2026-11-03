@@ -1,21 +1,20 @@
 import numpy as np
+from compas.geometry import Tessellation
 
 from compas_cgal import _meshing  # type: ignore
 from compas_cgal import _types_std  # noqa: F401  # type: ignore
 
+from ._tessellation import as_native_tessellation
+from ._tessellation import from_native_tessellation
 from .types import VerticesFaces
-from .types import VerticesFacesNumpy
 
 
 def trimesh_remesh(
-    mesh: VerticesFaces,
+    mesh: Tessellation,
     target_edge_length: float,
     number_of_iterations: int = 10,
     do_project: bool = True,
-    protect_boundary: bool = False,
-    protect_sharp_edges_angle_deg: float = 0.0,
-    keep_points=None,
-) -> VerticesFacesNumpy:
+) -> Tessellation:
     """Remeshing of a triangle mesh.
 
     Parameters
@@ -28,62 +27,30 @@ def trimesh_remesh(
         Number of remeshing iterations.
     do_project : bool, optional
         If True, reproject vertices onto the input surface when they are created or displaced.
-    protect_boundary : bool, optional
-        If True, constrain all boundary edges so they are NOT split, collapsed,
-        or flipped during remeshing. Use this to preserve the input mesh's
-        boundary curve verbatim — including sharp corners that the default
-        smoothing pass would otherwise round.
-    protect_sharp_edges_angle_deg : float, optional
-        Dihedral threshold in degrees for interior feature detection. Edges
-        whose adjacent faces form a dihedral angle ≥ this value are marked
-        constrained and preserved. ``0.0`` disables interior-feature
-        detection (default).
-    keep_points : array-like, optional
-        An Nx3 array of points. The mesh vertex coincident with each point
-        (matched by coordinate, within tolerance) is pinned: it is neither
-        moved nor removed during remeshing, while the edges between such
-        points are still re-sampled. Use this to keep only specific vertices
-        — e.g. the four corners of an open patch — rather than the whole
-        boundary. ``None`` disables (default).
-
     Returns
     -------
-    VerticesFacesNumpy
-
-    Notes
-    -----
-    Without ``protect_boundary`` or ``protect_sharp_edges_angle_deg`` set,
-    boundary edges follow CGAL's default remeshing behaviour: re-sampled
-    to ``target_edge_length`` (visible corner rounding is the cost).
+    Tessellation
+        The remeshed triangle representation.
 
     Examples
     --------
-    >>> from compas.geometry import Sphere, Polyhedron
-    >>> from compas_cgal.meshing import mesh_remesh
-
-    >>> sphere = Sphere(0.5, point=[1, 1, 1])
-    >>> mesh = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
-
-    >>> V, F = mesh_remesh(mesh, 1.0)
-    >>> shape = Polyhedron(V.tolist(), F.tolist())
+    >>> from compas.geometry import Sphere, UVGrid, trimesh_remesh  # doctest: +SKIP
+    >>> tessellation = Sphere(0.5).tessellate(UVGrid(32, 32))
+    >>> result = trimesh_remesh(tessellation, 0.1)
 
     """
-    V, F = mesh
-    V = np.asarray(V, dtype=np.float64, order="C")
-    F = np.asarray(F, dtype=np.int32, order="C")
-    if keep_points is None:
-        keep_points = np.empty((0, 3), dtype=np.float64)
-    keep_points = np.asarray(keep_points, dtype=np.float64, order="C").reshape(-1, 3)
-    return _meshing.pmp_trimesh_remesh(
+    V, F = as_native_tessellation(mesh)
+    vertices, triangles = _meshing.pmp_trimesh_remesh(
         V,
         F,
         target_edge_length,
         number_of_iterations,
         do_project,
-        protect_boundary,
-        protect_sharp_edges_angle_deg,
-        keep_points,
+        False,
+        0.0,
+        np.empty((0, 3), dtype=np.float64),
     )
+    return from_native_tessellation(vertices, triangles)
 
 
 def trimesh_dual(

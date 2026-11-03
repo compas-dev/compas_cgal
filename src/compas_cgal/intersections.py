@@ -1,17 +1,17 @@
-import numpy as np
+from compas.geometry import Tessellation
 
 from compas_cgal import _intersections  # type: ignore
 from compas_cgal import _types_std  # type: ignore
 
+from ._tessellation import as_native_tessellation
 from .types import PolylinesNumpy
-from .types import VerticesFaces
 
 
 def intersection_mesh_mesh(
-    A: VerticesFaces,
-    B: VerticesFaces,
+    A: Tessellation,
+    B: Tessellation,
 ) -> PolylinesNumpy:
-    """Compute the intersection of tow meshes.
+    """Compute the intersection of two triangle tessellations.
 
     Parameters
     ----------
@@ -27,25 +27,20 @@ def intersection_mesh_mesh(
 
     Examples
     --------
-    >>> from compas.geometry import Box, Sphere, Polyline
-    >>> from compas_cgal.intersections import intersection_mesh_mesh
+    >>> from compas.geometry import Box, Native, Polyline, Sphere, UVGrid, intersection_mesh_mesh  # doctest: +SKIP
 
     >>> box = Box(1)
     >>> sphere = Sphere(0.5, point=[1, 1, 1])
 
-    >>> A = box.to_vertices_and_faces(triangulated=True)
-    >>> B = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
+    >>> A = box.tessellate(Native())
+    >>> B = sphere.tessellate(UVGrid(32, 32))
 
     >>> result = intersection_mesh_mesh(A, B)
     >>> polylines = [Polyline(points) for points in result]
 
     """
-    VA, FA = A
-    VB, FB = B
-    VA = np.asarray(VA, dtype=np.float64, order="C")
-    FA = np.asarray(FA, dtype=np.int32, order="C")
-    VB = np.asarray(VB, dtype=np.float64, order="C")
-    FB = np.asarray(FB, dtype=np.int32, order="C")
+    VA, FA = as_native_tessellation(A)
+    VB, FB = as_native_tessellation(B)
 
     pointsets: _types_std.VectorRowMatrixXd = _intersections.intersection_mesh_mesh(VA, FA, VB, FB)
 

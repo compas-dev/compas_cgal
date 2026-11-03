@@ -1,5 +1,5 @@
 import math
-from numbers import Number
+from numbers import Real
 from typing import List
 from typing import Tuple
 from typing import Union
@@ -287,7 +287,7 @@ def _contour_speeds(value, sizes, name):
     list[list[float]]
         One list of edge values per contour.
     """
-    if isinstance(value, Number):
+    if isinstance(value, Real):
         return [[float(value)] * n for n in sizes]
 
     value = list(value)
@@ -452,5 +452,5 @@ def extrude(points, holes=None, weights=None, angles=None, maximum_height=None) 
     max_height = float(maximum_height) if maximum_height is not None else -1.0
 
     vertices, faces = _straight_skeleton_2.extrude_straight_skeleton(V, H, speeds, use_angles, max_height)
-    mesh = Mesh.from_vertices_and_faces(vertices, faces)
+    mesh = Mesh.from_vertices_and_faces(vertices.tolist(), faces.tolist())
     return _triangulated(mesh), _roof_outline(mesh)

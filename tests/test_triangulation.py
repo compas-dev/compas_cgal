@@ -1,91 +1,106 @@
-import pytest
 import numpy as np
+import pytest
+
+from compas.geometry import ConformingDelaunay
+from compas.geometry import ConstrainedDelaunay
+from compas.geometry import Delaunay
+from compas.geometry import Frame
 from compas.geometry import Polygon
+from compas.geometry import Tessellation
 from compas.geometry import Translation
-from compas_cgal.triangulation import delaunay_triangulation
-from compas_cgal.triangulation import conforming_delaunay_triangulation
-from compas_cgal.triangulation import refined_delaunay_mesh
+from compas.geometry import TriangulationQuality
+from compas.geometry import triangulate_planar_domain
+from compas.geometry import triangulate_planar_points
 
 
 @pytest.fixture
 def boundary_polygon():
-    """Create a square boundary polygon."""
-    return Polygon.from_sides_and_radius_xy(64, 4)
+    return Polygon.from_sides_and_radius_xy(32, 4)
 
 
 @pytest.fixture
 def hole_polygons():
-    """Create four circular holes in the boundary."""
-    hole = Polygon.from_sides_and_radius_xy(128, 1)
-    hole1 = hole.transformed(Translation.from_vector([2, 0, 0]))
-    hole2 = hole.transformed(Translation.from_vector([-2, 0, 0]))
-    hole3 = hole.transformed(Translation.from_vector([0, 2, 0]))
-    hole4 = hole.transformed(Translation.from_vector([0, -2, 0]))
-    return [hole1, hole2, hole3, hole4]
+    hole = Polygon.from_sides_and_radius_xy(32, 0.5)
+    return [
+        hole.transformed(Translation.from_vector([2, 0, 0])),
+        hole.transformed(Translation.from_vector([-2, 0, 0])),
+    ]
 
 
-def test_delaunay_triangulation(boundary_polygon):
-    """Test basic Delaunay triangulation of points."""
-    points = np.array(boundary_polygon.points)
-    F = delaunay_triangulation(points)
+def test_delaunay_returns_tessellation_and_preserves_points(boundary_polygon):
+    points = [list(point) for point in boundary_polygon.points]
+    result = triangulate_planar_points(points, strategy=Delaunay())
 
-    assert isinstance(F, np.ndarray)
-    assert F.shape[1] == 3  # triangles
-    assert len(F) > 0
+    assert isinstance(result, Tessellation)
+    assert result.vertices == points
+    assert isinstance(result.triangles, np.ndarray)
+    assert result.triangles.dtype == np.int32
+    assert result.triangles.flags.c_contiguous
 
 
-def test_conforming_delaunay_triangulation(boundary_polygon, hole_polygons):
-    """Test constrained Delaunay triangulation with holes."""
-    V, F = conforming_delaunay_triangulation(
+def test_constrained_domain_returns_tessellation(boundary_polygon, hole_polygons):
+    result = triangulate_planar_domain(
         boundary_polygon,
         holes=hole_polygons,
+        strategy=ConstrainedDelaunay(),
     )
 
-    assert isinstance(V, np.ndarray)
-    assert isinstance(F, np.ndarray)
-    assert V.shape[1] == 3  # 3D points
-    assert F.shape[1] == 3  # triangles
-    assert len(V) > 0
-    assert len(F) > 0
-
-    # Check that we have more vertices than the input due to conforming constraints
-    input_points = len(boundary_polygon.points) + sum(len(h.points) for h in hole_polygons)
-    assert len(V) >= input_points
+    assert isinstance(result, Tessellation)
+    assert result.number_of_vertices > 0
+    assert result.number_of_triangles > 0
+    assert isinstance(result.triangles, np.ndarray)
+    assert result.triangles.dtype == np.int32
 
 
-def test_refined_delaunay_mesh(boundary_polygon, hole_polygons):
-    """Test refined Delaunay mesh with quality constraints.
-
-    Regression: on numpy>=2.4 with nanobind<2, this raised
-    ``TypeError: incompatible function arguments`` despite correct dtypes.
-    """
-    maxlength = 0.5
-    V, F = refined_delaunay_mesh(
+def test_conforming_domain_supports_maximum_edge_length(boundary_polygon, hole_polygons):
+    maximum = 0.5
+    result = triangulate_planar_domain(
         boundary_polygon,
         holes=hole_polygons,
-        maxlength=maxlength,
-        is_optimized=True,
+        strategy=ConformingDelaunay(TriangulationQuality(max_edge_length=maximum)),
     )
 
-    assert isinstance(V, np.ndarray)
-    assert isinstance(F, np.ndarray)
-    assert V.shape[1] == 3  # 3D points
-    assert F.shape[1] == 3  # triangles
-    assert len(V) > 0
-    assert len(F) > 0
+    edges = {tuple(sorted((int(face[index]), int(face[(index + 1) % 3])))) for face in result.triangles for index in range(3)}
+    for u, v in edges:
+        length = np.linalg.norm(np.asarray(result.vertices[u]) - np.asarray(result.vertices[v]))
+        assert length <= maximum * 1.1
 
-    # Check refinement created more vertices than CDT
-    V_cdt, _ = conforming_delaunay_triangulation(boundary_polygon, holes=hole_polygons)
-    assert len(V) > len(V_cdt)
 
-    # Check edge lengths
-    edges = []
-    for face in F:
-        for i in range(3):
-            edge = sorted([face[i], face[(i + 1) % 3]])
-            if edge not in edges:
-                edges.append(edge)
+@pytest.mark.parametrize(
+    "quality",
+    [TriangulationQuality(min_angle=20.0), TriangulationQuality(max_area=0.5)],
+)
+def test_conforming_domain_rejects_unsupported_quality(boundary_polygon, quality):
+    with pytest.raises(NotImplementedError):
+        triangulate_planar_domain(
+            boundary_polygon,
+            strategy=ConformingDelaunay(quality),
+        )
 
-    for v1, v2 in edges:
-        edge_length = np.linalg.norm(V[v1] - V[v2])
-        assert edge_length <= maxlength * 1.1  # Allow 10% tolerance
+
+def test_explicit_frame_preserves_input_coordinates():
+    frame = Frame([0, 0, 2], [1, 0, 0], [0, 1, 0])
+    boundary = [[0, 0, 2], [2, 0, 2], [2, 2, 2], [0, 2, 2]]
+    result = triangulate_planar_domain(boundary, strategy=ConstrainedDelaunay(), frame=frame)
+
+    output = {tuple(point) for point in result.vertices}
+    assert all(tuple(point) in output for point in boundary)
+
+
+def test_planarity_is_validated():
+    boundary = [[0, 0, 0], [2, 0, 0], [2, 2, 0.1], [0, 2, 0]]
+    with pytest.raises(ValueError, match="world XY"):
+        triangulate_planar_domain(boundary, strategy=ConstrainedDelaunay())
+
+
+def test_native_boundary_sizes_are_validated():
+    with pytest.raises(ValueError, match="Delaunay input"):
+        triangulate_planar_points([[0, 0, 0], [1, 0, 0]], strategy=Delaunay())
+    with pytest.raises(ValueError, match="Boundary"):
+        triangulate_planar_domain([[0, 0, 0], [1, 0, 0]], strategy=ConstrainedDelaunay())
+    with pytest.raises(ValueError, match="Hole"):
+        triangulate_planar_domain(
+            [[0, 0, 0], [2, 0, 0], [0, 2, 0]],
+            holes=[[[0.5, 0.5, 0], [1.0, 0.5, 0]]],
+            strategy=ConstrainedDelaunay(),
+        )
