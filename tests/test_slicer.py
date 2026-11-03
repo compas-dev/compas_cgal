@@ -1,12 +1,12 @@
-from compas.geometry import Box, Plane, Point, Vector, Polyline
-from compas_cgal.slicer import slice_mesh
+from compas.geometry import Box, Native, Plane, Point, Vector, Polyline
+from compas.geometry import trimesh_slice
 
 
 def test_mesh_slice():
     """Test mesh slicing with a simple box."""
     # Create test box mesh
     box = Box.from_width_height_depth(2.0, 2.0, 2.0)
-    mesh = box.compute_tessellation().to_vertices_and_triangles()
+    mesh = box.tessellate(Native())
 
     # Create one horizontal slicing plane
     point = Point(0, 0, 0)
@@ -14,7 +14,7 @@ def test_mesh_slice():
     plane = Plane(point, normal)
 
     # Get intersection curves
-    slicer_polylines = slice_mesh(mesh, [plane])
+    slicer_polylines = trimesh_slice(mesh, [plane])
 
     # Convert edges to polylines
     polylines = []

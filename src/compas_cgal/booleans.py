@@ -2,13 +2,31 @@ from typing import Iterable
 from typing import Literal
 
 import numpy as np
+from compas.geometry import Tessellation
 
 from compas_cgal import _booleans
 
+from ._tessellation import as_native_tessellation
+from ._tessellation import from_native_tessellation
+from ._tessellation import validate_boolean_operand
 from .types import VerticesFaces
 from .types import VerticesFacesEdgesNumpy
 from .types import VerticesFacesNumpy
 from .types import VerticesFacesSourceNumpy
+
+
+def _tessellation_boolean(A: Tessellation, B: Tessellation, operation: Literal["union", "difference", "intersection"]) -> Tessellation:
+    validate_boolean_operand(A, "A")
+    validate_boolean_operand(B, "B")
+    VA, FA = as_native_tessellation(A)
+    VB, FB = as_native_tessellation(B)
+    if operation == "union":
+        vertices, triangles = _booleans.boolean_union(VA, FA, VB, FB)
+    elif operation == "difference":
+        vertices, triangles = _booleans.boolean_difference(VA, FA, VB, FB)
+    else:
+        vertices, triangles = _booleans.boolean_intersection(VA, FA, VB, FB)
+    return from_native_tessellation(vertices, triangles)
 
 
 def _boolean(
@@ -30,6 +48,7 @@ def _boolean(
     Returns
     -------
     VerticesFacesNumpy
+        Native vertex and triangle arrays.
 
     Raises
     ------
@@ -59,9 +78,9 @@ def _boolean(
 
 
 def boolean_union_mesh_mesh(
-    A: VerticesFaces,
-    B: VerticesFaces,
-) -> VerticesFacesNumpy:
+    A: Tessellation,
+    B: Tessellation,
+) -> Tessellation:
     """Boolean union of two meshes.
 
     Parameters
@@ -73,30 +92,24 @@ def boolean_union_mesh_mesh(
 
     Returns
     -------
-    VerticesFacesNumpy
+    Tessellation
+        The union triangle geometry.
 
     Examples
     --------
-    >>> from compas.geometry import Box, Sphere, Polyhedron
-    >>> from compas_cgal.booleans import boolean_union_mesh_mesh
-
-    >>> box = Box(1)
-    >>> sphere = Sphere(0.5, point=[1, 1, 1])
-
-    >>> A = box.to_vertices_and_faces(triangulated=True)
-    >>> B = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
-
-    >>> C = boolean_union_mesh_mesh(A, B)
-    >>> shape = Polyhedron(*C)
+    >>> from compas.geometry import Box, Native, Sphere, UVGrid, boolean_union_mesh_mesh  # doctest: +SKIP
+    >>> A = Box(1).tessellate(Native())
+    >>> B = Sphere(0.5).tessellate(UVGrid(32, 32))
+    >>> result = boolean_union_mesh_mesh(A, B)
 
     """
-    return _boolean(A, B, "union")
+    return _tessellation_boolean(A, B, "union")
 
 
 def boolean_difference_mesh_mesh(
-    A: VerticesFaces,
-    B: VerticesFaces,
-) -> VerticesFacesNumpy:
+    A: Tessellation,
+    B: Tessellation,
+) -> Tessellation:
     """Boolean difference of two meshes.
 
     Parameters
@@ -108,30 +121,24 @@ def boolean_difference_mesh_mesh(
 
     Returns
     -------
-    VerticesFacesNumpy
+    Tessellation
+        The difference triangle geometry.
 
     Examples
     --------
-    >>> from compas.geometry import Box, Sphere, Polyhedron
-    >>> from compas_cgal.booleans import boolean_difference_mesh_mesh
-
-    >>> box = Box(1)
-    >>> sphere = Sphere(0.5, point=[1, 1, 1])
-
-    >>> A = box.to_vertices_and_faces(triangulated=True)
-    >>> B = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
-
-    >>> C = boolean_difference_mesh_mesh(A, B)
-    >>> shape = Polyhedron(*C)
+    >>> from compas.geometry import Box, Native, Sphere, UVGrid, boolean_difference_mesh_mesh  # doctest: +SKIP
+    >>> A = Box(1).tessellate(Native())
+    >>> B = Sphere(0.5).tessellate(UVGrid(32, 32))
+    >>> result = boolean_difference_mesh_mesh(A, B)
 
     """
-    return _boolean(A, B, "difference")
+    return _tessellation_boolean(A, B, "difference")
 
 
 def boolean_intersection_mesh_mesh(
-    A: VerticesFaces,
-    B: VerticesFaces,
-) -> VerticesFacesNumpy:
+    A: Tessellation,
+    B: Tessellation,
+) -> Tessellation:
     """Boolean intersection of two meshes.
 
     Parameters
@@ -143,24 +150,18 @@ def boolean_intersection_mesh_mesh(
 
     Returns
     -------
-    VerticesFacesNumpy
+    Tessellation
+        The intersection triangle geometry.
 
     Examples
     --------
-    >>> from compas.geometry import Box, Sphere, Polyhedron
-    >>> from compas_cgal.booleans import boolean_intersection_mesh_mesh
-
-    >>> box = Box(1)
-    >>> sphere = Sphere(0.5, point=[1, 1, 1])
-
-    >>> A = box.to_vertices_and_faces(triangulated=True)
-    >>> B = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
-
-    >>> C = boolean_intersection_mesh_mesh(A, B)
-    >>> shape = Polyhedron(*C)
+    >>> from compas.geometry import Box, Native, Sphere, UVGrid, boolean_intersection_mesh_mesh  # doctest: +SKIP
+    >>> A = Box(1).tessellate(Native())
+    >>> B = Sphere(0.5).tessellate(UVGrid(32, 32))
+    >>> result = boolean_intersection_mesh_mesh(A, B)
 
     """
-    return _boolean(A, B, "intersection")
+    return _tessellation_boolean(A, B, "intersection")
 
 
 def split_mesh_mesh(
@@ -178,18 +179,19 @@ def split_mesh_mesh(
 
     Returns
     -------
-    VerticesFacesNumpy
+    tuple[numpy.ndarray, numpy.ndarray]
+        Native vertex and triangle arrays for the split surfaces.
 
     Examples
     --------
-    >>> from compas.geometry import Box, Sphere, Polyhedron
+    >>> from compas.geometry import Box, Native, Sphere, UVGrid, Polyhedron
     >>> from compas_cgal.booleans import split_mesh_mesh
 
     >>> box = Box(1)
     >>> sphere = Sphere(0.5, point=[1, 1, 1])
 
-    >>> A = box.to_vertices_and_faces(triangulated=True)
-    >>> B = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
+    >>> A = box.tessellate(Native()).to_vertices_and_triangles()
+    >>> B = sphere.tessellate(UVGrid(32, 32)).to_vertices_and_triangles()
 
     >>> V, F = split_mesh_mesh(A, B)
     >>> shape = Polyhedron(V.tolist(), F.tolist())

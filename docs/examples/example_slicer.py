@@ -2,14 +2,15 @@ from pathlib import Path
 
 import numpy as np
 from compas.datastructures import Mesh
+from compas.geometry import EarClipping
+from compas.geometry import FaceTriangulation
 from compas.geometry import Plane
 from compas.geometry import Point
 from compas.geometry import Polyline
 from compas.geometry import Vector
+from compas.geometry import trimesh_slice
 from compas_viewer import Viewer
 from compas_viewer.config import Config
-
-from compas_cgal.slicer import slice_mesh
 
 # =============================================================================
 # Get Mesh from STL
@@ -18,7 +19,7 @@ from compas_cgal.slicer import slice_mesh
 FILE = Path(__file__).parent.parent.parent / "data" / "3DBenchy.stl"
 benchy = Mesh.from_stl(FILE)
 
-V, F = benchy.to_vertices_and_faces()
+tessellation = benchy.triangulated(FaceTriangulation(quad=EarClipping()))
 
 # =============================================================================
 # Get Slice planes from the bounding box
@@ -35,7 +36,7 @@ for i in np.linspace(bbox.zmin, bbox.zmax, 50):
 # Slice
 # =============================================================================
 
-slicer_polylines = slice_mesh((V, F), planes)
+slicer_polylines = trimesh_slice(tessellation, planes)
 
 polylines = []
 for polyline in slicer_polylines:

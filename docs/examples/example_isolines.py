@@ -3,6 +3,8 @@ from pathlib import Path
 import numpy as np
 from compas.colors import Color
 from compas.datastructures import Mesh
+from compas.geometry import DiagonalSplit
+from compas.geometry import FaceTriangulation
 from compas.geometry import Polyline
 from compas_viewer import Viewer
 
@@ -16,7 +18,7 @@ from compas_cgal.subdivision import mesh_subdivide_loop
 
 FILE = Path(__file__).parent.parent.parent / "data" / "elephant.off"
 mesh = Mesh.from_off(FILE)
-mesh.quads_to_triangles()
+mesh.triangulate(FaceTriangulation(quad=DiagonalSplit()))
 
 V, F = mesh_subdivide_loop(mesh.to_vertices_and_faces(), k=2)  # k=4 for proper smoothness
 mesh = Mesh.from_vertices_and_faces(V.tolist(), F.tolist())

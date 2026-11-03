@@ -5,6 +5,9 @@ from compas.colors import Color
 from compas.colors import ColorMap
 from compas.datastructures import Mesh
 from compas.geometry import Box
+from compas.geometry import DiagonalSplit
+from compas.geometry import FaceTriangulation
+from compas.geometry import Native
 from compas.geometry import Point
 from compas.geometry import Polyline
 from compas.geometry import Translation
@@ -54,7 +57,7 @@ def make_source_points(sources, offset):
 
 FILE = Path(__file__).parent.parent.parent / "data" / "elephant.off"
 mesh = Mesh.from_off(FILE)
-mesh.quads_to_triangles()
+mesh.triangulate(FaceTriangulation(quad=DiagonalSplit()))
 V, F = mesh.to_vertices_and_faces()
 V_np = np.array(V)
 
@@ -90,7 +93,7 @@ dist1 = heat_geodesic_distances((V, F), src1)
 
 solver = HeatGeodesicSolver((V, F))
 bbox = Box.from_points(V_np)
-src2 = list(dict.fromkeys([int(np.argmin(np.linalg.norm(V_np - c, axis=1))) for c in bbox.vertices]))
+src2 = list(dict.fromkeys([int(np.argmin(np.linalg.norm(V_np - c, axis=1))) for c in bbox.tessellate(Native()).vertices]))
 dist2 = solver.solve(src2)
 
 # =============================================================================

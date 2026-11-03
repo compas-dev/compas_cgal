@@ -1,14 +1,17 @@
+from collections.abc import Sequence
+
 import numpy as np
 from compas.geometry import Plane
+from compas.geometry import Tessellation
 
 from compas_cgal import _slicer  # type: ignore
 from compas_cgal import _types_std  # noqa: F401  # type: ignore
 
+from ._tessellation import as_native_tessellation
 from .types import PolylinesNumpy
-from .types import VerticesFaces
 
 
-def slice_mesh_planes(mesh: VerticesFaces, planes: list[Plane]) -> PolylinesNumpy:
+def slice_mesh_planes(mesh: Tessellation, planes: Sequence[Plane]) -> PolylinesNumpy:
     """Slice a mesh by a list of planes.
 
     Parameters
@@ -25,28 +28,22 @@ def slice_mesh_planes(mesh: VerticesFaces, planes: list[Plane]) -> PolylinesNump
 
     Examples
     --------
-    >>> from compas.geometry import Sphere, Plane, Polyline
+    >>> from compas.geometry import Plane, Polyline, Sphere, UVGrid, trimesh_slice  # doctest: +SKIP
     >>> from compas.itertools import linspace
-    >>> from compas_cgal.slicer import slice_mesh
 
     >>> sphere = Sphere(1.0, point=[0, 0, 1.0])
-    >>> mesh = sphere.to_vertices_and_faces(u=32, v=32, triangulated=True)
+    >>> mesh = sphere.tessellate(UVGrid(32, 32))
 
     >>> planes = [Plane([0, 0, z], [0, 0, 1.0]) for z in linspace(0.1, 1.9, 19)]
 
-    >>> result = slice_mesh(mesh, planes)
+    >>> result = trimesh_slice(mesh, planes)
     >>> polylines = [Polyline(points) for points in result]
 
     """
-    vertices, faces = mesh
     points, normals = zip(*planes)
-    V = np.asarray(vertices, dtype=np.float64, order="C")
-    F = np.asarray(faces, dtype=np.int32, order="C")
+    V, F = as_native_tessellation(mesh)
     P = np.array(points, dtype=np.float64, order="C")
     N = np.array(normals, dtype=np.float64, order="C")
 
     pointsets = _slicer.slice_mesh(V, F, P, N)
     return pointsets
-
-
-slice_mesh = slice_mesh_planes

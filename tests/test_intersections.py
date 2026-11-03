@@ -1,20 +1,20 @@
 import pytest
 import numpy as np
 
-from compas.geometry import Box, Frame, Sphere
-from compas_cgal.intersections import intersection_mesh_mesh
+from compas.geometry import Box, Frame, Native, Sphere, Tessellation, UVGrid
+from compas.geometry import intersection_mesh_mesh
 
 
 @pytest.fixture
 def box_sphere_meshes():
     """Create test meshes: a box and a sphere that intersect."""
     box = Box(2)  # 2x2x2 box centered at origin
-    box_mesh = box.compute_tessellation().to_vertices_and_triangles()
+    box_mesh = box.tessellate(Native()).to_vertices_and_triangles()
 
     sphere = Sphere(1, frame=Frame([1, 1, 1], [1, 0, 0], [0, 1, 0]))
-    sphere_mesh = sphere.compute_tessellation(u=32, v=32).to_vertices_and_triangles()
+    sphere_mesh = sphere.tessellate(UVGrid(32, 32)).to_vertices_and_triangles()
 
-    return box_mesh, sphere_mesh
+    return Tessellation(*box_mesh), Tessellation(*sphere_mesh)
 
 
 def test_intersection_mesh_mesh(box_sphere_meshes):

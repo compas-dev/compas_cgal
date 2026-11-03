@@ -1,4 +1,5 @@
 from compas.geometry import Box
+from compas.geometry import Native
 from compas_cgal.skeletonization import mesh_skeleton, mesh_skeleton_with_mapping
 
 
@@ -6,7 +7,7 @@ def test_mesh_skeleton():
     """Test mesh skeletonization with a simple box."""
     # Create test box mesh
     box = Box.from_width_height_depth(2.0, 2.0, 2.0)
-    mesh = box.compute_tessellation().to_vertices_and_triangles()
+    mesh = box.tessellate(Native()).to_vertices_and_triangles()
 
     # Get skeleton
     edges = mesh_skeleton(mesh)
@@ -23,7 +24,7 @@ def test_mesh_skeleton_with_mapping():
     """Test mesh skeletonization with vertex mapping."""
     # Create test box mesh
     box = Box.from_width_height_depth(2.0, 2.0, 2.0)
-    mesh = box.compute_tessellation().to_vertices_and_triangles()
+    mesh = box.tessellate(Native()).to_vertices_and_triangles()
     vertices, faces = mesh
 
     # Get skeleton with mapping

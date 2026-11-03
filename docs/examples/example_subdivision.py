@@ -1,4 +1,5 @@
 from compas.geometry import Box
+from compas.geometry import Native
 from compas.geometry import Polyhedron
 from compas.geometry import Translation
 from compas_viewer import Viewer
@@ -7,17 +8,16 @@ from compas_cgal.subdivision import mesh_subdivide_catmull_clark
 from compas_cgal.subdivision import mesh_subdivide_loop
 from compas_cgal.subdivision import mesh_subdivide_sqrt3
 
-
 # ==============================================================================
 # Input geometry
 # ==============================================================================
 
 box = Box.from_diagonal(([0, 0, 0], [1, 1, 1]))
 
-V0, F0 = box.to_vertices_and_faces(triangulated=False)
-V1, F1 = box.to_vertices_and_faces(triangulated=False)
-V2, F2 = box.to_vertices_and_faces(triangulated=True)
-V3, F3 = box.to_vertices_and_faces(triangulated=True)
+V0, F0 = box.to_vertices_and_faces()
+V1, F1 = box.to_vertices_and_faces()
+V2, F2 = box.tessellate(Native()).to_vertices_and_triangles()
+V3, F3 = box.tessellate(Native()).to_vertices_and_triangles()
 
 # ==============================================================================
 # Compute

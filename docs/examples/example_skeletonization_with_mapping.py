@@ -2,6 +2,8 @@ import math
 from pathlib import Path
 
 from compas.datastructures import Mesh
+from compas.geometry import DiagonalSplit
+from compas.geometry import FaceTriangulation
 from compas.geometry import Point
 from compas.geometry import Polyline
 from compas.geometry import Rotation
@@ -26,7 +28,7 @@ S = Scale.from_factors([5, 5, 5])
 transform = T * R2 * R1 * S
 
 mesh = Mesh.from_off(input_file).transformed(transform)
-v, f = mesh.to_vertices_and_faces(triangulated=True)
+v, f = mesh.triangulated(FaceTriangulation(quad=DiagonalSplit())).to_vertices_and_triangles()
 
 # =============================================================================
 # Compute skeleton with vertex mapping

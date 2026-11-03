@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+* Planar triangulation now implements the core `triangulate_planar_points` and `triangulate_planar_domain` plugin contracts, returning `Tessellation` with explicit strategies, planar frames, and supported quality targets.
+* Triangle booleans and remeshing now consume and return `Tessellation`; mesh intersection and slicing consume `Tessellation` and return coordinate polylines through the core plugin contracts.
+* Updated polygonal mesh callers and examples to use the composite `FaceTriangulation` policy for explicit quad and n-gon handling.
+* Raised the COMPAS dependency to `compas>=3.0,<4` for the synchronized tessellation and plugin contracts.
 * `exact_geodesic_distances_from_points` and `ExactGeodesicSolver.solve_from_points` accept a list of points (e.g. `compas.geometry.Point`), not only an array.
 * `isolines` accepts the scalar values directly, in addition to a vertex attribute name.
 

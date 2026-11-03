@@ -9,7 +9,6 @@ The following operations are demonstrated:
 * Boolean difference
 * Boolean intersection
 * Boolean union
-* Mesh splitting
 
 ```python
 ---8<--- "docs/examples/example_booleans.py"

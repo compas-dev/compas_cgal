@@ -134,13 +134,12 @@ def isolines(
     Examples
     --------
     >>> from compas.datastructures import Mesh
-    >>> from compas.geometry import Sphere
+    >>> from compas.geometry import Sphere, UVGrid
     >>> from compas_cgal.geodesics import heat_geodesic_distances
     >>> from compas_cgal.isolines import isolines
     >>> sphere = Sphere(1.0)
-    >>> mesh = Mesh.from_shape(sphere, u=32, v=32)
-    >>> mesh.quads_to_triangles()
-    >>> vf = mesh.to_vertices_and_faces()
+    >>> vf = sphere.tessellate(UVGrid(32, 32)).to_vertices_and_triangles()
+    >>> mesh = Mesh.from_vertices_and_faces(*vf)
     >>> distances = heat_geodesic_distances(vf, [0])
     >>> for key, d in zip(mesh.vertices(), distances):
     ...     mesh.vertex_attribute(key, "distance", d)

@@ -1,58 +1,40 @@
-from compas.datastructures import Mesh
 from compas.geometry import Box
-from compas.geometry import Polyhedron
+from compas.geometry import Frame
+from compas.geometry import Native
 from compas.geometry import Sphere
 from compas.geometry import Translation
+from compas.geometry import UVGrid
+from compas.geometry import boolean_difference_mesh_mesh
+from compas.geometry import boolean_intersection_mesh_mesh
+from compas.geometry import boolean_union_mesh_mesh
 from compas_viewer import Viewer
-
-from compas_cgal.booleans import boolean_difference_mesh_mesh
-from compas_cgal.booleans import boolean_intersection_mesh_mesh
-from compas_cgal.booleans import boolean_union_mesh_mesh
-from compas_cgal.booleans import split_mesh_mesh
 
 
 def input():
     """Create an input for the boolean methods."""
     box = Box(2)
-    A = box.to_vertices_and_faces(triangulated=True)
-    sphere = Sphere(1, point=[1, 1, 1])
-    B = sphere.to_vertices_and_faces(u=64, v=64, triangulated=True)
+    A = box.tessellate(Native())
+    sphere = Sphere(1, frame=Frame(point=[1, 1, 1]))
+    B = sphere.tessellate(UVGrid(64, 64))
     return A, B
 
 
 def boolean_difference():
     """Compute the boolean difference of two triangle meshes."""
     A, B = input()
-    V, F = boolean_difference_mesh_mesh(A, B)
-    shape = Polyhedron(V.tolist(), F.tolist())
-    shape = shape.to_mesh()
-    return shape
+    return boolean_difference_mesh_mesh(A, B).to_mesh()
 
 
 def boolean_intersection():
     """Compute the boolean intersection of two triangle meshes."""
     A, B = input()
-    V, F = boolean_intersection_mesh_mesh(A, B)
-    shape = Polyhedron(V.tolist(), F.tolist())
-    shape = shape.to_mesh()
-    return shape
+    return boolean_intersection_mesh_mesh(A, B).to_mesh()
 
 
 def boolean_union():
     """Compute the boolean union of two triangle meshes."""
     A, B = input()
-    V, F = boolean_union_mesh_mesh(A, B)
-    shape = Polyhedron(V.tolist(), F.tolist())
-    shape = shape.to_mesh()
-    return shape
-
-
-def split():
-    """Compute the mesh split of two triangle meshes."""
-    A, B = input()
-    V, F = split_mesh_mesh(A, B)
-    mesh = Mesh.from_vertices_and_faces(V, F)
-    return mesh.exploded()
+    return boolean_union_mesh_mesh(A, B).to_mesh()
 
 
 # =============================================================================
@@ -62,7 +44,6 @@ def split():
 difference = boolean_difference()
 intersection = boolean_intersection()
 union = boolean_union()
-splits = split()
 
 # =============================================================================
 # Spread
@@ -72,8 +53,6 @@ difference.transform(Translation.from_vector([-6, 0, 0]))
 intersection.transform(Translation.from_vector([-2, 0, 0]))
 union.transform(Translation.from_vector([2, 0, 0]))
 
-for m in splits:
-    m.transform(Translation.from_vector([6, 0, 0]))
 
 # ==============================================================================
 # Visualize
@@ -84,8 +63,5 @@ viewer = Viewer()
 viewer.scene.add(difference, lineswidth=1, show_points=False)
 viewer.scene.add(intersection, lineswidth=1, show_points=False)
 viewer.scene.add(union, lineswidth=1, show_points=False)
-
-group = viewer.scene.add_group(name="Splits")
-group.add_from_list(splits, lineswidth=1, show_points=False)
 
 viewer.show()
