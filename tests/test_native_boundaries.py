@@ -171,7 +171,7 @@ def test_boolean_inputs_are_normalized_without_mutation(monkeypatch, vertices, f
     def boolean(*arrays):
         captured.extend(arrays)
         result = (np.empty((0, 3), dtype=np.float64), np.empty((0, 3), dtype=np.int32))
-        if operation != "split":
+        if operation in {"edges", "source"}:
             return (*result, np.empty((0, 2), dtype=np.int32))
         return result
 

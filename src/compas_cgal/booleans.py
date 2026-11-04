@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from math import isfinite
-from operator import index as integer_index
 from typing import TYPE_CHECKING
 from typing import Iterable
 from typing import Literal
@@ -19,59 +17,40 @@ if TYPE_CHECKING:
     from compas._typing import TriangleMeshInput
 
 
-def _validate_boolean_operand(mesh: TriangleMeshInput, name: str) -> None:
-    """Validate a raw triangle mesh before passing it to CGAL."""
+def _as_native_mesh(mesh: VerticesFaces, name: str) -> VerticesFacesNumpy:
+    """Convert structural mesh buffers to the representation required by CGAL."""
     try:
-        vertices, triangles = mesh
+        vertices, faces = mesh
     except (TypeError, ValueError):
         raise TypeError(f"{name} should be a (vertices, triangles) pair.")
 
-    vertex_count = len(vertices)
-    for vertex in vertices:
-        if len(vertex) != 3:
-            raise ValueError(f"{name} vertices should have exactly three coordinates.")
-        for value in vertex:
-            if isinstance(value, (bool, np.bool_)):
-                raise TypeError(f"{name} vertex coordinates should be real numbers.")
-            try:
-                finite = isfinite(value)
-            except (TypeError, ValueError):
-                raise TypeError(f"{name} vertex coordinates should be real numbers.")
-            if not finite:
-                raise ValueError(f"{name} vertex coordinates should be finite.")
+    vertices = np.ascontiguousarray(vertices, dtype=np.float64)
+    faces = np.ascontiguousarray(faces, dtype=np.int64)
+    if vertices.ndim != 2 or vertices.shape[1] != 3:
+        raise ValueError(f"{name} vertices should have shape (N, 3).")
+    if faces.ndim != 2 or faces.shape[1] != 3:
+        raise ValueError(f"{name} faces should have shape (M, 3).")
+    if not np.isfinite(vertices).all():
+        raise ValueError(f"{name} vertices should be finite.")
+    if faces.size:
+        minimum = faces.min()
+        maximum = faces.max()
+        info = np.iinfo(np.int32)
+        if minimum < info.min or maximum > info.max:
+            raise OverflowError(f"{name} face indices exceed the range supported by CGAL.")
+        if minimum < 0 or maximum >= len(vertices):
+            raise IndexError(f"{name} face index is out of range.")
+    return vertices, np.ascontiguousarray(faces, dtype=np.int32)
 
-    incidences: dict[tuple[int, int], list[tuple[int, int]]] = {}
-    unique_triangles: set[tuple[int, int, int]] = set()
-    for triangle in triangles:
-        if len(triangle) != 3:
-            raise ValueError(f"{name} faces should have exactly three indices.")
-        checked = []
-        for value in triangle:
-            if isinstance(value, (bool, np.bool_)):
-                raise TypeError(f"{name} face indices should be integers.")
-            try:
-                index = integer_index(value)
-            except TypeError:
-                raise TypeError(f"{name} face indices should be integers.")
-            if index < 0 or index >= vertex_count:
-                raise IndexError(f"{name} face index is out of range.")
-            checked.append(index)
 
-        a, b, c = checked
-        triangle_key = tuple(sorted((a, b, c)))
-        if triangle_key in unique_triangles:
-            raise ValueError(f"{name} should not contain duplicate triangles.")
-        unique_triangles.add(triangle_key)
-        for edge in ((a, b), (b, c), (c, a)):
-            key = (min(edge), max(edge))
-            incidences.setdefault(key, []).append(edge)
-
-    if any(len(edges) > 2 for edges in incidences.values()):
-        raise ValueError(f"{name} should be manifold for a Boolean operation.")
-    if not incidences or any(len(edges) < 2 for edges in incidences.values()):
-        raise ValueError(f"{name} should be closed for a Boolean operation.")
-    if any(edges[0] != edges[1][::-1] for edges in incidences.values()):
-        raise ValueError(f"{name} should be consistently oriented for a Boolean operation.")
+def _validate_boolean_result(result: VerticesFacesNumpy) -> VerticesFacesNumpy:
+    """Check the native Boolean result shape."""
+    vertices, faces = result
+    if vertices.ndim != 2 or vertices.shape[1] != 3:
+        raise RuntimeError("CGAL Boolean result vertices should have shape (N, 3).")
+    if faces.ndim != 2 or faces.shape[1] != 3:
+        raise RuntimeError("CGAL Boolean result faces should have shape (M, 3).")
+    return vertices, faces
 
 
 def _boolean(
@@ -101,12 +80,8 @@ def _boolean(
         If the operation type is not supported.
 
     """
-    VA, FA = A
-    VB, FB = B
-    VA = np.ascontiguousarray(VA, dtype=np.float64)
-    FA = np.ascontiguousarray(FA, dtype=np.int32)
-    VB = np.ascontiguousarray(VB, dtype=np.float64)
-    FB = np.ascontiguousarray(FB, dtype=np.int32)
+    VA, FA = _as_native_mesh(A, "A")
+    VB, FB = _as_native_mesh(B, "B")
 
     if operation == "union":
         result = _booleans.boolean_union(VA, FA, VB, FB)
@@ -119,7 +94,7 @@ def _boolean(
     else:
         raise NotImplementedError
 
-    return result
+    return _validate_boolean_result(result)
 
 
 def boolean_union_mesh_mesh(
@@ -142,10 +117,9 @@ def boolean_union_mesh_mesh(
 
     Notes
     -----
-    Operands should describe non-self-intersecting, non-degenerate closed
-    surfaces. Structural and topological requirements are checked before the
-    native call; geometric degeneracy and self-intersection have
-    backend-specific failure modes.
+    Operands should describe finite, non-self-intersecting, non-degenerate
+    closed surfaces. Buffers are normalized once at the native boundary. CGAL
+    is authoritative for geometric and topological validity.
 
     Examples
     --------
@@ -156,8 +130,6 @@ def boolean_union_mesh_mesh(
     >>> vertices, triangles = boolean_union_mesh_mesh(A, B)
 
     """
-    _validate_boolean_operand(A, "A")
-    _validate_boolean_operand(B, "B")
     return _boolean(A, B, "union")
 
 
@@ -181,10 +153,9 @@ def boolean_difference_mesh_mesh(
 
     Notes
     -----
-    Operands should describe non-self-intersecting, non-degenerate closed
-    surfaces. Structural and topological requirements are checked before the
-    native call; geometric degeneracy and self-intersection have
-    backend-specific failure modes.
+    Operands should describe finite, non-self-intersecting, non-degenerate
+    closed surfaces. Buffers are normalized once at the native boundary. CGAL
+    is authoritative for geometric and topological validity.
 
     Examples
     --------
@@ -195,8 +166,6 @@ def boolean_difference_mesh_mesh(
     >>> vertices, triangles = boolean_difference_mesh_mesh(A, B)
 
     """
-    _validate_boolean_operand(A, "A")
-    _validate_boolean_operand(B, "B")
     return _boolean(A, B, "difference")
 
 
@@ -220,10 +189,9 @@ def boolean_intersection_mesh_mesh(
 
     Notes
     -----
-    Operands should describe non-self-intersecting, non-degenerate closed
-    surfaces. Structural and topological requirements are checked before the
-    native call; geometric degeneracy and self-intersection have
-    backend-specific failure modes.
+    Operands should describe finite, non-self-intersecting, non-degenerate
+    closed surfaces. Buffers are normalized once at the native boundary. CGAL
+    is authoritative for geometric and topological validity.
 
     Examples
     --------
@@ -234,8 +202,6 @@ def boolean_intersection_mesh_mesh(
     >>> vertices, triangles = boolean_intersection_mesh_mesh(A, B)
 
     """
-    _validate_boolean_operand(A, "A")
-    _validate_boolean_operand(B, "B")
     return _boolean(A, B, "intersection")
 
 

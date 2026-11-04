@@ -2,6 +2,7 @@
 
 #include <array>
 #include <map>
+#include <stdexcept>
 
 // Local-only: enables std::vector<int> auto-conversion from Python lists for
 // the boolean_chain binding. Kept out of compas.h because types_std binds
@@ -25,7 +26,9 @@ pmp_boolean_union(
     compas::Mesh mesh_b = compas::mesh_from_vertices_and_faces(vertices_b, faces_b);
     compas::Mesh mesh_out;
 
-    PMP::corefine_and_compute_union(mesh_a, mesh_b, mesh_out);
+    if (!PMP::corefine_and_compute_union(mesh_a, mesh_b, mesh_out)) {
+        throw std::runtime_error("CGAL Boolean union failed.");
+    }
 
     return compas::mesh_to_vertices_and_faces(mesh_out);
 };
@@ -41,7 +44,9 @@ pmp_boolean_difference(
     compas::Mesh mesh_b = compas::mesh_from_vertices_and_faces(vertices_b, faces_b);
     compas::Mesh mesh_out;
 
-    PMP::corefine_and_compute_difference(mesh_a, mesh_b, mesh_out);
+    if (!PMP::corefine_and_compute_difference(mesh_a, mesh_b, mesh_out)) {
+        throw std::runtime_error("CGAL Boolean difference failed.");
+    }
 
     return compas::mesh_to_vertices_and_faces(mesh_out);
 };
@@ -57,7 +62,9 @@ pmp_boolean_intersection(
     compas::Mesh mesh_b = compas::mesh_from_vertices_and_faces(vertices_b, faces_b);
     compas::Mesh mesh_out;
 
-    PMP::corefine_and_compute_intersection(mesh_a, mesh_b, mesh_out);
+    if (!PMP::corefine_and_compute_intersection(mesh_a, mesh_b, mesh_out)) {
+        throw std::runtime_error("CGAL Boolean intersection failed.");
+    }
 
     return compas::mesh_to_vertices_and_faces(mesh_out);
 };

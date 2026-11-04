@@ -98,25 +98,6 @@ def _tetrahedron():
 
 
 @pytest.mark.parametrize(
-    ("triangles", "message"),
-    [
-        ([[0, 1, 2]], "closed"),
-        ([[0, 1, 2], [1, 0, 3], [0, 1, 3]], "duplicate triangles"),
-        ([[0, 1, 2], [0, 1, 3], [1, 2, 3], [2, 0, 3]], "consistently oriented"),
-    ],
-)
-def test_boolean_rejects_invalid_topology_before_native(monkeypatch, triangles, message):
-    invalid = ([[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]], triangles)
-
-    def fail_if_called(*args):
-        raise AssertionError("native boolean should not be called")
-
-    monkeypatch.setattr("compas_cgal.booleans._booleans.boolean_union", fail_if_called)
-    with pytest.raises(ValueError, match=message):
-        core_boolean_union(invalid, _tetrahedron())
-
-
-@pytest.mark.parametrize(
     ("function", "native_name"),
     [
         (boolean_union_mesh_mesh, "boolean_union"),
@@ -127,40 +108,15 @@ def test_boolean_rejects_invalid_topology_before_native(monkeypatch, triangles, 
 @pytest.mark.parametrize(
     ("invalid", "error", "message"),
     [
-        (([[0, 0]], [[0, 0, 0]]), ValueError, "three coordinates"),
+        (([[0, 0]], [[0, 0, 0]]), ValueError, r"shape \(N, 3\)"),
         (([[0, 0, float("nan")]], [[0, 0, 0]]), ValueError, "finite"),
-        (([[0, 0, "0"]], [[0, 0, 0]]), TypeError, "real numbers"),
-        (([[0, 0, 0]], [[0, 0]]), ValueError, "three indices"),
-        (([[0, 0, 0]], [[0.0, 0, 0]]), TypeError, "integers"),
+        (([[0, 0, 0]], [[0, 0]]), ValueError, r"shape \(M, 3\)"),
+        (([[0, 0, 0]], np.asarray([[0, 0, 2**32]], dtype=np.int64)), OverflowError, "range supported by CGAL"),
+        (([[0, 0, 0]], [[-1, 0, 0]]), IndexError, "out of range"),
         (([[0, 0, 0]], [[0, 0, 1]]), IndexError, "out of range"),
-        (([[0, 0, 0], [1, 0, 0], [0, 1, 0]], [[0, 1, 2]]), ValueError, "closed"),
-        (
-            (
-                [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]],
-                [[0, 2, 1], [0, 1, 3], [1, 2, 3], [2, 0, 3], [0, 2, 1]],
-            ),
-            ValueError,
-            "duplicate triangles",
-        ),
-        (
-            (
-                [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 1]],
-                [[0, 1, 2], [1, 0, 3], [0, 1, 4]],
-            ),
-            ValueError,
-            "manifold",
-        ),
-        (
-            (
-                [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]],
-                [[0, 1, 2], [0, 1, 3], [1, 2, 3], [2, 0, 3]],
-            ),
-            ValueError,
-            "consistently oriented",
-        ),
     ],
 )
-def test_direct_boolean_rejects_invalid_operand_before_native(monkeypatch, function, native_name, invalid, error, message):
+def test_direct_boolean_rejects_unsafe_native_buffers(monkeypatch, function, native_name, invalid, error, message):
     def fail_if_called(*args):
         raise AssertionError("native boolean should not be called")
 
@@ -168,6 +124,47 @@ def test_direct_boolean_rejects_invalid_operand_before_native(monkeypatch, funct
 
     with pytest.raises(error, match=message):
         function(invalid, _tetrahedron())
+
+
+def test_direct_boolean_leaves_topology_validation_to_cgal(monkeypatch):
+    captured = []
+
+    def boolean(*arrays):
+        captured.extend(arrays)
+        return np.empty((0, 3), dtype=np.float64), np.empty((0, 3), dtype=np.int32)
+
+    monkeypatch.setattr("compas_cgal.booleans._booleans.boolean_union", boolean)
+    open_triangle = ([[0, 0, 0], [1, 0, 0], [0, 1, 0]], [[0, 1, 2]])
+
+    vertices, faces = boolean_union_mesh_mesh(open_triangle, open_triangle)
+
+    assert len(captured) == 4
+    assert vertices.shape == (0, 3)
+    assert faces.shape == (0, 3)
+
+
+@pytest.mark.parametrize(
+    "result",
+    [
+        (np.empty((0, 2), dtype=np.float64), np.empty((0, 3), dtype=np.int32)),
+        (np.empty((0, 3), dtype=np.float64), np.empty((0, 4), dtype=np.int32)),
+    ],
+)
+def test_direct_boolean_rejects_invalid_native_result_shape(monkeypatch, result):
+    monkeypatch.setattr("compas_cgal.booleans._booleans.boolean_union", lambda *args: result)
+
+    with pytest.raises(RuntimeError, match="CGAL Boolean result"):
+        boolean_union_mesh_mesh(_tetrahedron(), _tetrahedron())
+
+
+def test_direct_boolean_propagates_native_failure(monkeypatch):
+    def fail(*args):
+        raise RuntimeError("CGAL Boolean union failed.")
+
+    monkeypatch.setattr("compas_cgal.booleans._booleans.boolean_union", fail)
+
+    with pytest.raises(RuntimeError, match="CGAL Boolean union failed"):
+        boolean_union_mesh_mesh(_tetrahedron(), _tetrahedron())
 
 
 def test_split(box_sphere_meshes):
