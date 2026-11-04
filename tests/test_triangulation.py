@@ -38,6 +38,35 @@ def test_delaunay_returns_tessellation_and_preserves_points(boundary_polygon):
     assert result.triangles.flags.c_contiguous
 
 
+@pytest.mark.parametrize(
+    "points",
+    [
+        np.asarray([[0, 0, 0], [2, 0, 0], [0, 2, 0]], dtype=np.float32),
+        np.asarray([[0, 0, 0], [2, 0, 0], [0, 2, 0]], dtype=np.float64),
+        np.asarray([[0, 0, 0], [2, 0, 0], [0, 2, 0]], dtype=np.int32),
+        np.asarray([[0, 0, 0], [2, 0, 0], [0, 2, 0]], dtype=np.int64),
+        np.asfortranarray(np.asarray([[0, 0, 0], [2, 0, 0], [0, 2, 0]], dtype=np.float64)),
+        np.asarray([[0, 0, 0, 9], [2, 0, 0, 9], [0, 2, 0, 9]], dtype=np.float64)[:, :3],
+    ],
+)
+def test_delaunay_accepts_numpy_coordinate_buffers_without_mutation(points):
+    points_before = points.copy()
+
+    result = triangulate_planar_points(points, strategy=Delaunay())
+
+    assert isinstance(result, Tessellation)
+    np.testing.assert_array_equal(points, points_before)
+
+
+def test_delaunay_accepts_readonly_numpy_coordinates():
+    points = np.asarray([[0, 0, 0], [2, 0, 0], [0, 2, 0]], dtype=np.float64)
+    points.flags.writeable = False
+
+    result = triangulate_planar_points(points, strategy=Delaunay())
+
+    assert isinstance(result, Tessellation)
+
+
 def test_constrained_domain_returns_tessellation(boundary_polygon, hole_polygons):
     result = triangulate_planar_domain(
         boundary_polygon,
@@ -50,6 +79,32 @@ def test_constrained_domain_returns_tessellation(boundary_polygon, hole_polygons
     assert result.number_of_triangles > 0
     assert isinstance(result.triangles, np.ndarray)
     assert result.triangles.dtype == np.int32
+
+
+def test_constrained_domain_accepts_numpy_coordinate_collections_without_mutation():
+    boundary = np.asfortranarray(
+        np.asarray([[0, 0, 0], [4, 0, 0], [4, 4, 0], [0, 4, 0]], dtype=np.float32)
+    )
+    holes = np.asarray(
+        [[[1, 1, 0], [1, 2, 0], [2, 2, 0], [2, 1, 0]]],
+        dtype=np.float64,
+    )
+    constraints = np.asarray([[[0, 3, 0], [4, 3, 0]]], dtype=np.float32)
+    points = np.asarray([[3, 1, 0]], dtype=np.float64)
+    holes.flags.writeable = False
+    before = [array.copy() for array in (boundary, holes, constraints, points)]
+
+    result = triangulate_planar_domain(
+        boundary,
+        holes=holes,
+        constraints=constraints,
+        points=points,
+        strategy=ConstrainedDelaunay(),
+    )
+
+    assert isinstance(result, Tessellation)
+    for array, expected in zip((boundary, holes, constraints, points), before, strict=True):
+        np.testing.assert_array_equal(array, expected)
 
 
 def test_conforming_domain_supports_maximum_edge_length(boundary_polygon, hole_polygons):

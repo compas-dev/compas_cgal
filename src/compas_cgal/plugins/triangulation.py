@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
 from compas.plugins import plugin
 
 if TYPE_CHECKING:
-    from compas._typing import CoordinatesType
+    from compas._typing import CoordinatesCollectionInput
+    from compas._typing import CoordinatesInput
     from compas.geometry import ConformingDelaunay
     from compas.geometry import ConstrainedDelaunay
     from compas.geometry import Delaunay
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 @plugin(category="triangulation", requires=["compas_cgal"])
 def _triangulate_planar_points(
-    points: CoordinatesType,
+    points: CoordinatesInput,
     *,
     strategy: Delaunay,
     frame: Frame | None = None,
@@ -30,11 +30,11 @@ def _triangulate_planar_points(
 
 @plugin(category="triangulation", requires=["compas_cgal"])
 def _triangulate_planar_domain(
-    boundary: CoordinatesType,
+    boundary: CoordinatesInput,
     *,
-    holes: Sequence[CoordinatesType] = (),
-    constraints: Sequence[CoordinatesType] = (),
-    points: CoordinatesType = (),
+    holes: CoordinatesCollectionInput = (),
+    constraints: CoordinatesCollectionInput = (),
+    points: CoordinatesInput = (),
     strategy: ConstrainedDelaunay | ConformingDelaunay,
     frame: Frame | None = None,
 ) -> Tessellation:

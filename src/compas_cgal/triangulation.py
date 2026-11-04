@@ -12,7 +12,8 @@ from compas_cgal import _triangulation  # type: ignore
 from compas_cgal import _types_std  # type: ignore
 
 if TYPE_CHECKING:
-    from compas._typing import CoordinatesType
+    from compas._typing import CoordinatesCollectionInput
+    from compas._typing import CoordinatesInput
     from compas.geometry import ConformingDelaunay
     from compas.geometry import ConstrainedDelaunay
     from compas.geometry import Delaunay
@@ -23,7 +24,7 @@ __all__ = []
 
 
 def _project_points(
-    points: CoordinatesType,
+    points: CoordinatesInput,
     frame: Frame | None,
     name: str,
 ) -> tuple[list[list[float]], np.ndarray]:
@@ -90,7 +91,7 @@ def _lift_vertices(
 
 
 def _triangulate_planar_points(
-    points: CoordinatesType,
+    points: CoordinatesInput,
     *,
     strategy: Delaunay,
     frame: Frame | None = None,
@@ -107,11 +108,11 @@ def _triangulate_planar_points(
 
 
 def _triangulate_planar_domain(
-    boundary: CoordinatesType,
+    boundary: CoordinatesInput,
     *,
-    holes: Sequence[CoordinatesType] = (),
-    constraints: Sequence[CoordinatesType] = (),
-    points: CoordinatesType = (),
+    holes: CoordinatesCollectionInput = (),
+    constraints: CoordinatesCollectionInput = (),
+    points: CoordinatesInput = (),
     strategy: ConstrainedDelaunay | ConformingDelaunay,
     frame: Frame | None = None,
 ) -> Tessellation:
