@@ -70,7 +70,7 @@ compas_cgal_trimesh = "compas_cgal.plugins.trimesh"
 compas_cgal_triangulation = "compas_cgal.plugins.triangulation"
 
 [tool.uv.sources]
-compas = { git = "https://github.com/compas-dev/compas.git", rev = "76fc544d7e00bf2ec4ada18e46738525632a879f" }
+compas = { git = "https://github.com/compas-dev/compas.git", rev = "e54f8ae0eba39e84b1290bea9c368a1a646dfdcd" }
 
 # ============================================================================
 # replace pytest.ini
