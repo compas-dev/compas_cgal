@@ -58,10 +58,10 @@ def _boolean(
     """
     VA, FA = A
     VB, FB = B
-    VA = np.asarray(VA, dtype=np.float64)
-    FA = np.asarray(FA, dtype=np.int32)
-    VB = np.asarray(VB, dtype=np.float64)
-    FB = np.asarray(FB, dtype=np.int32)
+    VA = np.ascontiguousarray(VA, dtype=np.float64)
+    FA = np.ascontiguousarray(FA, dtype=np.int32)
+    VB = np.ascontiguousarray(VB, dtype=np.float64)
+    FB = np.ascontiguousarray(FB, dtype=np.int32)
 
     if operation == "union":
         result = _booleans.boolean_union(VA, FA, VB, FB)
@@ -210,10 +210,10 @@ def _boolean_with_edges(
 ) -> VerticesFacesEdgesNumpy:
     VA, FA = A
     VB, FB = B
-    VA = np.asarray(VA, dtype=np.float64)
-    FA = np.asarray(FA, dtype=np.int32)
-    VB = np.asarray(VB, dtype=np.float64)
-    FB = np.asarray(FB, dtype=np.int32)
+    VA = np.ascontiguousarray(VA, dtype=np.float64)
+    FA = np.ascontiguousarray(FA, dtype=np.int32)
+    VB = np.ascontiguousarray(VB, dtype=np.float64)
+    FB = np.ascontiguousarray(FB, dtype=np.int32)
 
     if operation == "union":
         return _booleans.boolean_union_with_edges(VA, FA, VB, FB)
@@ -266,10 +266,10 @@ def _boolean_with_face_source(
 ) -> VerticesFacesSourceNumpy:
     VA, FA = A
     VB, FB = B
-    VA = np.asarray(VA, dtype=np.float64)
-    FA = np.asarray(FA, dtype=np.int32)
-    VB = np.asarray(VB, dtype=np.float64)
-    FB = np.asarray(FB, dtype=np.int32)
+    VA = np.ascontiguousarray(VA, dtype=np.float64)
+    FA = np.ascontiguousarray(FA, dtype=np.int32)
+    VB = np.ascontiguousarray(VB, dtype=np.float64)
+    FB = np.ascontiguousarray(FB, dtype=np.int32)
 
     if operation == "union":
         return _booleans.boolean_union_with_face_source(VA, FA, VB, FB)

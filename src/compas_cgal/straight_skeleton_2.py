@@ -121,7 +121,7 @@ def interior_straight_skeleton_with_holes(points, holes, as_graph=True) -> Union
         normal_hole = normal_polygon(points, True)
         if not TOL.is_allclose(normal_hole, [0, 0, -1]):
             raise ValueError("The normal of the hole should be [0, 0, -1]. The normal of the provided {}-th hole is {}".format(i, normal_hole))
-        hole = np.asarray(points, dtype=np.float64)
+        hole = np.ascontiguousarray(points, dtype=np.float64)
         H.append(hole)
     points, indices, edges, edge_types = _straight_skeleton_2.create_interior_straight_skeleton_with_holes(V, H)
     if as_graph:

@@ -1,19 +1,20 @@
 """Polyline utilities using CGAL."""
 
 from typing import List
-from typing import Union
+from typing import Sequence
 
 import numpy as np
+from compas._typing import CoordinatesInput
 from numpy.typing import NDArray
 
 from compas_cgal import _types_std  # noqa: F401  # type: ignore
 from compas_cgal._polylines import closest_points_on_polyline as _closest_points  # type: ignore
 from compas_cgal._polylines import simplify_polylines as _simplify  # type: ignore
 
-PointsList = Union[List[List[float]], NDArray]
+type PointsList = CoordinatesInput
 
 
-def simplify_polylines(polylines: List[PointsList], threshold: float) -> List[NDArray]:
+def simplify_polylines(polylines: Sequence[PointsList], threshold: float) -> List[NDArray]:
     """Simplify multiple polylines using Douglas-Peucker algorithm.
 
     Simplification is performed in the XY plane only. For 3D polylines,
@@ -43,7 +44,7 @@ def simplify_polylines(polylines: List[PointsList], threshold: float) -> List[ND
     """
     if threshold < 0:
         raise ValueError("threshold must be non-negative")
-    arrays = [np.asarray(p, dtype=np.float64) for p in polylines]
+    arrays = [np.ascontiguousarray(p, dtype=np.float64) for p in polylines]
     return _simplify(arrays, threshold)
 
 
@@ -96,6 +97,6 @@ def closest_points_on_polyline(query_points: PointsList, polyline: PointsList) -
     array([5., 0.])
 
     """
-    queries = np.asarray(query_points, dtype=np.float64)
-    poly = np.asarray(polyline, dtype=np.float64)
+    queries = np.ascontiguousarray(query_points, dtype=np.float64)
+    poly = np.ascontiguousarray(polyline, dtype=np.float64)
     return _closest_points(queries, poly)

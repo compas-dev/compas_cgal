@@ -5,6 +5,11 @@ import numpy as np
 import pytest
 
 from compas_cgal import measure
+from compas_cgal import polylines
+from compas_cgal import straight_skeleton_2
+from compas_cgal.booleans import boolean_union_mesh_mesh_with_edges
+from compas_cgal.booleans import boolean_union_mesh_mesh_with_face_source
+from compas_cgal.booleans import split_mesh_mesh
 from compas_cgal.subdivision import mesh_subdivide_loop
 
 
@@ -28,6 +33,17 @@ def index_inputs():
     readonly_int32 = c_int32.copy()
     readonly_int32.flags.writeable = False
     return [values, tuple(map(tuple, values)), c_int64, c_int32, f_int32, sliced_int32, readonly_int32]
+
+
+def polygon_inputs():
+    values = [[0, 0, 0], [4, 0, 0], [4, 4, 0], [0, 4, 0]]
+    c_float64 = np.asarray(values, dtype=np.float64)
+    c_float32 = np.asarray(values, dtype=np.float32)
+    f_float64 = np.asfortranarray(c_float64)
+    sliced_float64 = np.asarray([[0, 0, 0, 9], [4, 0, 0, 9], [4, 4, 0, 9], [0, 4, 0, 9]], dtype=np.float64)[:, :3]
+    readonly_float64 = c_float64.copy()
+    readonly_float64.flags.writeable = False
+    return [values, tuple(map(tuple, values)), c_float32, c_float64, f_float64, sliced_float64, readonly_float64]
 
 
 def test_python_wrapper_normalizes_mesh_arrays_at_native_boundary(monkeypatch):
@@ -70,6 +86,97 @@ def test_public_mesh_inputs_are_normalized_without_mutation(monkeypatch, vertice
     assert captured["faces"].flags.c_contiguous
     np.testing.assert_array_equal(vertices, vertices_before)
     np.testing.assert_array_equal(faces, faces_before)
+
+
+@pytest.mark.parametrize("vertices, faces", list(zip(coordinate_inputs(), index_inputs())))
+@pytest.mark.parametrize("operation", ["split", "edges", "source"])
+def test_boolean_inputs_are_normalized_without_mutation(monkeypatch, vertices, faces, operation):
+    vertices_before = np.asarray(vertices).copy()
+    faces_before = np.asarray(faces).copy()
+    captured = []
+
+    def boolean(*arrays):
+        captured.extend(arrays)
+        result = (np.empty((0, 3), dtype=np.float64), np.empty((0, 3), dtype=np.int32))
+        if operation != "split":
+            return (*result, np.empty((0, 2), dtype=np.int32))
+        return result
+
+    if operation == "edges":
+        monkeypatch.setattr("compas_cgal.booleans._booleans.boolean_union_with_edges", boolean)
+        boolean_union_mesh_mesh_with_edges((vertices, faces), (vertices, faces))
+    elif operation == "source":
+        monkeypatch.setattr("compas_cgal.booleans._booleans.boolean_union_with_face_source", boolean)
+        boolean_union_mesh_mesh_with_face_source((vertices, faces), (vertices, faces))
+    else:
+        monkeypatch.setattr("compas_cgal.booleans._booleans.split", boolean)
+        split_mesh_mesh((vertices, faces), (vertices, faces))
+
+    for native_vertices, native_faces in zip(captured[::2], captured[1::2]):
+        assert native_vertices.dtype == np.float64
+        assert native_faces.dtype == np.int32
+        assert native_vertices.flags.c_contiguous
+        assert native_faces.flags.c_contiguous
+    np.testing.assert_array_equal(vertices, vertices_before)
+    np.testing.assert_array_equal(faces, faces_before)
+
+
+@pytest.mark.parametrize("points", coordinate_inputs())
+@pytest.mark.parametrize("operation", ["simplify", "closest"])
+def test_polyline_inputs_are_normalized_without_mutation(monkeypatch, points, operation):
+    points_before = np.asarray(points).copy()
+    captured = []
+
+    if operation == "simplify":
+
+        def simplify(arrays, threshold):
+            captured.extend(arrays)
+            return arrays
+
+        monkeypatch.setattr(polylines, "_simplify", simplify)
+        polylines.simplify_polylines((points,), 0.1)
+    else:
+
+        def closest(query_points, polyline):
+            captured.extend([query_points, polyline])
+            return query_points
+
+        monkeypatch.setattr(polylines, "_closest_points", closest)
+        polylines.closest_points_on_polyline(points, points)
+
+    for array in captured:
+        assert array.dtype == np.float64
+        assert array.flags.c_contiguous
+    np.testing.assert_array_equal(points, points_before)
+
+
+@pytest.mark.parametrize("boundary", polygon_inputs())
+def test_straight_skeleton_holes_are_normalized_without_mutation(monkeypatch, boundary):
+    hole = np.asarray([[1, 1, 0], [1, 2, 0], [2, 2, 0], [2, 1, 0]], dtype=np.float32)
+    hole = np.asfortranarray(hole)
+    boundary_before = np.asarray(boundary).copy()
+    hole_before = hole.copy()
+    captured = {}
+
+    def skeleton(native_boundary, native_holes):
+        captured["boundary"] = native_boundary
+        captured["holes"] = native_holes
+        return (
+            np.empty((0, 3), dtype=np.float64),
+            np.empty((0,), dtype=np.int32),
+            np.empty((0, 2), dtype=np.int32),
+            np.empty((0,), dtype=np.int32),
+        )
+
+    monkeypatch.setattr(straight_skeleton_2._straight_skeleton_2, "create_interior_straight_skeleton_with_holes", skeleton)
+    straight_skeleton_2.interior_straight_skeleton_with_holes(boundary, [hole], as_graph=False)
+
+    assert captured["boundary"].dtype == np.float64
+    assert captured["boundary"].flags.c_contiguous
+    assert captured["holes"][0].dtype == np.float64
+    assert captured["holes"][0].flags.c_contiguous
+    np.testing.assert_array_equal(boundary, boundary_before)
+    np.testing.assert_array_equal(hole, hole_before)
 
 
 def test_native_array_results_remain_valid_after_collection():
