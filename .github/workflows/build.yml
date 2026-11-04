@@ -60,9 +60,10 @@ jobs:
       - uses: pypa/cibuildwheel@c923d83ad9c1bc00211c5041d0c3f73294ff88f6 # v2.23.3
         env:
           CIBW_ARCHS: ${{ matrix.arch }}
-          CIBW_TEST_REQUIRES: >-
-            numpy>=1.24 pytest build
-            compas@git+https://github.com/compas-dev/compas.git@e54f8ae0eba39e84b1290bea9c368a1a646dfdcd
+          CIBW_BEFORE_TEST: >-
+            python -m pip install
+            "compas @ git+https://github.com/compas-dev/compas.git@e54f8ae0eba39e84b1290bea9c368a1a646dfdcd"
+          CIBW_TEST_REQUIRES: numpy>=1.24 pytest build
         with:
           output-dir: wheelhouse
       - name: Verify wheel contents

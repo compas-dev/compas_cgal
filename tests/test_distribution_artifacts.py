@@ -22,6 +22,7 @@ NATIVE_MODULES = (
     "_triangulation",
     "_types_std",
 )
+COMPAS_CANDIDATE = "e54f8ae0eba39e84b1290bea9c368a1a646dfdcd"
 
 
 @pytest.fixture
@@ -67,3 +68,15 @@ def test_python_file_does_not_count_as_native_extension(tmp_path: Path, verifier
 
     assert result.returncode != 0
     assert "_triangulation" in result.stderr
+
+
+@pytest.mark.parametrize("workflow_name", ["build.yml", "release.yml"])
+def test_cibuildwheel_installs_compas_candidate_before_wheel(workflow_name: str) -> None:
+    workflow_path = Path(__file__).parents[1] / ".github" / "workflows" / workflow_name
+    workflow = workflow_path.read_text(encoding="utf-8")
+    before_test, test_requirements = workflow.split("CIBW_BEFORE_TEST:", maxsplit=1)[1].split("CIBW_TEST_REQUIRES:", maxsplit=1)
+    test_requirements = test_requirements.splitlines()[0]
+
+    assert COMPAS_CANDIDATE in before_test
+    assert "pip install" in before_test
+    assert "compas" not in test_requirements.lower()
