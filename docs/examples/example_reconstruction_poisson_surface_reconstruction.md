@@ -12,5 +12,5 @@ Key Features:
 * Side-by-side display of input points and reconstructed mesh
 
 ```python
----8<--- "docs/examples/example_reconstruction_poisson_surface_reconstruction.py"
+---8 < ---"docs/examples/example_reconstruction_poisson_surface_reconstruction.py"
 ```

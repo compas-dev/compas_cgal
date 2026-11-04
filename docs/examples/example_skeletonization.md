@@ -12,5 +12,5 @@ Key Features:
 * Visualization of mesh and skeleton polylines
 
 ```python
----8<--- "docs/examples/example_skeletonization.py"
+---8 < ---"docs/examples/example_skeletonization.py"
 ```

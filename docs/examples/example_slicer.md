@@ -13,5 +13,5 @@ Key Features:
 * Visualization with semi-transparent mesh and slice curves
 
 ```python
----8<--- "docs/examples/example_slicer.py"
+---8 < ---"docs/examples/example_slicer.py"
 ```

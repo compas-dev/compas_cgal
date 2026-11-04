@@ -12,5 +12,5 @@ Key Features:
 * Visualization of point normals as scaled lines
 
 ```python
----8<--- "docs/examples/example_reconstruction_pointset_normal_estimation.py"
+---8 < ---"docs/examples/example_reconstruction_pointset_normal_estimation.py"
 ```

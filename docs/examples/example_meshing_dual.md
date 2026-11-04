@@ -11,5 +11,5 @@ Key Features:
 * Dual vertices are fixed by angle or/and vertex index.
 
 ```python
----8<--- "docs/examples/example_meshing_dual.py"
+---8 < ---"docs/examples/example_meshing_dual.py"
 ```

@@ -12,5 +12,5 @@ Key Features:
 * Point cloud difference computation
 
 ```python
----8<--- "docs/examples/example_reconstruction_pointset_outlier_removal.py"
+---8 < ---"docs/examples/example_reconstruction_pointset_outlier_removal.py"
 ```

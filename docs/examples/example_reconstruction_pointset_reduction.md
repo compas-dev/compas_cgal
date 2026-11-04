@@ -11,5 +11,5 @@ Key Features:
 * Side-by-side visualization of original and reduced point clouds
 
 ```python
----8<--- "docs/examples/example_reconstruction_pointset_reduction.py"
+---8 < ---"docs/examples/example_reconstruction_pointset_reduction.py"
 ```

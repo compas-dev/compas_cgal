@@ -9,5 +9,5 @@ Key Features:
 * Centroid via `mesh_centroid`
 
 ```python
----8<--- "docs/examples/example_measure.py"
+---8 < ---"docs/examples/example_measure.py"
 ```

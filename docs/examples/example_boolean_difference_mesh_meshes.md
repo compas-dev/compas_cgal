@@ -22,5 +22,5 @@ corefinement steps `boolean_chain` applies CGAL 6.1's
 which makes the chain robust at radii up to ~0.7 in this geometry.
 
 ```python
----8<--- "docs/examples/example_boolean_difference_mesh_meshes.py"
+---8 < ---"docs/examples/example_boolean_difference_mesh_meshes.py"
 ```

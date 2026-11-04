@@ -1,0 +1,23 @@
+name: prepare-release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release-type:
+        description: Semantic version component to bump
+        required: true
+        type: choice
+        options: [patch, minor, major]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: compas-dev/compas-actions/release-pr@5c64e6e2b576a1232d28fed47d9478ca8eb63b2d # v2 candidate
+        with:
+          release-type: ${{ inputs.release-type }}
+          github-token: ${{ github.token }}

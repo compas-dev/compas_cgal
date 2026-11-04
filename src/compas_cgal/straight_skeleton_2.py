@@ -452,5 +452,5 @@ def extrude(points, holes=None, weights=None, angles=None, maximum_height=None) 
     max_height = float(maximum_height) if maximum_height is not None else -1.0
 
     vertices, faces = _straight_skeleton_2.extrude_straight_skeleton(V, H, speeds, use_angles, max_height)
-    mesh = Mesh.from_vertices_and_faces(vertices.tolist(), faces.tolist())
+    mesh = Mesh.from_vertices_and_faces(vertices.tolist(), faces)
     return _triangulated(mesh), _roof_outline(mesh)

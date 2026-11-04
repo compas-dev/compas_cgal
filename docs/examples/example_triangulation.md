@@ -12,5 +12,5 @@ Key Features:
 * Side-by-side visualization of different triangulation methods
 
 ```python
----8<--- "docs/examples/example_triangulation.py"
+---8 < ---"docs/examples/example_triangulation.py"
 ```

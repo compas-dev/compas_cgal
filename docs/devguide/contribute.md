@@ -61,7 +61,7 @@ NB_MODULE(_new_module, m) {
 Rebuild the project with:
 
 ``` bash
-pip install --no-build-isolation -ve . -Ceditable.rebuild=true
+uv sync --reinstall-package compas-cgal
 ```
 
 ### CMake
@@ -97,6 +97,7 @@ Implement the submodule in `src/compas_cgal/new_module.py`:
 ``` python
 from compas_cgal.compas_cgal_ext import new_module
 
+
 def new_function():
     ...
     result_from_cplusplus = new_module.python_function_name()
@@ -106,7 +107,7 @@ def new_function():
 After creating new source files, you must rebuild the project with:
 
 ``` bash
-pip install --no-build-isolation -ve .
+uv sync --reinstall-package compas-cgal
 ```
 
 ## Document, Test, and Format
@@ -114,11 +115,13 @@ pip install --no-build-isolation -ve .
 ### Documentation
 
 Document your scripts with a screenshot in `docs/examples`.
-Documentation can be build with:
+Build documentation strictly with:
 
 ``` bash
-invoke docs
+uv run --group docs mkdocs build --strict
 ```
+
+The equivalent compatibility command is `uv run invoke docs`.
 
 Scripts should be profiled for performance checks:
 
@@ -148,17 +151,25 @@ add a simplest possible test, this will help you run all the tests to
 know if everything is working.
 
 ``` bash
-invoke test
+uv run pytest
 ```
+
+The equivalent compatibility command is `uv run invoke test`.
 
 ### Formatting
 
 Run the formatter to ensure consistent code style:
 
 ``` bash
-invoke format
-invoke lint
+uv run ruff format .
+uv run ruff check --fix .
+uv run ruff format --check .
+uv run ruff check .
+uv run pyright
 ```
+
+Existing shared actions may use `uv run invoke check`; the direct commands above
+remain the authoritative local and CI operations.
 
 ## GitHub Pull Request
 

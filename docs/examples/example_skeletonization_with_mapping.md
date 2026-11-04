@@ -12,5 +12,5 @@ Key Features:
 * Printing mapping statistics to understand the correspondence
 
 ```python
----8<--- "docs/examples/example_skeletonization_with_mapping.py"
+---8 < ---"docs/examples/example_skeletonization_with_mapping.py"
 ```

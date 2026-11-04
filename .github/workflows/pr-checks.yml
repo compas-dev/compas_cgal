@@ -1,21 +1,16 @@
-name: verify-pr-checklist
+name: pull-request-policy
+
 on:
   pull_request:
-    types: [assigned, opened, synchronize, reopened, labeled, unlabeled]
-    branches:
-      - main
-      - master
+    types: [opened, synchronize, reopened, edited, labeled, unlabeled]
+
+permissions:
+  contents: read
+  pull-requests: read
 
 jobs:
-  build:
-    name: Check Actions
+  policy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - name: Changelog check
-        uses: Zomzog/changelog-checker@v1.2.0
-        with:
-          fileName: CHANGELOG.md
-          checkNotification: Simple
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: compas-dev/compas-actions/release-check@5c64e6e2b576a1232d28fed47d9478ca8eb63b2d # v2 candidate
+      - uses: compas-dev/compas-actions/pr-checks@5c64e6e2b576a1232d28fed47d9478ca8eb63b2d # v2 candidate

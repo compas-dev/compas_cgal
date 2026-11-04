@@ -143,7 +143,7 @@ When implementing new functionality:
 
   # BAD: Don't rely on automatic conversion
   vertices = points  # type not enforced
-  faces = indices   # type not enforced
+  faces = indices  # type not enforced
   ```
 
 - Error Handling:
