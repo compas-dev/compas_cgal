@@ -12,19 +12,17 @@ def test_weighted_offset_polygon():
         (12.23, 1.25, 0.0),
         (3.42, 0.66, 0.0),
         (2.92, 4.03, 0.0),
-        (-1.91, 3.59, 0.0),
     ]
-    distances = [0.1, 0.3, 0.6, 0.1, 0.7, 0.5, 0.2, 0.4, 0.8, 0.2]
+    distances = [0.1, 0.3, 0.6, 0.1, 0.7, 0.5, 0.2, 0.4, 0.8]
     weights = [1.0 / d for d in distances]
     offset = 1.0
 
-    # Call the function
-    offset_polygons_outer = weighted_offset_polygon(points, -offset, weights)
+    for signed_offset in (offset, -offset):
+        offset_polygons = weighted_offset_polygon(points, signed_offset, weights)
 
-    # Assertions
-    assert isinstance(offset_polygons_outer, list), "Expected a list of offset polygons"
-    assert len(offset_polygons_outer) > 0, "Expected at least one offset polygon"
+        assert isinstance(offset_polygons, list), "Expected a list of offset polygons"
+        assert len(offset_polygons) > 0, "Expected at least one offset polygon"
 
-    for poly in offset_polygons_outer:
-        assert hasattr(poly, "__iter__"), "Each polygon should be iterable"
-        assert len(poly) > 2, "Each polygon should have at least 3 vertices"
+        for polygon in offset_polygons:
+            assert hasattr(polygon, "__iter__"), "Each polygon should be iterable"
+            assert len(polygon) > 2, "Each polygon should have at least 3 vertices"
