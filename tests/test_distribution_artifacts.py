@@ -80,3 +80,14 @@ def test_cibuildwheel_installs_compas_candidate_before_wheel(workflow_name: str)
     assert COMPAS_CANDIDATE in before_test
     assert "pip install" in before_test
     assert "compas" not in test_requirements.lower()
+
+
+@pytest.mark.parametrize("workflow_name", ["build.yml", "release.yml"])
+def test_workflows_use_supported_intel_macos_runner(workflow_name: str) -> None:
+    workflow_path = Path(__file__).parents[1] / ".github" / "workflows" / workflow_name
+    workflow = workflow_path.read_text(encoding="utf-8")
+
+    assert "os: macos-15-intel" in workflow
+    assert "platform: macos-x86_64" in workflow
+    assert "arch: x86_64" in workflow
+    assert "macos-13" not in workflow

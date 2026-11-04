@@ -34,7 +34,7 @@ jobs:
           - os: ubuntu-latest
             platform: manylinux
             arch: x86_64
-          - os: macos-13
+          - os: macos-15-intel
             platform: macos-x86_64
             arch: x86_64
           - os: macos-15
