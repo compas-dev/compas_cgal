@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from compas.geometry import Box, Frame, Native, Sphere, Tessellation, UGrid, UVGrid
+from compas.geometry import Box, Frame, Native, Sphere, UGrid, UVGrid
 from compas.geometry import boolean_difference_mesh_mesh as core_boolean_difference
 from compas.geometry import boolean_intersection_mesh_mesh as core_boolean_intersection
 from compas.geometry import boolean_union_mesh_mesh as core_boolean_union
@@ -14,10 +14,12 @@ from compas_cgal.booleans import (
     boolean_difference_mesh_mesh_with_edges,
     boolean_difference_mesh_mesh_with_face_source,
     boolean_difference_mesh_meshes,
+    boolean_intersection_mesh_mesh,
     boolean_intersection_mesh_mesh_with_edges,
     boolean_intersection_mesh_mesh_with_face_source,
     boolean_union_mesh_mesh_with_edges,
     boolean_union_mesh_mesh_with_face_source,
+    boolean_union_mesh_mesh,
     split_mesh_mesh,
 )
 
@@ -37,10 +39,8 @@ def box_sphere_meshes():
 def test_boolean_union(box_sphere_meshes):
     """Test boolean union operation."""
     mesh_a, mesh_b = box_sphere_meshes
-    result = core_boolean_union(Tessellation(*mesh_a), Tessellation(*mesh_b))
-    vertices, faces = result.to_vertices_and_triangles()
+    vertices, faces = core_boolean_union(mesh_a, mesh_b)
 
-    assert isinstance(result, Tessellation)
     assert isinstance(vertices, np.ndarray)
     assert isinstance(faces, np.ndarray)
     assert vertices.shape[1] == 3  # 3D points
@@ -57,10 +57,8 @@ def test_boolean_union(box_sphere_meshes):
 def test_boolean_difference(box_sphere_meshes):
     """Test boolean difference operation."""
     mesh_a, mesh_b = box_sphere_meshes
-    result = core_boolean_difference(Tessellation(*mesh_a), Tessellation(*mesh_b))
-    vertices, faces = result.to_vertices_and_triangles()
+    vertices, faces = core_boolean_difference(mesh_a, mesh_b)
 
-    assert isinstance(result, Tessellation)
     assert isinstance(vertices, np.ndarray)
     assert isinstance(faces, np.ndarray)
     assert vertices.shape[1] == 3
@@ -77,10 +75,8 @@ def test_boolean_difference(box_sphere_meshes):
 def test_boolean_intersection(box_sphere_meshes):
     """Test boolean intersection operation."""
     mesh_a, mesh_b = box_sphere_meshes
-    result = core_boolean_intersection(Tessellation(*mesh_a), Tessellation(*mesh_b))
-    vertices, faces = result.to_vertices_and_triangles()
+    vertices, faces = core_boolean_intersection(mesh_a, mesh_b)
 
-    assert isinstance(result, Tessellation)
     assert isinstance(vertices, np.ndarray)
     assert isinstance(faces, np.ndarray)
     assert vertices.shape[1] == 3
@@ -94,8 +90,8 @@ def test_boolean_intersection(box_sphere_meshes):
     assert mesh.euler() == 2  # Valid closed manifold
 
 
-def _tetrahedron() -> Tessellation:
-    return Tessellation(
+def _tetrahedron():
+    return (
         [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]],
         [[0, 2, 1], [0, 1, 3], [1, 2, 3], [2, 0, 3]],
     )
@@ -105,12 +101,12 @@ def _tetrahedron() -> Tessellation:
     ("triangles", "message"),
     [
         ([[0, 1, 2]], "closed"),
-        ([[0, 1, 2], [1, 0, 3], [0, 1, 3]], "manifold"),
+        ([[0, 1, 2], [1, 0, 3], [0, 1, 3]], "duplicate triangles"),
         ([[0, 1, 2], [0, 1, 3], [1, 2, 3], [2, 0, 3]], "consistently oriented"),
     ],
 )
 def test_boolean_rejects_invalid_topology_before_native(monkeypatch, triangles, message):
-    invalid = Tessellation([[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]], triangles)
+    invalid = ([[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]], triangles)
 
     def fail_if_called(*args):
         raise AssertionError("native boolean should not be called")
@@ -118,6 +114,60 @@ def test_boolean_rejects_invalid_topology_before_native(monkeypatch, triangles, 
     monkeypatch.setattr("compas_cgal.booleans._booleans.boolean_union", fail_if_called)
     with pytest.raises(ValueError, match=message):
         core_boolean_union(invalid, _tetrahedron())
+
+
+@pytest.mark.parametrize(
+    ("function", "native_name"),
+    [
+        (boolean_union_mesh_mesh, "boolean_union"),
+        (boolean_difference_mesh_mesh, "boolean_difference"),
+        (boolean_intersection_mesh_mesh, "boolean_intersection"),
+    ],
+)
+@pytest.mark.parametrize(
+    ("invalid", "error", "message"),
+    [
+        (([[0, 0]], [[0, 0, 0]]), ValueError, "three coordinates"),
+        (([[0, 0, float("nan")]], [[0, 0, 0]]), ValueError, "finite"),
+        (([[0, 0, "0"]], [[0, 0, 0]]), TypeError, "real numbers"),
+        (([[0, 0, 0]], [[0, 0]]), ValueError, "three indices"),
+        (([[0, 0, 0]], [[0.0, 0, 0]]), TypeError, "integers"),
+        (([[0, 0, 0]], [[0, 0, 1]]), IndexError, "out of range"),
+        (([[0, 0, 0], [1, 0, 0], [0, 1, 0]], [[0, 1, 2]]), ValueError, "closed"),
+        (
+            (
+                [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]],
+                [[0, 2, 1], [0, 1, 3], [1, 2, 3], [2, 0, 3], [0, 2, 1]],
+            ),
+            ValueError,
+            "duplicate triangles",
+        ),
+        (
+            (
+                [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 1]],
+                [[0, 1, 2], [1, 0, 3], [0, 1, 4]],
+            ),
+            ValueError,
+            "manifold",
+        ),
+        (
+            (
+                [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]],
+                [[0, 1, 2], [0, 1, 3], [1, 2, 3], [2, 0, 3]],
+            ),
+            ValueError,
+            "consistently oriented",
+        ),
+    ],
+)
+def test_direct_boolean_rejects_invalid_operand_before_native(monkeypatch, function, native_name, invalid, error, message):
+    def fail_if_called(*args):
+        raise AssertionError("native boolean should not be called")
+
+    monkeypatch.setattr(f"compas_cgal.booleans._booleans.{native_name}", fail_if_called)
+
+    with pytest.raises(error, match=message):
+        function(invalid, _tetrahedron())
 
 
 def test_split(box_sphere_meshes):
@@ -166,8 +216,7 @@ def test_boolean_difference_mesh_meshes(box_sphere_meshes):
     """Consolidate-then-subtract returns the same shape as a single difference."""
     box, sphere = box_sphere_meshes
 
-    single = boolean_difference_mesh_mesh(Tessellation(*box), Tessellation(*sphere))
-    V_single, F_single = single.to_vertices_and_triangles()
+    V_single, F_single = boolean_difference_mesh_mesh(box, sphere)
     V_multi, F_multi = boolean_difference_mesh_meshes(box, [sphere])
 
     # Single-cutter case must match the single-mesh API.

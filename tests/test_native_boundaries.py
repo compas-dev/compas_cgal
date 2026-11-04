@@ -10,6 +10,9 @@ from compas_cgal import polylines
 from compas_cgal import straight_skeleton_2
 from compas_cgal._tessellation import as_native_tessellation
 from compas_cgal._tessellation import from_native_tessellation
+from compas_cgal.booleans import boolean_difference_mesh_mesh
+from compas_cgal.booleans import boolean_intersection_mesh_mesh
+from compas_cgal.booleans import boolean_union_mesh_mesh
 from compas_cgal.booleans import boolean_union_mesh_mesh_with_edges
 from compas_cgal.booleans import boolean_union_mesh_mesh_with_face_source
 from compas_cgal.booleans import split_mesh_mesh
@@ -47,6 +50,28 @@ def polygon_inputs():
     readonly_float64 = c_float64.copy()
     readonly_float64.flags.writeable = False
     return [values, tuple(map(tuple, values)), c_float32, c_float64, f_float64, sliced_float64, readonly_float64]
+
+
+def boolean_coordinate_inputs():
+    values = [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]]
+    c_float64 = np.asarray(values, dtype=np.float64)
+    c_float32 = np.asarray(values, dtype=np.float32)
+    f_float64 = np.asfortranarray(c_float64)
+    sliced_float64 = np.asarray([[*point, 9] for point in values], dtype=np.float64)[:, :3]
+    readonly_float64 = c_float64.copy()
+    readonly_float64.flags.writeable = False
+    return [values, tuple(map(tuple, values)), c_float32, c_float64, f_float64, sliced_float64, readonly_float64]
+
+
+def boolean_index_inputs():
+    values = [[0, 2, 1], [0, 1, 3], [1, 2, 3], [2, 0, 3]]
+    c_int64 = np.asarray(values, dtype=np.int64)
+    c_int32 = np.asarray(values, dtype=np.int32)
+    f_int32 = np.asfortranarray(c_int32)
+    sliced_int32 = np.asarray([[*face, 9] for face in values], dtype=np.int32)[:, :3]
+    readonly_int32 = c_int32.copy()
+    readonly_int32.flags.writeable = False
+    return [values, tuple(map(tuple, values)), c_int64, c_int32, f_int32, sliced_int32, readonly_int32]
 
 
 class HugeVertices(np.ndarray):
@@ -136,8 +161,8 @@ def test_public_mesh_inputs_are_normalized_without_mutation(monkeypatch, vertice
     np.testing.assert_array_equal(faces, faces_before)
 
 
-@pytest.mark.parametrize("vertices, faces", list(zip(coordinate_inputs(), index_inputs())))
-@pytest.mark.parametrize("operation", ["split", "edges", "source"])
+@pytest.mark.parametrize("vertices, faces", list(zip(boolean_coordinate_inputs(), boolean_index_inputs())))
+@pytest.mark.parametrize("operation", ["union", "difference", "intersection", "split", "edges", "source"])
 def test_boolean_inputs_are_normalized_without_mutation(monkeypatch, vertices, faces, operation):
     vertices_before = np.asarray(vertices).copy()
     faces_before = np.asarray(faces).copy()
@@ -150,7 +175,15 @@ def test_boolean_inputs_are_normalized_without_mutation(monkeypatch, vertices, f
             return (*result, np.empty((0, 2), dtype=np.int32))
         return result
 
-    if operation == "edges":
+    if operation in {"union", "difference", "intersection"}:
+        monkeypatch.setattr(f"compas_cgal.booleans._booleans.boolean_{operation}", boolean)
+        functions = {
+            "union": boolean_union_mesh_mesh,
+            "difference": boolean_difference_mesh_mesh,
+            "intersection": boolean_intersection_mesh_mesh,
+        }
+        functions[operation]((vertices, faces), (vertices, faces))
+    elif operation == "edges":
         monkeypatch.setattr("compas_cgal.booleans._booleans.boolean_union_with_edges", boolean)
         boolean_union_mesh_mesh_with_edges((vertices, faces), (vertices, faces))
     elif operation == "source":

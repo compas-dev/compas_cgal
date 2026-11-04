@@ -1,10 +1,17 @@
 """Static consumer coverage for public CGAL coordinate and index inputs."""
 
 import numpy as np
+from compas._typing import TriangleMeshInput
 from compas.geometry import ConstrainedDelaunay
 from compas.geometry import Delaunay
 from compas.geometry import Tessellation
 
+from compas_cgal.booleans import boolean_difference_mesh_mesh
+from compas_cgal.booleans import boolean_intersection_mesh_mesh
+from compas_cgal.booleans import boolean_union_mesh_mesh
+from compas_cgal.plugins.booleans import _boolean_difference_mesh_mesh
+from compas_cgal.plugins.booleans import _boolean_intersection_mesh_mesh
+from compas_cgal.plugins.booleans import _boolean_union_mesh_mesh
 from compas_cgal.plugins.triangulation import _triangulate_planar_domain
 from compas_cgal.plugins.triangulation import _triangulate_planar_points
 from compas_cgal.plugins.trimesh import trimesh_slice
@@ -66,6 +73,14 @@ consume_mesh((vertices_tuple, faces_tuple))
 consume_mesh((vertices_float32, faces_int64))
 consume_mesh((vertices_fortran, faces_sliced))
 consume_mesh((vertices_readonly, faces_readonly))
+
+triangle_mesh: TriangleMeshInput = (vertices_float32, faces_int64)
+boolean_union_mesh_mesh(triangle_mesh, (vertices_fortran, faces_sliced))
+boolean_difference_mesh_mesh(triangle_mesh, (vertices_readonly, faces_readonly))
+boolean_intersection_mesh_mesh(triangle_mesh, (vertices_list, faces_list))
+_boolean_union_mesh_mesh(triangle_mesh, triangle_mesh)
+_boolean_difference_mesh_mesh(triangle_mesh, triangle_mesh)
+_boolean_intersection_mesh_mesh(triangle_mesh, triangle_mesh)
 
 tessellation = Tessellation(vertices_float64, faces_int32)
 trimesh_slice(tessellation, [([0.0, 0.0, 0.0], [0.0, 0.0, 1.0])])

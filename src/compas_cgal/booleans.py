@@ -1,32 +1,77 @@
+from __future__ import annotations
+
+from math import isfinite
+from operator import index as integer_index
+from typing import TYPE_CHECKING
 from typing import Iterable
 from typing import Literal
 
 import numpy as np
-from compas.geometry import Tessellation
 
 from compas_cgal import _booleans
 
-from ._tessellation import as_native_tessellation
-from ._tessellation import from_native_tessellation
-from ._tessellation import validate_boolean_operand
 from .types import VerticesFaces
 from .types import VerticesFacesEdgesNumpy
 from .types import VerticesFacesNumpy
 from .types import VerticesFacesSourceNumpy
 
+if TYPE_CHECKING:
+    from compas._typing import TriangleMeshInput
 
-def _tessellation_boolean(A: Tessellation, B: Tessellation, operation: Literal["union", "difference", "intersection"]) -> Tessellation:
-    validate_boolean_operand(A, "A")
-    validate_boolean_operand(B, "B")
-    VA, FA = as_native_tessellation(A)
-    VB, FB = as_native_tessellation(B)
-    if operation == "union":
-        vertices, triangles = _booleans.boolean_union(VA, FA, VB, FB)
-    elif operation == "difference":
-        vertices, triangles = _booleans.boolean_difference(VA, FA, VB, FB)
-    else:
-        vertices, triangles = _booleans.boolean_intersection(VA, FA, VB, FB)
-    return from_native_tessellation(vertices, triangles)
+
+def _validate_boolean_operand(mesh: TriangleMeshInput, name: str) -> None:
+    """Validate a raw triangle mesh before passing it to CGAL."""
+    try:
+        vertices, triangles = mesh
+    except (TypeError, ValueError):
+        raise TypeError(f"{name} should be a (vertices, triangles) pair.")
+
+    vertex_count = len(vertices)
+    for vertex in vertices:
+        if len(vertex) != 3:
+            raise ValueError(f"{name} vertices should have exactly three coordinates.")
+        for value in vertex:
+            if isinstance(value, (bool, np.bool_)):
+                raise TypeError(f"{name} vertex coordinates should be real numbers.")
+            try:
+                finite = isfinite(value)
+            except (TypeError, ValueError):
+                raise TypeError(f"{name} vertex coordinates should be real numbers.")
+            if not finite:
+                raise ValueError(f"{name} vertex coordinates should be finite.")
+
+    incidences: dict[tuple[int, int], list[tuple[int, int]]] = {}
+    unique_triangles: set[tuple[int, int, int]] = set()
+    for triangle in triangles:
+        if len(triangle) != 3:
+            raise ValueError(f"{name} faces should have exactly three indices.")
+        checked = []
+        for value in triangle:
+            if isinstance(value, (bool, np.bool_)):
+                raise TypeError(f"{name} face indices should be integers.")
+            try:
+                index = integer_index(value)
+            except TypeError:
+                raise TypeError(f"{name} face indices should be integers.")
+            if index < 0 or index >= vertex_count:
+                raise IndexError(f"{name} face index is out of range.")
+            checked.append(index)
+
+        a, b, c = checked
+        triangle_key = tuple(sorted((a, b, c)))
+        if triangle_key in unique_triangles:
+            raise ValueError(f"{name} should not contain duplicate triangles.")
+        unique_triangles.add(triangle_key)
+        for edge in ((a, b), (b, c), (c, a)):
+            key = (min(edge), max(edge))
+            incidences.setdefault(key, []).append(edge)
+
+    if any(len(edges) > 2 for edges in incidences.values()):
+        raise ValueError(f"{name} should be manifold for a Boolean operation.")
+    if not incidences or any(len(edges) < 2 for edges in incidences.values()):
+        raise ValueError(f"{name} should be closed for a Boolean operation.")
+    if any(edges[0] != edges[1][::-1] for edges in incidences.values()):
+        raise ValueError(f"{name} should be consistently oriented for a Boolean operation.")
 
 
 def _boolean(
@@ -78,9 +123,9 @@ def _boolean(
 
 
 def boolean_union_mesh_mesh(
-    A: Tessellation,
-    B: Tessellation,
-) -> Tessellation:
+    A: TriangleMeshInput,
+    B: TriangleMeshInput,
+) -> VerticesFacesNumpy:
     """Boolean union of two meshes.
 
     Parameters
@@ -92,24 +137,34 @@ def boolean_union_mesh_mesh(
 
     Returns
     -------
-    Tessellation
-        The union triangle geometry.
+    VerticesFacesNumpy
+        Native vertex and triangle arrays of the union.
+
+    Notes
+    -----
+    Operands should describe non-self-intersecting, non-degenerate closed
+    surfaces. Structural and topological requirements are checked before the
+    native call; geometric degeneracy and self-intersection have
+    backend-specific failure modes.
 
     Examples
     --------
-    >>> from compas.geometry import Box, Native, Sphere, UVGrid, boolean_union_mesh_mesh  # doctest: +SKIP
-    >>> A = Box(1).tessellate(Native())
-    >>> B = Sphere(0.5).tessellate(UVGrid(32, 32))
-    >>> result = boolean_union_mesh_mesh(A, B)
+    >>> from compas.geometry import Box, Native, Sphere, UVGrid  # doctest: +SKIP
+    >>> from compas_cgal.booleans import boolean_union_mesh_mesh  # doctest: +SKIP
+    >>> A = Box(1).tessellate(Native()).to_vertices_and_triangles()
+    >>> B = Sphere(0.5).tessellate(UVGrid(32, 32)).to_vertices_and_triangles()
+    >>> vertices, triangles = boolean_union_mesh_mesh(A, B)
 
     """
-    return _tessellation_boolean(A, B, "union")
+    _validate_boolean_operand(A, "A")
+    _validate_boolean_operand(B, "B")
+    return _boolean(A, B, "union")
 
 
 def boolean_difference_mesh_mesh(
-    A: Tessellation,
-    B: Tessellation,
-) -> Tessellation:
+    A: TriangleMeshInput,
+    B: TriangleMeshInput,
+) -> VerticesFacesNumpy:
     """Boolean difference of two meshes.
 
     Parameters
@@ -121,24 +176,34 @@ def boolean_difference_mesh_mesh(
 
     Returns
     -------
-    Tessellation
-        The difference triangle geometry.
+    VerticesFacesNumpy
+        Native vertex and triangle arrays of the difference.
+
+    Notes
+    -----
+    Operands should describe non-self-intersecting, non-degenerate closed
+    surfaces. Structural and topological requirements are checked before the
+    native call; geometric degeneracy and self-intersection have
+    backend-specific failure modes.
 
     Examples
     --------
-    >>> from compas.geometry import Box, Native, Sphere, UVGrid, boolean_difference_mesh_mesh  # doctest: +SKIP
-    >>> A = Box(1).tessellate(Native())
-    >>> B = Sphere(0.5).tessellate(UVGrid(32, 32))
-    >>> result = boolean_difference_mesh_mesh(A, B)
+    >>> from compas.geometry import Box, Native, Sphere, UVGrid  # doctest: +SKIP
+    >>> from compas_cgal.booleans import boolean_difference_mesh_mesh  # doctest: +SKIP
+    >>> A = Box(1).tessellate(Native()).to_vertices_and_triangles()
+    >>> B = Sphere(0.5).tessellate(UVGrid(32, 32)).to_vertices_and_triangles()
+    >>> vertices, triangles = boolean_difference_mesh_mesh(A, B)
 
     """
-    return _tessellation_boolean(A, B, "difference")
+    _validate_boolean_operand(A, "A")
+    _validate_boolean_operand(B, "B")
+    return _boolean(A, B, "difference")
 
 
 def boolean_intersection_mesh_mesh(
-    A: Tessellation,
-    B: Tessellation,
-) -> Tessellation:
+    A: TriangleMeshInput,
+    B: TriangleMeshInput,
+) -> VerticesFacesNumpy:
     """Boolean intersection of two meshes.
 
     Parameters
@@ -150,18 +215,28 @@ def boolean_intersection_mesh_mesh(
 
     Returns
     -------
-    Tessellation
-        The intersection triangle geometry.
+    VerticesFacesNumpy
+        Native vertex and triangle arrays of the intersection.
+
+    Notes
+    -----
+    Operands should describe non-self-intersecting, non-degenerate closed
+    surfaces. Structural and topological requirements are checked before the
+    native call; geometric degeneracy and self-intersection have
+    backend-specific failure modes.
 
     Examples
     --------
-    >>> from compas.geometry import Box, Native, Sphere, UVGrid, boolean_intersection_mesh_mesh  # doctest: +SKIP
-    >>> A = Box(1).tessellate(Native())
-    >>> B = Sphere(0.5).tessellate(UVGrid(32, 32))
-    >>> result = boolean_intersection_mesh_mesh(A, B)
+    >>> from compas.geometry import Box, Native, Sphere, UVGrid  # doctest: +SKIP
+    >>> from compas_cgal.booleans import boolean_intersection_mesh_mesh  # doctest: +SKIP
+    >>> A = Box(1).tessellate(Native()).to_vertices_and_triangles()
+    >>> B = Sphere(0.5).tessellate(UVGrid(32, 32)).to_vertices_and_triangles()
+    >>> vertices, triangles = boolean_intersection_mesh_mesh(A, B)
 
     """
-    return _tessellation_boolean(A, B, "intersection")
+    _validate_boolean_operand(A, "A")
+    _validate_boolean_operand(B, "B")
+    return _boolean(A, B, "intersection")
 
 
 def split_mesh_mesh(
