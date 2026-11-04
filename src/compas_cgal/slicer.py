@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
-from compas.geometry import Plane
 from compas.geometry import Tessellation
 
 from compas_cgal import _slicer  # type: ignore
@@ -10,8 +12,11 @@ from compas_cgal import _types_std  # noqa: F401  # type: ignore
 from ._tessellation import as_native_tessellation
 from .types import PolylinesNumpy
 
+if TYPE_CHECKING:
+    from compas.geometry._typing import PlaneType
 
-def slice_mesh_planes(mesh: Tessellation, planes: Sequence[Plane]) -> PolylinesNumpy:
+
+def slice_mesh_planes(mesh: Tessellation, planes: Sequence[PlaneType]) -> PolylinesNumpy:
     """Slice a mesh by a list of planes.
 
     Parameters

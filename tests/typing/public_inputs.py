@@ -1,7 +1,9 @@
 """Static consumer coverage for public CGAL coordinate and index inputs."""
 
 import numpy as np
+from compas.geometry import Tessellation
 
+from compas_cgal.plugins.trimesh import trimesh_slice
 from compas_cgal.types import Faces
 from compas_cgal.types import Vertices
 from compas_cgal.types import VerticesFaces
@@ -58,3 +60,6 @@ consume_mesh((vertices_tuple, faces_tuple))
 consume_mesh((vertices_float32, faces_int64))
 consume_mesh((vertices_fortran, faces_sliced))
 consume_mesh((vertices_readonly, faces_readonly))
+
+tessellation = Tessellation(vertices_float64, faces_int32)
+trimesh_slice(tessellation, [([0.0, 0.0, 0.0], [0.0, 0.0, 1.0])])

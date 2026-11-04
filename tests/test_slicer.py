@@ -29,3 +29,13 @@ def test_mesh_slice():
     assert len(polylines) > 0  # Box intersected by middle plane should give edges
     assert len(polylines[0]) == 9
     assert len(polylines[0][0]) == 3  # 3D points
+
+
+def test_mesh_slice_accepts_tuple_plane():
+    """The plugin accepts the structural plane representation from COMPAS."""
+    mesh = Box.from_width_height_depth(2.0, 2.0, 2.0).tessellate(Native())
+
+    result = trimesh_slice(mesh, [([0, 0, 0], [0, 0, 1])])
+
+    assert result
+    assert len(result[0][0]) == 3

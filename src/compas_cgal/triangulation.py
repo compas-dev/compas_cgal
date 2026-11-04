@@ -103,7 +103,7 @@ def _triangulate_planar_points(
     source, local = _project_points(points, frame, "Delaunay input")
     _require_minimum(local, 3, "Delaunay input")
     triangles = np.asarray(_triangulation.delaunay_triangulation(local), dtype=np.int32, order="C")
-    return Tessellation(source, triangles)  # pyright: ignore[reportArgumentType]
+    return Tessellation(source, triangles)
 
 
 def _triangulate_planar_domain(
@@ -164,4 +164,4 @@ def _triangulate_planar_domain(
     vertices = np.asarray(vertices, dtype=np.float64, order="C")
     triangles = np.asarray(triangles, dtype=np.int32, order="C")
     lifted = _lift_vertices(vertices, frame, _source_coordinates(groups))
-    return Tessellation(lifted, triangles)  # pyright: ignore[reportArgumentType]
+    return Tessellation(lifted, triangles)

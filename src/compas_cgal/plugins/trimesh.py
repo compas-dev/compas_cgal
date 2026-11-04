@@ -8,8 +8,8 @@ from typing import TYPE_CHECKING
 from compas.plugins import plugin
 
 if TYPE_CHECKING:
-    from compas.geometry import Plane
     from compas.geometry import Tessellation
+    from compas.geometry._typing import PlaneType
 
     from compas_cgal.types import PolylinesNumpy
 
@@ -32,7 +32,7 @@ def trimesh_remesh(
 
 
 @plugin(category="trimesh", pluggable_name="trimesh_slice", requires=["compas_cgal"])
-def trimesh_slice(mesh: Tessellation, planes: Sequence[Plane]) -> PolylinesNumpy:
+def trimesh_slice(mesh: Tessellation, planes: Sequence[PlaneType]) -> PolylinesNumpy:
     from compas_cgal.slicer import slice_mesh_planes as implementation
 
     return implementation(mesh, planes)

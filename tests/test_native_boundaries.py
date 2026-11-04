@@ -3,10 +3,13 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+from compas.geometry import Tessellation
 
 from compas_cgal import measure
 from compas_cgal import polylines
 from compas_cgal import straight_skeleton_2
+from compas_cgal._tessellation import as_native_tessellation
+from compas_cgal._tessellation import from_native_tessellation
 from compas_cgal.booleans import boolean_union_mesh_mesh_with_edges
 from compas_cgal.booleans import boolean_union_mesh_mesh_with_face_source
 from compas_cgal.booleans import split_mesh_mesh
@@ -46,6 +49,17 @@ def polygon_inputs():
     return [values, tuple(map(tuple, values)), c_float32, c_float64, f_float64, sliced_float64, readonly_float64]
 
 
+class HugeVertices(np.ndarray):
+    """Small array reporting a vertex count beyond the CGAL index range."""
+
+    def __len__(self):
+        return np.iinfo(np.int32).max + 2
+
+    def __iter__(self):
+        for index in range(self.shape[0]):
+            yield np.asarray(np.ndarray.__getitem__(self, index))
+
+
 def test_python_wrapper_normalizes_mesh_arrays_at_native_boundary(monkeypatch):
     captured = {}
 
@@ -63,6 +77,40 @@ def test_python_wrapper_normalizes_mesh_arrays_at_native_boundary(monkeypatch):
     assert captured["faces"].dtype == np.int32
     assert captured["vertices"].flags.c_contiguous
     assert captured["faces"].flags.c_contiguous
+
+
+def test_tessellation_boundary_normalizes_without_mutation():
+    vertices = np.asfortranarray(np.asarray([[0, 0, 0], [1, 0, 0], [0, 1, 0]], dtype=np.float32))
+    triangles = np.asfortranarray(np.asarray([[0, 1, 2]], dtype=np.int64))
+    vertices_before = vertices.copy()
+    triangles_before = triangles.copy()
+
+    native_vertices, native_triangles = as_native_tessellation(Tessellation(vertices, triangles))
+
+    assert native_vertices.dtype == np.float64
+    assert native_triangles.dtype == np.int32
+    assert native_vertices.flags.c_contiguous
+    assert native_triangles.flags.c_contiguous
+    np.testing.assert_array_equal(vertices, vertices_before)
+    np.testing.assert_array_equal(triangles, triangles_before)
+
+
+def test_native_tessellation_retains_compatible_buffers():
+    vertices = np.asarray([[0, 0, 0], [1, 0, 0], [0, 1, 0]], dtype=np.float64, order="C")
+    triangles = np.asarray([[0, 1, 2]], dtype=np.int32, order="C")
+
+    tessellation = from_native_tessellation(vertices, triangles)
+
+    assert tessellation.vertices is vertices
+    assert tessellation.triangles is triangles
+
+
+def test_tessellation_boundary_rejects_indices_outside_native_range():
+    vertices = np.asarray([[0, 0, 0], [1, 0, 0], [0, 1, 0]], dtype=np.float64).view(HugeVertices)
+    triangles = [[0, 1, np.iinfo(np.int32).max + 1]]
+
+    with pytest.raises(OverflowError, match="Triangle indices"):
+        as_native_tessellation(Tessellation(vertices, triangles))
 
 
 @pytest.mark.parametrize("vertices", coordinate_inputs())

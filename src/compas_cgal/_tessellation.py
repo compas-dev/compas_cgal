@@ -39,6 +39,6 @@ def as_native_tessellation(mesh: Tessellation) -> tuple[np.ndarray, np.ndarray]:
 def from_native_tessellation(vertices: np.ndarray, triangles: np.ndarray) -> Tessellation:
     """Wrap CGAL output arrays in the canonical triangle representation."""
     return Tessellation(
-        np.asarray(vertices, dtype=np.float64, order="C"),  # pyright: ignore[reportArgumentType]
-        np.asarray(triangles, dtype=np.int32, order="C"),  # pyright: ignore[reportArgumentType]
+        np.asarray(vertices, dtype=np.float64, order="C"),
+        np.asarray(triangles, dtype=np.int32, order="C"),
     )
