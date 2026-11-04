@@ -3,19 +3,20 @@ from typing import Annotated
 from typing import Literal
 from typing import Sequence
 
-from numpy import float64
-from numpy import int32
-from numpy.typing import NDArray
+from compas._typing import CoordinatesInput
+from compas._typing import Float64Array
+from compas._typing import IndicesCollectionInput
+from compas._typing import Int32Array
 
 if TYPE_CHECKING:
     from compas.geometry import Plane
     from compas.geometry import Point
     from compas.geometry import Vector
 
-type FloatNx3 = Annotated[NDArray[float64], Literal["N", 3]]
-type IntNx3 = Annotated[NDArray[int32], Literal["N", 3]]
-type IntNx2 = Annotated[NDArray[int32], Literal["N", 2]]
-type IntNx1 = Annotated[NDArray[int32], Literal["N", 1]]
+type FloatNx3 = Annotated[Float64Array, Literal["N", 3]]
+type IntNx3 = Annotated[Int32Array, Literal["N", 3]]
+type IntNx2 = Annotated[Int32Array, Literal["N", 2]]
+type IntNx1 = Annotated[Int32Array, Literal["N", 1]]
 
 VerticesNumpy = FloatNx3
 """An array of vertices, with each vertex defined by 3 spatial coordinates."""
@@ -23,11 +24,19 @@ VerticesNumpy = FloatNx3
 FacesNumpy = IntNx3
 """An array of faces, with each face defined by 3 vertex indices."""
 
-type Vertices = Sequence[Sequence[float]] | FloatNx3
-"""The vertices of a mesh, defined as an array-like sequence of vertices, with each vertex represented by 3 spatial coordinates."""
+type Vertices = CoordinatesInput
+"""Public vertex input accepted as coordinate sequences or numeric arrays.
 
-type Faces = Sequence[Sequence[int]] | IntNx3
-"""The faces of a mesh, defined as an array-like sequence of faces, with each face represented by 3 vertex indices."""
+This public vocabulary is distinct from :attr:`VerticesNumpy`, which describes
+the representation required after normalization at a native boundary.
+"""
+
+type Faces = IndicesCollectionInput
+"""Public face input accepted as index sequences or integer arrays.
+
+This public vocabulary is distinct from :attr:`FacesNumpy`, which describes
+the representation required after normalization at a native boundary.
+"""
 
 type VerticesFaces = tuple[Vertices, Faces]
 """Representation of a mesh as a tuple of vertices and faces."""

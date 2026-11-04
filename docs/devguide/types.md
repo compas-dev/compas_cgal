@@ -1,5 +1,28 @@
 # Types
 
+## Public Inputs and Native Arrays
+
+Python callers may provide coordinates and indices using ordinary lists,
+tuples, or NumPy arrays. The public aliases in `compas_cgal.types` use the
+shared duck-typed vocabulary from `compas._typing`:
+
+- `Vertices` accepts coordinate sequences and numeric arrays.
+- `Faces` accepts index sequences and integer arrays.
+- `VerticesFaces` combines those public input types.
+
+These aliases describe values accepted by Python wrappers; they do not require
+a particular NumPy dtype, memory layout, or mutability. The corresponding
+`VerticesNumpy`, `FacesNumpy`, and NumPy result aliases describe the normalized
+native representation instead. Wrapper boundaries should convert compatible
+public inputs once to the dtype and memory layout required by the native
+operation. This keeps runtime code duck typed while making the native ABI
+explicit. Individual wrapper families are being aligned with this policy as
+their boundary contracts are verified.
+
+Do not add nominal runtime checks merely to enforce a type annotation. Validate
+only semantic requirements of an operation, and let boundary conversion handle
+compatible Python and NumPy representations.
+
 ## Type Conversion
 
 Matching C++/Python types often takes the most of the time and requires

@@ -2,9 +2,32 @@ import gc
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 from compas_cgal import measure
 from compas_cgal.subdivision import mesh_subdivide_loop
+
+
+def coordinate_inputs():
+    values = [[0, 0, 0], [1, 0, 0], [0, 1, 0]]
+    c_float64 = np.asarray(values, dtype=np.float64)
+    c_float32 = np.asarray(values, dtype=np.float32)
+    f_float64 = np.asfortranarray(c_float64)
+    sliced_float64 = np.asarray([[0, 0, 0, 9], [1, 0, 0, 9], [0, 1, 0, 9]], dtype=np.float64)[:, :3]
+    readonly_float64 = c_float64.copy()
+    readonly_float64.flags.writeable = False
+    return [values, tuple(map(tuple, values)), c_float32, c_float64, f_float64, sliced_float64, readonly_float64]
+
+
+def index_inputs():
+    values = [[0, 1, 2], [2, 1, 0]]
+    c_int64 = np.asarray(values, dtype=np.int64)
+    c_int32 = np.asarray(values, dtype=np.int32)
+    f_int32 = np.asfortranarray(c_int32)
+    sliced_int32 = np.asarray([[0, 1, 2, 9], [2, 1, 0, 9]], dtype=np.int32)[:, :3]
+    readonly_int32 = c_int32.copy()
+    readonly_int32.flags.writeable = False
+    return [values, tuple(map(tuple, values)), c_int64, c_int32, f_int32, sliced_int32, readonly_int32]
 
 
 def test_python_wrapper_normalizes_mesh_arrays_at_native_boundary(monkeypatch):
@@ -24,6 +47,29 @@ def test_python_wrapper_normalizes_mesh_arrays_at_native_boundary(monkeypatch):
     assert captured["faces"].dtype == np.int32
     assert captured["vertices"].flags.c_contiguous
     assert captured["faces"].flags.c_contiguous
+
+
+@pytest.mark.parametrize("vertices", coordinate_inputs())
+@pytest.mark.parametrize("faces", index_inputs())
+def test_public_mesh_inputs_are_normalized_without_mutation(monkeypatch, vertices, faces):
+    vertices_before = np.asarray(vertices).copy()
+    faces_before = np.asarray(faces).copy()
+    captured = {}
+
+    def area(native_vertices, native_faces):
+        captured["vertices"] = native_vertices
+        captured["faces"] = native_faces
+        return 0.5
+
+    monkeypatch.setattr(measure._measure, "area", area)
+
+    assert measure.mesh_area((vertices, faces)) == 0.5
+    assert captured["vertices"].dtype == np.float64
+    assert captured["faces"].dtype == np.int32
+    assert captured["vertices"].flags.c_contiguous
+    assert captured["faces"].flags.c_contiguous
+    np.testing.assert_array_equal(vertices, vertices_before)
+    np.testing.assert_array_equal(faces, faces_before)
 
 
 def test_native_array_results_remain_valid_after_collection():

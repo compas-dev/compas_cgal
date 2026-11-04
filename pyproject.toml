@@ -190,7 +190,7 @@ docstring-code-format = true
 docstring-code-line-length = "dynamic"
 
 [tool.pyright]
-include = ["src/compas_cgal"]
+include = ["src/compas_cgal", "tests/typing"]
 exclude = ["build", "dist", "external"]
 pythonVersion = "3.12"
 reportMissingModuleSource = false
