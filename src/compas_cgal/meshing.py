@@ -1,20 +1,27 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import numpy as np
-from compas.geometry import Tessellation
 
 from compas_cgal import _meshing  # type: ignore
 from compas_cgal import _types_std  # noqa: F401  # type: ignore
 
-from ._tessellation import as_native_tessellation
-from ._tessellation import from_native_tessellation
+from ._mesh import as_native_mesh
+from ._mesh import validate_native_mesh
 from .types import VerticesFaces
+from .types import VerticesFacesNumpy
+
+if TYPE_CHECKING:
+    from compas._typing import TriangleMeshInput
 
 
 def trimesh_remesh(
-    mesh: Tessellation,
+    mesh: TriangleMeshInput,
     target_edge_length: float,
     number_of_iterations: int = 10,
     do_project: bool = True,
-) -> Tessellation:
+) -> VerticesFacesNumpy:
     """Remeshing of a triangle mesh.
 
     Parameters
@@ -29,18 +36,19 @@ def trimesh_remesh(
         If True, reproject vertices onto the input surface when they are created or displaced.
     Returns
     -------
-    Tessellation
-        The remeshed triangle representation.
+    VerticesFacesNumpy
+        Native vertex and triangle arrays of the remeshed geometry.
 
     Examples
     --------
-    >>> from compas.geometry import Sphere, UVGrid, trimesh_remesh  # doctest: +SKIP
-    >>> tessellation = Sphere(0.5).tessellate(UVGrid(32, 32))
-    >>> result = trimesh_remesh(tessellation, 0.1)
+    >>> from compas.geometry import Sphere, UVGrid  # doctest: +SKIP
+    >>> from compas_cgal.meshing import trimesh_remesh  # doctest: +SKIP
+    >>> mesh = Sphere(0.5).tessellate(UVGrid(32, 32)).to_vertices_and_triangles()
+    >>> vertices, triangles = trimesh_remesh(mesh, 0.1)
 
     """
-    V, F = as_native_tessellation(mesh)
-    vertices, triangles = _meshing.pmp_trimesh_remesh(
+    V, F = as_native_mesh(mesh, "mesh")
+    result = _meshing.pmp_trimesh_remesh(
         V,
         F,
         target_edge_length,
@@ -50,7 +58,7 @@ def trimesh_remesh(
         0.0,
         np.empty((0, 3), dtype=np.float64),
     )
-    return from_native_tessellation(vertices, triangles)
+    return validate_native_mesh(result, "remeshing")
 
 
 def trimesh_dual(

@@ -9,6 +9,7 @@ from compas_cgal.booleans import boolean_difference_mesh_mesh
 from compas_cgal.booleans import boolean_intersection_mesh_mesh
 from compas_cgal.booleans import boolean_union_mesh_mesh
 from compas_cgal.intersections import intersection_mesh_mesh
+from compas_cgal.meshing import trimesh_remesh
 from compas_cgal.plugins.booleans import _boolean_difference_mesh_mesh
 from compas_cgal.plugins.booleans import _boolean_intersection_mesh_mesh
 from compas_cgal.plugins.booleans import _boolean_union_mesh_mesh
@@ -16,6 +17,7 @@ from compas_cgal.plugins.intersections import _intersection_mesh_mesh
 from compas_cgal.plugins.triangulation import _triangulate_planar_domain
 from compas_cgal.plugins.triangulation import _triangulate_planar_points
 from compas_cgal.plugins.trimesh import _trimesh_slice
+from compas_cgal.plugins.trimesh import _trimesh_remesh
 from compas_cgal.slicer import slice_mesh_planes
 from compas_cgal.types import Faces
 from compas_cgal.types import Vertices
@@ -87,6 +89,8 @@ intersection_mesh_mesh(triangle_mesh, triangle_mesh)
 _intersection_mesh_mesh(triangle_mesh, triangle_mesh)
 slice_mesh_planes(triangle_mesh, [([0.0, 0.0, 0.0], [0.0, 0.0, 1.0])])
 _trimesh_slice(triangle_mesh, [([0.0, 0.0, 0.0], [0.0, 0.0, 1.0])])
+trimesh_remesh(triangle_mesh, 0.1)
+_trimesh_remesh(triangle_mesh, 0.1)
 
 domain_float32 = np.asarray(
     [[0.0, 0.0, 0.0], [3.0, 0.0, 0.0], [3.0, 3.0, 0.0], [0.0, 3.0, 0.0]],

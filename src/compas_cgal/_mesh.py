@@ -33,6 +33,16 @@ def as_native_mesh(mesh: VerticesFaces, name: str) -> VerticesFacesNumpy:
     return vertices, np.ascontiguousarray(faces, dtype=np.int32)
 
 
+def validate_native_mesh(result: VerticesFacesNumpy, operation: str) -> VerticesFacesNumpy:
+    """Check the shape of a native triangle-mesh result."""
+    vertices, faces = result
+    if vertices.ndim != 2 or vertices.shape[1] != 3:
+        raise RuntimeError(f"CGAL {operation} result vertices should have shape (N, 3).")
+    if faces.ndim != 2 or faces.shape[1] != 3:
+        raise RuntimeError(f"CGAL {operation} result faces should have shape (M, 3).")
+    return vertices, faces
+
+
 def validate_polylines(result: PolylinesNumpy, operation: str) -> PolylinesNumpy:
     """Check the shape of native polyline results."""
     for points in result:

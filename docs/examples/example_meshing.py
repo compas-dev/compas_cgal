@@ -13,7 +13,7 @@ from compas_viewer import Viewer
 input_file = Path(__file__).parent.parent.parent / "data" / "rhinovault_mesh_0.ply"
 
 mesh = Mesh.from_ply(input_file)
-tessellation = mesh.triangulated(FaceTriangulation(quad=DiagonalSplit()))
+triangle_mesh = mesh.triangulated(FaceTriangulation(quad=DiagonalSplit())).to_vertices_and_triangles()
 
 # =============================================================================
 # Remesh to a uniform target edge length
@@ -22,8 +22,8 @@ tessellation = mesh.triangulated(FaceTriangulation(quad=DiagonalSplit()))
 TARGET_EDGE_LENGTH = 1
 ITERATIONS = 10
 
-result = trimesh_remesh(tessellation, TARGET_EDGE_LENGTH, ITERATIONS)
-remeshed = result.to_mesh()
+vertices, triangles = trimesh_remesh(triangle_mesh, TARGET_EDGE_LENGTH, ITERATIONS)
+remeshed = Mesh.from_vertices_and_faces(vertices, triangles)
 
 # =============================================================================
 # Visualize

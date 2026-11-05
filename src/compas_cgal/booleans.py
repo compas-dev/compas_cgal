@@ -9,6 +9,7 @@ import numpy as np
 from compas_cgal import _booleans
 
 from ._mesh import as_native_mesh
+from ._mesh import validate_native_mesh
 from .types import VerticesFaces
 from .types import VerticesFacesEdgesNumpy
 from .types import VerticesFacesNumpy
@@ -16,16 +17,6 @@ from .types import VerticesFacesSourceNumpy
 
 if TYPE_CHECKING:
     from compas._typing import TriangleMeshInput
-
-
-def _validate_boolean_result(result: VerticesFacesNumpy) -> VerticesFacesNumpy:
-    """Check the native Boolean result shape."""
-    vertices, faces = result
-    if vertices.ndim != 2 or vertices.shape[1] != 3:
-        raise RuntimeError("CGAL Boolean result vertices should have shape (N, 3).")
-    if faces.ndim != 2 or faces.shape[1] != 3:
-        raise RuntimeError("CGAL Boolean result faces should have shape (M, 3).")
-    return vertices, faces
 
 
 def _boolean(
@@ -69,7 +60,7 @@ def _boolean(
     else:
         raise NotImplementedError
 
-    return _validate_boolean_result(result)
+    return validate_native_mesh(result, "Boolean")
 
 
 def boolean_union_mesh_mesh(

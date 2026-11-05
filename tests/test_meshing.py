@@ -3,7 +3,8 @@
 import pytest
 import numpy as np
 from compas.datastructures import Mesh
-from compas.geometry import Tessellation, trimesh_remesh
+from compas.geometry import trimesh_remesh
+from compas_cgal.meshing import trimesh_remesh as direct_trimesh_remesh
 from compas_cgal.meshing import trimesh_dual
 
 
@@ -48,11 +49,9 @@ def test_remesh(sample_mesh):
     num_iterations = 10
 
     # Run remeshing
-    result = trimesh_remesh(Tessellation(V, F), target_edge_length, num_iterations)
-    V_new, F_new = result.to_vertices_and_triangles()
+    V_new, F_new = trimesh_remesh((V, F), target_edge_length, num_iterations)
 
     # Verify output types and shapes
-    assert isinstance(result, Tessellation)
     assert isinstance(V_new, np.ndarray)
     assert isinstance(F_new, np.ndarray)
     assert V_new.dtype == np.float64
@@ -67,9 +66,25 @@ def test_remesh(sample_mesh):
     assert remeshed_mesh.is_valid()
 
 
-def test_remesh_rejects_vertex_face_tuple(sample_mesh):
-    with pytest.raises(TypeError, match="Tessellation"):
-        trimesh_remesh(sample_mesh.to_vertices_and_faces(), 0.5)
+def test_direct_remesh_accepts_vertex_face_tuple(sample_mesh):
+    V_new, F_new = direct_trimesh_remesh(sample_mesh.to_vertices_and_faces(), 0.5, 1)
+
+    assert V_new.shape[1] == 3
+    assert F_new.shape[1] == 3
+
+
+@pytest.mark.parametrize(
+    "result",
+    [
+        (np.empty((0, 2), dtype=np.float64), np.empty((0, 3), dtype=np.int32)),
+        (np.empty((0, 3), dtype=np.float64), np.empty((0, 4), dtype=np.int32)),
+    ],
+)
+def test_direct_remesh_rejects_invalid_native_result_shape(monkeypatch, sample_mesh, result):
+    monkeypatch.setattr("compas_cgal.meshing._meshing.pmp_trimesh_remesh", lambda *args: result)
+
+    with pytest.raises(RuntimeError, match="CGAL remeshing result"):
+        direct_trimesh_remesh(sample_mesh.to_vertices_and_faces(), 0.5)
 
 
 def test_dual(sample_mesh):
