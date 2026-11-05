@@ -82,9 +82,7 @@ def test_constrained_domain_returns_tessellation(boundary_polygon, hole_polygons
 
 
 def test_constrained_domain_accepts_numpy_coordinate_collections_without_mutation():
-    boundary = np.asfortranarray(
-        np.asarray([[0, 0, 0], [4, 0, 0], [4, 4, 0], [0, 4, 0]], dtype=np.float32)
-    )
+    boundary = np.asfortranarray(np.asarray([[0, 0, 0], [4, 0, 0], [4, 4, 0], [0, 4, 0]], dtype=np.float32))
     holes = np.asarray(
         [[[1, 1, 0], [1, 2, 0], [2, 2, 0], [2, 1, 0]]],
         dtype=np.float64,
