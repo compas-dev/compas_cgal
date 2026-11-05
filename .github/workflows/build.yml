@@ -2,6 +2,7 @@ name: build
 
 on:
   pull_request:
+    branches: [main, initiative/repository-modernisation]
   push:
     branches: [main]
 
@@ -62,7 +63,7 @@ jobs:
           CIBW_ARCHS: ${{ matrix.arch }}
           CIBW_BEFORE_TEST: >-
             python -m pip install
-            "compas @ git+https://github.com/compas-dev/compas.git@e54f8ae0eba39e84b1290bea9c368a1a646dfdcd"
+            "compas @ git+https://github.com/compas-dev/compas.git@9b1518f74fe7d0315626954d8b893756f8dae06d"
           CIBW_TEST_REQUIRES: numpy>=1.24 pytest build
         with:
           output-dir: wheelhouse
