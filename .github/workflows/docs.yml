@@ -2,6 +2,7 @@ name: docs
 
 on:
   pull_request:
+    branches: [main, initiative/repository-modernisation]
     paths: ["docs/**", "mkdocs.yml", "pyproject.toml", "uv.lock"]
   workflow_dispatch:
 
