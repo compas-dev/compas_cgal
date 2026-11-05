@@ -16,6 +16,8 @@ from compas_cgal.booleans import boolean_union_mesh_mesh
 from compas_cgal.booleans import boolean_union_mesh_mesh_with_edges
 from compas_cgal.booleans import boolean_union_mesh_mesh_with_face_source
 from compas_cgal.booleans import split_mesh_mesh
+from compas_cgal.intersections import intersection_mesh_mesh
+from compas_cgal.slicer import slice_mesh_planes
 from compas_cgal.subdivision import mesh_subdivide_loop
 
 
@@ -192,6 +194,43 @@ def test_boolean_inputs_are_normalized_without_mutation(monkeypatch, vertices, f
     else:
         monkeypatch.setattr("compas_cgal.booleans._booleans.split", boolean)
         split_mesh_mesh((vertices, faces), (vertices, faces))
+
+    for native_vertices, native_faces in zip(captured[::2], captured[1::2]):
+        assert native_vertices.dtype == np.float64
+        assert native_faces.dtype == np.int32
+        assert native_vertices.flags.c_contiguous
+        assert native_faces.flags.c_contiguous
+    np.testing.assert_array_equal(vertices, vertices_before)
+    np.testing.assert_array_equal(faces, faces_before)
+
+
+@pytest.mark.parametrize("vertices, faces", list(zip(boolean_coordinate_inputs(), boolean_index_inputs())))
+@pytest.mark.parametrize("operation", ["intersection", "slice"])
+def test_polyline_mesh_inputs_are_normalized_without_mutation(monkeypatch, vertices, faces, operation):
+    vertices_before = np.asarray(vertices).copy()
+    faces_before = np.asarray(faces).copy()
+    captured = []
+
+    if operation == "intersection":
+
+        def native(*arrays):
+            captured.extend(arrays)
+            return [np.empty((0, 3), dtype=np.float64)]
+
+        monkeypatch.setattr("compas_cgal.intersections._intersections.intersection_mesh_mesh", native)
+        intersection_mesh_mesh((vertices, faces), (vertices, faces))
+    else:
+
+        def native(native_vertices, native_faces, points, normals):
+            captured.extend([native_vertices, native_faces])
+            assert points.dtype == np.float64
+            assert normals.dtype == np.float64
+            assert points.flags.c_contiguous
+            assert normals.flags.c_contiguous
+            return [np.empty((0, 3), dtype=np.float64)]
+
+        monkeypatch.setattr("compas_cgal.slicer._slicer.slice_mesh", native)
+        slice_mesh_planes((vertices, faces), [([0, 0, 0], [0, 0, 1])])
 
     for native_vertices, native_faces in zip(captured[::2], captured[1::2]):
         assert native_vertices.dtype == np.float64

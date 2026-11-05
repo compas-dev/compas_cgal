@@ -4,17 +4,19 @@ import numpy as np
 from compas._typing import TriangleMeshInput
 from compas.geometry import ConstrainedDelaunay
 from compas.geometry import Delaunay
-from compas.geometry import Tessellation
 
 from compas_cgal.booleans import boolean_difference_mesh_mesh
 from compas_cgal.booleans import boolean_intersection_mesh_mesh
 from compas_cgal.booleans import boolean_union_mesh_mesh
+from compas_cgal.intersections import intersection_mesh_mesh
 from compas_cgal.plugins.booleans import _boolean_difference_mesh_mesh
 from compas_cgal.plugins.booleans import _boolean_intersection_mesh_mesh
 from compas_cgal.plugins.booleans import _boolean_union_mesh_mesh
+from compas_cgal.plugins.intersections import _intersection_mesh_mesh
 from compas_cgal.plugins.triangulation import _triangulate_planar_domain
 from compas_cgal.plugins.triangulation import _triangulate_planar_points
-from compas_cgal.plugins.trimesh import trimesh_slice
+from compas_cgal.plugins.trimesh import _trimesh_slice
+from compas_cgal.slicer import slice_mesh_planes
 from compas_cgal.types import Faces
 from compas_cgal.types import Vertices
 from compas_cgal.types import VerticesFaces
@@ -81,9 +83,10 @@ boolean_intersection_mesh_mesh(triangle_mesh, (vertices_list, faces_list))
 _boolean_union_mesh_mesh(triangle_mesh, triangle_mesh)
 _boolean_difference_mesh_mesh(triangle_mesh, triangle_mesh)
 _boolean_intersection_mesh_mesh(triangle_mesh, triangle_mesh)
-
-tessellation = Tessellation(vertices_float64, faces_int32)
-trimesh_slice(tessellation, [([0.0, 0.0, 0.0], [0.0, 0.0, 1.0])])
+intersection_mesh_mesh(triangle_mesh, triangle_mesh)
+_intersection_mesh_mesh(triangle_mesh, triangle_mesh)
+slice_mesh_planes(triangle_mesh, [([0.0, 0.0, 0.0], [0.0, 0.0, 1.0])])
+_trimesh_slice(triangle_mesh, [([0.0, 0.0, 0.0], [0.0, 0.0, 1.0])])
 
 domain_float32 = np.asarray(
     [[0.0, 0.0, 0.0], [3.0, 0.0, 0.0], [3.0, 3.0, 0.0], [0.0, 3.0, 0.0]],

@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from compas.geometry import Box, Frame, Native, Sphere, Tessellation, UVGrid
+from compas.geometry import Box, Frame, Native, Sphere, UVGrid
 from compas.geometry import intersection_mesh_mesh
 
 
@@ -14,7 +14,7 @@ def box_sphere_meshes():
     sphere = Sphere(1, frame=Frame([1, 1, 1], [1, 0, 0], [0, 1, 0]))
     sphere_mesh = sphere.tessellate(UVGrid(32, 32)).to_vertices_and_triangles()
 
-    return Tessellation(*box_mesh), Tessellation(*sphere_mesh)
+    return box_mesh, sphere_mesh
 
 
 def test_intersection_mesh_mesh(box_sphere_meshes):
@@ -32,3 +32,14 @@ def test_intersection_mesh_mesh(box_sphere_meshes):
         assert isinstance(points, np.ndarray), "Each pointset should be a numpy array"
         assert points.shape[1] == 3, "Points should be 3D"
         assert len(points) > 1, "Each intersection curve should have multiple points"
+
+
+def test_intersection_rejects_invalid_native_result_shape(monkeypatch, box_sphere_meshes):
+    mesh_a, mesh_b = box_sphere_meshes
+    monkeypatch.setattr(
+        "compas_cgal.intersections._intersections.intersection_mesh_mesh",
+        lambda *args: [np.empty((0, 2), dtype=np.float64)],
+    )
+
+    with pytest.raises(RuntimeError, match="mesh intersection result"):
+        intersection_mesh_mesh(mesh_a, mesh_b)
