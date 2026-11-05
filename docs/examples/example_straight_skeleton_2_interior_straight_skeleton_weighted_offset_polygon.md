@@ -11,5 +11,5 @@ Key Features:
 * Visualization of original and weighted offset polygons
 
 ```python
----8<--- "docs/examples/example_straight_skeleton_2_interior_straight_skeleton_weighted_offset_polygon.py"
+---8 < ---"docs/examples/example_straight_skeleton_2_interior_straight_skeleton_weighted_offset_polygon.py"
 ```

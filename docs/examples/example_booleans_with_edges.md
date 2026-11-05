@@ -15,5 +15,5 @@ The function returns a tuple `(V, F, E)`:
 * `E` — `Kx2` vertex-index pairs marking edges that lie on the intersection curve
 
 ```python
----8<--- "docs/examples/example_booleans_with_edges.py"
+---8 < ---"docs/examples/example_booleans_with_edges.py"
 ```

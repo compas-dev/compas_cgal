@@ -12,5 +12,5 @@ Key Features:
 * Side-by-side comparison of different subdivision methods
 
 ```python
----8<--- "docs/examples/example_subdivision.py"
+---8 < ---"docs/examples/example_subdivision.py"
 ```

@@ -23,5 +23,5 @@ Key Features:
 * Mesh splitting along isolines via ``geodesic_isolines_split``
 
 ```python
----8<--- "docs/examples/example_geodesics.py"
+---8 < ---"docs/examples/example_geodesics.py"
 ```

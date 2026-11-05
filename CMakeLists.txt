@@ -58,6 +58,7 @@ if(NOT EXISTS "${CGAL_SOURCE_DIR}")
     ExternalProject_Add(
         cgal_download
         URL https://github.com/CGAL/cgal/releases/download/v6.1.1/CGAL-6.1.1.zip
+        URL_HASH SHA256=a47e83555966db53070bc37e2d313ce4de1b78a5ee3d8693369a3e268bcd2b79
         SOURCE_DIR "${CGAL_SOURCE_DIR}"
         CONFIGURE_COMMAND ""
         BUILD_COMMAND ""
@@ -77,12 +78,14 @@ if(NOT EXISTS "${BOOST_SOURCE_DIR}")
     message(STATUS "Configuring Boost...")
     ExternalProject_Add(boost_download
         URL https://archives.boost.io/release/1.82.0/source/boost_1_82_0.tar.gz
+        URL_HASH SHA256=66a469b6e608a51f8347236f4912e27dc5c60c60d7d53ae9bfe4683316c6f04c
         SOURCE_DIR "${BOOST_SOURCE_DIR}"
         CONFIGURE_COMMAND ""
         BUILD_COMMAND ""
         INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/boost ${BOOST_SOURCE_DIR}/boost
         LOG_DOWNLOAD
         ON
+        TLS_VERIFY ON
     )
 
     add_dependencies(external_downloads boost_download)
@@ -96,6 +99,7 @@ if(NOT EXISTS "${EIGEN_SOURCE_DIR}")
     ExternalProject_Add(
         eigen_download
         URL https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz
+        URL_HASH SHA256=8586084f71f9bde545ee7fa6d00288b264a2b7ac3607b974e54d13e7162c1c72
         SOURCE_DIR "${EIGEN_SOURCE_DIR}"
         CONFIGURE_COMMAND ""
         BUILD_COMMAND ""
@@ -103,6 +107,7 @@ if(NOT EXISTS "${EIGEN_SOURCE_DIR}")
         LOG_DOWNLOAD ON
         UPDATE_COMMAND ""
         PATCH_COMMAND ""
+        TLS_VERIFY ON
     )
     add_dependencies(external_downloads eigen_download)
 endif()

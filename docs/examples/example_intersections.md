@@ -11,5 +11,5 @@ Key Features:
 * Handling multiple intersection curves
 
 ```python
----8<--- "docs/examples/example_intersections.py"
+---8 < ---"docs/examples/example_intersections.py"
 ```

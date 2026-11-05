@@ -13,7 +13,7 @@ def test_subdivision_methods():
     box = Box.from_diagonal(([0, 0, 0], [1, 1, 1]))
 
     # Test Catmull-Clark on quad mesh
-    V1, F1 = box.to_vertices_and_faces()
+    V1, F1 = box.polygonize(Native()).to_vertices_and_faces()
     V1_subd, F1_subd = mesh_subdivide_catmull_clark((V1, F1), k=1)
     assert isinstance(V1_subd, np.ndarray)
     assert isinstance(F1_subd, np.ndarray)

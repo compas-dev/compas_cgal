@@ -1,50 +1,41 @@
 name: build
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
-    branches:
-      - main
+    branches: [main, initiative/repository-modernisation]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  Build:
-    if: ${{ !contains(github.event.pull_request.labels.*.name, 'docs-only') }} 
-    runs-on: ${{ matrix.os }}
+  quality:
+    runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python: ["3.12"]
-
+        python: ["3.12", "3.14"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0
-          
-      - name: Set up conda
-        uses: conda-incubator/setup-miniconda@v3
+          persist-credentials: false
+      - uses: compas-dev/compas-actions/setup-python@5c64e6e2b576a1232d28fed47d9478ca8eb63b2d # v2 candidate
         with:
           python-version: ${{ matrix.python }}
-          channels: conda-forge
-          activate-environment: "compas_123-dev"
-          
-      - name: Configure conda channels
-        shell: bash -el {0}
-        run: |
-          conda config --add channels defaults
-          conda config --set channel_priority strict
-          
-      - uses: compas-dev/compas-actions.build@v4
-        with:
-          invoke_lint: true
-          use_conda: true
-          check_import: true
-          python: ${{ matrix.python }}
-          
-  build_wheels:
-    name: cibuildwheel on ${{ matrix.platform }}
-    needs: [Build]  # Only run if Build job succeeds
+          dependency-groups: dev
+          extras: ""
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run pyright
+      - run: uv run pytest
+
+  wheels:
+    needs: quality
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -52,39 +43,149 @@ jobs:
         include:
           - os: ubuntu-latest
             platform: manylinux
-          - os: macos-latest
-            platform: mac
+            arch: x86_64
+          - os: macos-15-intel
+            platform: macos-x86_64
+            arch: x86_64
+          - os: macos-15
+            platform: macos-arm64
+            arch: arm64
           - os: windows-latest
             platform: windows
-
+            arch: AMD64
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0
-
-      - name: Install cibuildwheel
-        run: pipx install cibuildwheel==2.23.1
-
-      - name: Build wheels
-        run: cibuildwheel --output-dir wheelhouse .
-
-      - uses: actions/upload-artifact@v4
+          persist-credentials: false
+      # Native CMake/cibuildwheel settings and wheel composition remain in this repository.
+      - uses: pypa/cibuildwheel@c923d83ad9c1bc00211c5041d0c3f73294ff88f6 # v2.23.3
+        env:
+          CIBW_ARCHS: ${{ matrix.arch }}
+          CIBW_BEFORE_TEST: >-
+            python -m pip install
+            "compas @ git+https://github.com/compas-dev/compas.git@9b1518f74fe7d0315626954d8b893756f8dae06d"
+          CIBW_TEST_REQUIRES: numpy>=1.24 pytest build
+        with:
+          output-dir: wheelhouse
+      - name: Verify wheel contents
+        shell: bash
+        run: python .github/scripts/verify_native_wheel.py wheelhouse/*.whl
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: wheels-${{ matrix.platform }}
           path: wheelhouse/*.whl
+          if-no-files-found: error
 
-  build_sdist:
-    name: Test source distribution
+  wheel-smoke:
+    needs: wheels
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: manylinux
+            python: "3.12"
+          - os: ubuntu-latest
+            platform: manylinux
+            python: "3.14"
+          - os: macos-15-intel
+            platform: macos-x86_64
+            python: "3.12"
+          - os: macos-15-intel
+            platform: macos-x86_64
+            python: "3.14"
+          - os: macos-15
+            platform: macos-arm64
+            python: "3.12"
+          - os: macos-15
+            platform: macos-arm64
+            python: "3.14"
+          - os: windows-latest
+            platform: windows
+            python: "3.12"
+          - os: windows-latest
+            platform: windows
+            python: "3.14"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: wheels-${{ matrix.platform }}
+          path: wheelhouse
+      - uses: compas-dev/compas-actions/package@5c64e6e2b576a1232d28fed47d9478ca8eb63b2d # v2 candidate
+        env:
+          PIP_CONSTRAINT: ${{ github.workspace }}/.github/constraints/compas-candidate.txt
+        with:
+          build: false
+          output-directory: wheelhouse
+          import-modules: >-
+            compas_cgal,
+            compas_cgal._booleans,
+            compas_cgal._geodesics,
+            compas_cgal._intersections,
+            compas_cgal._isolines,
+            compas_cgal._measure,
+            compas_cgal._meshing,
+            compas_cgal._polylines,
+            compas_cgal._reconstruction,
+            compas_cgal._skeletonization,
+            compas_cgal._slicer,
+            compas_cgal._straight_skeleton_2,
+            compas_cgal._subdivision,
+            compas_cgal._triangulation,
+            compas_cgal._types_std
+
+  sdist:
+    needs: quality
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0
-
-      - name: Build SDist
-        run: pipx run build --sdist
-
-      - uses: actions/upload-artifact@v4
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - uses: compas-dev/compas-actions/package@5c64e6e2b576a1232d28fed47d9478ca8eb63b2d # v2 candidate
+        env:
+          PIP_CONSTRAINT: ${{ github.workspace }}/.github/constraints/compas-candidate.txt
+        with:
+          sdist: true
+          wheel: false
+          skip-install: true
+      - name: Build a wheel from the source distribution
+        run: python -m pip wheel --no-deps dist/*.tar.gz --wheel-dir sdist-wheelhouse
+      - name: Verify the source-built wheel
+        run: python .github/scripts/verify_native_wheel.py sdist-wheelhouse/*.whl
+      - uses: compas-dev/compas-actions/package@5c64e6e2b576a1232d28fed47d9478ca8eb63b2d # v2 candidate
+        env:
+          PIP_CONSTRAINT: ${{ github.workspace }}/.github/constraints/compas-candidate.txt
+        with:
+          build: false
+          output-directory: sdist-wheelhouse
+          import-modules: >-
+            compas_cgal,
+            compas_cgal._booleans,
+            compas_cgal._geodesics,
+            compas_cgal._intersections,
+            compas_cgal._isolines,
+            compas_cgal._measure,
+            compas_cgal._meshing,
+            compas_cgal._polylines,
+            compas_cgal._reconstruction,
+            compas_cgal._skeletonization,
+            compas_cgal._slicer,
+            compas_cgal._straight_skeleton_2,
+            compas_cgal._subdivision,
+            compas_cgal._triangulation,
+            compas_cgal._types_std
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: sdist
           path: dist/*.tar.gz
+          if-no-files-found: error

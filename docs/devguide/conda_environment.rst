@@ -1,24 +1,28 @@
 ********************************************************************************
-Conda Environment
+Development Environment
 ********************************************************************************
 
-There are two ways to set up the development environment:
+The canonical development environment is managed by uv and recorded in
+``uv.lock``.
 
-Using environment.yml (recommended)
------------------------------------
-
-.. code-block:: bash
-
-    conda env create -f environment.yml
-    conda activate compas_cgal
-
-Manual setup
-------------
+Install the development dependency group
+----------------------------------------
 
 .. code-block:: bash
 
-    conda create -n compas_cgal python=3.9 compas -c conda-forge cmake -y
-    pip install -r requirements-dev.txt
-    pip install --no-build-isolation -ve . -Ceditable.rebuild=true
+    uv sync --frozen --group dev
 
-Both methods will create and configure the same development environment.
+Run tools without activating the environment
+--------------------------------------------
+
+.. code-block:: bash
+
+    uv run pytest
+    uv run ruff check .
+    uv run ruff format --check .
+    uv run pyright
+
+The ``dev``, ``docs``, and ``viz`` dependency groups in ``pyproject.toml``
+replace the former Conda and requirements manifests. Until COMPAS 3 is
+published, the lock uses the exact coordinated COMPAS Git candidate recorded
+in ``[tool.uv.sources]``.

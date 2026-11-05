@@ -14,5 +14,5 @@ Key Features:
 * Optional Laplacian smoothing
 
 ```python
----8<--- "docs/examples/example_isolines.py"
+---8 < ---"docs/examples/example_isolines.py"
 ```

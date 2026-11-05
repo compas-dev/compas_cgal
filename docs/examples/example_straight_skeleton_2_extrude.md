@@ -37,5 +37,5 @@ standard hip roof. Smaller angles give flatter roofs, larger angles steeper ones
 a `maximum_height` (required for vertical or outward slopes) truncates the roof at that height.
 
 ```python
----8<--- "docs/examples/example_straight_skeleton_2_extrude.py"
+---8 < ---"docs/examples/example_straight_skeleton_2_extrude.py"
 ```

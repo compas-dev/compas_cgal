@@ -11,5 +11,5 @@ Key Features:
 * Side-by-side visualization of original and smoothed point clouds
 
 ```python
----8<--- "docs/examples/example_reconstruction_pointset_smoothing.py"
+---8 < ---"docs/examples/example_reconstruction_pointset_smoothing.py"
 ```

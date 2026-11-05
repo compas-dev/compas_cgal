@@ -12,5 +12,5 @@ Key Features:
 * Distinction between inner bisectors and regular edges
 
 ```python
----8<--- "docs/examples/example_straight_skeleton_2_interior_straight_skeleton_with_holes.py"
+---8 < ---"docs/examples/example_straight_skeleton_2_interior_straight_skeleton_with_holes.py"
 ```

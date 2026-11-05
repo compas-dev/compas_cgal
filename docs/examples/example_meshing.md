@@ -12,5 +12,5 @@ Key Features:
 * Converting the result back to a mesh for visualization
 
 ```python
----8<--- "docs/examples/example_meshing.py"
+---8 < ---"docs/examples/example_meshing.py"
 ```

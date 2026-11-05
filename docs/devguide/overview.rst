@@ -25,10 +25,9 @@ Build & Dependencies
 * ``build/`` - Distributables e.g. for PyPi package
 * ``external/`` - External C++ dependencies, downloaded via CMake ExternalProject module
 * ``CMakeLists.txt`` - C++ project configuration
-* ``pyproject.toml`` - Python project configuration (pip install -e .)
-* ``requirements.txt`` - Runtime requirements (pip install -r requirements.txt)
-* ``requirements-dev.txt`` - Development requirement (pip install -r requirements-dev.txt)
-* ``tasks.py`` - Development tasks (invoke test, invoke docs, invoke format, invoke lint)
+* ``pyproject.toml`` - Package metadata, dependency groups, and tool settings
+* ``uv.lock`` - Reproducible development and CI dependency resolution
+* ``tasks.py`` - Thin Invoke compatibility facade for established commands
 
 Tests & Examples
 ^^^^^^^^^^^^^^^^

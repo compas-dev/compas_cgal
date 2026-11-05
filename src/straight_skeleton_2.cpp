@@ -245,8 +245,9 @@ pmp_create_weighted_offset_polygons_2_inner(
     }
 
     try {
-        // The simple-polygon overload takes one weight per contour edge.
-        SsPtr skeleton = CGAL::create_interior_weighted_straight_skeleton_2(polygon, weight_values);
+        // CGAL 6.1 expects one weight range for the outer contour.
+        std::vector<std::vector<double>> weights = {weight_values};
+        SsPtr skeleton = CGAL::create_interior_weighted_straight_skeleton_2(polygon, weights);
         if (!skeleton) {
             throw std::runtime_error("Failed to create weighted straight skeleton");
         }
@@ -284,8 +285,9 @@ pmp_create_weighted_offset_polygons_2_outer(
     }
 
     try {
-        // The kernel-deducing overload takes (max_offset, weights, polygon).
-        SsPtr skeleton = CGAL::create_exterior_weighted_straight_skeleton_2(offset_distance, weight_values, polygon);
+        // CGAL 6.1 expects (max_offset, polygon, contour weight ranges).
+        std::vector<std::vector<double>> weights = {weight_values};
+        SsPtr skeleton = CGAL::create_exterior_weighted_straight_skeleton_2(offset_distance, polygon, weights);
         if (!skeleton) {
             throw std::runtime_error("Failed to create weighted straight skeleton");
         }

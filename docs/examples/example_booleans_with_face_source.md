@@ -46,5 +46,5 @@ If you don't need source tracking and want exactly-axial cylinders, use
 [`boolean_chain`](example_boolean_difference_mesh_meshes.md) instead.
 
 ```python
----8<--- "docs/examples/example_booleans_with_face_source.py"
+---8 < ---"docs/examples/example_booleans_with_face_source.py"
 ```

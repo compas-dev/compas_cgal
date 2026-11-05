@@ -2,7 +2,6 @@ from pathlib import Path
 
 from compas.datastructures import Mesh
 from compas.geometry import DiagonalSplit
-from compas.geometry import EarClipping
 from compas.geometry import FaceTriangulation
 from compas.geometry import trimesh_remesh
 from compas_viewer import Viewer

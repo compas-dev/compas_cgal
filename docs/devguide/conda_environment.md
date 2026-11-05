@@ -1,20 +1,29 @@
-# Conda Environment
+# Development Environment
 
-There are two ways to set up the development environment:
+The canonical development environment is managed by uv and recorded in
+`uv.lock`.
 
-## Using environment.yml (recommended)
-
-``` bash
-conda env create -f environment.yml
-conda activate cgal-dev
+```bash
+uv sync --frozen --group dev
 ```
 
-## Manual setup
+Run commands without activating the environment:
 
-``` bash
-conda create -n compas_cgal python=3.9 compas -c conda-forge cmake -y
-pip install -r requirements-dev.txt
-pip install --no-build-isolation -ve . -Ceditable.rebuild=true
+```bash
+uv run pytest
+uv run ruff check .
+uv run ruff format --check .
+uv run pyright
 ```
 
-Both methods will create and configure the same development environment.
+The compatibility facade used by existing shared actions remains available as
+`uv run invoke test`, `uv run invoke docs`, and `uv run invoke check`. Direct
+tool commands above define the repository contract.
+
+The dependency groups in `pyproject.toml` replace the former Conda environment
+and requirements files. The `dev`, `docs`, and `viz` groups retain their
+development, documentation, and visualization dependencies respectively.
+
+The native extensions require a C++20 compiler. CMake, Ninja, nanobind, and the
+Python build backend come from the lock. Rebuild after editing C++ with
+`uv sync --reinstall-package compas-cgal`.

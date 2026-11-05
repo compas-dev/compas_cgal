@@ -11,5 +11,5 @@ Key Features:
 * Color-coded display of different edge types
 
 ```python
----8<--- "docs/examples/example_straight_skeleton_2_interior_straight_skeleton.py"
+---8 < ---"docs/examples/example_straight_skeleton_2_interior_straight_skeleton.py"
 ```

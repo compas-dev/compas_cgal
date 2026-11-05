@@ -21,5 +21,5 @@ unfoldings and square roots, so the returned numbers carry ordinary floating-poi
 error.
 
 ```python
----8<--- "docs/examples/example_geodesics_exact.py"
+---8 < ---"docs/examples/example_geodesics_exact.py"
 ```

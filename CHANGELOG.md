@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+* Modernized the development, documentation, native-wheel, and release workflows around locked `uv` environments, complete stub verification, and exact artifact promotion.
 * Planar triangulation now implements the core `triangulate_planar_points` and `triangulate_planar_domain` plugin contracts, returning `Tessellation` with explicit strategies, planar frames, and supported quality targets.
 * Triangle booleans and remeshing now consume and return `Tessellation`; mesh intersection and slicing consume `Tessellation` and return coordinate polylines through the core plugin contracts.
 * Updated polygonal mesh callers and examples to use the composite `FaceTriangulation` policy for explicit quad and n-gon handling.

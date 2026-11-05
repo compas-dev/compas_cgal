@@ -11,5 +11,5 @@ The following operations are demonstrated:
 * Boolean union
 
 ```python
----8<--- "docs/examples/example_booleans.py"
+---8 < ---"docs/examples/example_booleans.py"
 ```

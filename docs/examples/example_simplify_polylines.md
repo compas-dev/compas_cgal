@@ -11,5 +11,5 @@ Key Features:
 * Side-by-side visualization of original and simplified polylines
 
 ```python
----8<--- "docs/examples/example_simplify_polylines.py"
+---8 < ---"docs/examples/example_simplify_polylines.py"
 ```

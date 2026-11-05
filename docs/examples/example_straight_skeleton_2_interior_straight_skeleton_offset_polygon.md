@@ -11,5 +11,5 @@ Key Features:
 * Color-coded visualization of original and offset polygons
 
 ```python
----8<--- "docs/examples/example_straight_skeleton_2_interior_straight_skeleton_offset_polygon.py"
+---8 < ---"docs/examples/example_straight_skeleton_2_interior_straight_skeleton_offset_polygon.py"
 ```
