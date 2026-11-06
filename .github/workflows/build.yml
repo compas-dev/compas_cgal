@@ -64,7 +64,7 @@ jobs:
           CIBW_ARCHS: ${{ matrix.arch }}
           CIBW_BEFORE_TEST: >-
             python -m pip install
-            "compas @ git+https://github.com/compas-dev/compas.git@21fdcaa5e7bf1a642030005a636164f63446d122"
+            "compas @ git+https://github.com/compas-dev/compas.git@f626151278b6fbea6c3dd271dcb096923c6073c3"
           CIBW_TEST_REQUIRES: numpy>=1.24 pytest build
         with:
           output-dir: wheelhouse

@@ -82,7 +82,8 @@ def project_points_on_mesh(
         The projected point coordinates.
 
     """
-    target = mesh.triangulated(None).to_vertices_and_triangles()
+    triangle_mesh = mesh.triangulated(None)
+    target = triangle_mesh.to_vertices_and_faces()
     numpy_V_source = np.ascontiguousarray(points, dtype=np.float64)
     if numpy_V_source.ndim != 2 or numpy_V_source.shape[1] != 3:
         raise ValueError("points should have shape (N, 3).")
@@ -111,7 +112,8 @@ def pull_points_on_mesh(points: PointsLike, normals: PointsLike, mesh: Mesh) -> 
 
     """
 
-    target = mesh.triangulated().to_vertices_and_triangles()
+    triangle_mesh = mesh.triangulated()
+    target = triangle_mesh.to_vertices_and_faces()
     numpy_V_source = np.ascontiguousarray(points, dtype=np.float64)
     numpy_N_source = np.ascontiguousarray(normals, dtype=np.float64)
     if numpy_V_source.ndim != 2 or numpy_V_source.shape[1] != 3:

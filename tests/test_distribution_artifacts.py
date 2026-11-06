@@ -24,7 +24,7 @@ NATIVE_MODULES = (
     "_triangulation",
     "_types_std",
 )
-COMPAS_CANDIDATE = "21fdcaa5e7bf1a642030005a636164f63446d122"
+COMPAS_CANDIDATE = "f626151278b6fbea6c3dd271dcb096923c6073c3"
 
 
 @pytest.fixture

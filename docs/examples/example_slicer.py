@@ -17,7 +17,7 @@ from compas_viewer.config import Config
 FILE = Path(__file__).parent.parent.parent / "data" / "3DBenchy.stl"
 benchy = Mesh.from_stl(FILE)
 
-tessellation = benchy.triangulated()
+triangle_mesh = benchy.triangulated()
 
 # =============================================================================
 # Get Slice planes from the bounding box
@@ -36,7 +36,7 @@ for i in np.linspace(zmin, zmax, 50):
 # Slice
 # =============================================================================
 
-slicer_polylines = trimesh_slice(tessellation.to_vertices_and_triangles(), planes)
+slicer_polylines = trimesh_slice(triangle_mesh.to_vertices_and_faces(), planes)
 
 polylines = []
 for polyline in slicer_polylines:

@@ -24,7 +24,8 @@ translation = Translation.from_vector([0, 0, 2])
 
 mesh = Mesh.from_off(input_file).transformed(translation * rotation * scale)
 
-v, f = mesh.triangulated().to_vertices_and_triangles()
+triangle_mesh = mesh.triangulated()
+v, f = triangle_mesh.to_vertices_and_faces()
 
 # =============================================================================
 # Skeleton

@@ -26,7 +26,8 @@ S = Scale.from_factors([5, 5, 5])
 transform = T * R2 * R1 * S
 
 mesh = Mesh.from_off(input_file).transformed(transform)
-v, f = mesh.triangulated().to_vertices_and_triangles()
+triangle_mesh = mesh.triangulated()
+v, f = triangle_mesh.to_vertices_and_faces()
 
 # =============================================================================
 # Compute skeleton with vertex mapping
@@ -67,9 +68,9 @@ viewer.scene.add(
 )
 
 for idx in start_indices:
-    viewer.scene.add(Point(*v[idx]), pointcolor=[1.0, 0.0, 0.0], pointsize=15)  # red = start
+    viewer.scene.add(Point(v[idx][0], v[idx][1], v[idx][2]), pointcolor=[1.0, 0.0, 0.0], pointsize=15)  # red = start
 for idx in end_indices:
-    viewer.scene.add(Point(*v[idx]), pointcolor=[0.0, 0.0, 1.0], pointsize=15)  # blue = end
+    viewer.scene.add(Point(v[idx][0], v[idx][1], v[idx][2]), pointcolor=[0.0, 0.0, 1.0], pointsize=15)  # blue = end
 
 for i, polyline in enumerate(polylines):
     if i == edge_idx:

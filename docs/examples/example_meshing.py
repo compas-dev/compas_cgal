@@ -11,7 +11,8 @@ from compas_viewer import Viewer
 input_file = Path(__file__).parent.parent.parent / "data" / "rhinovault_mesh_0.ply"
 
 mesh = Mesh.from_ply(input_file)
-triangle_mesh = mesh.triangulated().to_vertices_and_triangles()
+triangle_mesh = mesh.triangulated()
+vertices_faces = triangle_mesh.to_vertices_and_faces()
 
 # =============================================================================
 # Remesh to a uniform target edge length
@@ -20,7 +21,7 @@ triangle_mesh = mesh.triangulated().to_vertices_and_triangles()
 TARGET_EDGE_LENGTH = 1
 ITERATIONS = 10
 
-vertices, triangles = trimesh_remesh(triangle_mesh, TARGET_EDGE_LENGTH, ITERATIONS)
+vertices, triangles = trimesh_remesh(vertices_faces, TARGET_EDGE_LENGTH, ITERATIONS)
 remeshed = Mesh.from_vertices_and_faces(vertices, triangles)
 
 # =============================================================================
