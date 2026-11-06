@@ -2,8 +2,6 @@ from pathlib import Path
 
 import numpy as np
 from compas.datastructures import Mesh
-from compas.geometry import EarClipping
-from compas.geometry import FaceTriangulation
 from compas.geometry import Plane
 from compas.geometry import Point
 from compas.geometry import Polyline
@@ -19,16 +17,18 @@ from compas_viewer.config import Config
 FILE = Path(__file__).parent.parent.parent / "data" / "3DBenchy.stl"
 benchy = Mesh.from_stl(FILE)
 
-tessellation = benchy.triangulated(FaceTriangulation(quad=EarClipping()))
+tessellation = benchy.triangulated()
 
 # =============================================================================
 # Get Slice planes from the bounding box
 # =============================================================================
 
-bbox = benchy.aabb()
+bbox = benchy.aabb
+zmin = min(point.z for point in bbox.points)
+zmax = max(point.z for point in bbox.points)
 normal = Vector(0, 0, 1)
 planes = []
-for i in np.linspace(bbox.zmin, bbox.zmax, 50):
+for i in np.linspace(zmin, zmax, 50):
     plane = Plane(Point(0, 0, i), normal)
     planes.append(plane)
 
@@ -36,13 +36,13 @@ for i in np.linspace(bbox.zmin, bbox.zmax, 50):
 # Slice
 # =============================================================================
 
-slicer_polylines = trimesh_slice(tessellation, planes)
+slicer_polylines = trimesh_slice(tessellation.to_vertices_and_triangles(), planes)
 
 polylines = []
 for polyline in slicer_polylines:
     points = []
     for point in polyline:
-        points.append(Point(*point))
+        points.append(Point(point[0], point[1], point[2]))
     polylines.append(Polyline(points))
 
 # ==============================================================================

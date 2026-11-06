@@ -3,10 +3,7 @@ from compas.datastructures import Mesh
 from compas.geometry import Box
 from compas.geometry import Cylinder
 from compas.geometry import Frame
-from compas.geometry import Native
 from compas.geometry import Sphere
-from compas.geometry import UGrid
-from compas.geometry import UVGrid
 from compas_viewer import Viewer
 
 from compas_cgal.booleans import boolean_chain_with_face_source
@@ -30,8 +27,8 @@ from compas_cgal.booleans import split_by_source
 # maps" example.
 # =============================================================================
 
-cube = Box(2).tessellate(Native()).to_vertices_and_triangles()
-sphere = Sphere(1.3, frame=Frame(point=[0, 0, 0])).tessellate(UVGrid(64, 64)).to_vertices_and_triangles()
+cube = Box(2).to_tessellation().to_vertices_and_triangles()
+sphere = Sphere(1.3, frame=Frame(point=[0, 0, 0])).to_tessellation(nu=64, nv=64).to_vertices_and_triangles()
 
 
 def cylinder_along(axis, radius=0.8):
@@ -42,7 +39,7 @@ def cylinder_along(axis, radius=0.8):
         frame = Frame([0, 0, 0], [0, 0, 1], [1, 0, 0])
     else:  # "z"
         frame = Frame([0, 0, 0], [1, 0, 0], [0, 1, 0])
-    return Cylinder(radius, 4.0, frame).tessellate(UGrid(48)).to_vertices_and_triangles()
+    return Cylinder(radius, 4.0, frame).to_tessellation(nu=48).to_vertices_and_triangles()
 
 
 cyl_x = cylinder_along("x")

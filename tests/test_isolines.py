@@ -2,7 +2,6 @@ import pytest
 import numpy as np
 
 from compas.geometry import Sphere
-from compas.geometry import UVGrid
 from compas.datastructures import Mesh
 from compas_cgal.geodesics import heat_geodesic_distances
 from compas_cgal.isolines import isolines
@@ -12,7 +11,7 @@ from compas_cgal.isolines import isolines
 def sphere_mesh_with_distances():
     """Create a test sphere mesh with geodesic distances as vertex attribute."""
     sphere = Sphere(1.0)
-    V, F = sphere.tessellate(UVGrid(16, 16)).to_vertices_and_triangles()
+    V, F = sphere.to_tessellation(nu=16, nv=16).to_vertices_and_triangles()
     mesh = Mesh.from_vertices_and_faces(V, F)
 
     # Compute geodesic distances from vertex 0
@@ -59,6 +58,15 @@ def test_isolines_with_explicit_isovalues(sphere_mesh_with_distances):
     for pts in polylines:
         assert isinstance(pts, np.ndarray)
         assert pts.shape[1] == 3
+
+
+def test_isolines_accepts_numpy_scalar_values(sphere_mesh_with_distances):
+    mesh = sphere_mesh_with_distances
+    distances = np.asarray(mesh.vertices_attribute("distance"), dtype=np.float64)
+
+    polylines = isolines(mesh, distances, n=3, resample=False)
+
+    assert polylines
 
 
 def test_isolines_validation_neither_provided(sphere_mesh_with_distances):

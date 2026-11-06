@@ -4,7 +4,6 @@ import pytest
 import numpy as np
 
 from compas.geometry import Sphere
-from compas.geometry import UVGrid
 from compas.datastructures import Mesh
 from compas_cgal.geodesics import geodesic_isolines
 from compas_cgal.geodesics import geodesic_isolines_split
@@ -18,7 +17,7 @@ IFILE = Path(__file__).parent.parent / "data" / "flat_star_disk_irregular_rim.of
 def sphere_mesh():
     """Create a test sphere mesh."""
     sphere = Sphere(1.0)
-    V, F = sphere.tessellate(UVGrid(16, 16)).to_vertices_and_triangles()
+    V, F = sphere.to_tessellation(nu=16, nv=16).to_vertices_and_triangles()
     return V, F
 
 

@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+* Replaced strategy-based planar triangulation with the named structural `delaunay_triangulation`, `constrained_delaunay_triangulation`, and `conforming_delaunay_triangulation` APIs and plugin hooks. These functions accept coordinate buffers directly, preserve source coordinates through frame projection, and return `(vertices, triangles)` buffers without requiring `Tessellation`.
+* Replaced package-local public mesh-input aliases with the shared `compas.typing` vocabulary, completed public wrapper annotations, and corrected every packaged native stub to describe the actual NumPy, Python-container, and nanobind-vector ABI.
+* Distinguished quadrilateral Catmull-Clark results from triangle-mesh results and documented that polyline results preserve either two or three coordinate columns.
+* Documented that skeletonization remains experimental because its geometric results are known to be incorrect for some inputs; the typing update does not change that algorithmic limitation.
 * Modernized the development, documentation, native-wheel, and release workflows around locked `uv` environments, complete stub verification, and exact artifact promotion.
 * Aligned type annotations and numerical APIs with the core structural contracts: triangle-mesh operations use raw `(vertices, triangles)` data at the backend boundary, accept NumPy-compatible numerical inputs without requiring `Tessellation`, and return structural results suitable for direct array use.
 * Kept Delaunay and constrained triangulation explicitly scoped to planar input domains.

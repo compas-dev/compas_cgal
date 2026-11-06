@@ -2,20 +2,24 @@
 
 from typing import List
 from typing import Optional
-from typing import Sequence
 from typing import Union
 
 import numpy as np
 from compas.datastructures import Mesh
-from numpy.typing import NDArray
+from compas.typing import Float64Array
+from compas.typing import FloatSequenceLike
 
+from compas_cgal import _types_std  # noqa: F401
 from compas_cgal._isolines import isolines as _isolines
 from compas_cgal.types import PolylinesNumpy
+
+from ._mesh import as_native_mesh
+from ._mesh import validate_polylines
 
 __all__ = ["isolines"]
 
 
-def _smooth_polyline(pts: NDArray, iterations: int = 1) -> NDArray:
+def _smooth_polyline(pts: Float64Array, iterations: int = 1) -> Float64Array:
     """Apply Laplacian smoothing to a polyline, keeping endpoints fixed."""
     if len(pts) < 3:
         return pts
@@ -28,12 +32,12 @@ def _smooth_polyline(pts: NDArray, iterations: int = 1) -> NDArray:
     return smoothed
 
 
-def _segment_lengths(pts: NDArray) -> NDArray:
+def _segment_lengths(pts: Float64Array) -> Float64Array:
     """Compute segment lengths for a polyline."""
     return np.linalg.norm(np.diff(pts, axis=0), axis=1)
 
 
-def _resample_polyline_adaptive(pts: NDArray, threshold: float = 2.0) -> NDArray:
+def _resample_polyline_adaptive(pts: Float64Array, threshold: float = 2.0) -> Float64Array:
     """Resample only segments significantly longer than median.
 
     Parameters
@@ -74,7 +78,7 @@ def _resample_polyline_adaptive(pts: NDArray, threshold: float = 2.0) -> NDArray
     return np.array(result)
 
 
-def _resample_polyline(pts: NDArray, factor: int) -> NDArray:
+def _resample_polyline(pts: Float64Array, factor: int) -> Float64Array:
     """Resample a polyline by inserting interpolated points between each pair."""
     if len(pts) < 2 or factor < 2:
         return pts
@@ -90,7 +94,7 @@ def _resample_polyline(pts: NDArray, factor: int) -> NDArray:
 
 def isolines(
     mesh: Mesh,
-    scalars: Union[str, Sequence[float]],
+    scalars: str | FloatSequenceLike,
     isovalues: Optional[List[float]] = None,
     n: Optional[int] = None,
     resample: Union[int, bool] = True,
@@ -103,9 +107,9 @@ def isolines(
 
     Parameters
     ----------
-    mesh : :class:`compas.datastructures.Mesh`
+    mesh : Mesh
         A triangulated mesh.
-    scalars : str or Sequence[float]
+    scalars : str or FloatSequenceLike
         Name of the vertex attribute containing scalar values, or the values themselves
         in vertex order.
     isovalues : List[float], optional
@@ -123,7 +127,7 @@ def isolines(
 
     Returns
     -------
-    :attr:`compas_cgal.types.PolylinesNumpy`
+    PolylinesNumpy
         List of polyline segments as Nx3 arrays of points.
 
     Raises
@@ -134,11 +138,11 @@ def isolines(
     Examples
     --------
     >>> from compas.datastructures import Mesh
-    >>> from compas.geometry import Sphere, UVGrid
+    >>> from compas.geometry import Sphere
     >>> from compas_cgal.geodesics import heat_geodesic_distances
     >>> from compas_cgal.isolines import isolines
     >>> sphere = Sphere(1.0)
-    >>> vf = sphere.tessellate(UVGrid(32, 32)).to_vertices_and_triangles()
+    >>> vf = sphere.to_tessellation(nu=32, nv=32).to_vertices_and_triangles()
     >>> mesh = Mesh.from_vertices_and_faces(*vf)
     >>> distances = heat_geodesic_distances(vf, [0])
     >>> for key, d in zip(mesh.vertices(), distances):
@@ -146,8 +150,10 @@ def isolines(
     >>> polylines = isolines(mesh, "distance", n=5)
 
     """
-    V = np.asarray(mesh.vertices_attributes("xyz"), dtype=np.float64, order="C")
-    F = np.asarray([mesh.face_vertices(f) for f in mesh.faces()], dtype=np.int32, order="C")
+    V, F = as_native_mesh(
+        (mesh.vertices_attributes("xyz"), [mesh.face_vertices(face) for face in mesh.faces()]),
+        "mesh",
+    )
     values = mesh.vertices_attribute(scalars) if isinstance(scalars, str) else scalars
     scalar_values = np.asarray(values, dtype=np.float64, order="C").reshape(-1, 1)
 
@@ -161,7 +167,7 @@ def isolines(
         isovalues = np.linspace(smin, smax, n + 2)[1:-1].tolist()
 
     assert isovalues is not None
-    polylines = list(_isolines(V, F, scalar_values, isovalues, 0))
+    polylines = validate_polylines(list(_isolines(V, F, scalar_values, isovalues, 0)), "isoline")
 
     if resample is True:
         polylines = [_resample_polyline_adaptive(pl) for pl in polylines]

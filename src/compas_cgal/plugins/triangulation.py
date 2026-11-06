@@ -7,45 +7,61 @@ from typing import TYPE_CHECKING
 from compas.plugins import plugin
 
 if TYPE_CHECKING:
-    from compas._typing import CoordinatesCollectionInput
-    from compas._typing import CoordinatesInput
-    from compas.geometry import ConformingDelaunay
-    from compas.geometry import ConstrainedDelaunay
-    from compas.geometry import Delaunay
     from compas.geometry import Frame
-    from compas.geometry import Tessellation
+    from compas.typing import PointGroupsLike
+    from compas.typing import PointsLike
+    from compas.typing import VerticesFaces
 
 
-@plugin(category="triangulation", requires=["compas_cgal"])
-def _triangulate_planar_points(
-    points: CoordinatesInput,
+@plugin(category="triangulation", requires=["compas_cgal._triangulation"])
+def _delaunay_triangulation(
+    points: PointsLike,
     *,
-    strategy: Delaunay,
     frame: Frame | None = None,
-) -> Tessellation:
-    from compas_cgal.triangulation import _triangulate_planar_points as implementation
+) -> VerticesFaces:
+    from compas_cgal.triangulation import delaunay_triangulation
 
-    return implementation(points, strategy=strategy, frame=frame)
+    return delaunay_triangulation(points, frame=frame)
 
 
-@plugin(category="triangulation", requires=["compas_cgal"])
-def _triangulate_planar_domain(
-    boundary: CoordinatesInput,
+@plugin(category="triangulation", requires=["compas_cgal._triangulation"])
+def _constrained_delaunay_triangulation(
+    boundary: PointsLike,
     *,
-    holes: CoordinatesCollectionInput = (),
-    constraints: CoordinatesCollectionInput = (),
-    points: CoordinatesInput = (),
-    strategy: ConstrainedDelaunay | ConformingDelaunay,
+    holes: PointGroupsLike = (),
+    constraints: PointGroupsLike = (),
+    points: PointsLike = (),
     frame: Frame | None = None,
-) -> Tessellation:
-    from compas_cgal.triangulation import _triangulate_planar_domain as implementation
+) -> VerticesFaces:
+    from compas_cgal.triangulation import constrained_delaunay_triangulation
 
-    return implementation(
+    return constrained_delaunay_triangulation(
         boundary,
         holes=holes,
         constraints=constraints,
         points=points,
-        strategy=strategy,
+        frame=frame,
+    )
+
+
+@plugin(category="triangulation", requires=["compas_cgal._triangulation"])
+def _conforming_delaunay_triangulation(
+    boundary: PointsLike,
+    *,
+    holes: PointGroupsLike = (),
+    constraints: PointGroupsLike = (),
+    points: PointsLike = (),
+    max_edge_length: float | None = None,
+    frame: Frame | None = None,
+) -> VerticesFaces:
+    from compas_cgal.triangulation import conforming_delaunay_triangulation
+
+    return conforming_delaunay_triangulation(
+        boundary,
+        holes=holes,
+        constraints=constraints,
+        points=points,
+        max_edge_length=max_edge_length,
         frame=frame,
     )
 

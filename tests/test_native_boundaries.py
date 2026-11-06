@@ -1,4 +1,6 @@
+import ast
 import gc
+import importlib
 from pathlib import Path
 
 import numpy as np
@@ -8,6 +10,11 @@ from compas_cgal import measure
 from compas_cgal import meshing
 from compas_cgal import polylines
 from compas_cgal import straight_skeleton_2
+from compas_cgal import _intersections
+from compas_cgal import _measure
+from compas_cgal import _meshing
+from compas_cgal import _straight_skeleton_2
+from compas_cgal import _types_std
 from compas_cgal.booleans import boolean_difference_mesh_mesh
 from compas_cgal.booleans import boolean_intersection_mesh_mesh
 from compas_cgal.booleans import boolean_union_mesh_mesh
@@ -17,6 +24,24 @@ from compas_cgal.booleans import split_mesh_mesh
 from compas_cgal.intersections import intersection_mesh_mesh
 from compas_cgal.slicer import slice_mesh_planes
 from compas_cgal.subdivision import mesh_subdivide_loop
+
+
+NATIVE_MODULES = (
+    "_booleans",
+    "_geodesics",
+    "_intersections",
+    "_isolines",
+    "_measure",
+    "_meshing",
+    "_polylines",
+    "_reconstruction",
+    "_skeletonization",
+    "_slicer",
+    "_straight_skeleton_2",
+    "_subdivision",
+    "_triangulation",
+    "_types_std",
+)
 
 
 def coordinate_inputs():
@@ -297,6 +322,139 @@ def test_native_array_results_remain_valid_after_collection():
     assert faces.flags.c_contiguous
 
 
+def test_native_stub_exports_match_runtime_extensions():
+    package = Path(__file__).parents[1] / "src" / "compas_cgal"
+
+    for module_name in NATIVE_MODULES:
+        module = importlib.import_module(f"compas_cgal.{module_name}")
+        runtime_exports = {name for name in dir(module) if not name.startswith("_") and callable(getattr(module, name))}
+        tree = ast.parse((package / f"{module_name}.pyi").read_text())
+        stub_exports = {node.name for node in tree.body if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) and not node.name.startswith("_")}
+
+        assert stub_exports == runtime_exports, module_name
+
+
+def test_measured_native_container_contracts():
+    vertices = np.asarray([[0, 0, 0], [1, 0, 0], [0, 1, 0]], dtype=np.float64)
+    faces = np.asarray([[0, 1, 2]], dtype=np.int32)
+    centroid = _measure.centroid(vertices, faces)
+
+    assert isinstance(centroid, _types_std.VectorDouble)
+    assert all(isinstance(coordinate, float) for coordinate in centroid)
+
+    boundary = np.asarray([[0, 0, 0], [2, 0, 0], [2, 2, 0], [0, 2, 0]], dtype=np.float64)
+    skeleton_vertices, skeleton_types, skeleton_edges, skeleton_face_indices = _straight_skeleton_2.create_interior_straight_skeleton(boundary)
+
+    assert isinstance(skeleton_vertices, np.ndarray)
+    assert isinstance(skeleton_types, list)
+    assert isinstance(skeleton_edges, np.ndarray)
+    assert isinstance(skeleton_face_indices, list)
+    assert skeleton_vertices.dtype == np.float64
+    assert skeleton_edges.dtype == np.int32
+
+
+def test_native_vector_stubs_describe_sequence_behavior():
+    values = _types_std.VectorInt([1, 2, 3])
+
+    assert not isinstance(values, list)
+    assert list(values) == [1, 2, 3]
+    assert isinstance(values[1:], _types_std.VectorInt)
+    values[1:] = [4, 5]
+    values.append(6)
+    assert list(values) == [1, 4, 5, 6]
+
+
+def test_native_dual_accepts_measured_fixed_vertex_containers():
+    vertices = np.asarray(
+        [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0], [0, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1]],
+        dtype=np.float64,
+    )
+    faces = np.asarray(
+        [[0, 1, 2], [0, 2, 3], [4, 6, 5], [4, 7, 6], [0, 5, 1], [0, 4, 5], [2, 7, 3], [2, 6, 7], [0, 3, 7], [0, 7, 4], [1, 5, 6], [1, 6, 2]],
+        dtype=np.int32,
+    )
+
+    containers = (
+        [0, 2],
+        (0, 2),
+        range(0, 3, 2),
+        [np.int32(0), np.int64(2)],
+        np.asarray([0, 2], dtype=np.int8),
+        np.asarray([0, 2], dtype=np.int16),
+        np.asarray([0, 2], dtype=np.int32),
+        np.asarray([0, 2], dtype=np.int64),
+        np.asarray([0, 2], dtype=np.uint8),
+        np.asarray([0, 2], dtype=np.uint32),
+        np.asarray([0, 2], dtype=np.uint64),
+        _types_std.VectorInt([0, 2]),
+    )
+    for fixed_vertices in containers:
+        result = _meshing.pmp_trimesh_remesh_dual(vertices, faces, fixed_vertices, 1.0, 1, 0.9, 1.0)
+
+        assert result[0].shape[1] == 3
+        assert result[1].shape[1] == 3
+
+
+@pytest.mark.parametrize(
+    "fixed_vertices",
+    [
+        np.asarray([False, True], dtype=np.bool_),
+        np.asarray([0.0, 2.0], dtype=np.float32),
+        [0.0, 2.0],
+    ],
+)
+def test_native_dual_rejects_noninteger_fixed_vertex_containers(fixed_vertices):
+    vertices = np.asarray([[0, 0, 0], [1, 0, 0], [0, 1, 0]], dtype=np.float64)
+    faces = np.asarray([[0, 1, 2]], dtype=np.int32)
+
+    with pytest.raises(TypeError):
+        _meshing.pmp_trimesh_remesh_dual(vertices, faces, fixed_vertices, 1.0, 1, 0.9, 1.0)
+
+
+def test_dual_fixed_vertices_are_normalized_for_native_abi(monkeypatch):
+    captured = {}
+
+    def dual(vertices, faces, fixed_vertices, *args):
+        captured["vertices"] = vertices
+        captured["faces"] = faces
+        captured["fixed_vertices"] = fixed_vertices
+        return vertices, faces, vertices, [[0, 1, 2]]
+
+    monkeypatch.setattr(meshing._meshing, "pmp_trimesh_remesh_dual", dual)
+    mesh = ([[0, 0, 0], [1, 0, 0], [0, 1, 0]], [[0, 1, 2]])
+
+    containers = (
+        [0, 2],
+        (0, 2),
+        range(0, 3, 2),
+        np.asarray([0, 2], dtype=np.int32),
+        np.asarray([0, 2], dtype=np.int64),
+    )
+    for fixed_vertices in containers:
+        meshing.trimesh_dual(mesh, fixed_vertices=fixed_vertices)
+
+        assert captured["vertices"].dtype == np.float64
+        assert captured["faces"].dtype == np.int32
+        assert captured["fixed_vertices"].dtype == np.int32
+        assert captured["fixed_vertices"].flags.c_contiguous
+
+
+def test_native_intersection_result_is_list_of_float_arrays():
+    vertices_a = np.asarray(
+        [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]],
+        dtype=np.float64,
+    )
+    vertices_b = vertices_a + np.asarray([0.25, 0.25, 0.25])
+    faces = np.asarray([[0, 2, 1], [0, 1, 3], [1, 2, 3], [2, 0, 3]], dtype=np.int32)
+
+    polylines = _intersections.intersection_mesh_mesh(vertices_a, faces, vertices_b, faces)
+
+    assert isinstance(polylines, _types_std.VectorRowMatrixXd)
+    assert polylines
+    assert all(isinstance(polyline, np.ndarray) for polyline in polylines)
+    assert all(polyline.dtype == np.float64 for polyline in polylines)
+
+
 def test_all_native_modules_have_stubs_and_package_is_typed():
     package = Path(__file__).parents[1] / "src" / "compas_cgal"
     cmake = (Path(__file__).parents[1] / "CMakeLists.txt").read_text()
@@ -309,4 +467,5 @@ def test_all_native_modules_have_stubs_and_package_is_typed():
 
     assert (package / "py.typed").is_file()
     assert module_names
+    assert set(module_names) == set(NATIVE_MODULES)
     assert not [name for name in module_names if not (package / f"{name}.pyi").is_file()]

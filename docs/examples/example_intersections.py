@@ -1,9 +1,8 @@
 from compas.geometry import Box
-from compas.geometry import Native
+from compas.geometry import Frame
 from compas.geometry import Point
 from compas.geometry import Polyline
 from compas.geometry import Sphere
-from compas.geometry import UVGrid
 from compas.geometry import intersection_mesh_mesh
 from compas_viewer import Viewer
 
@@ -12,10 +11,10 @@ from compas_viewer import Viewer
 # ==============================================================================
 
 box = Box(2)
-A = box.tessellate(Native())
+A = box.to_tessellation().to_vertices_and_triangles()
 
-sphere = Sphere(1, point=[1, 1, 1])
-B = sphere.tessellate(UVGrid(32, 32))
+sphere = Sphere(1, frame=Frame(point=[1, 1, 1]))
+B = sphere.to_tessellation(nu=32, nv=32).to_vertices_and_triangles()
 
 # ==============================================================================
 # Compute the intersections
@@ -29,7 +28,7 @@ pointsets = intersection_mesh_mesh(A, B)
 
 polylines = []
 for points in pointsets:
-    points = [Point(*point) for point in points]
+    points = [Point(point[0], point[1], point[2]) for point in points]
     polyline = Polyline(points)
     polylines.append(polyline)
 
@@ -43,13 +42,13 @@ viewer.renderer.camera.target = [0, 0, 0]
 viewer.renderer.camera.position = [4, -6, 3]
 
 viewer.scene.add(
-    A.to_mesh(),
+    box,
     facecolor=(1.0, 0.0, 0.0),
     show_points=False,
 )
 
 viewer.scene.add(
-    B.to_mesh(),
+    sphere,
     facecolor=(0.0, 1.0, 0.0),
     show_points=False,
     opacity=0.3,

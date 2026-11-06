@@ -31,8 +31,8 @@ simplified_high = simplify_polyline(original_points, threshold=0.5)
 # =============================================================================
 
 offset = 6.0
-original_polyline = Polyline(original_points.tolist())
-simplified_high_polyline = Polyline((simplified_high + [offset, 0, 0]).tolist())
+original_polyline = Polyline(original_points)
+simplified_high_polyline = Polyline(simplified_high + [offset, 0, 0])
 
 # ==============================================================================
 # Visualize

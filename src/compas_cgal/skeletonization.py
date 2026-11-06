@@ -1,11 +1,13 @@
-import numpy as np
+from compas.typing import VerticesFaces
 
-from compas_cgal import _skeletonization  # type: ignore
-from compas_cgal import _types_std  # noqa: F401  # type: ignore
+from compas_cgal import _skeletonization
+from compas_cgal import _types_std  # noqa: F401
 
+from ._mesh import as_native_mesh
 from .types import PolylinesNumpySkeleton
 from .types import SkeletonVertexMapping
-from .types import VerticesFaces
+
+__all__ = ["mesh_skeleton", "mesh_skeleton_with_mapping"]
 
 
 def mesh_skeleton(mesh: VerticesFaces) -> PolylinesNumpySkeleton:
@@ -40,10 +42,14 @@ def mesh_skeleton(mesh: VerticesFaces) -> PolylinesNumpySkeleton:
     -----
     The input mesh must be manifold and closed.
     The skeleton is computed using mean curvature flow.
+
+    Warnings
+    --------
+    Skeletonization results are currently known to be geometrically incorrect
+    for some inputs. Treat this operation as experimental; the return type
+    describes the data contract, not the correctness of the result.
     """
-    V, F = mesh
-    V_numpy = np.asarray(V, dtype=np.float64, order="C")  # Ensure C-contiguous
-    F_numpy = np.asarray(F, dtype=np.int32, order="C")  # Ensure C-contiguous
+    V_numpy, F_numpy = as_native_mesh(mesh, "mesh")
 
     # Get start and end points as flattened vectors
     start_points, end_points, _, _ = _skeletonization.mesh_skeleton(V_numpy, F_numpy)
@@ -100,10 +106,14 @@ def mesh_skeleton_with_mapping(mesh: VerticesFaces) -> tuple[PolylinesNumpySkele
     (The set might be empty for some skeleton vertices that don't correspond
     to any original vertex.)
 
+    Warnings
+    --------
+    Skeletonization results are currently known to be geometrically incorrect
+    for some inputs. Treat this operation as experimental; the return type
+    describes the data contract, not the correctness of the result.
+
     """
-    V, F = mesh
-    V_numpy = np.asarray(V, dtype=np.float64, order="C")  # Ensure C-contiguous
-    F_numpy = np.asarray(F, dtype=np.int32, order="C")  # Ensure C-contiguous
+    V_numpy, F_numpy = as_native_mesh(mesh, "mesh")
 
     # Get start and end points and vertex indices
     start_points, end_points, start_vertex_indices, end_vertex_indices = _skeletonization.mesh_skeleton(V_numpy, F_numpy)

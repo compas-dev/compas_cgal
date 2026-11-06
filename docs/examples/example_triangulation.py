@@ -1,9 +1,8 @@
-from compas.geometry import ConformingDelaunay
-from compas.geometry import ConstrainedDelaunay
+from compas.datastructures import Mesh
 from compas.geometry import Polygon
 from compas.geometry import Translation
-from compas.geometry import TriangulationQuality
-from compas.geometry import triangulate_planar_domain
+from compas.geometry import conforming_delaunay_triangulation
+from compas.geometry import constrained_delaunay_triangulation
 from compas_viewer import Viewer
 
 boundary = Polygon.from_sides_and_radius_xy(64, 4)
@@ -17,19 +16,18 @@ hole4 = hole.transformed(Translation.from_vector([0, -2, 0]))
 
 holes = [hole1, hole2, hole3, hole4]
 
-cdt = triangulate_planar_domain(
+cdt = constrained_delaunay_triangulation(
     boundary,
     holes=holes,
-    strategy=ConstrainedDelaunay(),
 )
-cdt = cdt.to_mesh()
+cdt = Mesh.from_vertices_and_faces(*cdt)
 
-rdm = triangulate_planar_domain(
+rdm = conforming_delaunay_triangulation(
     boundary,
     holes=holes,
-    strategy=ConformingDelaunay(TriangulationQuality(max_edge_length=0.5)),
+    max_edge_length=0.5,
 )
-rdm = rdm.to_mesh()
+rdm = Mesh.from_vertices_and_faces(*rdm)
 
 # ==============================================================================
 # Visualize

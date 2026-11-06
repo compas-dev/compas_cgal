@@ -245,9 +245,7 @@ pmp_create_weighted_offset_polygons_2_inner(
     }
 
     try {
-        // CGAL 6.1 expects one weight range for the outer contour.
-        std::vector<std::vector<double>> weights = {weight_values};
-        SsPtr skeleton = CGAL::create_interior_weighted_straight_skeleton_2(polygon, weights);
+        SsPtr skeleton = CGAL::create_interior_weighted_straight_skeleton_2(polygon, weight_values);
         if (!skeleton) {
             throw std::runtime_error("Failed to create weighted straight skeleton");
         }
@@ -285,9 +283,8 @@ pmp_create_weighted_offset_polygons_2_outer(
     }
 
     try {
-        // CGAL 6.1 expects (max_offset, polygon, contour weight ranges).
-        std::vector<std::vector<double>> weights = {weight_values};
-        SsPtr skeleton = CGAL::create_exterior_weighted_straight_skeleton_2(offset_distance, polygon, weights);
+        // CGAL 6.1.1 orders the polygon before its flat edge-weight range.
+        SsPtr skeleton = CGAL::create_exterior_weighted_straight_skeleton_2(offset_distance, polygon, weight_values);
         if (!skeleton) {
             throw std::runtime_error("Failed to create weighted straight skeleton");
         }

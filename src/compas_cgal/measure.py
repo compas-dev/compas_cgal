@@ -1,9 +1,11 @@
-import numpy as np
+from compas.typing import VerticesFaces
 
-from compas_cgal import _measure  # type: ignore
-from compas_cgal import _types_std  # type: ignore
+from compas_cgal import _measure
+from compas_cgal import _types_std  # noqa: F401
 
-from .types import VerticesFaces
+from ._mesh import as_native_mesh
+
+__all__ = ["mesh_area", "mesh_centroid", "mesh_volume"]
 
 
 def mesh_area(mesh: VerticesFaces) -> float:
@@ -20,9 +22,7 @@ def mesh_area(mesh: VerticesFaces) -> float:
         The area of the mesh.
 
     """
-    V, F = mesh
-    V = np.asarray(V, dtype=np.float64, order="C")
-    F = np.asarray(F, dtype=np.int32, order="C")
+    V, F = as_native_mesh(mesh, "mesh")
     return _measure.area(V, F)
 
 
@@ -41,19 +41,17 @@ def mesh_volume(mesh: VerticesFaces) -> float:
 
     Examples
     --------
-    >>> from compas.geometry import Box, Native
+    >>> from compas.geometry import Box
     >>> from compas_cgal.measure import mesh_volume
 
     >>> box = Box(1)
-    >>> mesh = box.tessellate(Native()).to_vertices_and_triangles()
+    >>> mesh = box.to_tessellation().to_vertices_and_triangles()
 
     >>> mesh_volume(mesh)
     1.0
 
     """
-    V, F = mesh
-    V = np.asarray(V, dtype=np.float64, order="C")
-    F = np.asarray(F, dtype=np.int32, order="C")
+    V, F = as_native_mesh(mesh, "mesh")
     return _measure.volume(V, F)
 
 
@@ -71,8 +69,5 @@ def mesh_centroid(mesh: VerticesFaces) -> list[float]:
         The centroid of the mesh.
 
     """
-    V, F = mesh
-    V = np.asarray(V, dtype=np.float64, order="C")
-    F = np.asarray(F, dtype=np.int32, order="C")
-    vector_of_double: _types_std.VectorDouble = _measure.centroid(V, F)
-    return list(vector_of_double)
+    V, F = as_native_mesh(mesh, "mesh")
+    return list(_measure.centroid(V, F))

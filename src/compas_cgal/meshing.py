@@ -1,23 +1,22 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import numpy as np
+from compas.typing import IndicesLike
+from compas.typing import VerticesFaces
 
-from compas_cgal import _meshing  # type: ignore
-from compas_cgal import _types_std  # noqa: F401  # type: ignore
+from compas_cgal import _meshing
+from compas_cgal import _types_std  # noqa: F401
 
 from ._mesh import as_native_mesh
 from ._mesh import validate_native_mesh
-from .types import VerticesFaces
+from .types import DualMeshNumpy
 from .types import VerticesFacesNumpy
 
-if TYPE_CHECKING:
-    from compas._typing import TriangleMeshInput
+__all__ = ["trimesh_dual", "trimesh_remesh"]
 
 
 def trimesh_remesh(
-    mesh: TriangleMeshInput,
+    mesh: VerticesFaces,
     target_edge_length: float,
     number_of_iterations: int = 10,
     do_project: bool = True,
@@ -28,22 +27,23 @@ def trimesh_remesh(
     ----------
     mesh
         The mesh to remesh.
-    target_edge_length : float
+    target_edge_length
         The target edge length.
-    number_of_iterations : int, optional
+    number_of_iterations
         Number of remeshing iterations.
-    do_project : bool, optional
+    do_project
         If True, reproject vertices onto the input surface when they are created or displaced.
+
     Returns
     -------
-    VerticesFacesNumpy
+    tuple[numpy.ndarray, numpy.ndarray]
         Native vertex and triangle arrays of the remeshed geometry.
 
     Examples
     --------
-    >>> from compas.geometry import Sphere, UVGrid  # doctest: +SKIP
-    >>> from compas_cgal.meshing import trimesh_remesh  # doctest: +SKIP
-    >>> mesh = Sphere(0.5).tessellate(UVGrid(32, 32)).to_vertices_and_triangles()
+    >>> from compas.geometry import Sphere
+    >>> from compas_cgal.meshing import trimesh_remesh
+    >>> mesh = Sphere(0.5).to_tessellation(nu=32, nv=32).to_vertices_and_triangles()
     >>> vertices, triangles = trimesh_remesh(mesh, 0.1)
 
     """
@@ -67,8 +67,8 @@ def trimesh_dual(
     number_of_iterations: int = 10,
     angle_radians: float = 0.9,
     scale_factor: float = 1.0,
-    fixed_vertices: list[int] = [],
-) -> tuple[np.ndarray, np.ndarray, np.ndarray, list[list[int]]]:
+    fixed_vertices: IndicesLike = (),
+) -> DualMeshNumpy:
     """Create a dual mesh from a triangular mesh with variable-length faces.
 
     Parameters
@@ -84,7 +84,7 @@ def trimesh_dual(
     scale_factor
         Scale factor for inner vertices.
     fixed_vertices
-        List of vertex indices to keep fixed during remeshing.
+        Vertex indices to keep fixed during remeshing.
 
     Returns
     -------
@@ -104,8 +104,25 @@ def trimesh_dual(
     3. Creating proper connections for boundary edges
 
     """
-    V, F = mesh
-    V = np.asarray(V, dtype=np.float64, order="C")
-    F = np.asarray(F, dtype=np.int32, order="C")
-    fixed_vertices = np.asarray(fixed_vertices, dtype=np.int32, order="C")  # type: ignore
-    return _meshing.pmp_trimesh_remesh_dual(V, F, fixed_vertices, length_factor, number_of_iterations, angle_radians, scale_factor)
+    V, F = as_native_mesh(mesh, "mesh")
+    fixed_vertices_array = np.ascontiguousarray(fixed_vertices, dtype=np.int32)
+    if fixed_vertices_array.ndim != 1:
+        raise ValueError("fixed_vertices should be a one-dimensional sequence of indices.")
+    if fixed_vertices_array.size and (fixed_vertices_array.min() < 0 or fixed_vertices_array.max() >= len(V)):
+        raise IndexError("fixed_vertices contains an out-of-range vertex index.")
+    vertices, faces, dual_vertices, dual_faces = _meshing.pmp_trimesh_remesh_dual(
+        V,
+        F,
+        fixed_vertices_array,
+        length_factor,
+        number_of_iterations,
+        angle_radians,
+        scale_factor,
+    )
+    validate_native_mesh((vertices, faces), "dual remeshing")
+    if dual_vertices.ndim != 2 or dual_vertices.shape[1] != 3:
+        raise RuntimeError("CGAL dual result vertices should have shape (N, 3).")
+    for face in dual_faces:
+        if any(index < 0 or index >= len(dual_vertices) for index in face):
+            raise RuntimeError("CGAL dual result contains an out-of-range face index.")
+    return vertices, faces, dual_vertices, dual_faces

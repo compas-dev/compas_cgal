@@ -81,28 +81,40 @@ add_nanobind_module(_new_module src/new_module.cpp)
 > types with the same names, as this will result in errors even if they
 > are in different namespaces and libraries.
 
-### Python Binding
+### Python Wrapper and Plugin Registration
 
-Add the new python submodule in `src/compas_cgal/__init__.py`:
-
-``` python
-__all_plugins__ = [
-    ...
-    "compas_cgal.new_module",
-]
-```
-
-Implement the submodule in `src/compas_cgal/new_module.py`:
+Each compiled extension is a private module such as
+`compas_cgal._new_module`. Add a matching `.pyi` file and import the extension
+from the public wrapper that owns the operation:
 
 ``` python
-from compas_cgal.compas_cgal_ext import new_module
+from compas_cgal import _new_module
 
 
 def new_function():
-    ...
-    result_from_cplusplus = new_module.python_function_name()
+    result = _new_module.python_function_name()
     ...
 ```
+
+Only register a function as a plugin when it implements an existing COMPAS
+extension point. Plugin modules live in `src/compas_cgal/plugins`, are listed
+individually under `[project.entry-points."compas.plugins"]`, and must remain
+cheap to discover. Import the public wrapper inside the decorated function and
+declare the specific compiled module as its requirement:
+
+``` python
+from compas.plugins import plugin
+
+
+@plugin(category="example", requires=["compas_cgal._new_module"])
+def _new_operation(...):
+    from compas_cgal.new_module import new_function
+
+    return new_function(...)
+```
+
+Do not add plugin decorators for standalone APIs that have no matching core
+extension point.
 
 After creating new source files, you must rebuild the project with:
 

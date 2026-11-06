@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from compas.geometry import Box, Frame, Native, Sphere, UVGrid
+from compas.geometry import Box, Frame, Sphere
 from compas.geometry import intersection_mesh_mesh
 
 
@@ -9,10 +9,10 @@ from compas.geometry import intersection_mesh_mesh
 def box_sphere_meshes():
     """Create test meshes: a box and a sphere that intersect."""
     box = Box(2)  # 2x2x2 box centered at origin
-    box_mesh = box.tessellate(Native()).to_vertices_and_triangles()
+    box_mesh = box.to_tessellation().to_vertices_and_triangles()
 
     sphere = Sphere(1, frame=Frame([1, 1, 1], [1, 0, 0], [0, 1, 0]))
-    sphere_mesh = sphere.tessellate(UVGrid(32, 32)).to_vertices_and_triangles()
+    sphere_mesh = sphere.to_tessellation(nu=32, nv=32).to_vertices_and_triangles()
 
     return box_mesh, sphere_mesh
 

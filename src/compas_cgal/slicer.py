@@ -4,20 +4,22 @@ from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
 import numpy as np
+from compas.typing import VerticesFaces
 
-from compas_cgal import _slicer  # type: ignore
-from compas_cgal import _types_std  # noqa: F401  # type: ignore
+from compas_cgal import _slicer
+from compas_cgal import _types_std  # noqa: F401
 
 from ._mesh import as_native_mesh
 from ._mesh import validate_polylines
 from .types import PolylinesNumpy
 
+__all__ = ["slice_mesh_planes"]
+
 if TYPE_CHECKING:
-    from compas._typing import TriangleMeshInput
     from compas.geometry._typing import PlaneType
 
 
-def slice_mesh_planes(mesh: TriangleMeshInput, planes: Sequence[PlaneType]) -> PolylinesNumpy:
+def slice_mesh_planes(mesh: VerticesFaces, planes: Sequence[PlaneType]) -> PolylinesNumpy:
     """Slice a mesh by a list of planes.
 
     Parameters
@@ -34,11 +36,11 @@ def slice_mesh_planes(mesh: TriangleMeshInput, planes: Sequence[PlaneType]) -> P
 
     Examples
     --------
-    >>> from compas.geometry import Plane, Polyline, Sphere, UVGrid, trimesh_slice  # doctest: +SKIP
+    >>> from compas.geometry import Frame, Plane, Polyline, Sphere, trimesh_slice
     >>> from compas.itertools import linspace
 
-    >>> sphere = Sphere(1.0, point=[0, 0, 1.0])
-    >>> mesh = sphere.tessellate(UVGrid(32, 32)).to_vertices_and_triangles()
+    >>> sphere = Sphere(1.0, frame=Frame(point=[0, 0, 1.0]))
+    >>> mesh = sphere.to_tessellation(nu=32, nv=32).to_vertices_and_triangles()
 
     >>> planes = [Plane([0, 0, z], [0, 0, 1.0]) for z in linspace(0.1, 1.9, 19)]
 

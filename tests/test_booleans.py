@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from compas.geometry import Box, Frame, Native, Sphere, UGrid, UVGrid
+from compas.geometry import Box, Frame, Sphere
 from compas.geometry import boolean_difference_mesh_mesh as core_boolean_difference
 from compas.geometry import boolean_intersection_mesh_mesh as core_boolean_intersection
 from compas.geometry import boolean_union_mesh_mesh as core_boolean_union
@@ -30,8 +30,8 @@ def box_sphere_meshes():
     box = Box.from_width_height_depth(2.0, 2.0, 2.0)
     sphere = Sphere(1.0, frame=Frame([1, 1, 1], [1, 0, 0], [0, 1, 0]))
 
-    box_mesh = box.tessellate(Native()).to_vertices_and_triangles()
-    sphere_mesh = sphere.tessellate(UVGrid(32, 32)).to_vertices_and_triangles()
+    box_mesh = box.to_tessellation().to_vertices_and_triangles()
+    sphere_mesh = sphere.to_tessellation(nu=32, nv=32).to_vertices_and_triangles()
 
     return box_mesh, sphere_mesh
 
@@ -289,9 +289,9 @@ def test_boolean_chain_with_face_source():
     tagged with one of {0, 1, 2}."""
     from compas.geometry import Box, Cylinder, Frame, Sphere
 
-    cube = Box(2).tessellate(Native()).to_vertices_and_triangles()
-    sphere = Sphere(0.8, frame=Frame([1, 1, 1], [1, 0, 0], [0, 1, 0])).tessellate(UVGrid(32, 32)).to_vertices_and_triangles()
-    cyl = Cylinder(0.4, 4.0, Frame([0, 0, 0], [1, 0, 0], [0, 1, 0])).tessellate(UGrid(32)).to_vertices_and_triangles()
+    cube = Box(2).to_tessellation().to_vertices_and_triangles()
+    sphere = Sphere(0.8, frame=Frame([1, 1, 1], [1, 0, 0], [0, 1, 0])).to_tessellation(nu=32, nv=32).to_vertices_and_triangles()
+    cyl = Cylinder(0.4, 4.0, Frame([0, 0, 0], [1, 0, 0], [0, 1, 0])).to_tessellation(nu=32).to_vertices_and_triangles()
 
     V, F, S = boolean_chain_with_face_source(
         [cube, sphere, cyl],
@@ -318,8 +318,8 @@ def test_boolean_chain_drilled_rounded_cube():
     runs end-to-end thanks to autorefine_triangle_soup + snap rounding."""
     from compas.geometry import Box, Cylinder, Frame, Sphere
 
-    cube = Box(2).tessellate(Native()).to_vertices_and_triangles()
-    sphere = Sphere(1.3).tessellate(UVGrid(64, 64)).to_vertices_and_triangles()
+    cube = Box(2).to_tessellation().to_vertices_and_triangles()
+    sphere = Sphere(1.3).to_tessellation(nu=64, nv=64).to_vertices_and_triangles()
 
     def cyl(axis, r=0.6):
         if axis == "x":
@@ -328,7 +328,7 @@ def test_boolean_chain_drilled_rounded_cube():
             frame = Frame([0, 0, 0], [0, 0, 1], [1, 0, 0])
         else:
             frame = Frame([0, 0, 0], [1, 0, 0], [0, 1, 0])
-        return Cylinder(r, 4.0, frame).tessellate(UGrid(48)).to_vertices_and_triangles()
+        return Cylinder(r, 4.0, frame).to_tessellation(nu=48).to_vertices_and_triangles()
 
     V, F = boolean_chain(
         [cube, sphere, cyl("x"), cyl("y"), cyl("z")],

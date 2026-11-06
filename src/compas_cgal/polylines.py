@@ -1,20 +1,20 @@
 """Polyline utilities using CGAL."""
 
-from typing import List
 from typing import Sequence
 
 import numpy as np
-from compas._typing import CoordinatesInput
-from numpy.typing import NDArray
+from compas.typing import Float64Array
+from compas.typing import PointsLike
 
-from compas_cgal import _types_std  # noqa: F401  # type: ignore
-from compas_cgal._polylines import closest_points_on_polyline as _closest_points  # type: ignore
-from compas_cgal._polylines import simplify_polylines as _simplify  # type: ignore
+from compas_cgal import _types_std  # noqa: F401
+from compas_cgal._polylines import closest_points_on_polyline as _closest_points
+from compas_cgal._polylines import simplify_polylines as _simplify
+from compas_cgal.types import PolylinesNumpy
 
-type PointsList = CoordinatesInput
+__all__ = ["closest_points_on_polyline", "simplify_polyline", "simplify_polylines"]
 
 
-def simplify_polylines(polylines: Sequence[PointsList], threshold: float) -> List[NDArray]:
+def simplify_polylines(polylines: Sequence[PointsLike], threshold: float) -> PolylinesNumpy:
     """Simplify multiple polylines using Douglas-Peucker algorithm.
 
     Simplification is performed in the XY plane only. For 3D polylines,
@@ -48,7 +48,7 @@ def simplify_polylines(polylines: Sequence[PointsList], threshold: float) -> Lis
     return _simplify(arrays, threshold)
 
 
-def simplify_polyline(polyline: PointsList, threshold: float) -> NDArray:
+def simplify_polyline(polyline: PointsLike, threshold: float) -> Float64Array:
     """Simplify a single polyline using Douglas-Peucker algorithm.
 
     Simplification is performed in the XY plane only. For 3D polylines,
@@ -71,7 +71,7 @@ def simplify_polyline(polyline: PointsList, threshold: float) -> NDArray:
     return result[0]
 
 
-def closest_points_on_polyline(query_points: PointsList, polyline: PointsList) -> NDArray:
+def closest_points_on_polyline(query_points: PointsLike, polyline: PointsLike) -> Float64Array:
     """Find closest points on a polyline for a batch of query points.
 
     Uses CGAL's AABB tree for efficient batch queries.

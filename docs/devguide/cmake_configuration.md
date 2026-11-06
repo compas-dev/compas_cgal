@@ -106,12 +106,17 @@ optimized for template-heavy code:
 set(CMAKE_PCH_INSTANTIATE_TEMPLATES ON)  # Improve template compilation
 set(CMAKE_PCH_WARN_INVALID ON)          # Warn about invalid PCH usage
 
-# Configure PCH for the extension
-target_precompile_headers(compas_cgal_ext 
+# Configure PCH for one extension target
+target_precompile_headers(_new_module
     PRIVATE 
     src/compas.h
 )
 ```
+
+The repository builds one private extension target per native module; there is
+no monolithic `compas_cgal_ext` target. The `add_nanobind_module` helper applies
+the precompiled header to every target when
+`ENABLE_PRECOMPILED_HEADERS=ON`.
 
 Note: When adding new headers that are frequently included, consider
 adding them to the precompiled header `src/compas.h` to further improve

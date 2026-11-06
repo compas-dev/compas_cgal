@@ -3,21 +3,34 @@
 ## Public Inputs and Native Arrays
 
 Python callers may provide coordinates and indices using ordinary lists,
-tuples, or NumPy arrays. The public aliases in `compas_cgal.types` use the
-shared duck-typed vocabulary from `compas._typing`:
+tuples, COMPAS geometry objects, or NumPy arrays. Public wrapper signatures use
+the shared duck-typed vocabulary from `compas.typing`:
 
-- `Vertices` accepts coordinate sequences and numeric arrays.
-- `Faces` accepts index sequences and integer arrays.
-- `VerticesFaces` combines those public input types.
+- `PointsLike` accepts coordinate collections and numeric arrays.
+- `IndicesLike` accepts one-dimensional index containers and integer arrays,
+  including fixed-vertex selections used by dual remeshing.
+- `IndexGroupsLike` accepts nested index sequences and integer arrays.
+- `VerticesFaces` combines those structures without implying a COMPAS `Mesh`
+  object or a specific face arity.
 
-These aliases describe values accepted by Python wrappers; they do not require
-a particular NumPy dtype, memory layout, or mutability. The corresponding
-`VerticesNumpy`, `FacesNumpy`, and NumPy result aliases describe the normalized
-native representation instead. Wrapper boundaries should convert compatible
-public inputs once to the dtype and memory layout required by the native
-operation. This keeps runtime code duck typed while making the native ABI
-explicit. Individual wrapper families are being aligned with this policy as
-their boundary contracts are verified.
+These core aliases describe values accepted by Python wrappers; they do not
+require a particular NumPy dtype, memory layout, or mutability. The concrete
+aliases in `compas_cgal.types`, including `VerticesNumpy`, `FacesNumpy`, and
+`VerticesFacesNumpy`, describe normalized native inputs and exact results.
+Wrapper boundaries convert compatible public inputs once to the dtype and
+memory layout required by the native operation. Every private extension module
+has a packaged `.pyi` describing that narrower ABI.
+
+Result aliases retain operation-specific dimensions where they are part of the
+contract. Triangle operations return `VerticesFacesNumpy`; Catmull-Clark
+subdivision returns `VerticesQuadsNumpy`; and `PolylinesNumpy` contains Nx2 or
+Nx3 arrays according to the dimensionality of the input operation.
+
+Several native functions return nanobind vector classes rather than built-in
+Python lists. Their stubs name the exact vector class. Public result aliases
+describe the shared structural behavior so callers can iterate and index these
+results without depending on a private extension class. Wrappers that promise a
+list, such as `mesh_centroid`, perform that conversion before returning.
 
 Do not add nominal runtime checks merely to enforce a type annotation. Validate
 only semantic requirements of an operation, and let boundary conversion handle
@@ -73,14 +86,14 @@ order:
 
 ``` python
 import numpy as np
-from compas_cgal.compas_cgal_ext import my_submodule
+from compas_cgal import _my_submodule
 
 # Convert mesh vertices and faces to proper numpy arrays
 vertices1 = np.asarray(mesh1.vertices, dtype=np.float64)
 faces1 = np.asarray(mesh1.faces, dtype=np.int32)
 
 # Pass to C++ function
-V, F = my_submodule.my_function(vertices1, faces1)
+V, F = _my_submodule.my_function(vertices1, faces1)
 ```
 
 ### Vector Types

@@ -1,8 +1,6 @@
 from pathlib import Path
 
 from compas.datastructures import Mesh
-from compas.geometry import DiagonalSplit
-from compas.geometry import FaceTriangulation
 from compas.geometry import Line
 from compas_viewer import Viewer
 
@@ -14,7 +12,7 @@ from compas_cgal.meshing import trimesh_dual
 
 input_file = Path(__file__).parent.parent.parent / "data" / "rhinovault_mesh_0.ply"
 mesh = Mesh.from_ply(input_file)
-mesh.triangulate(FaceTriangulation(quad=DiagonalSplit()))
+mesh.triangulate()
 
 fixed_vertices = []
 for v in mesh.vertices():

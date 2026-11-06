@@ -3,8 +3,6 @@ from pathlib import Path
 import numpy as np
 from compas.colors import Color
 from compas.datastructures import Mesh
-from compas.geometry import DiagonalSplit
-from compas.geometry import FaceTriangulation
 from compas.geometry import Polyline
 from compas_viewer import Viewer
 
@@ -18,10 +16,10 @@ from compas_cgal.subdivision import mesh_subdivide_loop
 
 FILE = Path(__file__).parent.parent.parent / "data" / "elephant.off"
 mesh = Mesh.from_off(FILE)
-mesh.triangulate(FaceTriangulation(quad=DiagonalSplit()))
+mesh.triangulate()
 
 V, F = mesh_subdivide_loop(mesh.to_vertices_and_faces(), k=2)  # k=4 for proper smoothness
-mesh = Mesh.from_vertices_and_faces(V.tolist(), F.tolist())
+mesh = Mesh.from_vertices_and_faces(V, F)
 
 # =============================================================================
 # Find source vertices: 4 feet and snout
@@ -68,7 +66,6 @@ viewer = Viewer()
 viewer.scene.add(mesh, show_lines=False)
 
 for pts in polylines:
-    points = [pts[i].tolist() for i in range(len(pts))]
-    viewer.scene.add(Polyline(points), linecolor=Color.red(), lineswidth=3)
+    viewer.scene.add(Polyline(pts), linecolor=Color.red(), lineswidth=3)
 
 viewer.show()

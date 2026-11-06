@@ -8,18 +8,20 @@ from typing import TYPE_CHECKING
 from compas.plugins import plugin
 
 if TYPE_CHECKING:
-    from compas._typing import CoordinatesCollectionInput
-    from compas._typing import TriangleMeshInput
     from compas.geometry._typing import PlaneType
+    from compas.typing import VerticesFaces
+
+    from compas_cgal.types import PolylinesNumpy
+    from compas_cgal.types import VerticesFacesNumpy
 
 
-@plugin(category="trimesh", pluggable_name="_trimesh_remesh", requires=["compas_cgal"])
+@plugin(category="trimesh", pluggable_name="_trimesh_remesh", requires=["compas_cgal._meshing"])
 def _trimesh_remesh(
-    mesh: TriangleMeshInput,
+    mesh: VerticesFaces,
     target_edge_length: float,
     number_of_iterations: int = 10,
     do_project: bool = True,
-) -> TriangleMeshInput:
+) -> VerticesFacesNumpy:
     from compas_cgal.meshing import trimesh_remesh as implementation
 
     return implementation(
@@ -30,8 +32,8 @@ def _trimesh_remesh(
     )
 
 
-@plugin(category="trimesh", pluggable_name="_trimesh_slice", requires=["compas_cgal"])
-def _trimesh_slice(mesh: TriangleMeshInput, planes: Sequence[PlaneType]) -> CoordinatesCollectionInput:
+@plugin(category="trimesh", pluggable_name="_trimesh_slice", requires=["compas_cgal._slicer"])
+def _trimesh_slice(mesh: VerticesFaces, planes: Sequence[PlaneType]) -> PolylinesNumpy:
     from compas_cgal.slicer import slice_mesh_planes as implementation
 
     return implementation(mesh, planes)

@@ -1,8 +1,9 @@
 import math
+from collections.abc import Sequence
 from numbers import Real
-from typing import List
-from typing import Tuple
-from typing import Union
+from typing import Literal
+from typing import SupportsFloat
+from typing import overload
 
 import numpy as np
 from compas.datastructures import Graph
@@ -12,16 +13,31 @@ from compas.geometry import Polygon
 from compas.geometry import earclip_polygon
 from compas.geometry import normal_polygon
 from compas.tolerance import TOL
+from compas.typing import FloatSequenceLike
+from compas.typing import PointsLike
+from compas.typing import RealInput
 
-from compas_cgal import _straight_skeleton_2  # type: ignore
-from compas_cgal import _types_std  # noqa: F401  # type: ignore
+from compas_cgal import _straight_skeleton_2
+from compas_cgal import _types_std  # noqa: F401
 
-from .types import IntNx1
 from .types import IntNx2
+from .types import SkeletonData
 from .types import VerticesNumpy
 
+type ContourSpeeds = RealInput | FloatSequenceLike | Sequence[FloatSequenceLike]
 
-def graph_from_skeleton_data(points: VerticesNumpy, indices: IntNx1, edges: IntNx2, edge_types: IntNx1) -> Graph:
+__all__ = [
+    "extrude",
+    "graph_from_skeleton_data",
+    "interior_straight_skeleton",
+    "interior_straight_skeleton_with_holes",
+    "offset_polygon",
+    "offset_polygon_with_holes",
+    "weighted_offset_polygon",
+]
+
+
+def graph_from_skeleton_data(points: VerticesNumpy, indices: Sequence[int], edges: IntNx2, edge_types: Sequence[int]) -> Graph:
     """Create a graph from the skeleton data.
 
     Parameters
@@ -55,7 +71,15 @@ def graph_from_skeleton_data(points: VerticesNumpy, indices: IntNx1, edges: IntN
     return graph
 
 
-def interior_straight_skeleton(points, as_graph=True) -> Union[Graph, Tuple[VerticesNumpy, IntNx1, IntNx2, IntNx1]]:
+@overload
+def interior_straight_skeleton(points: PointsLike, as_graph: Literal[True] = True) -> Graph: ...
+
+
+@overload
+def interior_straight_skeleton(points: PointsLike, as_graph: Literal[False]) -> SkeletonData: ...
+
+
+def interior_straight_skeleton(points: PointsLike, as_graph: bool = True) -> Graph | SkeletonData:
     """Compute the skeleton of a 2D polygon.
 
     Parameters
@@ -67,7 +91,7 @@ def interior_straight_skeleton(points, as_graph=True) -> Union[Graph, Tuple[Vert
 
     Returns
     -------
-    Graph | tuple[VerticesNumpy, IntNx1, IntNx2, IntNx1]
+    Graph | SkeletonData
         The skeleton of the polygon.
 
     Raises
@@ -86,7 +110,15 @@ def interior_straight_skeleton(points, as_graph=True) -> Union[Graph, Tuple[Vert
     return points, indices, edges, edge_types
 
 
-def interior_straight_skeleton_with_holes(points, holes, as_graph=True) -> Union[Graph, Tuple[VerticesNumpy, IntNx1, IntNx2, IntNx1]]:
+@overload
+def interior_straight_skeleton_with_holes(points: PointsLike, holes: Sequence[PointsLike], as_graph: Literal[True] = True) -> Graph: ...
+
+
+@overload
+def interior_straight_skeleton_with_holes(points: PointsLike, holes: Sequence[PointsLike], as_graph: Literal[False]) -> SkeletonData: ...
+
+
+def interior_straight_skeleton_with_holes(points: PointsLike, holes: Sequence[PointsLike], as_graph: bool = True) -> Graph | SkeletonData:
     """Compute the skeleton of a 2D polygon with holes.
 
     Parameters
@@ -100,7 +132,7 @@ def interior_straight_skeleton_with_holes(points, holes, as_graph=True) -> Union
 
     Returns
     -------
-    Graph | tuple[VerticesNumpy, IntNx1, IntNx2, IntNx1]
+    Graph | SkeletonData
         The skeleton of the polygon.
 
     Raises
@@ -129,7 +161,7 @@ def interior_straight_skeleton_with_holes(points, holes, as_graph=True) -> Union
     return points, indices, edges, edge_types
 
 
-def offset_polygon(points, offset) -> list[Polygon]:
+def offset_polygon(points: PointsLike, offset: SupportsFloat) -> list[Polygon]:
     """Compute the offset from a 2D polygon.
 
     Parameters
@@ -159,10 +191,10 @@ def offset_polygon(points, offset) -> list[Polygon]:
         offset_polygons = _straight_skeleton_2.create_offset_polygons_2_outer(V, abs(offset))[1:]  # first one is box
     else:  # inside
         offset_polygons = _straight_skeleton_2.create_offset_polygons_2_inner(V, offset)
-    return [Polygon(points.tolist()) for points in offset_polygons]
+    return [Polygon(points) for points in offset_polygons]
 
 
-def offset_polygon_with_holes(points, holes, offset) -> list[Tuple[Polygon, list[Polygon]]]:
+def offset_polygon_with_holes(points: PointsLike, holes: Sequence[PointsLike], offset: RealInput) -> list[tuple[Polygon, list[Polygon]]]:
     """Compute the offset from a 2D polygon with holes.
 
     Parameters
@@ -211,21 +243,21 @@ def offset_polygon_with_holes(points, holes, offset) -> list[Tuple[Polygon, list
         H.append(np.asarray(hole_points, dtype=np.float64, order="C"))
 
     if offset < 0:  # outside
-        offset_polygons = _straight_skeleton_2.create_offset_polygons_2_outer_with_holes(V, H, abs(offset))
+        offset_polygons = _straight_skeleton_2.create_offset_polygons_2_outer_with_holes(V, H, float(abs(offset)))
     else:  # inside
-        offset_polygons = _straight_skeleton_2.create_offset_polygons_2_inner_with_holes(V, H, offset)
+        offset_polygons = _straight_skeleton_2.create_offset_polygons_2_inner_with_holes(V, H, float(offset))
 
     result = []
     for points_list in offset_polygons:
-        polygon = Polygon(points_list[0].tolist())
+        polygon = Polygon(points_list[0])
         holes = []
         for hole in points_list[1:]:
-            holes.append(Polygon(hole.tolist()))
+            holes.append(Polygon(hole))
         result.append((polygon, holes))
     return result
 
 
-def weighted_offset_polygon(points, offset, weights) -> list[Polygon]:
+def weighted_offset_polygon(points: PointsLike, offset: SupportsFloat, weights: FloatSequenceLike) -> list[Polygon]:
     """Compute the offset from a 2D polygon with weights.
 
     Parameters
@@ -263,10 +295,10 @@ def weighted_offset_polygon(points, offset, weights) -> list[Polygon]:
     if offset < 0:
         offset_polygons = _straight_skeleton_2.create_weighted_offset_polygons_2_outer(V, abs(offset), W)
         # Return all except the first polygon which is the bounding box
-        return [Polygon(points.tolist()) for points in offset_polygons[1:]]
+        return [Polygon(points) for points in offset_polygons[1:]]
     else:
         offset_polygons = _straight_skeleton_2.create_weighted_offset_polygons_2_inner(V, offset, W)
-        return [Polygon(points.tolist()) for points in offset_polygons]
+        return [Polygon(points) for points in offset_polygons]
 
 
 def _contour_speeds(value, sizes, name):
@@ -318,7 +350,7 @@ def _contour_speeds(value, sizes, name):
     )
 
 
-def _roof_outline(mesh: Mesh, angle_tol: float = 1.0) -> List[Line]:
+def _roof_outline(mesh: Mesh, angle_tol: float = 1.0) -> list[Line]:
     """Return the roof lines of a mesh: the edges between non-coplanar faces.
 
     These are the eaves, hips and ridges. Coplanar diagonals (for example those from a
@@ -359,12 +391,18 @@ def _triangulated(mesh: Mesh) -> Mesh:
     return Mesh.from_vertices_and_faces(vertices, triangles)
 
 
-def extrude(points, holes=None, weights=None, angles=None, maximum_height=None) -> Tuple[Mesh, List[Line]]:
+def extrude(
+    points: PointsLike,
+    holes: Sequence[PointsLike] | None = None,
+    weights: ContourSpeeds | None = None,
+    angles: ContourSpeeds | None = None,
+    maximum_height: SupportsFloat | None = None,
+) -> tuple[Mesh, list[Line]]:
     """Extrude a 2D polygon into a closed 3D roof mesh using the straight skeleton.
 
     This turns a building footprint into roof-like geometry. Each contour edge sweeps
     inwards (and upwards) at a speed controlled by either straight skeleton weights or
-    taper angles. A uniform weight of ``1`` (or an angle of ``45`` degrees) produces a
+    taper angles. A uniform weight of `1` (or an angle of `45` degrees) produces a
     standard 45 degree hip roof.
 
     The result is ready to display: the returned mesh is triangulated so it renders
@@ -378,17 +416,17 @@ def extrude(points, holes=None, weights=None, angles=None, maximum_height=None) 
 
     Parameters
     ----------
-    points : sequence[point] | :class:`compas.geometry.Polygon`
+    points : sequence[point] | Polygon
         The points of the outer boundary polygon.
     holes : sequence[sequence[point]], optional
         The holes of the polygon, each as a sequence of points.
     weights : float | sequence, optional
         Straight skeleton edge weights. A single value applied to every edge, one value
         per edge across all contours, or one sequence of edge values per contour
-        (outer boundary first, then holes). Mutually exclusive with ``angles``.
+        (outer boundary first, then holes). Mutually exclusive with `angles`.
     angles : float | sequence, optional
-        Taper angles in degrees, following the same shape rules as ``weights``. An angle
-        of ``45`` corresponds to a weight of ``1``. Mutually exclusive with ``weights``.
+        Taper angles in degrees, following the same shape rules as `weights`. An angle
+        of `45` corresponds to a weight of `1`. Mutually exclusive with `weights`.
     maximum_height : float, optional
         The maximum extrusion height. If not provided, an inward slope is extruded up to
         the apex of the skeleton. A maximum height is required for outward or vertical
@@ -396,14 +434,14 @@ def extrude(points, holes=None, weights=None, angles=None, maximum_height=None) 
 
     Returns
     -------
-    tuple[:class:`compas.datastructures.Mesh`, list[:class:`compas.geometry.Line`]]
+    tuple[Mesh, list[Line]]
         The triangulated, closed roof mesh (ready to display with hidden edges), and the
         roof outline as a list of line segments (eaves, hips and ridges).
 
     Raises
     ------
     ValueError
-        If both ``weights`` and ``angles`` are provided.
+        If both `weights` and `angles` are provided.
         If the normal of the polygon is not directed vertically upwards like [0, 0, 1].
         If the normal of a hole is not directed vertically downwards like [0, 0, -1].
     RuntimeError
@@ -452,5 +490,5 @@ def extrude(points, holes=None, weights=None, angles=None, maximum_height=None) 
     max_height = float(maximum_height) if maximum_height is not None else -1.0
 
     vertices, faces = _straight_skeleton_2.extrude_straight_skeleton(V, H, speeds, use_angles, max_height)
-    mesh = Mesh.from_vertices_and_faces(vertices.tolist(), faces)
+    mesh = Mesh.from_vertices_and_faces(vertices, faces)
     return _triangulated(mesh), _roof_outline(mesh)

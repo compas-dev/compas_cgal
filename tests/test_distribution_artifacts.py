@@ -1,5 +1,7 @@
+import ast
 import subprocess
 import sys
+import tomllib
 from pathlib import Path
 from zipfile import ZipFile
 
@@ -22,7 +24,7 @@ NATIVE_MODULES = (
     "_triangulation",
     "_types_std",
 )
-COMPAS_CANDIDATE = "9b1518f74fe7d0315626954d8b893756f8dae06d"
+COMPAS_CANDIDATE = "21fdcaa5e7bf1a642030005a636164f63446d122"
 
 
 @pytest.fixture
@@ -91,3 +93,74 @@ def test_workflows_use_supported_intel_macos_runner(workflow_name: str) -> None:
     assert "platform: macos-x86_64" in workflow
     assert "arch: x86_64" in workflow
     assert "macos-13" not in workflow
+
+
+def test_wheel_smoke_type_checks_the_installed_distribution() -> None:
+    workflow_path = Path(__file__).parents[1] / ".github" / "workflows" / "build.yml"
+    workflow = workflow_path.read_text(encoding="utf-8")
+    wheel_smoke = workflow.split("wheel-smoke:", maxsplit=1)[1].split("sdist:", maxsplit=1)[0]
+
+    assert "Verify installed wheel type contract" in wheel_smoke
+    assert "cp tests/typing/*.py" in wheel_smoke
+    assert 'python -m pyright --pythonpath "$(command -v python)" .' in wheel_smoke
+
+
+def test_installed_wheel_consumers_import_every_wrapper_and_plugin_family() -> None:
+    repository = Path(__file__).parents[1]
+    consumer_imports = set()
+    for consumer_path in (repository / "tests" / "typing").glob("*.py"):
+        tree = ast.parse(consumer_path.read_text(encoding="utf-8"))
+        consumer_imports.update(node.module for node in tree.body if isinstance(node, ast.ImportFrom) and node.module)
+
+    wrapper_modules = set()
+    for module_path in (repository / "src" / "compas_cgal").glob("*.py"):
+        if module_path.name.startswith("_") or module_path.name == "types.py":
+            continue
+        tree = ast.parse(module_path.read_text(encoding="utf-8"))
+        if any(
+            isinstance(node, ast.Assign)
+            and isinstance(node.value, (ast.List, ast.Tuple))
+            and bool(node.value.elts)
+            and any(isinstance(target, ast.Name) and target.id == "__all__" for target in node.targets)
+            for node in tree.body
+        ):
+            wrapper_modules.add(f"compas_cgal.{module_path.stem}")
+
+    plugin_modules = {
+        f"compas_cgal.plugins.{module_path.stem}" for module_path in (repository / "src" / "compas_cgal" / "plugins").glob("*.py") if module_path.name != "__init__.py"
+    }
+
+    assert wrapper_modules <= consumer_imports
+    assert plugin_modules <= consumer_imports
+
+
+def test_quality_gates_include_executable_documentation_examples() -> None:
+    repository = Path(__file__).parents[1]
+    pyproject = tomllib.loads((repository / "pyproject.toml").read_text(encoding="utf-8"))
+    workflow = (repository / ".github" / "workflows" / "build.yml").read_text(encoding="utf-8")
+
+    assert "docs/examples" in pyproject["tool"]["pyright"]["include"]
+    assert "uv run pyright" in workflow
+    assert "uv run ruff check ." in workflow
+
+
+def test_distribution_declares_only_plugin_modules_with_core_extension_points() -> None:
+    repository = Path(__file__).parents[1]
+    pyproject = tomllib.loads((repository / "pyproject.toml").read_text(encoding="utf-8"))
+
+    assert pyproject["project"]["entry-points"]["compas.plugins"] == {
+        "compas_cgal_booleans": "compas_cgal.plugins.booleans",
+        "compas_cgal_intersections": "compas_cgal.plugins.intersections",
+        "compas_cgal_trimesh": "compas_cgal.plugins.trimesh",
+        "compas_cgal_triangulation": "compas_cgal.plugins.triangulation",
+    }
+    assert not (repository / "src" / "compas_cgal" / "plugins" / "mesh.py").exists()
+
+
+def test_weighted_straight_skeleton_calls_match_cgal_6_1_1_api() -> None:
+    repository = Path(__file__).parents[1]
+    source = (repository / "src" / "straight_skeleton_2.cpp").read_text(encoding="utf-8")
+    compact = "".join(source.split())
+
+    assert "create_interior_weighted_straight_skeleton_2(polygon,weight_values)" in compact
+    assert "create_exterior_weighted_straight_skeleton_2(offset_distance,polygon,weight_values)" in compact

@@ -65,12 +65,11 @@ Homepage = "https://github.com/compas-dev/compas_cgal"
 [project.entry-points."compas.plugins"]
 compas_cgal_booleans = "compas_cgal.plugins.booleans"
 compas_cgal_intersections = "compas_cgal.plugins.intersections"
-compas_cgal_mesh = "compas_cgal.plugins.mesh"
 compas_cgal_trimesh = "compas_cgal.plugins.trimesh"
 compas_cgal_triangulation = "compas_cgal.plugins.triangulation"
 
 [tool.uv.sources]
-compas = { git = "https://github.com/compas-dev/compas.git", rev = "9b1518f74fe7d0315626954d8b893756f8dae06d" }
+compas = { git = "https://github.com/compas-dev/compas.git", rev = "21fdcaa5e7bf1a642030005a636164f63446d122" }
 
 # ============================================================================
 # replace pytest.ini
@@ -190,7 +189,7 @@ docstring-code-format = true
 docstring-code-line-length = "dynamic"
 
 [tool.pyright]
-include = ["src/compas_cgal", "tests/typing"]
+include = ["src/compas_cgal", "tests/typing", "docs/examples"]
 exclude = ["build", "dist", "external"]
 pythonVersion = "3.12"
 reportMissingModuleSource = false

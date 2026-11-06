@@ -46,14 +46,14 @@ Enforce proper numpy array types using float64 and int32 in C-contiguous order:
 .. code-block:: python
     
     import numpy as np
-    from compas_cgal.compas_cgal_ext import my_submodule
+    from compas_cgal import _my_submodule
 
     # Convert mesh vertices and faces to proper numpy arrays
     vertices1 = np.asarray(mesh1.vertices, dtype=np.float64)
     faces1 = np.asarray(mesh1.faces, dtype=np.int32)
 
     # Pass to C++ function
-    V, F = my_submodule.my_function(vertices1, faces1)
+    V, F = _my_submodule.my_function(vertices1, faces1)
     
 
 

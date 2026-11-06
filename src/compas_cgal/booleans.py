@@ -1,28 +1,44 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
 from typing import Iterable
 from typing import Literal
 
 import numpy as np
+from compas.typing import VerticesFaces
 
 from compas_cgal import _booleans
 
 from ._mesh import as_native_mesh
 from ._mesh import validate_native_mesh
-from .types import VerticesFaces
+from .types import FloatNx3
+from .types import IntNx2
+from .types import IntNx3
 from .types import VerticesFacesEdgesNumpy
 from .types import VerticesFacesNumpy
 from .types import VerticesFacesSourceNumpy
 
-if TYPE_CHECKING:
-    from compas._typing import TriangleMeshInput
+__all__ = [
+    "boolean_chain",
+    "boolean_chain_with_face_source",
+    "boolean_difference_mesh_mesh",
+    "boolean_difference_mesh_mesh_with_edges",
+    "boolean_difference_mesh_mesh_with_face_source",
+    "boolean_difference_mesh_meshes",
+    "boolean_intersection_mesh_mesh",
+    "boolean_intersection_mesh_mesh_with_edges",
+    "boolean_intersection_mesh_mesh_with_face_source",
+    "boolean_union_mesh_mesh",
+    "boolean_union_mesh_mesh_with_edges",
+    "boolean_union_mesh_mesh_with_face_source",
+    "split_by_source",
+    "split_mesh_mesh",
+]
 
 
 def _boolean(
     A: VerticesFaces,
     B: VerticesFaces,
-    operation: Literal["union", "difference", "intersection"],
+    operation: Literal["union", "difference", "intersection", "split"],
 ) -> VerticesFacesNumpy:
     """Wrapper for all boolean operations.
 
@@ -64,8 +80,8 @@ def _boolean(
 
 
 def boolean_union_mesh_mesh(
-    A: TriangleMeshInput,
-    B: TriangleMeshInput,
+    A: VerticesFaces,
+    B: VerticesFaces,
 ) -> VerticesFacesNumpy:
     """Boolean union of two meshes.
 
@@ -89,10 +105,10 @@ def boolean_union_mesh_mesh(
 
     Examples
     --------
-    >>> from compas.geometry import Box, Native, Sphere, UVGrid  # doctest: +SKIP
-    >>> from compas_cgal.booleans import boolean_union_mesh_mesh  # doctest: +SKIP
-    >>> A = Box(1).tessellate(Native()).to_vertices_and_triangles()
-    >>> B = Sphere(0.5).tessellate(UVGrid(32, 32)).to_vertices_and_triangles()
+    >>> from compas.geometry import Box, Sphere
+    >>> from compas_cgal.booleans import boolean_union_mesh_mesh
+    >>> A = Box(1).to_tessellation().to_vertices_and_triangles()
+    >>> B = Sphere(0.5).to_tessellation(nu=32, nv=32).to_vertices_and_triangles()
     >>> vertices, triangles = boolean_union_mesh_mesh(A, B)
 
     """
@@ -100,8 +116,8 @@ def boolean_union_mesh_mesh(
 
 
 def boolean_difference_mesh_mesh(
-    A: TriangleMeshInput,
-    B: TriangleMeshInput,
+    A: VerticesFaces,
+    B: VerticesFaces,
 ) -> VerticesFacesNumpy:
     """Boolean difference of two meshes.
 
@@ -125,10 +141,10 @@ def boolean_difference_mesh_mesh(
 
     Examples
     --------
-    >>> from compas.geometry import Box, Native, Sphere, UVGrid  # doctest: +SKIP
-    >>> from compas_cgal.booleans import boolean_difference_mesh_mesh  # doctest: +SKIP
-    >>> A = Box(1).tessellate(Native()).to_vertices_and_triangles()
-    >>> B = Sphere(0.5).tessellate(UVGrid(32, 32)).to_vertices_and_triangles()
+    >>> from compas.geometry import Box, Sphere
+    >>> from compas_cgal.booleans import boolean_difference_mesh_mesh
+    >>> A = Box(1).to_tessellation().to_vertices_and_triangles()
+    >>> B = Sphere(0.5).to_tessellation(nu=32, nv=32).to_vertices_and_triangles()
     >>> vertices, triangles = boolean_difference_mesh_mesh(A, B)
 
     """
@@ -136,8 +152,8 @@ def boolean_difference_mesh_mesh(
 
 
 def boolean_intersection_mesh_mesh(
-    A: TriangleMeshInput,
-    B: TriangleMeshInput,
+    A: VerticesFaces,
+    B: VerticesFaces,
 ) -> VerticesFacesNumpy:
     """Boolean intersection of two meshes.
 
@@ -161,10 +177,10 @@ def boolean_intersection_mesh_mesh(
 
     Examples
     --------
-    >>> from compas.geometry import Box, Native, Sphere, UVGrid  # doctest: +SKIP
-    >>> from compas_cgal.booleans import boolean_intersection_mesh_mesh  # doctest: +SKIP
-    >>> A = Box(1).tessellate(Native()).to_vertices_and_triangles()
-    >>> B = Sphere(0.5).tessellate(UVGrid(32, 32)).to_vertices_and_triangles()
+    >>> from compas.geometry import Box, Sphere
+    >>> from compas_cgal.booleans import boolean_intersection_mesh_mesh
+    >>> A = Box(1).to_tessellation().to_vertices_and_triangles()
+    >>> B = Sphere(0.5).to_tessellation(nu=32, nv=32).to_vertices_and_triangles()
     >>> vertices, triangles = boolean_intersection_mesh_mesh(A, B)
 
     """
@@ -191,20 +207,20 @@ def split_mesh_mesh(
 
     Examples
     --------
-    >>> from compas.geometry import Box, Native, Sphere, UVGrid, Polyhedron
+    >>> from compas.geometry import Box, Frame, Polyhedron, Sphere
     >>> from compas_cgal.booleans import split_mesh_mesh
 
     >>> box = Box(1)
-    >>> sphere = Sphere(0.5, point=[1, 1, 1])
+    >>> sphere = Sphere(0.5, frame=Frame(point=[1, 1, 1]))
 
-    >>> A = box.tessellate(Native()).to_vertices_and_triangles()
-    >>> B = sphere.tessellate(UVGrid(32, 32)).to_vertices_and_triangles()
+    >>> A = box.to_tessellation().to_vertices_and_triangles()
+    >>> B = sphere.to_tessellation(nu=32, nv=32).to_vertices_and_triangles()
 
     >>> V, F = split_mesh_mesh(A, B)
-    >>> shape = Polyhedron(V.tolist(), F.tolist())
+    >>> shape = Polyhedron(V, F)
 
     """
-    return _boolean(A, B, "split")  # type: ignore
+    return _boolean(A, B, "split")
 
 
 split = split_mesh_mesh
@@ -215,20 +231,25 @@ def _boolean_with_edges(
     B: VerticesFaces,
     operation: Literal["union", "difference", "intersection"],
 ) -> VerticesFacesEdgesNumpy:
-    VA, FA = A
-    VB, FB = B
-    VA = np.ascontiguousarray(VA, dtype=np.float64)
-    FA = np.ascontiguousarray(FA, dtype=np.int32)
-    VB = np.ascontiguousarray(VB, dtype=np.float64)
-    FB = np.ascontiguousarray(FB, dtype=np.int32)
+    VA, FA = as_native_mesh(A, "A")
+    VB, FB = as_native_mesh(B, "B")
 
     if operation == "union":
-        return _booleans.boolean_union_with_edges(VA, FA, VB, FB)
-    if operation == "difference":
-        return _booleans.boolean_difference_with_edges(VA, FA, VB, FB)
-    if operation == "intersection":
-        return _booleans.boolean_intersection_with_edges(VA, FA, VB, FB)
-    raise NotImplementedError(operation)
+        result = _booleans.boolean_union_with_edges(VA, FA, VB, FB)
+    elif operation == "difference":
+        result = _booleans.boolean_difference_with_edges(VA, FA, VB, FB)
+    elif operation == "intersection":
+        result = _booleans.boolean_intersection_with_edges(VA, FA, VB, FB)
+    else:
+        raise NotImplementedError(operation)
+
+    vertices, faces, edges = result
+    validate_native_mesh((vertices, faces), f"Boolean {operation}")
+    if edges.ndim != 2 or edges.shape[1] != 2:
+        raise RuntimeError(f"CGAL Boolean {operation} result edges should have shape (N, 2).")
+    if edges.size and (edges.min() < 0 or edges.max() >= len(vertices)):
+        raise RuntimeError(f"CGAL Boolean {operation} result contains an out-of-range edge index.")
+    return vertices, faces, edges
 
 
 def boolean_union_mesh_mesh_with_edges(A: VerticesFaces, B: VerticesFaces) -> VerticesFacesEdgesNumpy:
@@ -255,9 +276,8 @@ def _concat_meshes(meshes: Iterable[VerticesFaces]) -> VerticesFacesNumpy:
     Vs: list[np.ndarray] = []
     Fs: list[np.ndarray] = []
     offset = 0
-    for V, F in meshes:
-        V = np.asarray(V, dtype=np.float64)
-        F = np.asarray(F, dtype=np.int32)
+    for index, mesh in enumerate(meshes):
+        V, F = as_native_mesh(mesh, f"meshes[{index}]")
         Vs.append(V)
         Fs.append(F + offset)
         offset += V.shape[0]
@@ -271,20 +291,27 @@ def _boolean_with_face_source(
     B: VerticesFaces,
     operation: Literal["union", "difference", "intersection"],
 ) -> VerticesFacesSourceNumpy:
-    VA, FA = A
-    VB, FB = B
-    VA = np.ascontiguousarray(VA, dtype=np.float64)
-    FA = np.ascontiguousarray(FA, dtype=np.int32)
-    VB = np.ascontiguousarray(VB, dtype=np.float64)
-    FB = np.ascontiguousarray(FB, dtype=np.int32)
+    VA, FA = as_native_mesh(A, "A")
+    VB, FB = as_native_mesh(B, "B")
 
     if operation == "union":
-        return _booleans.boolean_union_with_face_source(VA, FA, VB, FB)
-    if operation == "difference":
-        return _booleans.boolean_difference_with_face_source(VA, FA, VB, FB)
-    if operation == "intersection":
-        return _booleans.boolean_intersection_with_face_source(VA, FA, VB, FB)
-    raise NotImplementedError(operation)
+        result = _booleans.boolean_union_with_face_source(VA, FA, VB, FB)
+    elif operation == "difference":
+        result = _booleans.boolean_difference_with_face_source(VA, FA, VB, FB)
+    elif operation == "intersection":
+        result = _booleans.boolean_intersection_with_face_source(VA, FA, VB, FB)
+    else:
+        raise NotImplementedError(operation)
+    return _validate_face_source_result(result, f"Boolean {operation}")
+
+
+def _validate_face_source_result(result: VerticesFacesSourceNumpy, operation: str) -> VerticesFacesSourceNumpy:
+    """Check the structural contract of a native face-source result."""
+    vertices, faces, source = result
+    validate_native_mesh((vertices, faces), operation)
+    if source.ndim != 2 or source.shape != (len(faces), 2):
+        raise RuntimeError(f"CGAL {operation} face sources should have shape (M, 2).")
+    return vertices, faces, source
 
 
 def boolean_union_mesh_mesh_with_face_source(A: VerticesFaces, B: VerticesFaces) -> VerticesFacesSourceNumpy:
@@ -317,27 +344,27 @@ def boolean_chain(
 ) -> VerticesFacesNumpy:
     """Run a chain of boolean operations entirely in C++ without round-tripping intermediates.
 
-    Computes ``result = meshes[0]; result = result OP_i meshes[i+1]`` for each
+    Computes `result = meshes[0]; result = result OP_i meshes[i+1]` for each
     operation in order. The full collection of input meshes is sent to C++ in a
-    single call; intermediate meshes never leave C++; only the final ``(V, F)``
+    single call; intermediate meshes never leave C++; only the final `(V, F)`
     is returned to Python.
 
     Parameters
     ----------
     meshes : iterable of (V, F)
-        Triangle meshes. Length must be ``len(operations) + 1``.
+        Triangle meshes. Length must be `len(operations) + 1`.
     operations : iterable of {"union", "difference", "intersection", "xor"}
-        Per-step operation. ``"difference"`` is ``result - meshes[i+1]``.
-        ``"xor"`` is the symmetric difference.
+        Per-step operation. `"difference"` is `result - meshes[i+1]`.
+        `"xor"` is the symmetric difference.
     hybrid : bool, default False
-        If ``False``, runs the chain in CGAL's
-        ``Exact_predicates_exact_constructions_kernel`` (EPECK). Constructions
+        If `False`, runs the chain in CGAL's
+        `Exact_predicates_exact_constructions_kernel` (EPECK). Constructions
         are lazy-exact, so the chain handles geometrically degenerate input —
         e.g., three cylinders meeting at the origin — without any shifts.
 
-        If ``True``, runs on an EPICK ``Surface_mesh`` augmented with an EPECK
+        If `True`, runs on an EPICK `Surface_mesh` augmented with an EPECK
         vertex property map passed to corefinement via
-        ``parameters::vertex_point_map()`` — the pattern from CGAL's
+        `parameters::vertex_point_map()` — the pattern from CGAL's
         "consecutive boolean operations with exact point maps" example.
         Storage stays at native double precision while every intersection
         vertex is constructed exactly: same robustness as full EPECK without
@@ -352,9 +379,8 @@ def boolean_chain(
     Fs: list[np.ndarray] = []
     v_counts: list[int] = []
     f_counts: list[int] = []
-    for V, F in meshes:
-        V = np.asarray(V, dtype=np.float64)
-        F = np.asarray(F, dtype=np.int32)
+    for index, mesh in enumerate(meshes):
+        V, F = as_native_mesh(mesh, f"meshes[{index}]")
         Vs.append(V)
         Fs.append(F)
         v_counts.append(int(V.shape[0]))
@@ -376,8 +402,10 @@ def boolean_chain(
     F_flat = np.vstack(Fs) if Fs else np.zeros((0, 3), dtype=np.int32)
 
     if hybrid:
-        return _booleans.boolean_chain_hybrid(V_flat, F_flat, v_counts, f_counts, op_codes)
-    return _booleans.boolean_chain(V_flat, F_flat, v_counts, f_counts, op_codes)
+        result = _booleans.boolean_chain_hybrid(V_flat, F_flat, v_counts, f_counts, op_codes)
+    else:
+        result = _booleans.boolean_chain(V_flat, F_flat, v_counts, f_counts, op_codes)
+    return validate_native_mesh(result, "Boolean chain")
 
 
 def boolean_chain_with_face_source(
@@ -386,25 +414,24 @@ def boolean_chain_with_face_source(
     hybrid: bool = False,
 ) -> VerticesFacesSourceNumpy:
     """Boolean chain that also tracks, for every output face, which input mesh
-    and which input face produced it. Returns ``(V, F, S)`` where ``S[i] =
-    [mesh_id, face_id]``. ``mesh_id`` is the position of the source mesh in
-    ``meshes`` and ``face_id`` is its row in that mesh's input face array.
+    and which input face produced it. Returns `(V, F, S)` where `S[i] =
+    [mesh_id, face_id]`. `mesh_id` is the position of the source mesh in
+    `meshes` and `face_id` is its row in that mesh's input face array.
 
     Tracking is done via a CGAL corefinement visitor that propagates per-face
     tags through subface creations and face copies — the technique used in
     the Cockroach project for CGAL face-color tracking through booleans.
 
-    See :func:`boolean_chain` for the meaning of the ``hybrid`` flag.
+    See `boolean_chain` for the meaning of the `hybrid` flag.
 
-    ``"xor"`` is not supported here.
+    `"xor"` is not supported here.
     """
     Vs: list[np.ndarray] = []
     Fs: list[np.ndarray] = []
     v_counts: list[int] = []
     f_counts: list[int] = []
-    for V, F in meshes:
-        V = np.asarray(V, dtype=np.float64)
-        F = np.asarray(F, dtype=np.int32)
+    for index, mesh in enumerate(meshes):
+        V, F = as_native_mesh(mesh, f"meshes[{index}]")
         Vs.append(V)
         Fs.append(F)
         v_counts.append(int(V.shape[0]))
@@ -425,26 +452,28 @@ def boolean_chain_with_face_source(
     F_flat = np.vstack(Fs) if Fs else np.zeros((0, 3), dtype=np.int32)
 
     if hybrid:
-        return _booleans.boolean_chain_with_face_source_hybrid(V_flat, F_flat, v_counts, f_counts, op_codes)
-    return _booleans.boolean_chain_with_face_source(V_flat, F_flat, v_counts, f_counts, op_codes)
+        result = _booleans.boolean_chain_with_face_source_hybrid(V_flat, F_flat, v_counts, f_counts, op_codes)
+    else:
+        result = _booleans.boolean_chain_with_face_source(V_flat, F_flat, v_counts, f_counts, op_codes)
+    return _validate_face_source_result(result, "Boolean chain")
 
 
 def split_by_source(
-    V: np.ndarray,
-    F: np.ndarray,
-    S: np.ndarray,
-) -> dict[int, tuple[np.ndarray, np.ndarray]]:
+    V: FloatNx3,
+    F: IntNx3,
+    S: IntNx2,
+) -> dict[int, VerticesFacesNumpy]:
     """Split a face-source-tagged boolean result into one mesh per source.
 
-    Given ``(V, F, S)`` from :func:`boolean_chain_with_face_source`, returns a
-    dict mapping each ``mesh_id`` present in ``S[:, 0]`` to its own
-    ``(V_sub, F_sub)`` pair. ``V_sub`` contains only the vertices referenced
-    by that submesh's faces and ``F_sub`` is reindexed accordingly.
+    Given `(V, F, S)` from `boolean_chain_with_face_source`, returns a
+    dict mapping each `mesh_id` present in `S[:, 0]` to its own
+    `(V_sub, F_sub)` pair. `V_sub` contains only the vertices referenced
+    by that submesh's faces and `F_sub` is reindexed accordingly.
 
     Note: vertices on the boundary between two source regions are duplicated
     across the resulting submeshes (each submesh gets its own copy), so the
-    submeshes are no longer connected at cut boundaries. The original ``(V,
-    F, S)`` remains the canonical output — use this helper only when a
+    submeshes are no longer connected at cut boundaries. The original `(V,
+    F, S)` remains the canonical output — use this helper only when a
     per-source mesh layout is convenient (e.g. assigning a single colour or
     material to a viewer scene object).
     """
@@ -452,7 +481,7 @@ def split_by_source(
     F = np.asarray(F)
     S = np.asarray(S)
 
-    out: dict[int, tuple[np.ndarray, np.ndarray]] = {}
+    out: dict[int, VerticesFacesNumpy] = {}
     for mesh_id in np.unique(S[:, 0]):
         face_mask = S[:, 0] == mesh_id
         F_sub = F[face_mask]

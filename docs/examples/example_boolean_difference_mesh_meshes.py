@@ -1,11 +1,11 @@
+from typing import Literal
+
 from compas.geometry import Box
 from compas.geometry import Cylinder
 from compas.geometry import Frame
-from compas.geometry import Native
 from compas.geometry import PolygonalSurface
 from compas.geometry import Sphere
-from compas.geometry import UGrid
-from compas.geometry import UVGrid
+from compas.typing import VerticesFaces
 from compas_viewer import Viewer
 
 from compas_cgal.booleans import boolean_chain
@@ -25,11 +25,11 @@ from compas_cgal.booleans import boolean_chain
 # boolean operations with exact point maps" example.
 # =============================================================================
 
-cube = Box(2).tessellate(Native()).to_vertices_and_triangles()
-sphere = Sphere(radius=1.3).tessellate(UVGrid(64, 64)).to_vertices_and_triangles()
+cube = Box(2).to_tessellation().to_vertices_and_triangles()
+sphere = Sphere(radius=1.3).to_tessellation(nu=64, nv=64).to_vertices_and_triangles()
 
 
-def cylinder_along(axis, radius=0.8):
+def cylinder_along(axis: Literal["x", "y", "z"], radius: float = 0.8) -> VerticesFaces:
     """A cylinder of length 4 oriented along a world axis.
 
     `Cylinder` defines its long axis as the frame's z-axis, so we build a
@@ -41,11 +41,11 @@ def cylinder_along(axis, radius=0.8):
         frame = Frame([0, 0, 0], [0, 0, 1], [1, 0, 0])
     else:  # "z"
         frame = Frame([0, 0, 0], [1, 0, 0], [0, 1, 0])
-    return Cylinder(radius, 4.0, frame).tessellate(UGrid(48)).to_vertices_and_triangles()
+    return Cylinder(radius, 4.0, frame).to_tessellation(nu=48).to_vertices_and_triangles()
 
 
 V, F = boolean_chain(
-    [  # type: ignore
+    [
         cube,
         sphere,
         cylinder_along("x"),
@@ -55,7 +55,7 @@ V, F = boolean_chain(
     ["intersection", "difference", "difference", "difference"],
 )
 
-shape = PolygonalSurface(V.tolist(), F.tolist())
+shape = PolygonalSurface(V, F)
 
 # =============================================================================
 # Visualize

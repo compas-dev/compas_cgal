@@ -1,10 +1,14 @@
 import numpy as np
 from compas.datastructures import Mesh
-from compas.geometry import DiagonalSplit
-from compas.geometry import FaceTriangulation
+from compas.typing import Float64Array
+from compas.typing import PointsLike
 
-from compas_cgal import _meshing  # type: ignore
-from compas_cgal import _types_std  # noqa: F401  # type: ignore
+from compas_cgal import _meshing
+from compas_cgal import _types_std  # noqa: F401
+
+from ._mesh import as_native_mesh
+
+__all__ = ["project_mesh_on_mesh", "project_points_on_mesh", "pull_mesh_on_mesh", "pull_points_on_mesh"]
 
 
 def project_mesh_on_mesh(
@@ -15,20 +19,20 @@ def project_mesh_on_mesh(
 
     Parameters
     ----------
-    mesh_source : :class:`compas.datastructures.Mesh`
+    mesh_source
         Mesh that is projected onto the target mesh.
-    mesh_target : :class:`compas.datastructures.Mesh`
+    mesh_target
         Mesh that is projected onto.
 
     Returns
     -------
-    :class:`compas.datastructures.Mesh`
+    Mesh
         The projected mesh (vertices on mesh_source surface, original faces).
 
     """
     V_source, F_source = mesh_source.to_vertices_and_faces()
     V_source = project_points_on_mesh(V_source, mesh_target)
-    return Mesh.from_vertices_and_faces(V_source.tolist(), F_source)
+    return Mesh.from_vertices_and_faces(V_source, F_source)
 
 
 def pull_mesh_on_mesh(
@@ -39,14 +43,14 @@ def pull_mesh_on_mesh(
 
     Parameters
     ----------
-    mesh_source : :class:`compas.datastructures.Mesh`
+    mesh_source
         Mesh that is projected onto the target mesh.
-    mesh_target : :class:`compas.datastructures.Mesh`
+    mesh_target
         Mesh that is projected onto.
 
     Returns
     -------
-    :class:`compas.datastructures.Mesh`
+    Mesh
         The projected mesh (vertices on mesh_source surface, original faces).
 
     """
@@ -56,20 +60,20 @@ def pull_mesh_on_mesh(
         N_source.append(mesh_source.vertex_normal(v))
 
     V_source = pull_points_on_mesh(V_source, N_source, mesh_target)
-    return Mesh.from_vertices_and_faces(V_source.tolist(), F_source)
+    return Mesh.from_vertices_and_faces(V_source, F_source)
 
 
 def project_points_on_mesh(
-    points: list[list[float]],
+    points: PointsLike,
     mesh: Mesh,
-) -> np.ndarray:
+) -> Float64Array:
     """Project points onto a mesh by closest perpendicular distance.
 
     Parameters
     ----------
-    points : list[list[float]]
+    points
         The points to project.
-    mesh : :class:`compas.datastructures.Mesh`
+    mesh
         Mesh that the points are projected onto.
 
     Returns
@@ -78,25 +82,26 @@ def project_points_on_mesh(
         The projected point coordinates.
 
     """
-    V_target, F_target = mesh.triangulated(FaceTriangulation(quad=DiagonalSplit())).to_vertices_and_triangles()
-    numpy_V_source = np.asarray(points, dtype=np.float64, order="C")
-    numpy_V_target = np.asarray(V_target, dtype=np.float64, order="C")
-    numpy_F_target = np.asarray(F_target, dtype=np.int32, order="C")
+    target = mesh.triangulated(None).to_vertices_and_triangles()
+    numpy_V_source = np.ascontiguousarray(points, dtype=np.float64)
+    if numpy_V_source.ndim != 2 or numpy_V_source.shape[1] != 3:
+        raise ValueError("points should have shape (N, 3).")
+    numpy_V_target, numpy_F_target = as_native_mesh(target, "mesh")
     _meshing.pmp_project(numpy_V_target, numpy_F_target, numpy_V_source)
 
     return numpy_V_source
 
 
-def pull_points_on_mesh(points: list[list[float]], normals: list[list[float]], mesh: Mesh) -> np.ndarray:
+def pull_points_on_mesh(points: PointsLike, normals: PointsLike, mesh: Mesh) -> Float64Array:
     """Pull points onto a mesh surface using ray-mesh intersection along normal vectors.
 
     Parameters
     ----------
-    points : list[list[float]]
+    points
         The points to pull.
-    normals : list[list[float]]
+    normals
         The normal vectors used for directing the projection.
-    mesh : :class:`compas.datastructures.Mesh`
+    mesh
         Mesh that the points are pulled onto.
 
     Returns
@@ -106,10 +111,13 @@ def pull_points_on_mesh(points: list[list[float]], normals: list[list[float]], m
 
     """
 
-    V_target, F_target = mesh.triangulated(FaceTriangulation(quad=DiagonalSplit())).to_vertices_and_triangles()
-    numpy_V_source = np.asarray(points, dtype=np.float64, order="C")
-    numpy_N_source = np.asarray(normals, dtype=np.float64, order="C")
-    numpy_V_target = np.asarray(V_target, dtype=np.float64, order="C")
-    numpy_F_target = np.asarray(F_target, dtype=np.int32, order="C")
+    target = mesh.triangulated().to_vertices_and_triangles()
+    numpy_V_source = np.ascontiguousarray(points, dtype=np.float64)
+    numpy_N_source = np.ascontiguousarray(normals, dtype=np.float64)
+    if numpy_V_source.ndim != 2 or numpy_V_source.shape[1] != 3:
+        raise ValueError("points should have shape (N, 3).")
+    if numpy_N_source.shape != numpy_V_source.shape:
+        raise ValueError("normals should have the same shape as points.")
+    numpy_V_target, numpy_F_target = as_native_mesh(target, "mesh")
     _meshing.pmp_pull(numpy_V_target, numpy_F_target, numpy_V_source, numpy_N_source)
     return numpy_V_source

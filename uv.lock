@@ -416,7 +416,7 @@ wheels = [
 [[package]]
 name = "compas"
 version = "3.0.0"
-source = { git = "https://github.com/compas-dev/compas.git?rev=9b1518f74fe7d0315626954d8b893756f8dae06d#9b1518f74fe7d0315626954d8b893756f8dae06d" }
+source = { git = "https://github.com/compas-dev/compas.git?rev=21fdcaa5e7bf1a642030005a636164f63446d122#21fdcaa5e7bf1a642030005a636164f63446d122" }
 dependencies = [
     { name = "mapbox-earcut" },
     { name = "networkx" },
@@ -486,7 +486,7 @@ viz = [
 
 [package.metadata]
 requires-dist = [
-    { name = "compas", git = "https://github.com/compas-dev/compas.git?rev=9b1518f74fe7d0315626954d8b893756f8dae06d" },
+    { name = "compas", git = "https://github.com/compas-dev/compas.git?rev=21fdcaa5e7bf1a642030005a636164f63446d122" },
     { name = "numpy", specifier = ">=1.24" },
 ]
 

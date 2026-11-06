@@ -1,8 +1,6 @@
 from pathlib import Path
 
 from compas.datastructures import Mesh
-from compas.geometry import DiagonalSplit
-from compas.geometry import FaceTriangulation
 from compas.geometry import trimesh_remesh
 from compas_viewer import Viewer
 
@@ -13,7 +11,7 @@ from compas_viewer import Viewer
 input_file = Path(__file__).parent.parent.parent / "data" / "rhinovault_mesh_0.ply"
 
 mesh = Mesh.from_ply(input_file)
-triangle_mesh = mesh.triangulated(FaceTriangulation(quad=DiagonalSplit())).to_vertices_and_triangles()
+triangle_mesh = mesh.triangulated().to_vertices_and_triangles()
 
 # =============================================================================
 # Remesh to a uniform target edge length

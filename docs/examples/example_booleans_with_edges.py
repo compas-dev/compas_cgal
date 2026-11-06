@@ -2,9 +2,7 @@ from compas.datastructures import Mesh
 from compas.geometry import Box
 from compas.geometry import Frame
 from compas.geometry import Line
-from compas.geometry import Native
 from compas.geometry import Sphere
-from compas.geometry import UVGrid
 from compas_viewer import Viewer
 
 from compas_cgal.booleans import boolean_difference_mesh_mesh_with_edges
@@ -12,8 +10,8 @@ from compas_cgal.booleans import boolean_difference_mesh_mesh_with_edges
 
 def input():
     """Two triangle meshes that intersect."""
-    A = Box(2).tessellate(Native()).to_vertices_and_triangles()
-    B = Sphere(1, frame=Frame(point=[1, 1, 1])).tessellate(UVGrid(64, 64)).to_vertices_and_triangles()
+    A = Box(2).to_tessellation().to_vertices_and_triangles()
+    B = Sphere(1, frame=Frame(point=[1, 1, 1])).to_tessellation(nu=64, nv=64).to_vertices_and_triangles()
     return A, B
 
 

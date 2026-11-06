@@ -3,8 +3,6 @@ from pathlib import Path
 from compas.colors import Color
 from compas.colors import ColorMap
 from compas.datastructures import Mesh
-from compas.geometry import DiagonalSplit
-from compas.geometry import FaceTriangulation
 from compas.geometry import Polyline
 from compas_viewer import Viewer
 from compas_viewer.config import Config
@@ -13,7 +11,7 @@ from compas_cgal.geodesics import exact_geodesic_distances_from_points
 from compas_cgal.isolines import isolines
 
 mesh = Mesh.from_off(Path(__file__).parent.parent.parent / "data" / "elephant.off")
-mesh.triangulate(FaceTriangulation(quad=DiagonalSplit()))
+mesh.triangulate()
 
 source = mesh.face_centroid(0)
 distances = exact_geodesic_distances_from_points(mesh, [source])

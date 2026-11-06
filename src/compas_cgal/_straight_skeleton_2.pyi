@@ -5,7 +5,7 @@ from numpy.typing import NDArray
 
 FloatArray = NDArray[np.float64]
 IntArray = NDArray[np.int32]
-Skeleton = tuple[FloatArray, IntArray, IntArray, IntArray]
+Skeleton = tuple[FloatArray, list[int], IntArray, list[int]]
 PolygonWithHoles = tuple[FloatArray, list[FloatArray]]
 
 def create_interior_straight_skeleton(vertices: FloatArray) -> Skeleton: ...

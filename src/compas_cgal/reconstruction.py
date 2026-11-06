@@ -1,23 +1,28 @@
-from typing import Tuple
-from typing import Union
-
 import numpy as np
-from compas.geometry import Point
-from compas.geometry import Vector
+from compas.typing import PointsLike
 
-from compas_cgal import _reconstruction  # type: ignore
+from compas_cgal import _reconstruction
 
+from ._mesh import validate_native_mesh
 from .types import FloatNx3
 from .types import IntNx3
 
+__all__ = [
+    "pointset_normal_estimation",
+    "pointset_outlier_removal",
+    "pointset_reduction",
+    "pointset_smoothing",
+    "poisson_surface_reconstruction",
+]
+
 
 def poisson_surface_reconstruction(
-    points: Union[list[Point], FloatNx3],
-    normals: Union[list[Vector], FloatNx3],
+    points: PointsLike,
+    normals: PointsLike,
     sm_angle: float = 20.0,
     sm_radius: float = 30.0,
     sm_distance: float = 0.375,
-) -> Tuple[FloatNx3, IntNx3]:
+) -> tuple[FloatNx3, IntNx3]:
     """Reconstruct a surface from a point cloud using the Poisson surface reconstruction algorithm.
 
     Parameters
@@ -96,13 +101,14 @@ def poisson_surface_reconstruction(
         N = N / norms[:, np.newaxis]
 
     try:
-        return _reconstruction.poisson_surface_reconstruction(P, N, sm_angle, sm_radius, sm_distance)
+        result = _reconstruction.poisson_surface_reconstruction(P, N, sm_angle, sm_radius, sm_distance)
+        return validate_native_mesh(result, "Poisson reconstruction")
     except RuntimeError as e:
         raise RuntimeError(f"Poisson surface reconstruction failed: {str(e)}")
 
 
 def pointset_outlier_removal(
-    points: Union[list[Point], FloatNx3],
+    points: PointsLike,
     nnnbrs: int = 10,
     radius: float = 1.0,
 ) -> FloatNx3:
@@ -128,7 +134,7 @@ def pointset_outlier_removal(
 
 
 def pointset_reduction(
-    points: Union[list[Point], FloatNx3],
+    points: PointsLike,
     spacing: float = 2,
 ) -> FloatNx3:
     """Remove outliers from a point cloud using the point set outlier removal algorithm.
@@ -151,7 +157,7 @@ def pointset_reduction(
 
 
 def pointset_smoothing(
-    points: Union[list[Point], FloatNx3],
+    points: PointsLike,
     neighbors: int = 8,
     iterations: int = 1,
 ) -> FloatNx3:
@@ -175,10 +181,10 @@ def pointset_smoothing(
 
 
 def pointset_normal_estimation(
-    points: Union[list[Point], FloatNx3],
+    points: PointsLike,
     neighbors: int = 8,
     erase: bool = False,
-) -> Tuple[FloatNx3, FloatNx3]:
+) -> tuple[FloatNx3, FloatNx3]:
     """Remove outliers from a point cloud using the point set outlier removal algorithm.
 
     Parameters

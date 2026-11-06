@@ -60,8 +60,21 @@ class TestSimplifyPolyline:
         ]
         results = simplify_polylines(polylines, threshold=0.1)
         assert len(results) == 2
+        assert all(result.shape[1] == 2 for result in results)
         assert len(results[0]) == 2  # First simplified
         assert len(results[1]) == 3  # Second has corner, preserved
+
+    def test_simplify_multiple_3d_polylines(self):
+        """Batch simplification preserves three-dimensional coordinates."""
+        polylines = [
+            [[0, 0, 1], [1, 0.01, 2], [2, 0, 3]],
+            [[0, 0, 0], [0, 1, 1], [1, 1, 2]],
+        ]
+
+        results = simplify_polylines(polylines, threshold=0.1)
+
+        assert len(results) == 2
+        assert all(result.shape[1] == 3 for result in results)
 
 
 class TestClosestPointsOnPolyline:

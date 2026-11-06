@@ -32,6 +32,7 @@ jobs:
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run pyright
+      - run: uv run pyright --verifytypes compas_cgal --ignoreexternal
       - run: uv run pytest
 
   wheels:
@@ -63,7 +64,7 @@ jobs:
           CIBW_ARCHS: ${{ matrix.arch }}
           CIBW_BEFORE_TEST: >-
             python -m pip install
-            "compas @ git+https://github.com/compas-dev/compas.git@9b1518f74fe7d0315626954d8b893756f8dae06d"
+            "compas @ git+https://github.com/compas-dev/compas.git@21fdcaa5e7bf1a642030005a636164f63446d122"
           CIBW_TEST_REQUIRES: numpy>=1.24 pytest build
         with:
           output-dir: wheelhouse
@@ -140,6 +141,15 @@ jobs:
             compas_cgal._subdivision,
             compas_cgal._triangulation,
             compas_cgal._types_std
+      - name: Verify installed wheel type contract
+        shell: bash
+        run: |
+          python -m pip install "pyright==1.1.414"
+          typing_dir="$RUNNER_TEMP/compas-cgal-wheel-types-${{ matrix.python }}"
+          mkdir -p "$typing_dir"
+          cp tests/typing/*.py "$typing_dir/"
+          cd "$typing_dir"
+          python -m pyright --pythonpath "$(command -v python)" .
 
   sdist:
     needs: quality
