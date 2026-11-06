@@ -178,7 +178,10 @@ def test_numpy_compatibility_gate_covers_lowest_and_current_runtime_and_typing()
 
     assert "numpy>=1.26" in pyproject["project"]["dependencies"]
     assert 'numpy: "numpy==1.26.*"' in compatibility
+    assert 'scipy: "scipy==1.11.4"' in compatibility
     assert 'numpy: "numpy"' in compatibility
+    assert 'scipy: "scipy"' in compatibility
+    assert 'uv pip install --python .venv --upgrade "${{ matrix.numpy }}" "${{ matrix.scipy }}"' in compatibility
     assert workflow.count("dependency-groups: dev,viz") == 2
     assert workflow.count('extras: ""') == 2
     assert "uv run --no-sync pytest" in compatibility

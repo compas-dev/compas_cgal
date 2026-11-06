@@ -43,8 +43,10 @@ jobs:
         include:
           - name: lowest
             numpy: "numpy==1.26.*"
+            scipy: "scipy==1.11.4"
           - name: current
             numpy: "numpy"
+            scipy: "scipy"
     name: numpy-${{ matrix.name }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -55,7 +57,7 @@ jobs:
           python-version: "3.12"
           dependency-groups: dev,viz
           extras: ""
-      - run: uv pip install --python .venv --upgrade "${{ matrix.numpy }}"
+      - run: uv pip install --python .venv --upgrade "${{ matrix.numpy }}" "${{ matrix.scipy }}"
       - run: uv run --no-sync pytest
       - run: uv run --no-sync pyright
       - run: PYTHONPATH=src uv run --no-sync pyright --verifytypes compas_cgal --ignoreexternal
