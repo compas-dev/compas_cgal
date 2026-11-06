@@ -179,7 +179,8 @@ def test_numpy_compatibility_gate_covers_lowest_and_current_runtime_and_typing()
     assert "numpy>=1.26" in pyproject["project"]["dependencies"]
     assert 'numpy: "numpy==1.26.*"' in compatibility
     assert 'numpy: "numpy"' in compatibility
-    assert "extras: viz" in compatibility
+    assert workflow.count("dependency-groups: dev,viz") == 2
+    assert workflow.count('extras: ""') == 2
     assert "uv run --no-sync pytest" in compatibility
     assert "uv run --no-sync pyright" in compatibility
     assert "PYTHONPATH=src uv run --no-sync pyright --verifytypes compas_cgal --ignoreexternal" in compatibility

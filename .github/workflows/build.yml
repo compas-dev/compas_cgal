@@ -27,8 +27,8 @@ jobs:
       - uses: compas-dev/compas-actions/setup-python@5c64e6e2b576a1232d28fed47d9478ca8eb63b2d # v2 candidate
         with:
           python-version: ${{ matrix.python }}
-          dependency-groups: dev
-          extras: viz
+          dependency-groups: dev,viz
+          extras: ""
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run pyright
@@ -53,8 +53,8 @@ jobs:
       - uses: compas-dev/compas-actions/setup-python@5c64e6e2b576a1232d28fed47d9478ca8eb63b2d # v2 candidate
         with:
           python-version: "3.12"
-          dependency-groups: dev
-          extras: viz
+          dependency-groups: dev,viz
+          extras: ""
       - run: uv pip install --python .venv --upgrade "${{ matrix.numpy }}"
       - run: uv run --no-sync pytest
       - run: uv run --no-sync pyright
