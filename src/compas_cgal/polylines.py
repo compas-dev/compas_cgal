@@ -14,6 +14,23 @@ from compas_cgal.types import PolylinesNumpy
 __all__ = ["closest_points_on_polyline", "simplify_polyline", "simplify_polylines"]
 
 
+def _as_polyline(points: PointsLike, name: str) -> Float64Array:
+    """Convert structural points to a native 2D or 3D polyline array."""
+    array = np.ascontiguousarray(points, dtype=np.float64)
+    if array.ndim != 2 or array.shape[1] not in (2, 3):
+        raise ValueError(f"{name} should have shape (N, 2) or (N, 3).")
+    return array
+
+
+def _validate_polyline(result: Float64Array, operation: str, columns: int, rows: int | None = None) -> Float64Array:
+    """Check a native polyline result against the input dimensionality."""
+    if result.ndim != 2 or result.shape[1] != columns:
+        raise RuntimeError(f"CGAL {operation} result should have shape (N, {columns}).")
+    if rows is not None and len(result) != rows:
+        raise RuntimeError(f"CGAL {operation} result should contain {rows} points, got {len(result)}.")
+    return result
+
+
 def simplify_polylines(polylines: Sequence[PointsLike], threshold: float) -> PolylinesNumpy:
     """Simplify multiple polylines using Douglas-Peucker algorithm.
 
@@ -32,6 +49,11 @@ def simplify_polylines(polylines: Sequence[PointsLike], threshold: float) -> Pol
     list of ndarray
         Simplified polylines as numpy arrays.
 
+    Raises
+    ------
+    ValueError
+        If an input polyline does not have two or three coordinates per point.
+
     Examples
     --------
     >>> polylines = [[[0, 0], [1, 0.01], [2, 0]], [[0, 0], [0, 1], [1, 1]]]
@@ -44,8 +66,13 @@ def simplify_polylines(polylines: Sequence[PointsLike], threshold: float) -> Pol
     """
     if threshold < 0:
         raise ValueError("threshold must be non-negative")
-    arrays = [np.ascontiguousarray(p, dtype=np.float64) for p in polylines]
-    return _simplify(arrays, threshold)
+    arrays = [_as_polyline(polyline, f"polylines[{index}]") for index, polyline in enumerate(polylines)]
+    result = _simplify(arrays, threshold)
+    if len(result) != len(arrays):
+        raise RuntimeError(f"CGAL polyline simplification returned {len(result)} polylines for {len(arrays)} inputs.")
+    for index, (points, source) in enumerate(zip(result, arrays)):
+        _validate_polyline(points, f"polyline simplification item {index}", columns=source.shape[1])
+    return result
 
 
 def simplify_polyline(polyline: PointsLike, threshold: float) -> Float64Array:
@@ -65,6 +92,11 @@ def simplify_polyline(polyline: PointsLike, threshold: float) -> Float64Array:
     -------
     ndarray
         Simplified polyline as numpy array.
+
+    Raises
+    ------
+    ValueError
+        If the polyline does not have two or three coordinates per point.
 
     """
     result = simplify_polylines([polyline], threshold)
@@ -88,6 +120,12 @@ def closest_points_on_polyline(query_points: PointsLike, polyline: PointsLike) -
     ndarray
         Closest points on the polyline (same shape as query_points).
 
+    Raises
+    ------
+    ValueError
+        If either input does not have two or three coordinates per point, or
+        if their coordinate dimensions differ.
+
     Examples
     --------
     >>> polyline = [[0, 0], [10, 0]]
@@ -97,6 +135,9 @@ def closest_points_on_polyline(query_points: PointsLike, polyline: PointsLike) -
     array([5., 0.])
 
     """
-    queries = np.ascontiguousarray(query_points, dtype=np.float64)
-    poly = np.ascontiguousarray(polyline, dtype=np.float64)
-    return _closest_points(queries, poly)
+    queries = _as_polyline(query_points, "query_points")
+    poly = _as_polyline(polyline, "polyline")
+    if queries.shape[1] != poly.shape[1]:
+        raise ValueError("query_points and polyline should have the same coordinate dimension.")
+    result = _closest_points(queries, poly)
+    return _validate_polyline(result, "closest-point", columns=queries.shape[1], rows=len(queries))

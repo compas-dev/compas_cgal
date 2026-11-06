@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from compas.geometry import Frame
     from compas.typing import PointGroupsLike
     from compas.typing import PointsLike
+    from compas.typing import RealInput
 
 __all__ = [
     "conforming_delaunay_triangulation",
@@ -231,7 +232,7 @@ def conforming_delaunay_triangulation(
     holes: PointGroupsLike = (),
     constraints: PointGroupsLike = (),
     points: PointsLike = (),
-    max_edge_length: float | None = None,
+    max_edge_length: RealInput | None = None,
     frame: Frame | None = None,
 ) -> DelaunayResult:
     """Triangulate and optionally refine a constrained planar domain.

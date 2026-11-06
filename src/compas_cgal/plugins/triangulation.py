@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from compas.geometry import Frame
     from compas.typing import PointGroupsLike
     from compas.typing import PointsLike
+    from compas.typing import RealInput
     from compas.typing import VerticesFaces
 
 
@@ -51,7 +52,7 @@ def _conforming_delaunay_triangulation(
     holes: PointGroupsLike = (),
     constraints: PointGroupsLike = (),
     points: PointsLike = (),
-    max_edge_length: float | None = None,
+    max_edge_length: RealInput | None = None,
     frame: Frame | None = None,
 ) -> VerticesFaces:
     from compas_cgal.triangulation import conforming_delaunay_triangulation

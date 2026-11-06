@@ -15,15 +15,14 @@ from compas_viewer.config import Config
 # =============================================================================
 
 FILE = Path(__file__).parent.parent.parent / "data" / "3DBenchy.stl"
-benchy = Mesh.from_stl(FILE)
-
-triangle_mesh = benchy.triangulated()
+mesh = Mesh.from_stl(FILE)
+mesh = mesh.triangulated()
 
 # =============================================================================
 # Get Slice planes from the bounding box
 # =============================================================================
 
-bbox = benchy.aabb
+bbox = mesh.aabb
 zmin = min(point.z for point in bbox.points)
 zmax = max(point.z for point in bbox.points)
 normal = Vector(0, 0, 1)
@@ -36,7 +35,7 @@ for i in np.linspace(zmin, zmax, 50):
 # Slice
 # =============================================================================
 
-slicer_polylines = trimesh_slice(triangle_mesh.to_vertices_and_faces(), planes)
+slicer_polylines = trimesh_slice(mesh.to_vertices_and_faces(), planes)
 
 polylines = []
 for polyline in slicer_polylines:
@@ -53,7 +52,7 @@ config = Config()
 
 viewer = Viewer(config=config)
 
-viewer.scene.add(benchy, opacity=0.5, show_lines=False, show_points=False)
+viewer.scene.add(mesh, opacity=0.5, show_lines=False, show_points=False)
 
 for polyline in polylines:
     viewer.scene.add(polyline, linewidth=2, show_points=False)

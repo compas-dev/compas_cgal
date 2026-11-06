@@ -12,7 +12,7 @@ from compas_cgal.meshing import trimesh_dual
 
 input_file = Path(__file__).parent.parent.parent / "data" / "rhinovault_mesh_0.ply"
 mesh = Mesh.from_ply(input_file)
-mesh.triangulate()
+mesh = mesh.triangulated()
 
 fixed_vertices = []
 for v in mesh.vertices():

@@ -26,8 +26,8 @@ S = Scale.from_factors([5, 5, 5])
 transform = T * R2 * R1 * S
 
 mesh = Mesh.from_off(input_file).transformed(transform)
-triangle_mesh = mesh.triangulated()
-v, f = triangle_mesh.to_vertices_and_faces()
+mesh = mesh.triangulated()
+v, f = mesh.to_vertices_and_faces()
 
 # =============================================================================
 # Compute skeleton with vertex mapping

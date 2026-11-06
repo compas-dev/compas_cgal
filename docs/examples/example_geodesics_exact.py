@@ -11,7 +11,7 @@ from compas_cgal.geodesics import exact_geodesic_distances_from_points
 from compas_cgal.isolines import isolines
 
 mesh = Mesh.from_off(Path(__file__).parent.parent.parent / "data" / "elephant.off")
-mesh.triangulate()
+mesh = mesh.triangulated()
 
 source = mesh.face_centroid(0)
 distances = exact_geodesic_distances_from_points(mesh, [source])

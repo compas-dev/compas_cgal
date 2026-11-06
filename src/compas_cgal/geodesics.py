@@ -10,6 +10,7 @@ from compas.typing import Float64Array
 from compas.typing import Int32Array
 from compas.typing import PointsLike
 from compas.typing import VerticesFaces
+from numpy.typing import NDArray
 
 from compas_cgal import _types_std  # noqa: F401  # Load vector type bindings
 from compas_cgal._geodesics import ExactGeodesicSolver as _ExactGeodesicSolver
@@ -54,6 +55,32 @@ def _as_vertices_faces(mesh: MeshInput) -> VerticesFacesNumpy:
     return as_native_mesh(buffers, "mesh")
 
 
+def _validate_native_vector[T: np.generic](result: NDArray[T], expected_size: int, operation: str) -> NDArray[T]:
+    """Check a native vector result before exposing its flattened form."""
+    if result.ndim == 1:
+        valid_shape = result.shape == (expected_size,)
+    else:
+        valid_shape = result.ndim == 2 and 1 in result.shape and result.size == expected_size
+    if not valid_shape:
+        raise RuntimeError(f"CGAL {operation} result should contain one value per mesh vertex ({expected_size}), got shape {result.shape}.")
+    return result.reshape(-1)
+
+
+def _validate_distance_result(
+    result: tuple[Float64Array, Int32Array],
+    expected_size: int,
+    operation: str,
+) -> tuple[Float64Array, Int32Array]:
+    """Check paired distance and nearest-source vectors."""
+    if len(result) != 2:
+        raise RuntimeError(f"CGAL {operation} should return distances and nearest-source indices.")
+    distances, nearest = result
+    return (
+        _validate_native_vector(distances, expected_size, f"{operation} distances"),
+        _validate_native_vector(nearest, expected_size, f"{operation} nearest sources"),
+    )
+
+
 @overload
 def heat_geodesic_distances(mesh: Mesh, sources: Sequence[int]) -> Float64Array: ...
 @overload
@@ -96,7 +123,7 @@ def heat_geodesic_distances(mesh: MeshInput, sources: Sequence[int]) -> Float64A
     """
     V, F = _as_vertices_faces(mesh)
     result = _heat_geodesic_distances(V, F, sources)
-    return result.flatten()
+    return _validate_native_vector(result, len(V), "heat geodesic distances")
 
 
 class HeatGeodesicSolver:
@@ -148,7 +175,7 @@ class HeatGeodesicSolver:
 
         """
         result = self._solver.solve(sources)
-        return result.flatten()
+        return _validate_native_vector(result, self.num_vertices, "heat geodesic solver distances")
 
     @property
     def num_vertices(self) -> int:
@@ -195,6 +222,8 @@ def geodesic_isolines_split(mesh: MeshInput, sources: Sequence[int], isovalues: 
     """
     V, F = _as_vertices_faces(mesh)
     vertices_list, faces_list = _geodesic_isolines_split(V, F, sources, isovalues)
+    if len(vertices_list) != len(faces_list):
+        raise RuntimeError(f"CGAL geodesic isoline split returned {len(vertices_list)} vertex arrays and {len(faces_list)} face arrays.")
     return [validate_native_mesh(result, "geodesic isoline split") for result in zip(vertices_list, faces_list)]
 
 
@@ -238,6 +267,8 @@ def _as_source_points(points: PointsLike) -> Float64Array:
         raise ValueError(f"source points require shape (S, 3), got {P.shape}")
     if P.shape[0] == 0:
         raise ValueError("at least one source point is required")
+    if not np.isfinite(P).all():
+        raise ValueError("source points should be finite")
     return P
 
 
@@ -298,10 +329,10 @@ def exact_geodesic_distances(mesh: MeshInput, sources: Sequence[int], *, return_
 
     """
     V, F = _as_vertices_faces(mesh)
-    distances, nearest = _exact_geodesic_distances(V, F, sources)
+    distances, nearest = _validate_distance_result(_exact_geodesic_distances(V, F, sources), len(V), "exact geodesic")
     if return_sources:
-        return distances.flatten(), nearest.flatten()
-    return distances.flatten()
+        return distances, nearest
+    return distances
 
 
 @overload
@@ -354,10 +385,10 @@ def exact_geodesic_distances_from_points(mesh: MeshInput, points: PointsLike, *,
     """
     V, F = _as_vertices_faces(mesh)
     P = _as_source_points(points)
-    distances, nearest = _exact_geodesic_distances_from_points(V, F, P)
+    distances, nearest = _validate_distance_result(_exact_geodesic_distances_from_points(V, F, P), len(V), "exact point-source geodesic")
     if return_sources:
-        return distances.flatten(), nearest.flatten()
-    return distances.flatten()
+        return distances, nearest
+    return distances
 
 
 class ExactGeodesicSolver:
@@ -416,10 +447,10 @@ class ExactGeodesicSolver:
             Distances of shape (n_vertices,), optionally with nearest-source ordinals.
 
         """
-        distances, nearest = self._solver.solve(sources)
+        distances, nearest = _validate_distance_result(self._solver.solve(sources), self.num_vertices, "exact geodesic solver")
         if return_sources:
-            return distances.flatten(), nearest.flatten()
-        return distances.flatten()
+            return distances, nearest
+        return distances
 
     @overload
     def solve_from_points(self, points: PointsLike, *, return_sources: Literal[False] = False) -> Float64Array: ...
@@ -444,10 +475,10 @@ class ExactGeodesicSolver:
 
         """
         P = _as_source_points(points)
-        distances, nearest = self._solver.solve_from_points(P)
+        distances, nearest = _validate_distance_result(self._solver.solve_from_points(P), self.num_vertices, "exact point-source geodesic solver")
         if return_sources:
-            return distances.flatten(), nearest.flatten()
-        return distances.flatten()
+            return distances, nearest
+        return distances
 
     @property
     def num_vertices(self) -> int:

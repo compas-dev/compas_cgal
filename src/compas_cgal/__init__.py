@@ -3,7 +3,7 @@ import os
 
 __author__ = ["tom van mele", "petras vestartas"]
 __copyright__ = "Block Research Group - ETH Zurich"
-__license__ = "MIT License"
+__license__ = "LGPL-3.0-only"
 __email__ = ["van.mele@arch.ethz.ch", "vestartas@arch.ethz.ch"]
 __version__ = "0.9.5"
 

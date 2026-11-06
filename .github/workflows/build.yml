@@ -2,9 +2,9 @@ name: build
 
 on:
   pull_request:
-    branches: [main, initiative/repository-modernisation]
+    branches: [main, c3-upgrade, initiative/repository-modernisation]
   push:
-    branches: [main]
+    branches: [main, c3-upgrade]
 
 permissions:
   contents: read
@@ -28,12 +28,37 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
           dependency-groups: dev
-          extras: ""
+          extras: viz
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run pyright
-      - run: uv run pyright --verifytypes compas_cgal --ignoreexternal
+      - run: PYTHONPATH=src uv run pyright --verifytypes compas_cgal --ignoreexternal
       - run: uv run pytest
+
+  numpy-compatibility:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: lowest
+            numpy: "numpy==1.26.*"
+          - name: current
+            numpy: "numpy"
+    name: numpy-${{ matrix.name }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: compas-dev/compas-actions/setup-python@5c64e6e2b576a1232d28fed47d9478ca8eb63b2d # v2 candidate
+        with:
+          python-version: "3.12"
+          dependency-groups: dev
+          extras: viz
+      - run: uv pip install --python .venv --upgrade "${{ matrix.numpy }}"
+      - run: uv run --no-sync pytest
+      - run: uv run --no-sync pyright
+      - run: PYTHONPATH=src uv run --no-sync pyright --verifytypes compas_cgal --ignoreexternal
 
   wheels:
     needs: quality
@@ -65,7 +90,7 @@ jobs:
           CIBW_BEFORE_TEST: >-
             python -m pip install
             "compas @ git+https://github.com/compas-dev/compas.git@3c1a2e8e0e5c4c14292ecf4bb38c82e5b977273e"
-          CIBW_TEST_REQUIRES: numpy>=1.24 pytest build
+          CIBW_TEST_REQUIRES: numpy>=1.26 pytest build
         with:
           output-dir: wheelhouse
       - name: Verify wheel contents
@@ -150,6 +175,7 @@ jobs:
           cp tests/typing/*.py "$typing_dir/"
           cd "$typing_dir"
           python -m pyright --pythonpath "$(command -v python)" .
+          python -m pyright --verifytypes compas_cgal --ignoreexternal
 
   sdist:
     needs: quality

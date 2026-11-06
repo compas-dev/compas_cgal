@@ -6,19 +6,20 @@ build-backend = "scikit_build_core.build"
 name = "compas_cgal"
 description = "CGAL wrapper for COMPAS."
 readme = "README.md"
+license = "LGPL-3.0-only"
+license-files = ["LICENSE"]
 requires-python = ">=3.12"
 authors = [
     { name = "tom van mele", email = "tom.v.mele@gmail.com" },
     { name = "Petras Vestartas", email = "petrasvestartas@gmail.com" },
 ]
 classifiers = [
-    "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
-    "numpy>=1.24",
+    "numpy>=1.26",
     "compas>=3.0,<4",
 ]
 dynamic = ["version"]
@@ -70,6 +71,7 @@ compas_cgal_triangulation = "compas_cgal.plugins.triangulation"
 
 [tool.uv.sources]
 compas = { git = "https://github.com/compas-dev/compas.git", rev = "3c1a2e8e0e5c4c14292ecf4bb38c82e5b977273e" }
+compas-viewer = { git = "https://github.com/compas-dev/compas_viewer.git", rev = "cf5a5195bda840a511319d6b7201978af68c15e3" }
 
 # ============================================================================
 # replace pytest.ini
@@ -130,7 +132,7 @@ CMAKE_POLICY_DEFAULT_CMP0135 = "NEW"
 [tool.cibuildwheel]
 build = ["cp312-*"] # One CPython 3.12 stable-ABI wheel supports Python 3.12+.
 build-verbosity = 3
-test-requires = ["numpy>=1.24", "compas>=3.0,<4", "pytest", "build"]
+test-requires = ["numpy>=1.26", "compas>=3.0,<4", "pytest", "build"]
 test-command = "pip list && pytest {project}/tests"
 build-frontend = "pip"
 manylinux-x86_64-image = "manylinux_2_28"

@@ -7,6 +7,7 @@ from compas.typing import VerticesFaces
 from compas_cgal import _meshing
 from compas_cgal import _types_std  # noqa: F401
 
+from ._mesh import as_native_indices
 from ._mesh import as_native_mesh
 from ._mesh import validate_native_mesh
 from .types import DualMeshNumpy
@@ -84,7 +85,7 @@ def trimesh_dual(
     scale_factor
         Scale factor for inner vertices.
     fixed_vertices
-        Vertex indices to keep fixed during remeshing.
+        Non-boolean integer vertex indices to keep fixed during remeshing.
 
     Returns
     -------
@@ -105,9 +106,7 @@ def trimesh_dual(
 
     """
     V, F = as_native_mesh(mesh, "mesh")
-    fixed_vertices_array = np.ascontiguousarray(fixed_vertices, dtype=np.int32)
-    if fixed_vertices_array.ndim != 1:
-        raise ValueError("fixed_vertices should be a one-dimensional sequence of indices.")
+    fixed_vertices_array = as_native_indices(fixed_vertices, "fixed_vertices", dimensions=1)
     if fixed_vertices_array.size and (fixed_vertices_array.min() < 0 or fixed_vertices_array.max() >= len(V)):
         raise IndexError("fixed_vertices contains an out-of-range vertex index.")
     vertices, faces, dual_vertices, dual_faces = _meshing.pmp_trimesh_remesh_dual(

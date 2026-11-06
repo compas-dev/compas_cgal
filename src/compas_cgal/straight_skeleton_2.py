@@ -37,6 +37,22 @@ __all__ = [
 ]
 
 
+def _validate_skeleton_data(result: SkeletonData, operation: str) -> SkeletonData:
+    """Check the paired vectors returned by native straight-skeleton calls."""
+    if len(result) != 4:
+        raise RuntimeError(f"CGAL {operation} should return points, point indices, edges, and edge types.")
+    points, indices, edges, edge_types = result
+    if points.ndim != 2 or points.shape[1] != 3:
+        raise RuntimeError(f"CGAL {operation} points should have shape (N, 3).")
+    if len(indices) != len(points):
+        raise RuntimeError(f"CGAL {operation} returned {len(points)} points and {len(indices)} point indices.")
+    if edges.ndim != 2 or edges.shape[1] != 2:
+        raise RuntimeError(f"CGAL {operation} edges should have shape (M, 2).")
+    if len(edge_types) != len(edges):
+        raise RuntimeError(f"CGAL {operation} returned {len(edges)} edges and {len(edge_types)} edge types.")
+    return result
+
+
 def graph_from_skeleton_data(points: VerticesNumpy, indices: Sequence[int], edges: IntNx2, edge_types: Sequence[int]) -> Graph:
     """Create a graph from the skeleton data.
 
@@ -104,7 +120,10 @@ def interior_straight_skeleton(points: PointsLike, as_graph: bool = True) -> Gra
     if not TOL.is_allclose(normal, [0, 0, 1]):
         raise ValueError("The normal of the polygon should be [0, 0, 1]. The normal of the provided polygon is {}".format(normal))
     V = np.asarray(points, dtype=np.float64, order="C")
-    points, indices, edges, edge_types = _straight_skeleton_2.create_interior_straight_skeleton(V)
+    points, indices, edges, edge_types = _validate_skeleton_data(
+        _straight_skeleton_2.create_interior_straight_skeleton(V),
+        "interior straight skeleton",
+    )
     if as_graph:
         return graph_from_skeleton_data(points, indices, edges, edge_types)
     return points, indices, edges, edge_types
@@ -155,7 +174,10 @@ def interior_straight_skeleton_with_holes(points: PointsLike, holes: Sequence[Po
             raise ValueError("The normal of the hole should be [0, 0, -1]. The normal of the provided {}-th hole is {}".format(i, normal_hole))
         hole = np.ascontiguousarray(points, dtype=np.float64)
         H.append(hole)
-    points, indices, edges, edge_types = _straight_skeleton_2.create_interior_straight_skeleton_with_holes(V, H)
+    points, indices, edges, edge_types = _validate_skeleton_data(
+        _straight_skeleton_2.create_interior_straight_skeleton_with_holes(V, H),
+        "interior straight skeleton with holes",
+    )
     if as_graph:
         return graph_from_skeleton_data(points, indices, edges, edge_types)
     return points, indices, edges, edge_types

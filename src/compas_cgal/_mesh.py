@@ -1,5 +1,7 @@
 """Shared array conversion at native triangle-mesh boundaries."""
 
+import operator
+
 import numpy as np
 from compas.typing import Float64Array
 from compas.typing import Int32Array
@@ -32,22 +34,41 @@ def _as_native_mesh(mesh: VerticesFaces, name: str) -> tuple[Float64Array, Int32
         raise TypeError(f"{name} should be a (vertices, faces) pair.")
 
     vertices = np.ascontiguousarray(vertices, dtype=np.float64)
-    faces = np.ascontiguousarray(faces, dtype=np.int64)
+    faces = as_native_indices(faces, f"{name} faces", dimensions=2)
     if vertices.ndim != 2 or vertices.shape[1] != 3:
         raise ValueError(f"{name} vertices should have shape (N, 3).")
-    if faces.ndim != 2:
-        raise ValueError(f"{name} faces should be a two-dimensional index array.")
     if not np.isfinite(vertices).all():
         raise ValueError(f"{name} vertices should be finite.")
     if faces.size:
         minimum = faces.min()
         maximum = faces.max()
-        info = np.iinfo(np.int32)
-        if minimum < info.min or maximum > info.max:
-            raise OverflowError(f"{name} face indices exceed the range supported by CGAL.")
         if minimum < 0 or maximum >= len(vertices):
             raise IndexError(f"{name} face index is out of range.")
-    return vertices, np.ascontiguousarray(faces, dtype=np.int32)
+    return vertices, faces
+
+
+def as_native_indices(values: object, name: str, dimensions: int) -> Int32Array:
+    """Normalize non-boolean `SupportsIndex` values for a native call."""
+    try:
+        array = np.asarray(values)
+    except ValueError as error:
+        raise ValueError(f"{name} should be a regular {dimensions}-dimensional index array.") from error
+    if array.ndim != dimensions:
+        raise ValueError(f"{name} should be a {dimensions}-dimensional index array.")
+
+    indices = []
+    for value in array.flat:
+        if isinstance(value, (bool, np.bool_)):
+            raise TypeError(f"{name} should contain non-boolean integer indices.")
+        try:
+            indices.append(operator.index(value))
+        except TypeError as error:
+            raise TypeError(f"{name} should contain values implementing SupportsIndex.") from error
+
+    info = np.iinfo(np.int32)
+    if any(index < info.min or index > info.max for index in indices):
+        raise OverflowError(f"{name} exceed the index range supported by CGAL.")
+    return np.asarray(indices, dtype=np.int32).reshape(array.shape)
 
 
 def validate_native_mesh(result: VerticesFacesNumpy, operation: str) -> VerticesFacesNumpy:

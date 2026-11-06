@@ -5,10 +5,13 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+from compas.datastructures import Mesh
 
 from compas_cgal import measure
 from compas_cgal import meshing
 from compas_cgal import polylines
+from compas_cgal import projection
+from compas_cgal import reconstruction
 from compas_cgal import straight_skeleton_2
 from compas_cgal import _intersections
 from compas_cgal import _measure
@@ -398,7 +401,6 @@ def test_native_dual_accepts_measured_fixed_vertex_containers():
 @pytest.mark.parametrize(
     "fixed_vertices",
     [
-        np.asarray([False, True], dtype=np.bool_),
         np.asarray([0.0, 2.0], dtype=np.float32),
         [0.0, 2.0],
     ],
@@ -437,6 +439,156 @@ def test_dual_fixed_vertices_are_normalized_for_native_abi(monkeypatch):
         assert captured["faces"].dtype == np.int32
         assert captured["fixed_vertices"].dtype == np.int32
         assert captured["fixed_vertices"].flags.c_contiguous
+
+
+class IndexValue:
+    def __init__(self, value):
+        self.value = value
+
+    def __index__(self):
+        return self.value
+
+
+def test_mesh_faces_accept_supports_index_values(monkeypatch):
+    captured = {}
+
+    def area(vertices, faces):
+        captured["faces"] = faces
+        return 0.5
+
+    monkeypatch.setattr(measure._measure, "area", area)
+    faces = [[IndexValue(0), IndexValue(1), IndexValue(2)]]
+
+    assert measure.mesh_area(([[0, 0, 0], [1, 0, 0], [0, 1, 0]], faces)) == 0.5
+    assert captured["faces"].dtype == np.int32
+    np.testing.assert_array_equal(captured["faces"], [[0, 1, 2]])
+
+
+@pytest.mark.parametrize("faces", [[[False, True, True]], [[0.0, 1.0, 2.0]]])
+def test_mesh_faces_reject_noninteger_indices(monkeypatch, faces):
+    def unexpected(*args):
+        pytest.fail("native function should not be called")
+
+    monkeypatch.setattr(measure._measure, "area", unexpected)
+
+    with pytest.raises(TypeError):
+        measure.mesh_area(([[0, 0, 0], [1, 0, 0], [0, 1, 0]], faces))
+
+
+def test_mesh_faces_reject_indices_before_int32_narrowing(monkeypatch):
+    def unexpected(*args):
+        pytest.fail("native function should not be called")
+
+    monkeypatch.setattr(measure._measure, "area", unexpected)
+
+    with pytest.raises(OverflowError, match="index range"):
+        measure.mesh_area(([[0, 0, 0], [1, 0, 0], [0, 1, 0]], [[0, 1, 2**40]]))
+
+
+def test_dual_fixed_vertices_accept_supports_index_values(monkeypatch):
+    captured = {}
+
+    def dual(vertices, faces, fixed_vertices, *args):
+        captured["fixed_vertices"] = fixed_vertices
+        return vertices, faces, vertices, [[0, 1, 2]]
+
+    monkeypatch.setattr(meshing._meshing, "pmp_trimesh_remesh_dual", dual)
+    mesh = ([[0, 0, 0], [1, 0, 0], [0, 1, 0]], [[0, 1, 2]])
+
+    meshing.trimesh_dual(mesh, fixed_vertices=[IndexValue(0), IndexValue(2)])
+
+    assert captured["fixed_vertices"].dtype == np.int32
+    np.testing.assert_array_equal(captured["fixed_vertices"], [0, 2])
+
+
+@pytest.mark.parametrize("fixed_vertices", [[False, True], [0.0, 2.0]])
+def test_dual_fixed_vertices_reject_noninteger_indices(monkeypatch, fixed_vertices):
+    def unexpected(*args):
+        pytest.fail("native function should not be called")
+
+    monkeypatch.setattr(meshing._meshing, "pmp_trimesh_remesh_dual", unexpected)
+    mesh = ([[0, 0, 0], [1, 0, 0], [0, 1, 0]], [[0, 1, 2]])
+
+    with pytest.raises(TypeError):
+        meshing.trimesh_dual(mesh, fixed_vertices=fixed_vertices)
+
+
+def test_dual_fixed_vertices_reject_indices_before_int32_narrowing(monkeypatch):
+    def unexpected(*args):
+        pytest.fail("native function should not be called")
+
+    monkeypatch.setattr(meshing._meshing, "pmp_trimesh_remesh_dual", unexpected)
+    mesh = ([[0, 0, 0], [1, 0, 0], [0, 1, 0]], [[0, 1, 2]])
+
+    with pytest.raises(OverflowError, match="index range"):
+        meshing.trimesh_dual(mesh, fixed_vertices=[2**40])
+
+
+@pytest.mark.parametrize("operation", ["project", "pull"])
+@pytest.mark.parametrize("readonly", [False, True])
+def test_projection_owns_writable_output_without_mutating_input(monkeypatch, operation, readonly):
+    source = np.asarray([[0.25, 0.25, 1.0]], dtype=np.float64)
+    source.flags.writeable = not readonly
+    source_before = source.copy()
+    target = Mesh.from_vertices_and_faces([[0, 0, 0], [1, 0, 0], [0, 1, 0]], [[0, 1, 2]])
+
+    def project(vertices, faces, output):
+        assert output.flags.owndata
+        assert output.flags.writeable
+        assert output.flags.c_contiguous
+        output[:, 2] = 0.0
+
+    def pull(vertices, faces, output, normals):
+        project(vertices, faces, output)
+
+    if operation == "project":
+        monkeypatch.setattr(projection._meshing, "pmp_project", project)
+        result = projection.project_points_on_mesh(source, target)
+    else:
+        monkeypatch.setattr(projection._meshing, "pmp_pull", pull)
+        result = projection.pull_points_on_mesh(source, [[0, 0, -1]], target)
+
+    np.testing.assert_array_equal(source, source_before)
+    np.testing.assert_array_equal(result, [[0.25, 0.25, 0.0]])
+    assert result is not source
+
+
+@pytest.mark.parametrize(
+    "call",
+    [
+        lambda points: reconstruction.pointset_outlier_removal(points),
+        lambda points: reconstruction.pointset_reduction(points),
+        lambda points: reconstruction.pointset_smoothing(points),
+        lambda points: reconstruction.pointset_normal_estimation(points),
+        lambda points: reconstruction.poisson_surface_reconstruction(points, [[0, 0, 1], [0, 0, 1]]),
+    ],
+)
+def test_reconstruction_rejects_non_3d_pointsets_before_native_call(monkeypatch, call):
+    def unexpected(*args):
+        pytest.fail("native function should not be called")
+
+    monkeypatch.setattr(reconstruction._reconstruction, "pointset_outlier_removal", unexpected)
+    monkeypatch.setattr(reconstruction._reconstruction, "pointset_reduction", unexpected)
+    monkeypatch.setattr(reconstruction._reconstruction, "pointset_smoothing", unexpected)
+    monkeypatch.setattr(reconstruction._reconstruction, "pointset_normal_estimation", unexpected)
+    monkeypatch.setattr(reconstruction._reconstruction, "poisson_surface_reconstruction", unexpected)
+
+    with pytest.raises(ValueError, match=r"shape \(N, 3\)"):
+        call([[0, 0], [1, 1]])
+
+
+@pytest.mark.parametrize("points", [[[0]], [[0, 0, 0, 0]]])
+def test_polylines_reject_unsupported_coordinate_dimensions_before_native_call(monkeypatch, points):
+    def unexpected(*args):
+        pytest.fail("native function should not be called")
+
+    monkeypatch.setattr(polylines, "_simplify", unexpected)
+    monkeypatch.setattr(polylines, "_closest_points", unexpected)
+
+    with pytest.raises(ValueError, match=r"shape \(N, 2\) or \(N, 3\)"):
+        polylines.simplify_polyline(points, 0.1)
+    with pytest.raises(ValueError, match=r"shape \(N, 2\) or \(N, 3\)"):
+        polylines.closest_points_on_polyline(points, [[0, 0]])
 
 
 def test_native_intersection_result_is_list_of_float_arrays():

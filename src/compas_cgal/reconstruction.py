@@ -16,6 +16,23 @@ __all__ = [
 ]
 
 
+def _as_pointset(points: PointsLike, name: str) -> FloatNx3:
+    """Convert a structural point set to a native `(N, 3)` array."""
+    array = np.ascontiguousarray(points, dtype=np.float64)
+    if array.ndim != 2 or array.shape[1] != 3:
+        raise ValueError(f"{name} should have shape (N, 3).")
+    return array
+
+
+def _validate_pointset(result: FloatNx3, operation: str, expected_rows: int | None = None) -> FloatNx3:
+    """Check the shape and optional cardinality of a native point-set result."""
+    if result.ndim != 2 or result.shape[1] != 3:
+        raise RuntimeError(f"CGAL {operation} result should have shape (N, 3).")
+    if expected_rows is not None and len(result) != expected_rows:
+        raise RuntimeError(f"CGAL {operation} result should contain {expected_rows} points, got {len(result)}.")
+    return result
+
+
 def poisson_surface_reconstruction(
     points: PointsLike,
     normals: PointsLike,
@@ -28,9 +45,9 @@ def poisson_surface_reconstruction(
     Parameters
     ----------
     points
-        The points of the point cloud.
+        The points of the point cloud as an `(N, 3)` array-like object.
     normals
-        The normals of the point cloud.
+        The normals of the point cloud as an `(N, 3)` array-like object.
     sm_angle : float, optional
         Surface meshing angle bound in degrees.
         Controls the minimum angle of triangles in the output mesh.
@@ -81,15 +98,9 @@ def poisson_surface_reconstruction(
     >>> # Use larger sm_radius and sm_distance to reduce mesh complexity
     >>> V, F = poisson_surface_reconstruction(points, normals, sm_radius=50.0, sm_distance=0.5)
     """
-    # Convert input to numpy arrays with proper type and memory layout
-    P = np.asarray(points, dtype=np.float64, order="C")
-    N = np.asarray(normals, dtype=np.float64, order="C")
+    P = _as_pointset(points, "points")
+    N = _as_pointset(normals, "normals")
 
-    # Input validation
-    if P.ndim != 2 or P.shape[1] != 3:
-        raise ValueError("Points must be an Nx3 array")
-    if N.ndim != 2 or N.shape[1] != 3:
-        raise ValueError("Normals must be an Nx3 array")
     if P.shape[0] != N.shape[0]:
         raise ValueError("Number of points and normals must match")
     if len(P) < 3:
@@ -117,7 +128,7 @@ def pointset_outlier_removal(
     Parameters
     ----------
     points
-        The points of the point cloud.
+        The points of the point cloud as an `(N, 3)` array-like object.
     nnnbrs
         The number of nearest neighbors to consider for each point.
     radius
@@ -129,8 +140,9 @@ def pointset_outlier_removal(
         The points of the point cloud without outliers.
 
     """
-    P = np.asarray(points, dtype=np.float64, order="C")
-    return _reconstruction.pointset_outlier_removal(P, nnnbrs, radius)
+    P = _as_pointset(points, "points")
+    result = _reconstruction.pointset_outlier_removal(P, nnnbrs, radius)
+    return _validate_pointset(result, "point-set outlier removal")
 
 
 def pointset_reduction(
@@ -142,7 +154,7 @@ def pointset_reduction(
     Parameters
     ----------
     points
-        The points of the point cloud.
+        The points of the point cloud as an `(N, 3)` array-like object.
     spacing
         The cell size.
 
@@ -152,8 +164,9 @@ def pointset_reduction(
         The vectors of the point cloud.
 
     """
-    P = np.asarray(points, dtype=np.float64, order="C")
-    return _reconstruction.pointset_reduction(P, spacing)
+    P = _as_pointset(points, "points")
+    result = _reconstruction.pointset_reduction(P, spacing)
+    return _validate_pointset(result, "point-set reduction")
 
 
 def pointset_smoothing(
@@ -166,7 +179,7 @@ def pointset_smoothing(
     Parameters
     ----------
     points
-        The points of the point cloud.
+        The points of the point cloud as an `(N, 3)` array-like object.
     neighbors
         The number of nearest neighbors to consider for each point.
 
@@ -176,8 +189,9 @@ def pointset_smoothing(
         The vectors of the point cloud.
 
     """
-    P = np.asarray(points, dtype=np.float64, order="C")
-    return _reconstruction.pointset_smoothing(P, neighbors, iterations)
+    P = _as_pointset(points, "points")
+    result = _reconstruction.pointset_smoothing(P, neighbors, iterations)
+    return _validate_pointset(result, "point-set smoothing", expected_rows=len(P))
 
 
 def pointset_normal_estimation(
@@ -190,7 +204,7 @@ def pointset_normal_estimation(
     Parameters
     ----------
     points
-        The points of the point cloud.
+        The points of the point cloud as an `(N, 3)` array-like object.
     neighbors
         The number of nearest neighbors to consider for each point.
     erase
@@ -202,5 +216,11 @@ def pointset_normal_estimation(
         The vectors of the point cloud.
 
     """
-    P = np.asarray(points, dtype=np.float64, order="C")
-    return _reconstruction.pointset_normal_estimation(P, neighbors, erase)
+    P = _as_pointset(points, "points")
+    result = _reconstruction.pointset_normal_estimation(P, neighbors, erase)
+    if len(result) != 2:
+        raise RuntimeError("CGAL point-set normal estimation should return points and normals.")
+    result_points, result_normals = result
+    result_points = _validate_pointset(result_points, "point-set normal estimation points")
+    result_normals = _validate_pointset(result_normals, "point-set normal estimation normals", expected_rows=len(result_points))
+    return result_points, result_normals

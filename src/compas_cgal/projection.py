@@ -81,10 +81,20 @@ def project_points_on_mesh(
     numpy.ndarray
         The projected point coordinates.
 
+    Raises
+    ------
+    ValueError
+        If `points` does not have shape `(N, 3)`.
+
+    Notes
+    -----
+    The input points are not modified. The returned C-contiguous array owns
+    its writable memory.
+
     """
     triangle_mesh = mesh.triangulated(None)
     target = triangle_mesh.to_vertices_and_faces()
-    numpy_V_source = np.ascontiguousarray(points, dtype=np.float64)
+    numpy_V_source = np.array(points, dtype=np.float64, order="C", copy=True)
     if numpy_V_source.ndim != 2 or numpy_V_source.shape[1] != 3:
         raise ValueError("points should have shape (N, 3).")
     numpy_V_target, numpy_F_target = as_native_mesh(target, "mesh")
@@ -110,11 +120,22 @@ def pull_points_on_mesh(points: PointsLike, normals: PointsLike, mesh: Mesh) -> 
     numpy.ndarray
         The pulled point coordinates.
 
+    Raises
+    ------
+    ValueError
+        If `points` does not have shape `(N, 3)` or `normals` does not have
+        the same shape as `points`.
+
+    Notes
+    -----
+    The input points and normals are not modified. The returned C-contiguous
+    array owns its writable memory.
+
     """
 
     triangle_mesh = mesh.triangulated()
     target = triangle_mesh.to_vertices_and_faces()
-    numpy_V_source = np.ascontiguousarray(points, dtype=np.float64)
+    numpy_V_source = np.array(points, dtype=np.float64, order="C", copy=True)
     numpy_N_source = np.ascontiguousarray(normals, dtype=np.float64)
     if numpy_V_source.ndim != 2 or numpy_V_source.shape[1] != 3:
         raise ValueError("points should have shape (N, 3).")

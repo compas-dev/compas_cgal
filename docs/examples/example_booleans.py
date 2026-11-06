@@ -8,41 +8,23 @@ from compas.geometry import boolean_intersection_mesh_mesh
 from compas.geometry import boolean_union_mesh_mesh
 from compas_viewer import Viewer
 
+# =============================================================================
+# Input
+# =============================================================================
 
-def input():
-    """Create an input for the boolean methods."""
-    box = Box(2)
-    A = box.to_tessellation().to_vertices_and_triangles()
-    sphere = Sphere(1, frame=Frame(point=[1, 1, 1]))
-    B = sphere.to_tessellation(nu=64, nv=64).to_vertices_and_triangles()
-    return A, B
-
-
-def boolean_difference():
-    """Compute the boolean difference of two triangle meshes."""
-    A, B = input()
-    return Mesh.from_vertices_and_faces(*boolean_difference_mesh_mesh(A, B))
-
-
-def boolean_intersection():
-    """Compute the boolean intersection of two triangle meshes."""
-    A, B = input()
-    return Mesh.from_vertices_and_faces(*boolean_intersection_mesh_mesh(A, B))
-
-
-def boolean_union():
-    """Compute the boolean union of two triangle meshes."""
-    A, B = input()
-    return Mesh.from_vertices_and_faces(*boolean_union_mesh_mesh(A, B))
+box = Box(2)
+A = box.to_tessellation().to_vertices_and_triangles()
+sphere = Sphere(1, frame=Frame(point=[1, 1, 1]))
+B = sphere.to_tessellation(nu=64, nv=64).to_vertices_and_triangles()
 
 
 # =============================================================================
 # Booleans
 # =============================================================================
 
-difference = boolean_difference()
-intersection = boolean_intersection()
-union = boolean_union()
+difference = Mesh.from_vertices_and_faces(*boolean_difference_mesh_mesh(A, B))
+intersection = Mesh.from_vertices_and_faces(*boolean_intersection_mesh_mesh(A, B))
+union = Mesh.from_vertices_and_faces(*boolean_union_mesh_mesh(A, B))
 
 # =============================================================================
 # Spread

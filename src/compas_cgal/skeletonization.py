@@ -10,6 +10,19 @@ from .types import SkeletonVertexMapping
 __all__ = ["mesh_skeleton", "mesh_skeleton_with_mapping"]
 
 
+def _validate_skeleton_result(result, operation):
+    """Check paired native skeleton vectors without asserting numerical correctness."""
+    if len(result) != 4:
+        raise RuntimeError(f"CGAL {operation} should return start points, end points, and two vertex mappings.")
+    start_points, end_points, start_vertex_indices, end_vertex_indices = result
+    if len(start_points) != len(end_points) or len(start_points) % 3:
+        raise RuntimeError(f"CGAL {operation} should return equally sized XYZ start and end point vectors.")
+    edge_count = len(start_points) // 3
+    if len(start_vertex_indices) != edge_count or len(end_vertex_indices) != edge_count:
+        raise RuntimeError(f"CGAL {operation} returned {edge_count} edges, {len(start_vertex_indices)} start mappings, and {len(end_vertex_indices)} end mappings.")
+    return result
+
+
 def mesh_skeleton(mesh: VerticesFaces) -> PolylinesNumpySkeleton:
     """Compute the geometric skeleton of a triangle mesh using mean curvature flow.
 
@@ -52,7 +65,7 @@ def mesh_skeleton(mesh: VerticesFaces) -> PolylinesNumpySkeleton:
     V_numpy, F_numpy = as_native_mesh(mesh, "mesh")
 
     # Get start and end points as flattened vectors
-    start_points, end_points, _, _ = _skeletonization.mesh_skeleton(V_numpy, F_numpy)
+    start_points, end_points, _, _ = _validate_skeleton_result(_skeletonization.mesh_skeleton(V_numpy, F_numpy), "mesh skeletonization")
 
     # Convert flattened vectors to list of point coordinates
     edges = []
@@ -116,7 +129,10 @@ def mesh_skeleton_with_mapping(mesh: VerticesFaces) -> tuple[PolylinesNumpySkele
     V_numpy, F_numpy = as_native_mesh(mesh, "mesh")
 
     # Get start and end points and vertex indices
-    start_points, end_points, start_vertex_indices, end_vertex_indices = _skeletonization.mesh_skeleton(V_numpy, F_numpy)
+    start_points, end_points, start_vertex_indices, end_vertex_indices = _validate_skeleton_result(
+        _skeletonization.mesh_skeleton(V_numpy, F_numpy),
+        "mesh skeletonization with mapping",
+    )
 
     # Convert flattened vectors to list of point coordinates
     edges = []

@@ -53,7 +53,7 @@ jobs:
           CIBW_BEFORE_TEST: >-
             python -m pip install
             "compas @ git+https://github.com/compas-dev/compas.git@3c1a2e8e0e5c4c14292ecf4bb38c82e5b977273e"
-          CIBW_TEST_REQUIRES: numpy>=1.24 pytest build
+          CIBW_TEST_REQUIRES: numpy>=1.26 pytest build
         with:
           output-dir: wheelhouse
       - name: Verify wheel contents
