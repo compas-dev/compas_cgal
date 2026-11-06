@@ -109,8 +109,11 @@ def test_wheel_smoke_type_checks_the_installed_distribution() -> None:
     assert 'type_python="$type_venv/bin/python"' in wheel_smoke
     assert '"$type_python" -m pip install "pyright==1.1.414" wheelhouse/*.whl' in wheel_smoke
     assert "type_site=$(\"$type_python\" -c 'import site; print(site.getsitepackages()[0])')" in wheel_smoke
+    assert 'type_site_dir=$(cygpath -u "$type_site")' in wheel_smoke
+    assert 'type_site_dir="$type_site"' in wheel_smoke
     assert 'PYTHONPATH="$type_site" "$type_python" -m pyright --pythonpath "$type_python" .' in wheel_smoke
-    assert 'PYTHONPATH="$type_site" "$type_python" -m pyright --pythonpath "$type_python" --verifytypes compas_cgal --ignoreexternal' in wheel_smoke
+    assert 'cd "$type_site_dir"' in wheel_smoke
+    assert 'PYTHONPATH=. "$type_python" -m pyright --pythonpath "$type_python" --verifytypes compas_cgal --ignoreexternal' in wheel_smoke
 
 
 def test_installed_wheel_consumers_import_every_wrapper_and_plugin_family() -> None:

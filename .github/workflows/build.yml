@@ -183,11 +183,17 @@ jobs:
           fi
           "$type_python" -m pip install "pyright==1.1.414" wheelhouse/*.whl
           type_site=$("$type_python" -c 'import site; print(site.getsitepackages()[0])')
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            type_site_dir=$(cygpath -u "$type_site")
+          else
+            type_site_dir="$type_site"
+          fi
           mkdir -p "$typing_dir"
           cp tests/typing/*.py "$typing_dir/"
           cd "$typing_dir"
           PYTHONPATH="$type_site" "$type_python" -m pyright --pythonpath "$type_python" .
-          PYTHONPATH="$type_site" "$type_python" -m pyright --pythonpath "$type_python" --verifytypes compas_cgal --ignoreexternal
+          cd "$type_site_dir"
+          PYTHONPATH=. "$type_python" -m pyright --pythonpath "$type_python" --verifytypes compas_cgal --ignoreexternal
 
   sdist:
     needs: quality
