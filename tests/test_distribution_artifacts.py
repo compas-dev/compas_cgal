@@ -24,7 +24,7 @@ NATIVE_MODULES = (
     "_triangulation",
     "_types_std",
 )
-COMPAS_CANDIDATE = "f626151278b6fbea6c3dd271dcb096923c6073c3"
+COMPAS_CANDIDATE = "3c1a2e8e0e5c4c14292ecf4bb38c82e5b977273e"
 
 
 @pytest.fixture
@@ -162,5 +162,8 @@ def test_weighted_straight_skeleton_calls_match_cgal_6_1_1_api() -> None:
     source = (repository / "src" / "straight_skeleton_2.cpp").read_text(encoding="utf-8")
     compact = "".join(source.split())
 
-    assert "create_interior_weighted_straight_skeleton_2(polygon,weight_values)" in compact
-    assert "create_exterior_weighted_straight_skeleton_2(offset_distance,polygon,weight_values)" in compact
+    assert "std::vector<std::vector<double>>weights={weight_values};" in compact
+    assert "create_interior_weighted_straight_skeleton_2(polygon,weights)" in compact
+    assert "create_exterior_weighted_straight_skeleton_2(offset_distance,polygon,weights)" in compact
+    assert "create_interior_weighted_straight_skeleton_2(polygon,weight_values)" not in compact
+    assert "create_exterior_weighted_straight_skeleton_2(offset_distance,polygon,weight_values)" not in compact
