@@ -178,22 +178,22 @@ jobs:
           python -m venv "$type_venv"
           if [[ "$RUNNER_OS" == "Windows" ]]; then
             type_python="$type_venv/Scripts/python.exe"
+            type_bin=$(cygpath -u "$type_venv/Scripts")
           else
             type_python="$type_venv/bin/python"
+            type_bin="$type_venv/bin"
           fi
           "$type_python" -m pip install "pyright==1.1.414" wheelhouse/*.whl
           type_site=$("$type_python" -c 'import site; print(site.getsitepackages()[0])')
-          if [[ "$RUNNER_OS" == "Windows" ]]; then
-            type_site_dir=$(cygpath -u "$type_site")
-          else
-            type_site_dir="$type_site"
-          fi
           mkdir -p "$typing_dir"
           cp tests/typing/*.py "$typing_dir/"
           cd "$typing_dir"
           PYTHONPATH="$type_site" "$type_python" -m pyright --pythonpath "$type_python" .
-          cd "$type_site_dir"
-          PYTHONPATH=. "$type_python" -m pyright --pythonpath "$type_python" --verifytypes compas_cgal --ignoreexternal
+          export VIRTUAL_ENV="$type_venv"
+          export PATH="$type_bin:$PATH"
+          hash -r
+          python -c 'import pathlib, sys; assert pathlib.Path(sys.prefix).resolve() == pathlib.Path(sys.argv[1]).resolve()' "$type_venv"
+          "$type_python" -m pyright --verifytypes compas_cgal --ignoreexternal
 
   sdist:
     needs: quality

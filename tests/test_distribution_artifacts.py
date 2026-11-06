@@ -107,13 +107,16 @@ def test_wheel_smoke_type_checks_the_installed_distribution() -> None:
     assert 'python -m venv "$type_venv"' in wheel_smoke
     assert 'type_python="$type_venv/Scripts/python.exe"' in wheel_smoke
     assert 'type_python="$type_venv/bin/python"' in wheel_smoke
+    assert 'type_bin=$(cygpath -u "$type_venv/Scripts")' in wheel_smoke
+    assert 'type_bin="$type_venv/bin"' in wheel_smoke
     assert '"$type_python" -m pip install "pyright==1.1.414" wheelhouse/*.whl' in wheel_smoke
     assert "type_site=$(\"$type_python\" -c 'import site; print(site.getsitepackages()[0])')" in wheel_smoke
-    assert 'type_site_dir=$(cygpath -u "$type_site")' in wheel_smoke
-    assert 'type_site_dir="$type_site"' in wheel_smoke
     assert 'PYTHONPATH="$type_site" "$type_python" -m pyright --pythonpath "$type_python" .' in wheel_smoke
-    assert 'cd "$type_site_dir"' in wheel_smoke
-    assert 'PYTHONPATH=. "$type_python" -m pyright --pythonpath "$type_python" --verifytypes compas_cgal --ignoreexternal' in wheel_smoke
+    assert 'export VIRTUAL_ENV="$type_venv"' in wheel_smoke
+    assert 'export PATH="$type_bin:$PATH"' in wheel_smoke
+    assert "hash -r" in wheel_smoke
+    assert "python -c 'import pathlib, sys; assert pathlib.Path(sys.prefix).resolve() == pathlib.Path(sys.argv[1]).resolve()' \"$type_venv\"" in wheel_smoke
+    assert '"$type_python" -m pyright --verifytypes compas_cgal --ignoreexternal' in wheel_smoke
 
 
 def test_installed_wheel_consumers_import_every_wrapper_and_plugin_family() -> None:
