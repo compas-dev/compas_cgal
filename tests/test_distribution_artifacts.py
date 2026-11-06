@@ -103,8 +103,14 @@ def test_wheel_smoke_type_checks_the_installed_distribution() -> None:
 
     assert "Verify installed wheel type contract" in wheel_smoke
     assert "cp tests/typing/*.py" in wheel_smoke
-    assert 'python -m pyright --pythonpath "$(command -v python)" .' in wheel_smoke
-    assert "python -m pyright --verifytypes compas_cgal --ignoreexternal" in wheel_smoke
+    assert wheel_smoke.count("PIP_CONSTRAINT: ${{ github.workspace }}/.github/constraints/compas-candidate.txt") == 2
+    assert 'python -m venv "$type_venv"' in wheel_smoke
+    assert 'type_python="$type_venv/Scripts/python.exe"' in wheel_smoke
+    assert 'type_python="$type_venv/bin/python"' in wheel_smoke
+    assert '"$type_python" -m pip install "pyright==1.1.414" wheelhouse/*.whl' in wheel_smoke
+    assert "type_site=$(\"$type_python\" -c 'import site; print(site.getsitepackages()[0])')" in wheel_smoke
+    assert 'PYTHONPATH="$type_site" "$type_python" -m pyright --pythonpath "$type_python" .' in wheel_smoke
+    assert 'PYTHONPATH="$type_site" "$type_python" -m pyright --pythonpath "$type_python" --verifytypes compas_cgal --ignoreexternal' in wheel_smoke
 
 
 def test_installed_wheel_consumers_import_every_wrapper_and_plugin_family() -> None:
