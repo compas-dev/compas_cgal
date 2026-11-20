@@ -1,3 +1,6 @@
+import subprocess
+import sys
+
 import pytest
 import numpy as np
 
@@ -5,6 +8,7 @@ from compas.geometry import Sphere
 from compas.datastructures import Mesh
 from compas_cgal.geodesics import heat_geodesic_distances
 from compas_cgal.isolines import isolines
+from compas_cgal.isolines import isolines_with_indices
 
 
 @pytest.fixture
@@ -126,3 +130,122 @@ def test_isolines_resample_disabled(sphere_mesh_with_distances):
     for pts in polylines:
         assert isinstance(pts, np.ndarray)
         assert pts.shape[1] == 3
+
+
+# ---------------------------------------------------------------------------
+# isolines_with_indices: many isovalues on one mesh
+# ---------------------------------------------------------------------------
+
+
+def _canonical(polylines):
+    """Polylines as a sorted list, each closed one started at its smallest point.
+
+    Where a closed polyline starts, the direction a polyline runs in, and the order of the
+    polylines of one isovalue carry no geometry; the points do, and they are kept bit for bit.
+    """
+    result = []
+    for points in polylines:
+        points = np.asarray(points)
+        if np.array_equal(points[0], points[-1]):
+            ring = points[:-1]
+            start = min(range(len(ring)), key=lambda i: tuple(ring[i]))
+            ring = np.roll(ring, -start, axis=0)
+            if tuple(ring[-1]) < tuple(ring[1]):
+                ring = np.concatenate([ring[:1], ring[:0:-1]])
+            points = np.concatenate([ring, ring[:1]])
+        elif tuple(points[-1]) < tuple(points[0]):
+            points = points[::-1]
+        result.append(points)
+    return sorted(result, key=lambda points: points.tobytes())
+
+
+def _assert_same_polylines(batch, single):
+    batch, single = _canonical(batch), _canonical(single)
+    assert len(batch) == len(single)
+    for a, b in zip(batch, single):
+        assert np.array_equal(a, b)
+
+
+def _arrays(mesh, name):
+    V, F = mesh.to_vertices_and_faces()
+    return (V, F), np.asarray(mesh.vertices_attribute(name), dtype=np.float64)
+
+
+@pytest.fixture
+def grid_mesh_with_x():
+    """An open 6 x 6 grid of triangles whose scalar is x: whole columns of vertices sit on integer isovalues."""
+    mesh = Mesh.from_meshgrid(dx=6, nx=6)
+    mesh.quads_to_triangles()
+    for key in mesh.vertices():
+        mesh.vertex_attribute(key, "x", float(mesh.vertex_attribute(key, "x")))
+    return mesh
+
+
+def test_isolines_with_indices_are_the_isolines_of_each_isovalue(sphere_mesh_with_distances):
+    mesh = sphere_mesh_with_distances
+    vf, scalars = _arrays(mesh, "distance")
+    smin, smax = float(scalars.min()), float(scalars.max())
+    isovalues = np.linspace(smin, smax, 9)[1:-1].tolist()
+
+    polylines, indices = isolines_with_indices(vf, scalars, isovalues)
+
+    assert len(polylines) == len(indices) > 0
+    for i, isovalue in enumerate(isovalues):
+        batch = [pl for pl, k in zip(polylines, indices) if k == i]
+        single = isolines(mesh, "distance", isovalues=[isovalue], resample=False)
+        assert len(single) > 0
+        _assert_same_polylines(batch, single)
+
+
+def test_isolines_with_indices_through_vertices_and_on_an_open_mesh(grid_mesh_with_x):
+    mesh = grid_mesh_with_x
+    vf, scalars = _arrays(mesh, "x")
+    # 2.0 and 3.0 run along columns of vertices, 2.5 crosses the edges between them.
+    isovalues = [2.0, 2.5, 3.0]
+
+    polylines, indices = isolines_with_indices(vf, scalars, isovalues)
+
+    for i, isovalue in enumerate(isovalues):
+        batch = [pl for pl, k in zip(polylines, indices) if k == i]
+        single = isolines(mesh, "x", isovalues=[isovalue], resample=False)
+        assert len(single) > 0
+        _assert_same_polylines(batch, single)
+        assert all(np.all(pl[:, 0] == isovalue) for pl in batch)
+
+
+def test_isolines_with_indices_index_the_isovalues_as_given(sphere_mesh_with_distances):
+    vf, scalars = _arrays(sphere_mesh_with_distances, "distance")
+    smin, smax = float(scalars.min()), float(scalars.max())
+    low, mid, high = np.linspace(smin, smax, 5)[1:-1].tolist()
+    # Unsorted, with a repeated isovalue and one that crosses nothing.
+    isovalues = [high, low, smax + 1.0, mid, low]
+
+    polylines, indices = isolines_with_indices(vf, scalars, isovalues)
+
+    assert isinstance(indices, np.ndarray)
+    assert indices.dtype == np.int32
+    assert indices.shape == (len(polylines),)
+    assert np.all(np.diff(indices) >= 0)
+    assert set(indices.tolist()) == {0, 1, 3, 4}
+    for i, isovalue in enumerate(isovalues):
+        batch = [pl for pl, k in zip(polylines, indices) if k == i]
+        _assert_same_polylines(batch, isolines_with_indices(vf, scalars, [isovalue])[0])
+
+
+def test_isolines_with_indices_need_one_scalar_per_vertex(sphere_mesh_with_distances):
+    vf, scalars = _arrays(sphere_mesh_with_distances, "distance")
+
+    with pytest.raises(ValueError, match="scalar"):
+        isolines_with_indices(vf, scalars[:-1], [1.0])
+
+
+def test_isolines_module_works_when_imported_alone():
+    """The bound list types have to be loaded by the module itself, not by an earlier import."""
+    code = (
+        "from compas_cgal.isolines import isolines_with_indices\n"
+        "V = [[0, 0, 0], [1, 0, 0], [0, 1, 0]]\n"
+        "polylines, indices = isolines_with_indices((V, [[0, 1, 2]]), [0.0, 1.0, 1.0], [0.5])\n"
+        "assert len(polylines) == 1 and indices.tolist() == [0]\n"
+    )
+    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr

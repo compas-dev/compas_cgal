@@ -3,16 +3,20 @@
 from typing import List
 from typing import Optional
 from typing import Sequence
+from typing import Tuple
 from typing import Union
 
 import numpy as np
+from compas.datastructures import Mesh
 from numpy.typing import NDArray
 
-from compas.datastructures import Mesh
+from compas_cgal import _types_std  # noqa: F401  # Load vector type bindings
 from compas_cgal._isolines import isolines as _isolines
+from compas_cgal._isolines import isolines_with_indices as _isolines_with_indices
 from compas_cgal.types import PolylinesNumpy
+from compas_cgal.types import VerticesFaces
 
-__all__ = ["isolines"]
+__all__ = ["isolines", "isolines_with_indices"]
 
 
 def _smooth_polyline(pts: NDArray, iterations: int = 1) -> NDArray:
@@ -172,3 +176,62 @@ def isolines(
         polylines = [_smooth_polyline(pl, smoothing) for pl in polylines]
 
     return polylines
+
+
+def isolines_with_indices(
+    mesh: VerticesFaces,
+    scalars: Sequence[float],
+    isovalues: Sequence[float],
+) -> Tuple[PolylinesNumpy, NDArray]:
+    """Extract the isolines of many isovalues, each polyline with the index of its isovalue.
+
+    Uses CGAL's refine_mesh_at_isolevel, as :func:`isolines` does, but for each
+    isovalue only on the faces it crosses: the mesh is read once, whatever the
+    number of isovalues, where :func:`isolines` rebuilds it for every one of them.
+    The polylines of an isovalue are those :func:`isolines` returns for it without
+    resampling, with the same points; where a closed polyline starts, the direction
+    a polyline runs in and the order of the polylines of one isovalue may differ.
+
+    Parameters
+    ----------
+    mesh : :attr:`compas_cgal.types.VerticesFaces`
+        A manifold triangle mesh.
+    scalars : Sequence[float]
+        The scalar value at each vertex.
+    isovalues : Sequence[float]
+        The isovalues, in any order.
+
+    Returns
+    -------
+    polylines : :attr:`compas_cgal.types.PolylinesNumpy`
+        The polylines as Nx3 arrays of points, ordered by the index of their isovalue.
+        A closed polyline repeats its first point at the end.
+    indices : NDArray
+        For each polyline, the index in `isovalues` of the isovalue it belongs to, as ``int32``.
+        An isovalue that crosses no face has no polyline.
+
+    Raises
+    ------
+    ValueError
+        If there is not one scalar per vertex, a face refers to a vertex that
+        does not exist, or the faces do not form a manifold triangle mesh.
+
+    Examples
+    --------
+    >>> from compas.geometry import Sphere
+    >>> from compas_cgal.isolines import isolines_with_indices
+    >>> V, F = Sphere(1.0).to_vertices_and_faces(u=32, v=32, triangulated=True)
+    >>> heights = [z for x, y, z in V]
+    >>> polylines, indices = isolines_with_indices((V, F), heights, [-0.5, 0.0, 0.5])
+    >>> indices.tolist()
+    [0, 1, 2]
+
+    """
+    V, F = mesh
+    V = np.asarray(V, dtype=np.float64, order="C")
+    F = np.asarray(F, dtype=np.int32, order="C")
+    scalar_values = np.asarray(scalars, dtype=np.float64, order="C").reshape(-1, 1)
+    values = np.asarray(isovalues, dtype=np.float64).tolist()
+
+    polylines, indices = _isolines_with_indices(V, F, scalar_values, values)
+    return list(polylines), indices
