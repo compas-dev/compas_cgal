@@ -31,7 +31,8 @@ class MeshDistance:
     ------
     ValueError
         If the faces are not triangles, refer to a vertex that does not exist,
-        or do not form a manifold mesh.
+        do not form a manifold mesh, or one of them is degenerate: its three
+        vertices lie on one line (decided with exact predicates).
 
     Examples
     --------

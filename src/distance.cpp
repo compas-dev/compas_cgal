@@ -7,6 +7,7 @@
 #include <exception>
 #include <iterator>
 #include <stdexcept>
+#include <string>
 #include <thread>
 #include <utility>
 #include <vector>
@@ -50,6 +51,15 @@ build_mesh(
     // Face indices are reported to the caller, so every input face has to be in the mesh.
     if (mesh.number_of_faces() != static_cast<std::size_t>(faces.rows())) {
         throw std::invalid_argument("the faces do not form a manifold triangle mesh");
+    }
+
+    // A face with its corners on one line (an exact verdict) has no normal: the closest
+    // point on it and the gradient of a query on it are not defined.
+    for (const auto face : mesh.faces()) {
+        if (CGAL::Polygon_mesh_processing::is_degenerate_triangle_face(face, mesh)) {
+            throw std::invalid_argument(
+                "face " + std::to_string(face.idx()) + " is degenerate: its three vertices lie on one line");
+        }
     }
     return mesh;
 }

@@ -225,6 +225,62 @@ def test_closest_works_on_an_open_mesh_and_signed_distance_refuses_it():
         solver.signed_distance(queries)
 
 
+def box_with_a_vertex_on_an_edge(flat):
+    """The box with a ninth vertex midway along the edge from vertex 0 to vertex 2.
+
+    The side below the edge is cut at the new vertex. The side beside it is cut there too, or,
+    when `flat`, left whole with the triangle (0, 2, 8) filling the gap: three corners on one
+    line. Either way the mesh is closed, manifold and wound outwards.
+    """
+    vertices, faces = box_mesh()
+    vertices = np.concatenate([vertices, 0.5 * (vertices[[0]] + vertices[[2]])])
+    cut = []
+    for face in faces.tolist():
+        if face == [0, 2, 6]:
+            cut += [[0, 8, 6], [8, 2, 6]]
+        elif face == [0, 3, 2]:
+            cut += [[0, 3, 2], [0, 2, 8]] if flat else [[0, 3, 8], [8, 3, 2]]
+        else:
+            cut.append(face)
+    return vertices, np.array(cut, dtype=np.int32)
+
+
+def test_a_face_without_area_is_refused():
+    """A face with its corners on one line has no normal, so no gradient for a query on it."""
+    queries = random_queries()[:2000]
+    distances, _, _, gradients = MeshDistance(box_with_a_vertex_on_an_edge(flat=False)).signed_distance(queries)
+    assert np.abs(distances - box_signed_distance(queries)).max() <= ROUNDING_TOLERANCE
+    assert np.isfinite(gradients).all()
+
+    with pytest.raises(ValueError, match="degenerate"):
+        MeshDistance(box_with_a_vertex_on_an_edge(flat=True))
+
+
+def test_a_face_without_area_is_refused_where_rounding_hides_it():
+    """The corners d, 2d and 4d lie on one line exactly, and their cross product in floats is not zero."""
+    step = np.array([0.1, 0.2, 0.3])
+    # A tetrahedron on d, 4d and two points off their line, with 2d as a fifth vertex on that edge.
+    vertices = np.array([step, 4 * step, [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], 2 * step])
+    # The edges from d are d and 3d, and 3d is not a float: it rounds, coordinate by coordinate.
+    assert np.any(np.cross(vertices[4] - vertices[0], vertices[1] - vertices[0]) != 0.0)
+
+    # The face on one side of the edge is cut at the fifth vertex; (0, 1, 4) fills the gap.
+    faces = np.array([[0, 2, 1], [0, 4, 3], [4, 1, 3], [0, 1, 4], [0, 3, 2], [1, 2, 3]], dtype=np.int32)
+    if np.linalg.det(vertices[1:4] - vertices[0]) < 0:
+        faces = faces[:, ::-1]
+
+    with pytest.raises(ValueError, match="face 3 is degenerate"):
+        MeshDistance((vertices, faces))
+
+
+def test_faces_between_two_vertices_at_one_place_are_refused():
+    vertices, faces = box_mesh()
+    vertices[1] = vertices[0]
+
+    with pytest.raises(ValueError, match="degenerate"):
+        MeshDistance((vertices, faces))
+
+
 def test_a_face_that_names_a_missing_vertex_is_refused():
     vertices, faces = box_mesh()
     broken = faces.copy()
