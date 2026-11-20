@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added the exact geodesics example (`docs/examples/example_geodesics_exact.py`) with screenshot.
 * Restored the developer guide as Markdown pages (`docs/devguide.md`, `docs/devguide/`) and added it to the nav.
 * Documented source installation with conda, uv and pixi in `docs/installation.md`.
+* Added `compas_cgal.distance.MeshDistance`: closest point, face and signed distance from many points to one triangle mesh, on numpy arrays, with the CGAL `AABB_tree` built once in the constructor and reused by every query. `closest(points)` returns the closest points and the index of a face each lies on. `signed_distance(points)` returns the distance (negative inside), the closest point, the face and the gradient; the side is decided by CGAL `Side_of_triangle_mesh` with exact predicates, so a query on the mesh is at distance exactly zero, and its gradient is the angle-weighted pseudonormal of the face, edge or vertex it lies on. Queries run on all hardware threads by default (`num_threads`), release the GIL, and return the same arrays whatever the number of threads; the `_distance` module is compiled with `CGAL_HAS_THREADS`.
+* Added the `MeshDistance` binding in `src/distance.cpp` / `.h`, `tests/test_distance.py` (a box against its closed form: distance, closest point, gradient, the sign one rounding step off the surface, queries on faces, edges and corners, the number of threads, the GIL), and `docs/api/compas_cgal.distance.md` with its API Reference nav entry.
 
 ### Changed
 
