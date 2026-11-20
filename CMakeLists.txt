@@ -240,3 +240,10 @@ add_nanobind_module(_polylines src/polylines.cpp)
 
 add_nanobind_module(_geodesics "src/geodesics.cpp;src/geodesics_exact.cpp")
 add_nanobind_module(_isolines src/isolines.cpp)
+add_nanobind_module(_distance src/distance.cpp)
+
+# _distance answers its queries from several threads: CGAL then has to guard what it
+# builds lazily and keep its scratch state per thread.
+find_package(Threads REQUIRED)
+target_compile_definitions(_distance PRIVATE CGAL_HAS_THREADS)
+target_link_libraries(_distance PRIVATE Threads::Threads)

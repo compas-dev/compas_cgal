@@ -177,6 +177,7 @@ nav:
       - Triangulation: examples/example_triangulation.md
   - API Reference:
       - compas_cgal.booleans: api/compas_cgal.booleans.md
+      - compas_cgal.distance: api/compas_cgal.distance.md
       - compas_cgal.geodesics: api/compas_cgal.geodesics.md
       - compas_cgal.intersections: api/compas_cgal.intersections.md
       - compas_cgal.isolines: api/compas_cgal.isolines.md

@@ -12,11 +12,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added the exact geodesics example (`docs/examples/example_geodesics_exact.py`) with screenshot.
 * Restored the developer guide as Markdown pages (`docs/devguide.md`, `docs/devguide/`) and added it to the nav.
 * Documented source installation with conda, uv and pixi in `docs/installation.md`.
+* Added `compas_cgal.distance.MeshDistance`: closest point, face and signed distance from many points to one triangle mesh, on numpy arrays, with the CGAL `AABB_tree` built once in the constructor and reused by every query. `closest(points)` returns the closest points and the index of a face each lies on. `signed_distance(points)` returns the distance (negative inside), the closest point, the face and the gradient; the side is decided by CGAL `Side_of_triangle_mesh` with exact predicates, so a query on the mesh is at distance exactly zero, and its gradient is the angle-weighted pseudonormal of the face, edge or vertex it lies on. Queries run on all hardware threads by default (`num_threads`), release the GIL, and return the same arrays whatever the number of threads; the `_distance` module is compiled with `CGAL_HAS_THREADS`. A mesh with a degenerate face, its three vertices on one line by CGAL's exact predicate, is refused with a `ValueError`: such a face has no normal, and the gradient of a query on it would be NaN.
+* Added the `MeshDistance` binding in `src/distance.cpp` / `.h`, `tests/test_distance.py` (a box against its closed form: distance, closest point, gradient, the sign one rounding step off the surface, queries on faces, edges and corners, a degenerate face, the number of threads, the GIL), and `docs/api/compas_cgal.distance.md` with its API Reference nav entry.
+* Added `compas_cgal.isolines.isolines_with_indices` for extracting the isolines of many isovalues from a `(vertices, faces)` mesh and a scalar per vertex, returning each polyline with the index of its isovalue. The faces are sorted to the isovalues they cross in one pass and `refine_mesh_at_isolevel` runs per isovalue on those faces only, where `isolines` rebuilds the whole mesh for every isovalue: on a mesh of 116,132 faces, 100 isovalues take 0.08 s instead of 3.1 s. The points are those `isolines` returns, bit for bit; where a closed polyline starts, its direction, and the order of the polylines of one isovalue may differ.
 
 ### Changed
 
 * `exact_geodesic_distances_from_points` and `ExactGeodesicSolver.solve_from_points` accept a list of points (e.g. `compas.geometry.Point`), not only an array.
 * `isolines` accepts the scalar values directly, in addition to a vertex attribute name.
+
+### Fixed
+
+* Fixed `compas_cgal.isolines` raising `TypeError: incompatible function arguments` for a list of isovalues unless another module that loads the bound vector types (`compas_cgal.geodesics`, for one) had been imported first: the module now loads them itself.
 
 ### Removed
 
